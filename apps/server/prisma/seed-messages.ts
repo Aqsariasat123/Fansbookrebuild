@@ -1,72 +1,45 @@
 import { PrismaClient } from '@prisma/client';
 
-export async function seedMessages(prisma: PrismaClient, passwordHash: string) {
-  const testFan = await prisma.user.upsert({
-    where: { email: 'fan@test.com' },
+async function upsertUser(
+  prisma: PrismaClient,
+  data: {
+    email: string;
+    username: string;
+    displayName: string;
+    passwordHash: string;
+    role: string;
+    avatar?: string;
+  },
+) {
+  const user = await prisma.user.upsert({
+    where: { email: data.email },
     update: {},
-    create: {
-      email: 'fan@test.com',
-      username: 'testfan',
-      displayName: 'Test Fan',
-      passwordHash,
-      role: 'FAN',
-      emailVerified: true,
-    },
+    create: { ...data, emailVerified: true },
   });
   await prisma.wallet.upsert({
-    where: { userId: testFan.id },
+    where: { userId: user.id },
     update: {},
-    create: { userId: testFan.id, balance: 0 },
+    create: { userId: user.id, balance: 0 },
   });
+  return user;
+}
 
-  const jimmyFox = await prisma.user.upsert({
-    where: { email: 'jimmy_fox@fansbook.com' },
-    update: {},
-    create: {
-      email: 'jimmy_fox@fansbook.com',
-      username: 'jimmy_fox',
-      displayName: 'Jimmy Fox',
-      passwordHash,
-      role: 'CREATOR',
-      avatar: '/images/creators/creator4.webp',
-      emailVerified: true,
-    },
-  });
-  await prisma.wallet.upsert({
-    where: { userId: jimmyFox.id },
-    update: {},
-    create: { userId: jimmyFox.id, balance: 0 },
-  });
-
-  await prisma.message.deleteMany({});
-  await prisma.conversation.deleteMany({});
-
+async function createConv(
+  prisma: PrismaClient,
+  p1: string,
+  p2: string,
+  lastMsg: string,
+  msgs: { senderId: string; text: string; offset: number }[],
+) {
   const conv = await prisma.conversation.create({
     data: {
-      participant1Id: testFan.id,
-      participant2Id: jimmyFox.id,
-      lastMessage: 'Lorem Ipsum is simply dummy text.',
+      participant1Id: p1,
+      participant2Id: p2,
+      lastMessage: lastMsg,
       lastMessageAt: new Date(),
     },
   });
-
   const now = Date.now();
-  const msgs = [
-    {
-      senderId: jimmyFox.id,
-      text: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      offset: -5,
-    },
-    { senderId: testFan.id, text: 'Lorem Ipsum is simply dummy text.', offset: -4 },
-    {
-      senderId: jimmyFox.id,
-      text: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-      offset: -3,
-    },
-    { senderId: testFan.id, text: 'Lorem Ipsum is simply dummy text.', offset: -2 },
-    { senderId: testFan.id, text: 'Lorem Ipsum is simply dummy text.', offset: -1 },
-  ];
-
   for (const m of msgs) {
     await prisma.message.create({
       data: {
@@ -75,8 +48,118 @@ export async function seedMessages(prisma: PrismaClient, passwordHash: string) {
         text: m.text,
         mediaType: 'TEXT',
         createdAt: new Date(now + m.offset * 60000),
-        readAt: m.senderId === jimmyFox.id ? new Date() : null,
       },
     });
   }
+}
+
+export async function seedMessages(prisma: PrismaClient, passwordHash: string) {
+  const fan = await upsertUser(prisma, {
+    email: 'fan@test.com',
+    username: 'testfan',
+    displayName: 'Test Fan',
+    passwordHash,
+    role: 'FAN',
+  });
+  const jimmy = await upsertUser(prisma, {
+    email: 'jimmy_fox@fansbook.com',
+    username: 'jimmy_fox',
+    displayName: 'Jimmy Fox',
+    passwordHash,
+    role: 'CREATOR',
+    avatar: '/images/creators/creator4.webp',
+  });
+  const sarah = await upsertUser(prisma, {
+    email: 'sarah_jones@fansbook.com',
+    username: 'sarah_jones',
+    displayName: 'Sarah Jones',
+    passwordHash,
+    role: 'CREATOR',
+    avatar: '/images/creators/creator1.webp',
+  });
+  const robert = await upsertUser(prisma, {
+    email: 'robert_zak@fansbook.com',
+    username: 'robert_zak',
+    displayName: 'Robert Zak',
+    passwordHash,
+    role: 'CREATOR',
+    avatar: '/images/creators/creator2.webp',
+  });
+
+  await prisma.message.deleteMany({});
+  await prisma.conversation.deleteMany({});
+
+  await createConv(
+    prisma,
+    fan.id,
+    jimmy.id,
+    'Maybe a behind-the-scenes look at my creative process?',
+    [
+      {
+        senderId: jimmy.id,
+        text: 'Hey! How are you doing? I saw your latest post, it was amazing! 🔥',
+        offset: -5,
+      },
+      {
+        senderId: fan.id,
+        text: 'Thanks so much! I worked really hard on it. Glad you liked it 😊',
+        offset: -4,
+      },
+      {
+        senderId: jimmy.id,
+        text: 'Seriously though, your content keeps getting better. Keep it up!',
+        offset: -3,
+      },
+      {
+        senderId: fan.id,
+        text: 'That means a lot! Any suggestions for what I should post next?',
+        offset: -2,
+      },
+      {
+        senderId: fan.id,
+        text: 'Maybe a behind-the-scenes look at my creative process?',
+        offset: -1,
+      },
+    ],
+  );
+
+  await createConv(
+    prisma,
+    fan.id,
+    sarah.id,
+    "Can't wait to see it! Let me know if you need anything 💕",
+    [
+      { senderId: sarah.id, text: 'Hey there! Welcome to my page 💕', offset: -10 },
+      {
+        senderId: fan.id,
+        text: 'Hi Sarah! I love your work, been following you for a while now',
+        offset: -9,
+      },
+      {
+        senderId: sarah.id,
+        text: "That's so sweet! I have some exclusive content coming this week 🎉",
+        offset: -8,
+      },
+      {
+        senderId: fan.id,
+        text: "Can't wait to see it! Let me know if you need anything 💕",
+        offset: -7,
+      },
+    ],
+  );
+
+  await createConv(prisma, fan.id, robert.id, 'Sounds good, talk soon! 👊', [
+    { senderId: robert.id, text: 'Yo! Thanks for subscribing to my channel 🙏', offset: -20 },
+    {
+      senderId: fan.id,
+      text: 'No problem bro! Your fitness content is next level 💪',
+      offset: -19,
+    },
+    {
+      senderId: robert.id,
+      text: "Appreciate that! I'm dropping a new workout series next Monday",
+      offset: -18,
+    },
+    { senderId: fan.id, text: 'Sounds good, talk soon! 👊', offset: -17 },
+  ]);
 }

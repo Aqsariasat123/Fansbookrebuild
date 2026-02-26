@@ -1,68 +1,86 @@
-const IMG = '/icons/dashboard';
+import { useState } from 'react';
 
-interface ChatHeaderProps {
-  title: string;
-  otherName?: string;
-  otherAvatar?: string | null;
-  onBack?: () => void;
-}
+const IMG = '/icons/dashboard';
 
 export function MessagePageHeader() {
   return (
-    <div className="flex items-center justify-between mb-[16px]">
-      <p className="text-[24px] font-bold text-[#f8f8f8]">Message</p>
-      <div className="flex items-center gap-[10px]">
-        <button className="flex items-center gap-[6px] bg-[#15191c] rounded-[8px] px-[14px] py-[8px] text-[14px] text-[#f8f8f8] hover:opacity-80 transition-opacity">
-          <img src={`${IMG}/person-heart.svg`} alt="" className="size-[18px]" />
-          Invite
+    <div className="flex items-center justify-between border-b border-[#15191c] px-[39px] py-[16px]">
+      <p className="text-[20px] text-[#f8f8f8]">Message</p>
+      <div className="flex items-center gap-[16px]">
+        <button className="flex items-center gap-[10px] bg-[#15191c] p-[10px] rounded-[8px] hover:opacity-80 transition-opacity">
+          <img src={`${IMG}/person-heart.svg`} alt="" className="size-[24px]" />
+          <span className="text-[20px] text-[#5d5d5d]">Invite</span>
         </button>
-        <button className="size-[36px] rounded-full flex items-center justify-center hover:bg-[#15191c] transition-colors">
-          <img src={`${IMG}/notifications.svg`} alt="" className="size-[20px]" />
+        <button className="size-[34px] flex items-center justify-center hover:opacity-80 transition-opacity">
+          <img src={`${IMG}/notifications.svg`} alt="" className="size-[24px]" />
         </button>
       </div>
     </div>
   );
 }
 
-export function ChatUserHeader({ otherName, otherAvatar, onBack }: ChatHeaderProps) {
+interface ChatUserHeaderProps {
+  otherName?: string;
+  otherAvatar?: string | null;
+  onBack: () => void;
+}
+
+export function ChatUserHeader({ otherName, otherAvatar, onBack }: ChatUserHeaderProps) {
+  const [showMenu, setShowMenu] = useState(false);
   const initial = otherName?.charAt(0)?.toUpperCase() || '?';
   return (
-    <div className="flex items-center gap-[12px] mb-[16px]">
-      {onBack && (
-        <button onClick={onBack} className="hover:opacity-80 transition-opacity">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#f8f8f8"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-        </button>
-      )}
-      {otherAvatar ? (
-        <img src={otherAvatar} alt="" className="size-[40px] rounded-full object-cover" />
-      ) : (
-        <div className="size-[40px] rounded-full bg-[#2e4882] flex items-center justify-center">
-          <span className="text-[14px] font-medium text-[#f8f8f8]">{initial}</span>
+    <div className="flex items-center border-b border-[#15191c] pl-[12px] py-[14px] pr-[17px]">
+      <button onClick={onBack} className="mr-[12px] hover:opacity-80 transition-opacity">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#f8f8f8"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <div className="flex items-center gap-[16px]">
+        {otherAvatar ? (
+          <img src={otherAvatar} alt="" className="size-[40px] rounded-full object-cover" />
+        ) : (
+          <div className="size-[40px] rounded-full bg-[#2e4882] flex items-center justify-center">
+            <span className="text-[14px] font-medium text-[#f8f8f8]">{initial}</span>
+          </div>
+        )}
+        <div>
+          <p className="text-[20px] leading-[1.7] text-[#f8f8f8]">{otherName}</p>
+          <p className="text-[12px] leading-[1.7] text-green-500">Online</p>
         </div>
-      )}
-      <div>
-        <p className="text-[16px] font-medium text-[#f8f8f8]">{otherName}</p>
-        <p className="text-[12px] text-[#2e80c8]">{otherName} is Typing...</p>
       </div>
       <div className="flex-1" />
-      <div className="flex items-center gap-[6px]">
-        <button className="size-[36px] flex items-center justify-center hover:opacity-80">
+      <div className="relative flex items-center gap-[8px]">
+        <button className="hover:opacity-80 transition-opacity">
           <img src={`${IMG}/settings.svg`} alt="" className="size-[20px] opacity-50" />
         </button>
-        <button className="size-[36px] flex items-center justify-center hover:opacity-80">
-          <span className="text-[20px] text-[#5d5d5d]">⋮</span>
+        <button
+          onClick={() => setShowMenu(!showMenu)}
+          className="hover:opacity-80 transition-opacity"
+        >
+          <span className="text-[20px] text-[#5d5d5d]">&#8942;</span>
         </button>
+        {showMenu && (
+          <div className="absolute top-full right-0 mt-[4px] bg-[#15191c] rounded-[8px] py-[4px] w-[160px] z-20 shadow-lg">
+            <button className="w-full text-left px-[14px] py-[10px] text-[14px] text-[#f8f8f8] hover:bg-[#2a2d30]">
+              Mute
+            </button>
+            <button className="w-full text-left px-[14px] py-[10px] text-[14px] text-[#f8f8f8] hover:bg-[#2a2d30]">
+              Block
+            </button>
+            <button className="w-full text-left px-[14px] py-[10px] text-[14px] text-red-400 hover:bg-[#2a2d30]">
+              Delete Chat
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
