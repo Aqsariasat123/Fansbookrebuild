@@ -185,6 +185,9 @@ model User {
   bio              String?
   location         String?
   website          String?
+  firstName        String?
+  lastName         String?
+  mobileNumber     String?
   gender           String?
   country          String?
   category         String?

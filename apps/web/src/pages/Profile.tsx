@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { api } from '../lib/api';
-import { EditProfileModal } from '../components/profile/EditProfileModal';
 import { ChangePasswordModal } from '../components/profile/ChangePasswordModal';
 
 const IMG = '/icons/dashboard';
@@ -78,7 +78,7 @@ function ActionRow({ icon, label, onClick }: { icon: string; label: string; onCl
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
-  const [editOpen, setEditOpen] = useState(false);
+  const navigate = useNavigate();
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -120,7 +120,7 @@ export default function Profile() {
           <ActionRow
             icon={`${IMG}/edit-property.svg`}
             label="Edit Profile"
-            onClick={() => setEditOpen(true)}
+            onClick={() => navigate('/profile/edit')}
           />
           <div className="w-full h-px bg-[#2a2d30] my-[16px]" />
           <ActionRow
@@ -131,7 +131,6 @@ export default function Profile() {
           <div className="w-full h-px bg-[#2a2d30] my-[16px]" />
         </div>
       </div>
-      <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} />
       <ChangePasswordModal open={passwordOpen} onClose={() => setPasswordOpen(false)} />
     </div>
   );

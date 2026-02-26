@@ -14,6 +14,9 @@ const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const Profile = lazy(() => import('./pages/Profile'));
+const ProfileEdit = lazy(() => import('./pages/ProfileEdit'));
+const Messages = lazy(() => import('./pages/Messages'));
+const MessageChat = lazy(() => import('./pages/MessageChat'));
 const Explore = lazy(() => import('./pages/Explore'));
 const Settings = lazy(() => import('./pages/Settings'));
 const About = lazy(() => import('./pages/About'));
@@ -93,6 +96,9 @@ export default function App() {
                 <Route element={<MainLayout />}>
                   <Route path="/feed" element={<Home />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/profile/edit" element={<ProfileEdit />} />
+                  <Route path="/messages" element={<Messages />} />
+                  <Route path="/messages/:conversationId" element={<MessageChat />} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/settings" element={<Settings />} />
                 </Route>

@@ -11,6 +11,7 @@ import profileRouter from './routes/profile.js';
 import creatorsRouter from './routes/creators.js';
 import liveRouter from './routes/live.js';
 import feedRouter from './routes/feed.js';
+import messagesRouter from './routes/messages.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -45,6 +46,7 @@ app.use('/api/profile', profileRouter);
 app.use('/api/creators', creatorsRouter);
 app.use('/api/live', liveRouter);
 app.use('/api/feed', feedRouter);
+app.use('/api/messages', messagesRouter);
 
 // Error handling
 app.use(errorHandler);

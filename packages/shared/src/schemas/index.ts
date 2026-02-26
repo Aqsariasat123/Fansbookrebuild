@@ -74,6 +74,9 @@ export const updatePostSchema = createPostSchema.partial();
 
 export const updateProfileSchema = z.object({
   displayName: z.string().min(1).max(50).optional(),
+  firstName: z.string().max(50).optional().or(z.literal('')),
+  lastName: z.string().max(50).optional().or(z.literal('')),
+  mobileNumber: z.string().max(20).optional().or(z.literal('')),
   bio: z.string().max(1000).optional(),
   location: z.string().max(100).optional(),
   website: z.string().url().max(200).optional().or(z.literal('')),

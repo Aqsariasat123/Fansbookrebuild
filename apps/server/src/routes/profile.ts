@@ -11,8 +11,6 @@ import { AppError } from '../middleware/errorHandler.js';
 
 const router = Router();
 
-// ─── Multer config for avatar uploads ─────────────────────
-
 const uploadsDir = path.join(process.cwd(), 'uploads', 'avatars');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -51,6 +49,9 @@ const USER_SELECT = {
   username: true,
   email: true,
   displayName: true,
+  firstName: true,
+  lastName: true,
+  mobileNumber: true,
   role: true,
   avatar: true,
   cover: true,
@@ -61,10 +62,11 @@ const USER_SELECT = {
   createdAt: true,
 } as const;
 
-// ─── Schemas ──────────────────────────────────────────────
-
 const updateProfileSchema = z.object({
   displayName: z.string().min(1).max(50).optional(),
+  firstName: z.string().max(50).optional().or(z.literal('')),
+  lastName: z.string().max(50).optional().or(z.literal('')),
+  mobileNumber: z.string().max(20).optional().or(z.literal('')),
   bio: z.string().max(1000).optional(),
   location: z.string().max(100).optional(),
   website: z.string().url().max(200).optional().or(z.literal('')),
@@ -86,30 +88,28 @@ const changePasswordSchema = z
     path: ['confirmPassword'],
   });
 
-// ─── PUT /api/profile ─────────────────────────────────────
+const PROFILE_FIELDS = ['displayName', 'bio', 'location', 'website'] as const;
+const NULLABLE_FIELDS = ['firstName', 'lastName', 'mobileNumber'] as const;
+
+function buildProfileUpdate(body: Record<string, unknown>) {
+  const data: Record<string, unknown> = {};
+  for (const f of PROFILE_FIELDS) if (body[f] !== undefined) data[f] = body[f];
+  for (const f of NULLABLE_FIELDS) if (body[f] !== undefined) data[f] = body[f] || null;
+  return data;
+}
 
 router.put('/', authenticate, validate(updateProfileSchema), async (req, res, next) => {
   try {
-    const { displayName, bio, location, website } = req.body;
-
     const user = await prisma.user.update({
       where: { id: req.user!.userId },
-      data: {
-        ...(displayName !== undefined && { displayName }),
-        ...(bio !== undefined && { bio }),
-        ...(location !== undefined && { location }),
-        ...(website !== undefined && { website }),
-      },
+      data: buildProfileUpdate(req.body),
       select: USER_SELECT,
     });
-
     res.json({ success: true, data: user });
   } catch (err) {
     next(err);
   }
 });
-
-// ─── PUT /api/profile/password ────────────────────────────
 
 router.put('/password', authenticate, validate(changePasswordSchema), async (req, res, next) => {
   try {
@@ -141,8 +141,6 @@ router.put('/password', authenticate, validate(changePasswordSchema), async (req
     next(err);
   }
 });
-
-// ─── POST /api/profile/avatar ─────────────────────────────
 
 router.post('/avatar', authenticate, upload.single('avatar'), async (req, res, next) => {
   try {
@@ -178,8 +176,6 @@ router.post('/avatar', authenticate, upload.single('avatar'), async (req, res, n
     next(err);
   }
 });
-
-// ─── GET /api/profile/avatar/:filename ────────────────────
 
 router.get('/avatar/:id', (req, res, next) => {
   try {
