@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import path from 'path';
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { apiLimiter } from './middleware/rateLimit.js';
@@ -38,9 +37,6 @@ app.use(
 
 // Rate limiting
 app.use('/api', apiLimiter);
-
-// Serve uploaded files (under /api so Nginx proxies it)
-app.use('/api/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Routes
 app.use('/api', healthRouter);
