@@ -18,10 +18,17 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+const MIME_EXT: Record<string, string> = {
+  'image/jpeg': '.jpeg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+};
+
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
+    const ext = MIME_EXT[file.mimetype] ?? '.bin';
     cb(null, `${req.user!.userId}-${Date.now()}${ext}`);
   },
 });
@@ -38,6 +45,21 @@ const upload = multer({
     }
   },
 });
+
+const USER_SELECT = {
+  id: true,
+  username: true,
+  email: true,
+  displayName: true,
+  role: true,
+  avatar: true,
+  cover: true,
+  bio: true,
+  location: true,
+  website: true,
+  isVerified: true,
+  createdAt: true,
+} as const;
 
 // ─── Schemas ──────────────────────────────────────────────
 
@@ -78,20 +100,7 @@ router.put('/', authenticate, validate(updateProfileSchema), async (req, res, ne
         ...(location !== undefined && { location }),
         ...(website !== undefined && { website }),
       },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        displayName: true,
-        role: true,
-        avatar: true,
-        cover: true,
-        bio: true,
-        location: true,
-        website: true,
-        isVerified: true,
-        createdAt: true,
-      },
+      select: USER_SELECT,
     });
 
     res.json({ success: true, data: user });
@@ -141,7 +150,9 @@ router.post('/avatar', authenticate, upload.single('avatar'), async (req, res, n
       throw new AppError(400, 'No image file provided');
     }
 
-    const avatarUrl = `/api/profile/avatar/${req.file.filename}`;
+    // Store URL without extension to avoid Nginx static file regex
+    const nameNoExt = path.parse(req.file.filename).name;
+    const avatarUrl = `/api/profile/avatar/${nameNoExt}`;
 
     // Delete old avatar file if it's an upload (not default)
     const current = await prisma.user.findUnique({
@@ -149,31 +160,17 @@ router.post('/avatar', authenticate, upload.single('avatar'), async (req, res, n
       select: { avatar: true },
     });
 
-    if (current?.avatar?.includes('/avatar/')) {
-      const filename = current.avatar.split('/').pop();
-      const oldPath = path.join(uploadsDir, filename ?? '');
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
-      }
+    if (current?.avatar?.includes('/api/profile/avatar/')) {
+      const oldId = current.avatar.split('/').pop() ?? '';
+      const files = fs.readdirSync(uploadsDir);
+      const oldFile = files.find((f) => f.startsWith(oldId));
+      if (oldFile) fs.unlinkSync(path.join(uploadsDir, oldFile));
     }
 
     const user = await prisma.user.update({
       where: { id: req.user!.userId },
       data: { avatar: avatarUrl },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        displayName: true,
-        role: true,
-        avatar: true,
-        cover: true,
-        bio: true,
-        location: true,
-        website: true,
-        isVerified: true,
-        createdAt: true,
-      },
+      select: USER_SELECT,
     });
 
     res.json({ success: true, data: user });
@@ -184,13 +181,12 @@ router.post('/avatar', authenticate, upload.single('avatar'), async (req, res, n
 
 // ─── GET /api/profile/avatar/:filename ────────────────────
 
-router.get('/avatar/:filename', (req, res, next) => {
+router.get('/avatar/:id', (req, res, next) => {
   try {
-    const filePath = path.join(uploadsDir, req.params.filename);
-    if (!fs.existsSync(filePath)) {
-      throw new AppError(404, 'Avatar not found');
-    }
-    res.sendFile(filePath);
+    const files = fs.readdirSync(uploadsDir);
+    const match = files.find((f) => f.startsWith(req.params.id));
+    if (!match) throw new AppError(404, 'Avatar not found');
+    res.sendFile(path.join(uploadsDir, match));
   } catch (err) {
     next(err);
   }
