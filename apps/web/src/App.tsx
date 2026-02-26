@@ -13,6 +13,7 @@ const CreatorsLive = lazy(() => import('./pages/CreatorsLive'));
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
+const Profile = lazy(() => import('./pages/Profile'));
 const Explore = lazy(() => import('./pages/Explore'));
 const Settings = lazy(() => import('./pages/Settings'));
 const About = lazy(() => import('./pages/About'));
@@ -91,6 +92,7 @@ export default function App() {
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
                   <Route path="/feed" element={<Home />} />
+                  <Route path="/profile" element={<Profile />} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/settings" element={<Settings />} />
                 </Route>
