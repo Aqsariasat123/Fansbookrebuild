@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fansbook Platform - Complete Rebuild Plan v2.1</title>
+<style>
+@page {
+  size: A4;
+  margin: 20mm 15mm;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: #2d3748;
+  background: #f7fafc;
+  font-size: 14px;
+}
+.page { background: #fff; max-width: 210mm; margin: 0 auto 20px; padding: 40px 50px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+@media print {
+  body { background: #fff; }
+  .page { box-shadow: none; margin: 0; padding: 20mm 15mm; max-width: 100%; }
+  .page-break { page-break-before: always; }
+  .no-print { display: none; }
+}
+h1 { font-size: 28px; color: #1a365d; margin-bottom: 16px; font-weight: 700; border-bottom: 3px solid #1a365d; padding-bottom: 8px; }
+h2 { font-size: 22px; color: #1a365d; margin: 24px 0 12px; font-weight: 600; }
+h3 { font-size: 18px; color: #2c5282; margin: 20px 0 10px; font-weight: 600; }
+h4 { font-size: 15px; color: #2d3748; margin: 16px 0 8px; font-weight: 600; }
+p { margin-bottom: 10px; }
+ul, ol { margin: 8px 0 12px 24px; }
+li { margin-bottom: 4px; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+th { background: #1a365d; color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; }
+td { padding: 8px 12px; border: 1px solid #e2e8f0; }
+tr:nth-child(even) td { background: #f7fafc; }
+tr:hover td { background: #edf2f7; }
+.cover { text-align: center; padding: 80px 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; }
+.cover h1 { font-size: 36px; border: none; margin-bottom: 8px; }
+.cover .subtitle { font-size: 20px; color: #4a5568; margin-bottom: 24px; }
+.cover .tech { font-size: 14px; color: #718096; margin-bottom: 6px; }
+.cover .version { margin-top: 30px; padding: 12px 24px; background: #1a365d; color: #fff; border-radius: 6px; font-size: 14px; font-weight: 600; display: inline-block; }
+.cover .design-note { margin-top: 16px; font-size: 13px; color: #718096; font-style: italic; }
+.badge-new { display: inline-block; background: #f6ad55; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; text-transform: uppercase; }
+.badge-updated { display: inline-block; background: #4299e1; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; text-transform: uppercase; }
+.new-section-header { background: linear-gradient(90deg, #f6ad55 0%, #ed8936 100%); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; letter-spacing: 1px; }
+.callout { border-left: 4px solid #4299e1; background: #ebf8ff; padding: 16px 20px; border-radius: 0 6px 6px 0; margin: 16px 0; }
+.callout-warning { border-left-color: #ed8936; background: #fffaf0; }
+.callout-success { border-left-color: #48bb78; background: #f0fff4; }
+.callout-critical { border-left-color: #e53e3e; background: #fff5f5; }
+.callout h4 { margin-top: 0; color: #2c5282; }
+.callout-warning h4 { color: #c05621; }
+.callout-success h4 { color: #276749; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 12px 0; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+@media (max-width: 700px) { .card-grid { grid-template-columns: 1fr; } }
+.rule-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; background: #fff; }
+.rule-card .rule-num { display: inline-block; background: #1a365d; color: #fff; width: 28px; height: 28px; text-align: center; line-height: 28px; border-radius: 50%; font-size: 13px; font-weight: 700; margin-right: 8px; }
+.rule-card h4 { display: inline; font-size: 14px; }
+.rule-card p { margin-top: 8px; font-size: 13px; color: #4a5568; }
+.risk-card { border-left: 4px solid #e53e3e; background: #fff; border-radius: 0 8px 8px 0; padding: 16px; margin: 12px 0; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+.risk-card.medium { border-left-color: #ed8936; }
+.risk-card .risk-meta { font-size: 12px; color: #718096; margin-bottom: 8px; }
+.risk-card .risk-meta span { margin-right: 16px; }
+.impact-high { color: #e53e3e; font-weight: 600; }
+.impact-critical { color: #9b2c2c; font-weight: 700; }
+.impact-medium { color: #dd6b20; font-weight: 600; }
+.code-block { background: #1a202c; color: #e2e8f0; padding: 16px; border-radius: 6px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12px; overflow-x: auto; margin: 12px 0; white-space: pre; line-height: 1.5; }
+.toc { columns: 2; column-gap: 30px; }
+.toc-item { padding: 6px 0; border-bottom: 1px dotted #e2e8f0; font-size: 13px; break-inside: avoid; }
+.toc-item a { text-decoration: none; color: #2c5282; }
+.toc-item a:hover { text-decoration: underline; }
+.toc-section-num { font-weight: 700; color: #1a365d; margin-right: 6px; }
+.mvp-box { background: linear-gradient(135deg, #48bb78, #38a169); color: #fff; padding: 24px; border-radius: 10px; margin: 20px 0; text-align: center; }
+.mvp-box h3 { color: #fff; margin-bottom: 12px; font-size: 20px; }
+.mvp-box ul { text-align: left; list-style: none; margin: 0; padding: 0; }
+.mvp-box li { padding: 6px 0; padding-left: 20px; position: relative; }
+.mvp-box li::before { content: "\2713"; position: absolute; left: 0; font-weight: 700; }
+.section-num { color: #1a365d; font-weight: 700; }
+.endpoint { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12px; background: #edf2f7; padding: 2px 6px; border-radius: 3px; }
+.method { font-weight: 700; font-size: 11px; padding: 2px 6px; border-radius: 3px; color: #fff; margin-right: 4px; }
+.method-get { background: #48bb78; }
+.method-post { background: #4299e1; }
+.method-put { background: #ed8936; }
+.method-patch { background: #ed8936; }
+.method-delete { background: #e53e3e; }
+.emoji { font-style: normal; }
+.phase-header { background: #1a365d; color: #fff; padding: 12px 20px; border-radius: 6px; margin: 20px 0 12px; }
+.phase-header h3 { color: #fff; margin: 0; }
+.phase-header .weeks { float: right; font-size: 14px; opacity: 0.8; }
+.change-marker { color: #ed8936; font-weight: 700; }
+.directory-tree { background: #1a202c; color: #a0aec0; padding: 20px; border-radius: 8px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12px; line-height: 1.6; white-space: pre; overflow-x: auto; margin: 12px 0; }
+.permission-list { column-count: 2; column-gap: 20px; margin: 8px 0; }
+@media (max-width: 600px) { .permission-list { column-count: 1; } }
+.section-divider { border: none; height: 2px; background: linear-gradient(90deg, #1a365d, #4299e1, transparent); margin: 30px 0; }
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="page cover">
+  <div>
+    <h1 style="font-size: 42px; color: #1a365d; border: none; margin-bottom: 12px;">Fansbook Platform</h1>
+    <div class="subtitle">Complete Rebuild Plan</div>
+    <p class="subtitle" style="font-size: 18px;">Modern Social Creator-Fan Platform</p>
+    <hr style="border: 1px solid #e2e8f0; margin: 24px 60px;">
+    <p class="tech">React + Node.js + TypeScript + PostgreSQL</p>
+    <p class="tech">Mobile-First Responsive Design (Figma-Driven)</p>
+    <p class="tech">Tailwind CSS v3.4 + shadcn/ui + Socket.IO</p>
+    <div class="version">Version 2.1 &nbsp;|&nbsp; February 2026 &nbsp;|&nbsp; UPDATED</div>
+    <p class="design-note" style="margin-top: 20px;">Design: Figma &nbsp;|&nbsp; Functionality: This Document</p>
+    <p class="design-note">4 New Sections Added &bull; Performance Budgets &bull; Testing Strategy &bull; Anti-Mess Rules &bull; Risk Resolution</p>
+  </div>
+</div>
+
+<!-- ==================== TABLE OF CONTENTS ==================== -->
+<div class="page page-break">
+  <h1>Table of Contents</h1>
+  <div class="toc">
+    <div class="toc-item"><a href="#s1"><span class="toc-section-num">1.</span> Context &amp; Overview</a></div>
+    <div class="toc-item"><a href="#s2"><span class="toc-section-num">2.</span> Confirmed Tech Stack <span class="badge-updated">Updated</span></a></div>
+    <div class="toc-item"><a href="#s3"><span class="toc-section-num">3.</span> Anti-Mess Architecture Rules <span class="badge-new">New</span></a></div>
+    <div class="toc-item"><a href="#s4"><span class="toc-section-num">4.</span> Performance Budget <span class="badge-new">New</span></a></div>
+    <div class="toc-item"><a href="#s5"><span class="toc-section-num">5.</span> Testing Strategy <span class="badge-new">New</span></a></div>
+    <div class="toc-item"><a href="#s6"><span class="toc-section-num">6.</span> Responsive Design Strategy</a></div>
+    <div class="toc-item"><a href="#s7"><span class="toc-section-num">7.</span> User Roles &amp; Permissions</a></div>
+    <div class="toc-item"><a href="#s8"><span class="toc-section-num">8.</span> Auth Pages Map</a></div>
+    <div class="toc-item"><a href="#s9"><span class="toc-section-num">9.</span> Fan Pages Map</a></div>
+    <div class="toc-item"><a href="#s10"><span class="toc-section-num">10.</span> Creator Pages Map</a></div>
+    <div class="toc-item"><a href="#s11"><span class="toc-section-num">11.</span> Admin Panel Pages Map</a></div>
+    <div class="toc-item"><a href="#s12"><span class="toc-section-num">12.</span> Shared Pages Map</a></div>
+    <div class="toc-item"><a href="#s13"><span class="toc-section-num">13.</span> Authentication &amp; Onboarding</a></div>
+    <div class="toc-item"><a href="#s14"><span class="toc-section-num">14.</span> Feed &amp; Content System</a></div>
+    <div class="toc-item"><a href="#s15"><span class="toc-section-num">15.</span> Social Graph</a></div>
+    <div class="toc-item"><a href="#s16"><span class="toc-section-num">16.</span> Subscriptions &amp; Payments <span class="badge-updated">Updated</span></a></div>
+    <div class="toc-item"><a href="#s17"><span class="toc-section-num">17.</span> Real-time Chat</a></div>
+    <div class="toc-item"><a href="#s18"><span class="toc-section-num">18.</span> Notifications</a></div>
+    <div class="toc-item"><a href="#s19"><span class="toc-section-num">19.</span> Stories</a></div>
+    <div class="toc-item"><a href="#s20"><span class="toc-section-num">20.</span> Live Streaming &amp; Video Calls</a></div>
+    <div class="toc-item"><a href="#s21"><span class="toc-section-num">21.</span> Marketplace &amp; Gamification</a></div>
+    <div class="toc-item"><a href="#s22"><span class="toc-section-num">22.</span> Admin Panel Functions</a></div>
+    <div class="toc-item"><a href="#s23"><span class="toc-section-num">23.</span> Monorepo Structure</a></div>
+    <div class="toc-item"><a href="#s24"><span class="toc-section-num">24.</span> Database Schema</a></div>
+    <div class="toc-item"><a href="#s25"><span class="toc-section-num">25.</span> Development Phases &amp; Timeline <span class="badge-updated">Updated</span></a></div>
+    <div class="toc-item"><a href="#s26"><span class="toc-section-num">26.</span> Risk Resolution <span class="badge-new">New</span></a></div>
+    <div class="toc-item"><a href="#s27"><span class="toc-section-num">27.</span> Deployment Strategy <span class="badge-updated">Updated</span></a></div>
+    <div class="toc-item"><a href="#s28"><span class="toc-section-num">28.</span> Phase 0 Verification Checklist <span class="badge-updated">Updated</span></a></div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 1: CONTEXT & OVERVIEW ==================== -->
+<div class="page page-break" id="s1">
+  <h1><span class="section-num">Section 1:</span> Context &amp; Overview</h1>
+
+  <p>The current Fansbook platform is a <strong>Laravel 8.83 monolith</strong> with 597+ routes, 66 controllers, and 301 Blade templates. The codebase has become messy and extremely hard to maintain. We are rebuilding from scratch with a modern tech stack and a clean white Figma design. This is a fresh start with no data migration from the old system.</p>
+
+  <h2>What is Fansbook?</h2>
+  <p>Fansbook is a <strong>creator-fan social platform</strong> where content creators monetize through subscriptions, tips, pay-per-view posts, live streaming, and a marketplace. Fans follow creators, subscribe to premium tiers, chat privately, send tips, bid on marketplace items, and enjoy real-time interactions.</p>
+
+  <h2>Key Business Features</h2>
+  <ul>
+    <li><strong>Subscription-based content monetization</strong> (multiple tiers per creator)</li>
+    <li><strong>Pay-per-view (PPV)</strong> individual posts with price lock</li>
+    <li><strong>Tipping system</strong> for posts and messages</li>
+    <li><strong>Real-time private messaging</strong> with media sharing</li>
+    <li><strong>Instagram-style 24-hour disappearing stories</strong></li>
+    <li><strong>Live streaming</strong> via OBS (RTMP) with live chat overlay</li>
+    <li><strong>1-on-1 video calls</strong> between creators and fans (Vonage/OpenTok)</li>
+    <li><strong>Marketplace</strong> with auction bidding system</li>
+    <li><strong>Gamification</strong> with badges and leaderboards</li>
+    <li><strong>Full admin panel</strong> for platform management and moderation</li>
+    <li><strong>Multi-language support</strong> (i18n) with dark/light theme</li>
+    <li><strong>Payment gateways:</strong> CCBill (Phase 3) + MirexPay (Phase 10)</li>
+    <li><strong>Mobile-first responsive design</strong> following Figma mockups</li>
+  </ul>
+
+  <h2>Design Philosophy</h2>
+  <p>The design follows a <strong>clean, modern white aesthetic</strong> from Figma mockups. Every page is designed mobile-first and scales up to desktop. The Figma file is the single source of truth for visual design &mdash; colors, spacing, typography, component styles. <strong>This document is the single source of truth for functionality</strong> &mdash; what each page does, what data it shows, how interactions work.</p>
+
+  <div class="callout">
+    <h4>Two Sources of Truth</h4>
+    <p><strong>Figma</strong> = How it looks (visual design, spacing, colors, components)</p>
+    <p><strong>This Document</strong> = How it works (functionality, data flow, interactions, API)</p>
+  </div>
+</div>
+
+<!-- ==================== SECTION 2: TECH STACK ==================== -->
+<div class="page page-break" id="s2">
+  <h1><span class="section-num">Section 2:</span> Confirmed Tech Stack <span class="badge-updated">Updated</span></h1>
+
+  <table>
+    <thead>
+      <tr><th>Layer</th><th>Technology</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Frontend</td><td>React 18 + Vite + TypeScript (SPA)</td></tr>
+      <tr><td>UI / CSS</td><td><span class="change-marker">&#9889;</span> <strong>Tailwind CSS v3.4</strong> + shadcn/ui (changed from v4 &mdash; v4 has breaking changes with shadcn/ui)</td></tr>
+      <tr><td>State Management</td><td>Zustand (client) + TanStack Query v5 (server)</td></tr>
+      <tr><td>Routing</td><td>React Router v6</td></tr>
+      <tr><td>Forms</td><td>React Hook Form + Zod validation</td></tr>
+      <tr><td>Backend</td><td>Node.js 20 LTS + Express 4 + TypeScript</td></tr>
+      <tr><td>ORM</td><td>Prisma 5</td></tr>
+      <tr><td>Database</td><td>PostgreSQL 15+</td></tr>
+      <tr><td>Cache / Queue</td><td><span class="change-marker">&#9889;</span> <strong>Redis 7 + BullMQ (added in Phase 4, not Phase 0)</strong></td></tr>
+      <tr><td>Real-time</td><td>Socket.IO v4</td></tr>
+      <tr><td>Auth</td><td>Custom JWT (access + refresh) + speakeasy (2FA)</td></tr>
+      <tr><td>Media Storage</td><td>AWS S3 (presigned URLs for direct upload)</td></tr>
+      <tr><td>Video Calls</td><td>Vonage / OpenTok SDK</td></tr>
+      <tr><td>Email</td><td>Nodemailer + AWS SES</td></tr>
+      <tr><td>i18n</td><td>react-i18next</td></tr>
+      <tr><td>Theme</td><td>Dark / Light via Tailwind + CSS variables</td></tr>
+      <tr><td>Error Monitoring</td><td><span class="change-marker">&#9889;</span> <strong>Sentry (from Phase 0 &mdash; day 1 error tracking)</strong></td></tr>
+      <tr><td>Staging</td><td>Hetzner (Nginx + PM2)</td></tr>
+      <tr><td>Production</td><td>AWS (EC2/ECS + RDS + ElastiCache + S3 + CloudFront)</td></tr>
+      <tr><td>CI/CD</td><td>GitHub Actions</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    <h4>&#9889; Tech Stack Changes from v2.0</h4>
+    <ul>
+      <li><strong>Tailwind CSS v4 &rarr; v3.4:</strong> v4 has breaking changes with shadcn/ui, v3.4 is battle-tested and fully compatible.</li>
+      <li><strong>Redis deferred to Phase 4:</strong> Not needed until real-time chat features, reduces Phase 0 complexity.</li>
+      <li><strong>CCBill only in Phase 3, MirexPay deferred to Phase 10:</strong> One gateway at a time reduces risk and integration complexity.</li>
+      <li><strong>Sentry moved to Phase 0:</strong> Error monitoring from day 1, not an afterthought.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== SECTION 3: ANTI-MESS RULES ==================== -->
+<div class="page page-break" id="s3">
+  <h1><span class="section-num">Section 3:</span> Anti-Mess Architecture Rules <span class="badge-new">New</span></h1>
+  <div class="new-section-header">&#9889; NEW SECTION &mdash; Added in v2.1</div>
+
+  <p>The old Laravel codebase became unmaintainable due to lack of enforced standards. These rules are enforced via <strong>ESLint + Husky pre-commit hooks from Phase 0</strong>. No exceptions.</p>
+
+  <div class="card-grid">
+    <div class="rule-card">
+      <span class="rule-num">1</span>
+      <h4>Max 200 Lines Per File</h4>
+      <p>ESLint <code>max-lines</code> rule. If a file exceeds 200 lines, it must be split. No megacontrollers, no god-files. Forces modular, focused code.</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-num">2</span>
+      <h4>No Business Logic in Controllers</h4>
+      <p>Controllers ONLY parse request, call service, return response. All logic lives in services. ESLint custom rule enforces this pattern.</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-num">3</span>
+      <h4>Thin Controller &rarr; Service &rarr; Repository</h4>
+      <p>Mandatory architecture: Controller (HTTP layer) &rarr; Service (business logic) &rarr; Prisma queries (data layer). No skipping layers.</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-num">4</span>
+      <h4>No <code>any</code> Type in TypeScript</h4>
+      <p>tsconfig strict mode ON. ESLint <code>@typescript-eslint/no-explicit-any = error</code>. Every variable, parameter, return type must be typed.</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-num">5</span>
+      <h4>Shared Zod Schemas = Single Source of Truth</h4>
+      <p>All validation schemas live in <code>packages/shared</code>. Frontend and backend import the SAME schemas. No duplicate validation logic.</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-num">6</span>
+      <h4>Max Cyclomatic Complexity of 10</h4>
+      <p>ESLint <code>complexity</code> rule. Max 1 level of nesting for if/else. Forces clean, readable code with early returns.</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-num">7</span>
+      <h4>Pre-Commit Hooks (Husky + lint-staged)</h4>
+      <p>Every commit MUST pass: ESLint (zero errors), TypeScript type-check (<code>tsc --noEmit</code>), All tests (<code>vitest run</code>). If any fail, commit is blocked.</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-num">8</span>
+      <h4>No Debug Code in Codebase</h4>
+      <p><code>console.log</code> / <code>console.debug</code> banned via ESLint (<code>no-console</code> rule). Use structured logger (winston/pino) with proper log levels. Debug code = instant PR rejection.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-critical">
+    <h4>Enforcement Mechanism</h4>
+    <ul>
+      <li><strong>Phase 0:</strong> ESLint config + Husky setup + CI pipeline configured</li>
+      <li><strong>Every PR:</strong> Automated checks must pass before merge</li>
+      <li><strong>Code Review:</strong> Architecture violations = PR rejected</li>
+      <li><strong>No exceptions, no "we'll fix it later"</strong></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== SECTION 4: PERFORMANCE BUDGET ==================== -->
+<div class="page page-break" id="s4">
+  <h1><span class="section-num">Section 4:</span> Performance Budget <span class="badge-new">New</span></h1>
+  <div class="new-section-header">&#9889; NEW SECTION &mdash; Added in v2.1</div>
+
+  <p>Built into CI/CD from Phase 0. These are <strong>hard limits, not guidelines</strong>. Violations block deployment.</p>
+
+  <table>
+    <thead>
+      <tr><th>Metric</th><th>Budget</th><th>Enforcement</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Lighthouse Performance</td><td><strong>&ge; 90</strong></td><td>Lighthouse CI in GitHub Actions</td></tr>
+      <tr><td>Lighthouse Accessibility</td><td><strong>&ge; 95</strong></td><td>Lighthouse CI in GitHub Actions</td></tr>
+      <tr><td>Lighthouse Best Practices</td><td><strong>&ge; 95</strong></td><td>Lighthouse CI in GitHub Actions</td></tr>
+      <tr><td>JS Bundle (initial, gzipped)</td><td><strong>&le; 200KB</strong></td><td>bundlesize in CI</td></tr>
+      <tr><td>Route Code Splitting</td><td><strong>Every route lazy loaded</strong></td><td>React.lazy + Suspense mandatory</td></tr>
+      <tr><td>Image Format</td><td><strong>WebP with responsive sizes</strong></td><td>sharp on server, next-gen formats</td></tr>
+      <tr><td>API Response (reads)</td><td><strong>&le; 200ms</strong></td><td>Sentry performance monitoring</td></tr>
+      <tr><td>API Response (writes)</td><td><strong>&le; 500ms</strong></td><td>Sentry performance monitoring</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Additional Performance Measures</h2>
+
+  <div class="card">
+    <h4>Database Performance</h4>
+    <p>All queries must use indexes. N+1 detection via Prisma query logging. Indexes defined WITH the schema, not as an afterthought.</p>
+  </div>
+  <div class="card">
+    <h4>Virtual Scrolling</h4>
+    <p><code>react-virtual</code> for feed, comments, and any list exceeding 50 items. Prevents DOM bloat and keeps scroll performance smooth.</p>
+  </div>
+  <div class="card">
+    <h4>Image Optimization</h4>
+    <p><code>sharp</code> for server-side processing, WebP format, responsive <code>srcset</code> sizes. All uploaded images processed before storage.</p>
+  </div>
+  <div class="card">
+    <h4>CDN</h4>
+    <p>All static assets served via CloudFront CDN. Geographic distribution for fast load times globally.</p>
+  </div>
+  <div class="card">
+    <h4>Caching</h4>
+    <p>HTTP cache headers on static assets (1 year). API responses cached where appropriate. ETags for conditional requests.</p>
+  </div>
+</div>
+
+<!-- ==================== SECTION 5: TESTING STRATEGY ==================== -->
+<div class="page page-break" id="s5">
+  <h1><span class="section-num">Section 5:</span> Testing Strategy <span class="badge-new">New</span></h1>
+  <div class="new-section-header">&#9889; NEW SECTION &mdash; Added in v2.1</div>
+
+  <p>Testing was completely missing from the original plan. This section defines minimum testing requirements per phase.</p>
+
+  <h2>Coverage Requirements</h2>
+  <table>
+    <thead>
+      <tr><th>Layer</th><th>Minimum Coverage</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Services (business logic)</td><td><strong>70%</strong></td></tr>
+      <tr><td>Controllers (HTTP layer)</td><td><strong>50%</strong></td></tr>
+      <tr><td>Shared Schemas (Zod)</td><td><strong>80%</strong></td></tr>
+      <tr><td>React Components (critical)</td><td><strong>50%</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Testing Per Phase</h2>
+  <table>
+    <thead>
+      <tr><th>Phase</th><th>Testing Requirement</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Phase 0</strong></td><td>Vitest + React Testing Library setup, CI pipeline running tests, example tests</td></tr>
+      <tr><td><strong>Phase 1</strong></td><td>Unit tests for auth services (register, login, OTP, 2FA), integration tests for auth API endpoints</td></tr>
+      <tr><td><strong>Phase 2</strong></td><td>Unit tests for feed/post services, component tests for PostCard/PostComposer</td></tr>
+      <tr><td><strong>Phase 3</strong></td><td>Payment webhook tests with mocks, wallet transaction tests, CCBill sandbox integration tests</td></tr>
+      <tr><td><strong>Phase 4</strong></td><td>Socket.IO integration tests for chat, message delivery tests</td></tr>
+      <tr><td><strong>Phase 5+</strong></td><td>E2E tests for critical user flows (Playwright), notification delivery tests</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Testing Tools</h2>
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Tool</th><th>Purpose</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Unit / Integration</td><td><strong>Vitest</strong></td><td>Fast, Vite-native test runner</td></tr>
+      <tr><td>Component</td><td><strong>React Testing Library</strong></td><td>DOM-based component testing</td></tr>
+      <tr><td>E2E</td><td><strong>Playwright</strong></td><td>End-to-end browser tests (added Phase 5+)</td></tr>
+      <tr><td>API</td><td><strong>Supertest</strong></td><td>HTTP assertion library for Express</td></tr>
+      <tr><td>Mocking</td><td><strong>vitest mocks + MSW</strong></td><td>Mock Service Worker for API mocking</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ==================== SECTION 6: RESPONSIVE DESIGN ==================== -->
+<div class="page page-break" id="s6">
+  <h1><span class="section-num">Section 6:</span> Responsive Design Strategy</h1>
+
+  <h2>Breakpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Width</th><th>Usage</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>sm</code></td><td>640px</td><td>Large phones landscape</td></tr>
+      <tr><td><code>md</code></td><td>768px</td><td>Tablets portrait</td></tr>
+      <tr><td><code>lg</code></td><td>1024px</td><td>Tablets landscape / small laptops</td></tr>
+      <tr><td><code>xl</code></td><td>1280px</td><td>Desktop</td></tr>
+      <tr><td><code>2xl</code></td><td>1536px</td><td>Large desktop</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Layout Behavior</h2>
+
+  <h3>Mobile (&lt;768px)</h3>
+  <ul>
+    <li>Single column layout</li>
+    <li>Bottom navigation bar (5 icons: Home, Explore, Create, Notifications, Profile)</li>
+    <li>No sidebar. Hamburger menu for additional nav</li>
+    <li>Full-width content. Stacked cards</li>
+    <li>Touch-friendly tap targets (min 44px)</li>
+    <li>Pull-to-refresh</li>
+    <li>Swipe gestures for navigation</li>
+  </ul>
+
+  <h3>Tablet (768&ndash;1023px)</h3>
+  <ul>
+    <li>Collapsible sidebar (icon-only mode)</li>
+    <li>Top navbar</li>
+    <li>Content area takes remaining width</li>
+    <li>Cards in 2-column grid where applicable</li>
+    <li>Bottom nav hidden, sidebar icons used instead</li>
+  </ul>
+
+  <h3>Desktop (1024px+)</h3>
+  <ul>
+    <li>Full sidebar with labels expanded (left side)</li>
+    <li>Top navbar</li>
+    <li>Main content in center column (max-width constrained)</li>
+    <li>Optional right sidebar for suggestions/trending</li>
+    <li>Cards can be in multi-column grid</li>
+    <li>Hover states active</li>
+  </ul>
+
+  <h2>Global Responsive Components</h2>
+
+  <h3>Navbar (Top Bar)</h3>
+  <ul>
+    <li><strong>Desktop:</strong> Logo left, search bar center (expandable), notification bell + message icon + theme toggle + user avatar dropdown right.</li>
+    <li><strong>Tablet:</strong> Logo left, search icon (expands on click), icons right (condensed).</li>
+    <li><strong>Mobile:</strong> Logo left, search icon + notification bell right. Other actions in hamburger menu or bottom nav.</li>
+    <li><strong>[M] Hamburger menu</strong> slides in from right with: Messages, Settings, Theme toggle, Logout.</li>
+  </ul>
+
+  <h3>Sidebar (Left Navigation)</h3>
+  <ul>
+    <li><strong>Desktop:</strong> Fixed left sidebar, 250px wide. Nav links with icons + labels. "Create Post" CTA button at bottom. Creator section (Dashboard, Analytics, Earnings) shown if user is creator.</li>
+    <li><strong>Tablet:</strong> Collapsed sidebar, 60px wide, icons only. Hover/click to expand temporarily.</li>
+    <li><strong>Mobile:</strong> No sidebar. Navigation via bottom nav bar + hamburger menu.</li>
+  </ul>
+
+  <h3>Bottom Navigation (Mobile Only)</h3>
+  <ul>
+    <li>Fixed at bottom, visible on mobile only (&lt;768px)</li>
+    <li>5 icons: Home, Explore, Create Post (+), Notifications (bell with badge), Profile (avatar)</li>
+    <li>Active icon highlighted with primary color</li>
+    <li>Create button opens post composer as fullscreen modal on mobile</li>
+    <li><strong>[M]</strong> Bottom nav hides when scrolling down, shows when scrolling up (auto-hide behavior)</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 7: USER ROLES ==================== -->
+<div class="page page-break" id="s7">
+  <h1><span class="section-num">Section 7:</span> User Roles &amp; Permissions</h1>
+
+  <h2>Role: FAN (Default)</h2>
+  <p>Every new user starts as a Fan. Full list of permissions:</p>
+  <div class="permission-list">
+    <ul>
+      <li>Browse public posts</li>
+      <li>Follow / unfollow users</li>
+      <li>Subscribe to tiers</li>
+      <li>View subscriber-only content</li>
+      <li>Purchase PPV posts</li>
+      <li>Like / comment on posts</li>
+      <li>Bookmark posts</li>
+      <li>Send tips ($1 minimum)</li>
+      <li>Send / receive messages</li>
+      <li>View stories</li>
+      <li>Watch live streams</li>
+      <li>Join video calls</li>
+      <li>Browse marketplace / bid</li>
+      <li>Manage wallet</li>
+      <li>Update profile</li>
+      <li>Settings &amp; 2FA</li>
+      <li>Block / unblock users</li>
+      <li>Report content</li>
+      <li>Search users / content</li>
+    </ul>
+  </div>
+
+  <h2>Role: CREATOR</h2>
+  <p>All Fan permissions plus:</p>
+  <div class="permission-list">
+    <ul>
+      <li>Create posts (5,000 chars + 10 media)</li>
+      <li>Set post visibility (public/subscribers/tier)</li>
+      <li>Set PPV price on posts</li>
+      <li>Pin / unpin posts</li>
+      <li>Edit / delete own posts</li>
+      <li>Manage tiers (up to 5 tiers, $4.99&ndash;$99.99)</li>
+      <li>Post stories</li>
+      <li>Go live (stream)</li>
+      <li>Initiate video calls</li>
+      <li>Creator Dashboard</li>
+      <li>Analytics page</li>
+      <li>Earnings page</li>
+      <li>Request withdrawals ($20 minimum)</li>
+      <li>Create marketplace listings</li>
+      <li>Earn badges</li>
+      <li>Leaderboards</li>
+      <li>Verification request</li>
+    </ul>
+  </div>
+
+  <h2>Role: ADMIN</h2>
+  <p>Full platform management:</p>
+  <div class="permission-list">
+    <ul>
+      <li>Admin Panel access</li>
+      <li>Dashboard metrics</li>
+      <li>User management (view/edit/ban/delete)</li>
+      <li>Content moderation</li>
+      <li>Review reports</li>
+      <li>Payment oversight</li>
+      <li>Withdrawal processing</li>
+      <li>Platform settings</li>
+      <li>Badge management</li>
+      <li>Analytics dashboard</li>
+      <li>Send announcements</li>
+      <li>Audit log access</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== SECTION 8: AUTH PAGES MAP ==================== -->
+<div class="page page-break" id="s8">
+  <h1><span class="section-num">Section 8:</span> Auth Pages Map</h1>
+
+  <h3>/login</h3>
+  <div class="card">
+    <p><strong>Login Page.</strong> Email + password form. "Remember me" checkbox. Links: "Forgot password?", "Don't have an account? Register". Social login buttons (future). On success: redirect to home feed. If 2FA enabled: redirect to /2fa/verify. Mobile: fullscreen form, keyboard-aware scroll.</p>
+  </div>
+
+  <h3>/register</h3>
+  <div class="card">
+    <p><strong>Registration Page.</strong> Display name, email, password, confirm password. Password strength indicator (real-time). Username auto-generated from display name (editable). Terms &amp; Conditions checkbox. On success: send OTP email, redirect to /verify-email. Mobile: stepped form for smaller screens, auto-focus next field.</p>
+  </div>
+
+  <h3>/verify-email</h3>
+  <div class="card">
+    <p><strong>Email Verification Page.</strong> 6-digit OTP input (auto-focus, auto-advance). Countdown timer (5 minutes). "Resend OTP" button (after timer). Shows masked email. On success: redirect to /onboarding. Mobile: large OTP boxes, numpad keyboard.</p>
+  </div>
+
+  <h3>/forgot-password</h3>
+  <div class="card">
+    <p><strong>Forgot Password Page.</strong> Email input. "Send Reset Link" button. Success: show confirmation message. Link to /login. Rate limited (3 attempts per hour). Mobile: simple centered form.</p>
+  </div>
+
+  <h3>/reset-password</h3>
+  <div class="card">
+    <p><strong>Reset Password Page.</strong> Accessed via email link with token. New password + confirm password. Password strength indicator. Token validation on page load. On success: redirect to /login with success message. Mobile: fullscreen form.</p>
+  </div>
+
+  <h3>/2fa/verify</h3>
+  <div class="card">
+    <p><strong>Two-Factor Authentication Page.</strong> 6-digit TOTP code input. "Use backup code" link (switches to backup code input). "Lost access?" help link. Auto-submit on 6th digit. On success: redirect to home feed. Mobile: large code boxes, numpad keyboard.</p>
+  </div>
+
+  <h3>/onboarding</h3>
+  <div class="card">
+    <p><strong>Onboarding Wizard (4 Steps).</strong></p>
+    <ul>
+      <li><strong>Step 1:</strong> Upload avatar + cover photo (crop/resize). Camera capture on mobile.</li>
+      <li><strong>Step 2:</strong> Bio text (500 chars), location (optional), website URL (optional).</li>
+      <li><strong>Step 3:</strong> Select interests (tag chips) from predefined categories. Min 3 interests.</li>
+      <li><strong>Step 4:</strong> Suggested creators to follow (based on interests). Follow buttons. "Skip" option.</li>
+    </ul>
+    <p>Progress bar at top. "Skip" and "Next" buttons. "Back" button after step 1. On complete: redirect to home feed. Mobile: fullscreen steps, swipe between steps.</p>
+  </div>
+</div>
+
+<!-- ==================== SECTION 9: FAN PAGES MAP ==================== -->
+<div class="page page-break" id="s9">
+  <h1><span class="section-num">Section 9:</span> Fan Pages Map</h1>
+
+  <h3>/ (Home Feed)</h3>
+  <div class="card">
+    <p><strong>Main Feed Page.</strong> Stories row at top (horizontal scrollable avatars with colored rings). Infinite scroll feed of PostCards from followed creators. Each PostCard: avatar, name, time, text, media (images/video), like/comment/tip/bookmark buttons, comment preview. "New posts" toast when fresh content available (click to scroll to top). Feed algorithm: chronological from followed users + pinned posts. Empty state for new users: "Follow creators to see their posts" with suggestions. Mobile: full-bleed cards, pull-to-refresh, bottom sheet for post actions. [M] Swipe left on post to bookmark, swipe right to like.</p>
+  </div>
+
+  <h3>/explore</h3>
+  <div class="card">
+    <p><strong>Explore/Discover Page.</strong> Search bar at top. Filter tabs: All, Creators, Posts, Hashtags. Masonry grid of content (images/videos). Trending hashtags section. Suggested creators carousel. Category filters (chips). Infinite scroll. Mobile: 2-column masonry, filter chips horizontally scrollable, search expands fullscreen on tap.</p>
+  </div>
+
+  <h3>/profile/:username</h3>
+  <div class="card">
+    <p><strong>User Profile Page.</strong> Cover photo (full-width banner). Avatar (overlapping cover). Display name + @username + verification badge. Bio text. Stats: posts count, followers, following. Action buttons: Follow/Unfollow, Message, Tip, Subscribe. Subscription tiers section (if creator): tier cards with name, price, benefits, subscribe button. Posts tab (grid or list toggle). Media tab (grid of images/videos). Liked tab (own profile only). Mobile: stacked layout, sticky action buttons, tab content scrollable. [M] Pull-down cover photo to see full image.</p>
+  </div>
+
+  <h3>/post/:id</h3>
+  <div class="card">
+    <p><strong>Single Post Page.</strong> Full post with all media displayed. Like/comment/tip/bookmark/share buttons. Comment section: threaded comments, infinite scroll, reply to comments. Related posts from same creator. PPV: if locked, shows blurred preview + price + unlock button. Mobile: fullscreen media viewer, bottom sheet for comments, pinch-to-zoom on images.</p>
+  </div>
+
+  <h3>/messages</h3>
+  <div class="card">
+    <p><strong>Messages Page.</strong> Desktop: split layout &mdash; conversation list (left 350px) + active chat (right). Search conversations. Online status dots (green). Unread count badges. Last message preview + timestamp. Sort by recent. Mobile: conversation list only (fullscreen). Tap to navigate to /messages/:conversationId. [M] Swipe left to delete/archive conversation.</p>
+  </div>
+
+  <h3>/messages/:conversationId</h3>
+  <div class="card">
+    <p><strong>Chat Conversation (Mobile).</strong> Fullscreen chat view. Message bubbles (sent right/blue, received left/gray). Typing indicator. Online status in header. Media messages (images, videos). Tip-in-chat button. Emoji picker. Send media button (camera/gallery). Auto-scroll to bottom. Infinite scroll up for history. Mobile: keyboard-aware, auto-resize input, camera/gallery attachment. [M] Long-press message for options (copy, delete, reply).</p>
+  </div>
+
+  <h3>/notifications</h3>
+  <div class="card">
+    <p><strong>Notifications Page.</strong> Grouped notifications: Today, This Week, Earlier. Filter tabs: All, Likes, Comments, Follows, Subscriptions, Tips, System. Each notification: avatar, action text, timestamp, read/unread state. Click to navigate to relevant content. "Mark all as read" button. Mobile: swipe left to dismiss, pull-to-refresh, unread indicator on tab.</p>
+  </div>
+
+  <h3>/settings/*</h3>
+  <div class="card">
+    <p><strong>Settings Pages.</strong> Sidebar navigation (desktop) or stacked list (mobile).</p>
+    <ul>
+      <li><strong>/settings/profile:</strong> Edit display name, username, bio, avatar, cover photo, location, website.</li>
+      <li><strong>/settings/account:</strong> Change email, change password, delete account.</li>
+      <li><strong>/settings/privacy:</strong> Profile visibility, message permissions, block list management.</li>
+      <li><strong>/settings/notifications:</strong> Toggle per-type: email and in-app separately for likes, comments, follows, messages, tips, subscriptions, live, system.</li>
+      <li><strong>/settings/security:</strong> Enable/disable 2FA (QR code setup + backup codes), active sessions list, logout all devices.</li>
+      <li><strong>/settings/display:</strong> Theme (dark/light/system), language selection, content preferences.</li>
+      <li><strong>/settings/become-creator:</strong> Apply to become creator. Agreement form. Verification steps.</li>
+    </ul>
+    <p>Mobile: each section is a separate fullscreen page with back navigation.</p>
+  </div>
+
+  <h3>/wallet</h3>
+  <div class="card">
+    <p><strong>Wallet Page.</strong> Balance display (prominent). Add funds button. Transaction history (infinite scroll table). Filters: All, Deposits, Tips Sent, Tips Received, Subscriptions, PPV, Withdrawals. Each transaction: type icon, description, amount (+/-), date, status. Mobile: card-style transactions, filter chips, pull-to-refresh.</p>
+  </div>
+</div>
+
+<!-- ==================== SECTION 10: CREATOR PAGES MAP ==================== -->
+<div class="page page-break" id="s10">
+  <h1><span class="section-num">Section 10:</span> Creator Pages Map</h1>
+
+  <h3>/creator/dashboard</h3>
+  <div class="card">
+    <p><strong>Creator Dashboard.</strong> Overview metrics: total subscribers, total earnings (this month), new followers (this week), post count. Quick stats cards with trend arrows (up/down vs. last period). Recent activity feed (new subs, tips, comments). Quick actions: Create Post, Go Live, View Analytics. Charts: subscriber growth (line), earnings by day (bar). Mobile: stacked metric cards, swipe between charts, quick action FAB.</p>
+  </div>
+
+  <h3>/creator/analytics</h3>
+  <div class="card">
+    <p><strong>Creator Analytics.</strong> Date range picker (7d, 30d, 90d, custom). Engagement metrics: total views, likes, comments, shares. Top performing posts (table with metrics). Audience demographics: age groups, locations (if available). Post performance over time (chart). Best posting times heatmap. Follower growth chart. Mobile: simplified charts, scrollable tables, date range as bottom sheet.</p>
+  </div>
+
+  <h3>/creator/earnings</h3>
+  <div class="card">
+    <p><strong>Creator Earnings.</strong> Total balance (large display). Pending balance (processing). Available for withdrawal. Revenue breakdown: subscriptions, tips, PPV, marketplace. Earnings chart over time. Withdrawal history table (status: pending, processing, completed, failed). Request Withdrawal button (opens form: amount, payment method). Minimum withdrawal: $20. Mobile: card layout for balances, scroll table for history.</p>
+  </div>
+
+  <h3>/creator/tiers</h3>
+  <div class="card">
+    <p><strong>Manage Subscription Tiers.</strong> List of current tiers (up to 5 max). Each tier card: name, price (monthly), benefits list, subscriber count, edit/delete buttons. "Add New Tier" button. Tier form: name, price ($4.99&ndash;$99.99), description, benefits (add/remove), tier color/badge. Drag to reorder tiers. Preview how tier appears on profile. Mobile: fullscreen tier editor, stacked tier cards.</p>
+  </div>
+
+  <h3>/creator/go-live</h3>
+  <div class="card">
+    <p><strong>Go Live Setup Page.</strong> Stream title input. Stream description. Category selection. Thumbnail upload. Stream key display (copy button). RTMP URL display. "Start Stream" button (if using browser). Preview panel. Viewer settings: who can watch (all, subscribers, specific tier). Mobile: simplified setup form, stream key with tap-to-copy.</p>
+  </div>
+
+  <h3>/stories/create</h3>
+  <div class="card">
+    <p><strong>Story Creator.</strong> Upload image/video (camera capture on mobile). Text overlay tool. Drawing tool. Sticker/emoji overlay. Filters (basic color filters). Preview before posting. "Post Story" button. Story expires in 24 hours. Mobile: fullscreen camera, swipe filters, tap to add text, pinch to resize stickers.</p>
+  </div>
+</div>
+
+<!-- ==================== SECTION 11: ADMIN PANEL PAGES MAP ==================== -->
+<div class="page page-break" id="s11">
+  <h1><span class="section-num">Section 11:</span> Admin Panel Pages Map</h1>
+
+  <h3>/admin/dashboard</h3>
+  <div class="card">
+    <p><strong>Admin Dashboard.</strong> Platform overview metrics: total users, active users (DAU/MAU), total creators, total revenue, pending withdrawals, open reports. Charts: user growth, revenue over time, content posted per day. Recent activity feed. System health indicators. Mobile: stacked metric cards, simplified charts.</p>
+  </div>
+
+  <h3>/admin/users</h3>
+  <div class="card">
+    <p><strong>User Management.</strong> Searchable, filterable user table. Columns: avatar, name, email, role, status, joined date, posts count, subscribers count. Filters: role (fan/creator/admin), status (active/suspended/banned), date range. Actions: view profile, edit, suspend, ban, delete, change role. Bulk actions with checkbox selection. Pagination. Mobile: card layout instead of table, filter as bottom sheet.</p>
+  </div>
+
+  <h3>/admin/users/:id</h3>
+  <div class="card">
+    <p><strong>User Detail.</strong> Full user profile info. Account status with action buttons. Login history. Content posted (recent). Subscription info. Transaction history. Reports filed against this user. Notes field for admin comments. Action buttons: suspend, ban, verify, reset password, impersonate. Mobile: tabbed sections.</p>
+  </div>
+
+  <h3>/admin/content</h3>
+  <div class="card">
+    <p><strong>Content Moderation.</strong> Grid/list view of flagged content. Filters: type (post/comment/message), status (pending/reviewed/removed), report reason. Each item: preview, reporter info, report reason, timestamp. Actions: approve, remove, warn user, ban user. Quick review mode (one-by-one with keyboard shortcuts). Mobile: card-based review queue.</p>
+  </div>
+
+  <h3>/admin/reports</h3>
+  <div class="card">
+    <p><strong>Reports Management.</strong> Table of user reports. Columns: reporter, reported user/content, reason, status, date. Filters: status (open/investigating/resolved/dismissed), reason category. Detail view with context (reported content + conversation thread). Actions: investigate, resolve, dismiss, take action on reported user. Mobile: card layout, swipe actions.</p>
+  </div>
+
+  <h3>/admin/payments</h3>
+  <div class="card">
+    <p><strong>Payment Oversight.</strong> Transaction log with filters. Columns: transaction ID, user, type, amount, status, gateway, date. Filters: type (subscription/tip/PPV/withdrawal), status, date range, gateway. Summary stats: total revenue, platform fees, pending payouts. Export to CSV. Mobile: simplified table, horizontal scroll.</p>
+  </div>
+
+  <h3>/admin/withdrawals</h3>
+  <div class="card">
+    <p><strong>Withdrawal Processing.</strong> Queue of pending withdrawals. Columns: creator, amount, payment method, requested date, status. Actions: approve, reject (with reason), mark as processed. Batch approval. Filter by status. Mobile: card layout with action buttons.</p>
+  </div>
+
+  <h3>/admin/settings</h3>
+  <div class="card">
+    <p><strong>Platform Settings.</strong> General: site name, description, maintenance mode toggle. Payments: commission percentage, minimum withdrawal, payment gateway config. Content: max upload size, allowed file types, auto-moderation rules. Email: SMTP config, email templates. Security: rate limiting, IP blocking. Mobile: section-based form, collapsible panels.</p>
+  </div>
+
+  <h3>/admin/badges, /admin/analytics, /admin/announcements, /admin/audit-log</h3>
+  <div class="card">
+    <ul>
+      <li><strong>/admin/badges:</strong> Manage badges (create/edit/delete). Badge criteria configuration. Assign badges manually. Preview badge appearance.</li>
+      <li><strong>/admin/analytics:</strong> Platform-wide analytics dashboard. Revenue analytics, user analytics, content analytics. Exportable reports.</li>
+      <li><strong>/admin/announcements:</strong> Create/manage platform announcements. Target audience (all users, creators only, specific roles). Schedule announcements. Banner display settings.</li>
+      <li><strong>/admin/audit-log:</strong> Full audit trail. Admin actions log. Filterable by admin user, action type, date range. Immutable records.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== SECTION 12: SHARED PAGES MAP ==================== -->
+<div class="page page-break" id="s12">
+  <h1><span class="section-num">Section 12:</span> Shared Pages Map</h1>
+
+  <h3>/search</h3>
+  <div class="card">
+    <p><strong>Global Search.</strong> Full-page search with large search input. Real-time results as you type (debounced 300ms). Tabs: All, Users, Posts, Hashtags. Recent searches (saved locally). Trending searches. Result cards with relevance highlighting. Mobile: fullscreen search overlay, keyboard auto-focus, recent/trending suggestions.</p>
+  </div>
+
+  <h3>/hashtag/:tag</h3>
+  <div class="card">
+    <p><strong>Hashtag Page.</strong> Hashtag name as header with post count. Grid of posts containing this hashtag. Sort: recent, popular. Infinite scroll. Follow hashtag button (for feed). Related hashtags. Mobile: 2-column grid, pull-to-refresh.</p>
+  </div>
+
+  <h3>/live/:sessionId</h3>
+  <div class="card">
+    <p><strong>Live Stream Viewer.</strong> Video player (HLS, full-width). Live chat overlay (right sidebar on desktop, bottom sheet on mobile). Viewer count. Like/react animations. Tip button (sends animated tip notification). Creator info header. "Stream ended" state with replay option (if recorded). Mobile: fullscreen video, chat slides up from bottom, landscape support.</p>
+  </div>
+
+  <h3>/marketplace</h3>
+  <div class="card">
+    <p><strong>Marketplace Browse.</strong> Grid of listings. Filters: category, price range, type (fixed/auction), status (active/sold). Search bar. Sort: newest, price low/high, ending soon. Each listing card: image, title, price/current bid, seller, time remaining (for auctions). Mobile: 2-column grid, filter drawer slides from bottom, sticky search.</p>
+  </div>
+
+  <h3>/marketplace/:id</h3>
+  <div class="card">
+    <p><strong>Marketplace Listing Detail.</strong> Image gallery (swipeable). Title, description. Price or current bid + bid history. Seller info with link to profile. "Buy Now" or "Place Bid" button. Bid form (for auctions): amount input, minimum increment shown. Time remaining countdown. Similar listings. Mobile: fullscreen images, sticky bid/buy bar at bottom.</p>
+  </div>
+
+  <h3>/marketplace/create</h3>
+  <div class="card">
+    <p><strong>Create Marketplace Listing.</strong> Multi-step wizard: Step 1: images upload (up to 10). Step 2: title, description, category. Step 3: pricing (fixed price or auction with starting bid, reserve price, duration). Preview step. "Publish" button. Mobile: fullscreen steps, camera upload.</p>
+  </div>
+
+  <h3>/leaderboard</h3>
+  <div class="card">
+    <p><strong>Leaderboard Page.</strong> Rankings table: rank, avatar, name, score/metric. Filter tabs: Top Creators (by subscribers), Top Earners (by tips received), Most Active (by posts), Rising Stars (new creators with fast growth). Time period: weekly, monthly, all-time. Your rank highlighted. Mobile: card-style rankings, swipeable tabs.</p>
+  </div>
+
+  <h3>/badges</h3>
+  <div class="card">
+    <p><strong>All Badges Page.</strong> Grid of all available badges. Each badge: icon, name, description, criteria, rarity (common/rare/epic/legendary). Earned badges highlighted. Unearned badges grayed with progress indicator. Filter: earned/unearned, category. Mobile: 2-column grid, tap for detail modal.</p>
+  </div>
+
+  <h3>/404</h3>
+  <div class="card">
+    <p><strong>Not Found Page.</strong> Friendly 404 illustration. "Page not found" message. Search bar. Link to home. Suggested popular pages. Mobile: centered, simple layout.</p>
+  </div>
+
+  <h3>/maintenance</h3>
+  <div class="card">
+    <p><strong>Maintenance Mode Page.</strong> Displayed when admin enables maintenance mode. Maintenance illustration. Estimated return time. Contact email. Social media links. Mobile: centered, simple layout.</p>
+  </div>
+</div>
+
+<!-- ==================== SECTION 13: AUTHENTICATION MODULE ==================== -->
+<div class="page page-break" id="s13">
+  <h1><span class="section-num">Section 13:</span> Authentication &amp; Onboarding Module</h1>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/register</td><td>Register new user (email, password, displayName)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/verify-email</td><td>Verify email with 6-digit OTP code</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/resend-otp</td><td>Resend OTP to email (rate limited)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/login</td><td>Login with email + password, returns JWT tokens</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/refresh</td><td>Refresh access token using refresh token</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/logout</td><td>Invalidate refresh token, clear cookies</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/forgot-password</td><td>Send password reset email</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/reset-password</td><td>Reset password with token</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/2fa/enable</td><td>Generate 2FA secret + QR code</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/2fa/verify</td><td>Verify TOTP code and enable 2FA</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/2fa/disable</td><td>Disable 2FA (requires current TOTP)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/auth/2fa/validate</td><td>Validate 2FA during login</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/auth/me</td><td>Get current authenticated user</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Backend Logic</h2>
+  <ul>
+    <li><strong>Password hashing:</strong> bcrypt with 12 salt rounds</li>
+    <li><strong>JWT:</strong> Access token (15min), Refresh token (7 days, stored in DB + httpOnly cookie)</li>
+    <li><strong>OTP:</strong> 6-digit numeric, valid 5 minutes, single-use, stored hashed in DB</li>
+    <li><strong>Rate limiting:</strong> Login: 5 attempts per 15 min. OTP: 3 resends per hour. Password reset: 3 per hour</li>
+    <li><strong>2FA:</strong> speakeasy library, TOTP with 30-second window. Backup codes: 10 codes generated, hashed, single-use</li>
+    <li><strong>Username generation:</strong> From display name, check uniqueness, append random digits if needed</li>
+    <li><strong>Onboarding:</strong> Stored as step completion flags on user record. Can be skipped and resumed later</li>
+  </ul>
+
+  <h2>Frontend Components</h2>
+  <ul>
+    <li><code>LoginForm</code> &mdash; Email + password form with validation</li>
+    <li><code>RegisterForm</code> &mdash; Registration with password strength meter</li>
+    <li><code>OtpInput</code> &mdash; 6-digit auto-advance input boxes</li>
+    <li><code>TwoFactorSetup</code> &mdash; QR code display + verification</li>
+    <li><code>OnboardingWizard</code> &mdash; Multi-step wizard with progress</li>
+    <li><code>AvatarUpload</code> &mdash; Crop and resize image upload</li>
+    <li><code>ProtectedRoute</code> &mdash; HOC that checks auth state</li>
+    <li><code>useAuth</code> &mdash; Custom hook for auth state + actions</li>
+    <li><code>authStore</code> &mdash; Zustand store for user, tokens, loading state</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 14: FEED & CONTENT ==================== -->
+<div class="page page-break" id="s14">
+  <h1><span class="section-num">Section 14:</span> Feed &amp; Content System</h1>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/feed</td><td>Get personalized feed (posts from followed users)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/feed/explore</td><td>Get explore/discover feed (trending, suggested)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/posts</td><td>Create new post (text + media)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/posts/:id</td><td>Get single post with details</td></tr>
+      <tr><td><span class="method method-put">PUT</span></td><td class="endpoint">/api/posts/:id</td><td>Edit post (text only, within 24h)</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/posts/:id</td><td>Delete post (soft delete)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/posts/:id/pin</td><td>Pin post to profile top</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/posts/:id/pin</td><td>Unpin post</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/posts/:id/like</td><td>Like a post</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/posts/:id/like</td><td>Unlike a post</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/posts/:id/bookmark</td><td>Bookmark a post</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/posts/:id/bookmark</td><td>Remove bookmark</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/posts/:id/comments</td><td>Get comments on post (paginated)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/posts/:id/comments</td><td>Add comment to post</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/comments/:id</td><td>Delete comment (author or post owner)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/upload/presign</td><td>Get presigned S3 URL for direct upload</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Backend Logic</h2>
+  <ul>
+    <li><strong>Post creation:</strong> Max 5,000 chars text, up to 10 media files. Visibility: public, subscribers-only, specific-tier. PPV option with price ($1&ndash;$500).</li>
+    <li><strong>Feed algorithm:</strong> Chronological from followed users. Pinned posts shown first. Paginated with cursor-based pagination (20 per page).</li>
+    <li><strong>Explore algorithm:</strong> Trending posts (likes + comments in last 24h weighted). Suggested creators (based on follows-of-follows). Category-based discovery.</li>
+    <li><strong>Media upload:</strong> Presigned S3 URLs generated server-side. Client uploads directly to S3. Server validates completion. Image processing (resize, WebP conversion) via sharp.</li>
+    <li><strong>Visibility enforcement:</strong> Middleware checks subscription status before returning content. PPV content returns blurred thumbnail + price until purchased.</li>
+    <li><strong>Soft delete:</strong> Posts marked as deleted, not removed from DB. Hidden from feeds. Admin can see deleted content.</li>
+  </ul>
+
+  <h2>Frontend Components</h2>
+  <ul>
+    <li><code>PostComposer</code> &mdash; Rich text + media upload + visibility selector + PPV price</li>
+    <li><code>PostCard</code> &mdash; Full post display with actions (like, comment, tip, bookmark)</li>
+    <li><code>FeedList</code> &mdash; Infinite scroll container with virtual scrolling</li>
+    <li><code>MediaGallery</code> &mdash; Grid/carousel display of post media with lightbox</li>
+    <li><code>CommentSection</code> &mdash; Threaded comments with reply, load more</li>
+    <li><code>BlurredOverlay</code> &mdash; PPV/subscription lock overlay with unlock button</li>
+    <li><code>ExploreGrid</code> &mdash; Masonry layout for explore page</li>
+    <li><code>InfiniteScroll</code> &mdash; Reusable infinite scroll wrapper with loading states</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 15: SOCIAL GRAPH ==================== -->
+<div class="page page-break" id="s15">
+  <h1><span class="section-num">Section 15:</span> Social Graph</h1>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/users/:id/follow</td><td>Follow a user</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/users/:id/follow</td><td>Unfollow a user</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/users/:id/followers</td><td>Get user's followers list (paginated)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/users/:id/following</td><td>Get user's following list (paginated)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/users/:id/block</td><td>Block a user</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/users/:id/block</td><td>Unblock a user</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/users/blocked</td><td>Get blocked users list</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/reports</td><td>Report a user or content</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/users/:username</td><td>Get user profile by username</td></tr>
+      <tr><td><span class="method method-put">PUT</span></td><td class="endpoint">/api/users/profile</td><td>Update own profile</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/users/suggestions</td><td>Get suggested users to follow</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Backend Logic</h2>
+  <ul>
+    <li><strong>Follow:</strong> Creates Follow record. Increments follower/following counts (denormalized). Triggers notification to followed user.</li>
+    <li><strong>Block:</strong> Creates Block record. Auto-unfollows in both directions. Blocked user cannot view profile, posts, or send messages. Existing conversations hidden.</li>
+    <li><strong>Report:</strong> Creates Report record with reason (spam, harassment, nudity, copyright, other). Admin notified. Reported content flagged for review.</li>
+    <li><strong>Suggestions:</strong> Based on follows-of-follows algorithm. Excludes blocked users. Weighted by engagement (more active creators ranked higher).</li>
+    <li><strong>Profile:</strong> Display name, username (unique, alphanumeric + underscore), bio (500 chars), avatar URL, cover URL, location, website.</li>
+  </ul>
+
+  <h2>Frontend Components</h2>
+  <ul>
+    <li><code>FollowButton</code> &mdash; Toggle follow/unfollow with optimistic UI update</li>
+    <li><code>UserCard</code> &mdash; Compact user display (avatar, name, bio snippet, follow button)</li>
+    <li><code>ProfileHeader</code> &mdash; Cover photo, avatar, stats, action buttons</li>
+    <li><code>UserList</code> &mdash; Paginated list of users (followers, following, blocked)</li>
+    <li><code>ReportModal</code> &mdash; Report form with reason selection and description</li>
+    <li><code>SuggestionCarousel</code> &mdash; Horizontal scrollable creator suggestions</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 16: SUBSCRIPTIONS & PAYMENTS ==================== -->
+<div class="page page-break" id="s16">
+  <h1><span class="section-num">Section 16:</span> Subscriptions &amp; Payments <span class="badge-updated">Updated</span></h1>
+
+  <div class="callout callout-warning">
+    <h4>&#9889; Payment Gateway Update (v2.1)</h4>
+    <p><strong>Phase 3:</strong> CCBill integration only. <strong>Phase 10:</strong> MirexPay integration deferred. One payment gateway at a time reduces risk and integration complexity.</p>
+  </div>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/creators/:id/tiers</td><td>Get creator's subscription tiers</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/tiers</td><td>Create subscription tier (creator only)</td></tr>
+      <tr><td><span class="method method-put">PUT</span></td><td class="endpoint">/api/tiers/:id</td><td>Update subscription tier</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/tiers/:id</td><td>Delete subscription tier</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/subscriptions</td><td>Subscribe to a creator's tier</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/subscriptions/:id</td><td>Cancel subscription</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/subscriptions</td><td>Get user's active subscriptions</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/tips</td><td>Send tip to creator (post or message)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/posts/:id/unlock</td><td>Purchase PPV post</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/wallet</td><td>Get wallet balance and summary</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/wallet/transactions</td><td>Get transaction history (paginated)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/wallet/deposit</td><td>Initiate deposit (redirect to payment gateway)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/withdrawals</td><td>Request withdrawal (creator, min $20)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/withdrawals</td><td>Get withdrawal history</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/webhooks/ccbill</td><td>CCBill webhook handler (Phase 3)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/webhooks/mirexpay</td><td>MirexPay webhook handler <span class="badge-updated">Phase 10 - Deferred</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Backend Logic</h2>
+  <ul>
+    <li><strong>Tiers:</strong> Up to 5 per creator. Price range $4.99&ndash;$99.99/month. Name, description, benefits list, badge color. Cannot delete tier with active subscribers (must migrate first).</li>
+    <li><strong>Subscriptions:</strong> Monthly recurring. Grace period (3 days) for failed payments. Auto-renewal via webhook. Access revoked on expiry.</li>
+    <li><strong>Wallet:</strong> Internal balance system. Deposits via payment gateway. All transactions logged. Platform takes commission (configurable, default 20%). Creator earnings = gross - platform commission.</li>
+    <li><strong>Tips:</strong> Minimum $1, maximum $500. Sent on posts or in messages. 100% goes to creator (minus platform commission). Animated notification to creator.</li>
+    <li><strong>PPV:</strong> One-time purchase. Price set by creator ($1&ndash;$500). Once purchased, permanent access. Blurred preview shown to non-purchasers.</li>
+    <li><strong>Withdrawals:</strong> Minimum $20. Processing time: 3&ndash;5 business days. Admin approval required. Methods: bank transfer, configurable.</li>
+    <li><strong>Webhooks:</strong> Idempotent handlers. Signature verification. Transaction logging for debugging. Retry handling.</li>
+  </ul>
+
+  <h2>Frontend Components</h2>
+  <ul>
+    <li><code>TierCard</code> &mdash; Subscription tier display with price, benefits, subscribe button</li>
+    <li><code>TierManager</code> &mdash; Creator CRUD interface for managing tiers</li>
+    <li><code>SubscribeModal</code> &mdash; Subscription checkout flow</li>
+    <li><code>TipModal</code> &mdash; Tip amount input with preset amounts ($1, $5, $10, $25, custom)</li>
+    <li><code>WalletPage</code> &mdash; Balance display, transaction history, deposit/withdraw</li>
+    <li><code>EarningsDashboard</code> &mdash; Revenue charts, breakdown, withdrawal management</li>
+    <li><code>PPVUnlockButton</code> &mdash; Purchase button with price and confirmation</li>
+    <li><code>TransactionList</code> &mdash; Filterable, paginated transaction table</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 17: REAL-TIME CHAT ==================== -->
+<div class="page page-break" id="s17">
+  <h1><span class="section-num">Section 17:</span> Real-time Chat</h1>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/conversations</td><td>Get conversation list (paginated, sorted by recent)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/conversations</td><td>Create or get existing conversation with user</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/conversations/:id/messages</td><td>Get messages in conversation (paginated, cursor-based)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/conversations/:id/messages</td><td>Send message (text, media, tip)</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/messages/:id</td><td>Delete message (for self or both)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/conversations/:id/read</td><td>Mark conversation as read</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Socket.IO Events</h2>
+  <table>
+    <thead>
+      <tr><th>Event</th><th>Direction</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>message:send</code></td><td>Client &rarr; Server</td><td>Send new message</td></tr>
+      <tr><td><code>message:new</code></td><td>Server &rarr; Client</td><td>New message received</td></tr>
+      <tr><td><code>message:read</code></td><td>Bidirectional</td><td>Message read receipt</td></tr>
+      <tr><td><code>typing:start</code></td><td>Client &rarr; Server</td><td>User started typing</td></tr>
+      <tr><td><code>typing:stop</code></td><td>Client &rarr; Server</td><td>User stopped typing</td></tr>
+      <tr><td><code>typing:indicator</code></td><td>Server &rarr; Client</td><td>Show typing indicator to other user</td></tr>
+      <tr><td><code>user:online</code></td><td>Server &rarr; Client</td><td>User came online</td></tr>
+      <tr><td><code>user:offline</code></td><td>Server &rarr; Client</td><td>User went offline</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Backend Logic</h2>
+  <ul>
+    <li><strong>Socket.IO:</strong> JWT authentication on connection handshake. User joins personal room (user:{id}). Conversations as rooms.</li>
+    <li><strong>Redis adapter:</strong> Socket.IO Redis adapter for multi-instance support (added Phase 4).</li>
+    <li><strong>Online status:</strong> Tracked via Redis SET. Presence broadcasted to contacts on connect/disconnect.</li>
+    <li><strong>Messages:</strong> Stored in PostgreSQL. Real-time delivery via Socket.IO. Fallback to REST polling if WebSocket disconnected.</li>
+    <li><strong>Media messages:</strong> Presigned S3 upload, then send message with media URL.</li>
+    <li><strong>Tip in chat:</strong> Special message type with tip amount. Triggers payment processing.</li>
+    <li><strong>Message permissions:</strong> Blocked users cannot send messages. Creators can set message pricing (paid messages).</li>
+  </ul>
+
+  <h2>Frontend Components</h2>
+  <ul>
+    <li><code>ChatPage</code> &mdash; Split layout (desktop) or fullscreen (mobile)</li>
+    <li><code>ConversationList</code> &mdash; List of conversations with search, online indicators</li>
+    <li><code>ChatWindow</code> &mdash; Active conversation with messages</li>
+    <li><code>MessageBubble</code> &mdash; Individual message (text, media, tip)</li>
+    <li><code>ChatInput</code> &mdash; Message input with emoji picker, media attach, tip button</li>
+    <li><code>TypingIndicator</code> &mdash; Animated dots showing other user is typing</li>
+    <li><code>OnlineStatus</code> &mdash; Green dot indicator on user avatars</li>
+    <li><code>useSocket</code> &mdash; Custom hook for Socket.IO connection management</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 18: NOTIFICATIONS ==================== -->
+<div class="page page-break" id="s18">
+  <h1><span class="section-num">Section 18:</span> Notifications</h1>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/notifications</td><td>Get notifications (paginated, filterable)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/notifications/unread-count</td><td>Get unread notification count</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/notifications/:id/read</td><td>Mark single notification as read</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/notifications/read-all</td><td>Mark all notifications as read</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/notifications/preferences</td><td>Get notification preferences</td></tr>
+      <tr><td><span class="method method-put">PUT</span></td><td class="endpoint">/api/notifications/preferences</td><td>Update notification preferences</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Notification Types</h2>
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Trigger</th><th>Template</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>LIKE</td><td>Someone likes your post</td><td>"{user} liked your post"</td></tr>
+      <tr><td>COMMENT</td><td>Someone comments on your post</td><td>"{user} commented on your post"</td></tr>
+      <tr><td>FOLLOW</td><td>Someone follows you</td><td>"{user} started following you"</td></tr>
+      <tr><td>SUBSCRIBE</td><td>Someone subscribes to your tier</td><td>"{user} subscribed to {tier}"</td></tr>
+      <tr><td>TIP</td><td>Someone sends you a tip</td><td>"{user} tipped you ${amount}"</td></tr>
+      <tr><td>MESSAGE</td><td>New message received</td><td>"{user} sent you a message"</td></tr>
+      <tr><td>LIVE</td><td>Followed creator goes live</td><td>"{creator} is now live!"</td></tr>
+      <tr><td>STORY</td><td>Followed creator posts a story</td><td>"{creator} posted a new story"</td></tr>
+      <tr><td>MENTION</td><td>Someone mentions you</td><td>"{user} mentioned you in a post"</td></tr>
+      <tr><td>SYSTEM</td><td>Platform announcement</td><td>Custom message from admin</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Backend Logic</h2>
+  <ul>
+    <li><strong>Creation:</strong> NotificationService creates notification record in DB. Checks user preferences before creating.</li>
+    <li><strong>Real-time delivery:</strong> Socket.IO pushes notification to connected user immediately.</li>
+    <li><strong>Email delivery:</strong> BullMQ queue processes email notifications asynchronously (added Phase 5). Respects email preferences. Uses SES with templates.</li>
+    <li><strong>Grouping:</strong> Multiple likes on same post grouped ("User1, User2, and 3 others liked your post").</li>
+    <li><strong>Preferences:</strong> Per-type toggle for in-app and email separately. Default: all in-app ON, email only for follows/subscriptions/tips.</li>
+  </ul>
+
+  <h2>Frontend Components</h2>
+  <ul>
+    <li><code>NotificationBell</code> &mdash; Navbar icon with unread count badge</li>
+    <li><code>NotificationDropdown</code> &mdash; Quick preview dropdown (last 10 notifications)</li>
+    <li><code>NotificationPage</code> &mdash; Full page with filters and grouping</li>
+    <li><code>NotificationItem</code> &mdash; Single notification with avatar, action text, timestamp</li>
+    <li><code>NotificationPreferences</code> &mdash; Settings page for per-type toggles</li>
+    <li><code>Toast</code> &mdash; Pop-up notification toast for real-time alerts</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 19: STORIES ==================== -->
+<div class="page page-break" id="s19">
+  <h1><span class="section-num">Section 19:</span> Stories</h1>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/stories/feed</td><td>Get stories from followed users (grouped by user)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/stories</td><td>Create new story (image/video + overlays)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/stories/:id</td><td>Get single story with view count</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/stories/:id</td><td>Delete story early</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/stories/:id/view</td><td>Record story view</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/stories/:id/viewers</td><td>Get story viewers list (creator only)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Backend Logic</h2>
+  <ul>
+    <li><strong>Creation:</strong> Upload media to S3 via presigned URL. Store story record with media URL, overlays (text, stickers as JSON), created timestamp.</li>
+    <li><strong>Expiry:</strong> Stories expire after 24 hours. Cron job runs every 15 minutes to soft-delete expired stories. BullMQ scheduled job (Phase 5+).</li>
+    <li><strong>Views:</strong> Tracked per user (unique views only). Creator can see viewer list. View count displayed.</li>
+    <li><strong>Feed:</strong> Stories grouped by user. Users with unseen stories shown first. Colored ring indicates unseen story.</li>
+    <li><strong>Visibility:</strong> Stories follow same visibility as creator's account (public or subscribers-only).</li>
+  </ul>
+
+  <h2>Frontend Components</h2>
+  <ul>
+    <li><code>StoryRing</code> &mdash; Circular avatar with gradient ring (unseen = colored, seen = gray)</li>
+    <li><code>StoryRow</code> &mdash; Horizontal scrollable row of StoryRings (top of feed)</li>
+    <li><code>StoryViewer</code> &mdash; Fullscreen story display with auto-advance, tap to next/prev, progress bars at top</li>
+    <li><code>StoryCreator</code> &mdash; Fullscreen story creation with camera capture, text overlay, stickers, filters</li>
+    <li><code>StoryProgress</code> &mdash; Segmented progress bar showing story segments</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 20: LIVE & VIDEO ==================== -->
+<div class="page page-break" id="s20">
+  <h1><span class="section-num">Section 20:</span> Live Streaming &amp; Video Calls</h1>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/live/start</td><td>Start live stream (returns stream key + RTMP URL)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/live/stop</td><td>End live stream</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/live/active</td><td>Get list of active live streams</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/live/:sessionId</td><td>Get live session details (HLS URL, viewer count)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/video-calls/initiate</td><td>Initiate video call with user (returns Vonage session)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/video-calls/:id/accept</td><td>Accept incoming video call</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/video-calls/:id/reject</td><td>Reject incoming video call</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/video-calls/:id/end</td><td>End active video call</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Backend Logic</h2>
+  <ul>
+    <li><strong>Live Streaming:</strong> Creator starts stream from /creator/go-live. Server generates unique stream key. Creator uses OBS to push RTMP stream. Server converts to HLS for viewers. Live chat via Socket.IO room. Viewer count tracked in real-time. Tips during live stream supported.</li>
+    <li><strong>Stream key:</strong> Unique per session, invalidated on stream end. RTMP URL provided for OBS configuration.</li>
+    <li><strong>Live chat:</strong> Socket.IO room per live session. Messages broadcast to all viewers. Rate limited (1 message per 2 seconds). Moderation controls for creator.</li>
+    <li><strong>Video Calls:</strong> Vonage/OpenTok SDK for WebRTC. Creator initiates call, fan accepts/rejects via Socket.IO signaling. Session duration tracked. Video call recording optional (creator setting).</li>
+    <li><strong>Call signaling:</strong> Socket.IO events for call initiation, acceptance, rejection, ending. Ringing timeout (30 seconds).</li>
+  </ul>
+
+  <h2>Frontend Components</h2>
+  <ul>
+    <li><code>GoLivePage</code> &mdash; Stream setup form with key/URL display</li>
+    <li><code>LiveViewer</code> &mdash; HLS video player with live chat sidebar</li>
+    <li><code>LiveChat</code> &mdash; Real-time chat component for live streams</li>
+    <li><code>ViewerCount</code> &mdash; Animated viewer count display</li>
+    <li><code>VideoCallUI</code> &mdash; Vonage video call interface (local + remote video)</li>
+    <li><code>IncomingCallModal</code> &mdash; Incoming call notification with accept/reject</li>
+    <li><code>CallControls</code> &mdash; Mute, camera toggle, end call buttons</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 21: MARKETPLACE & GAMIFICATION ==================== -->
+<div class="page page-break" id="s21">
+  <h1><span class="section-num">Section 21:</span> Marketplace &amp; Gamification</h1>
+
+  <h2>Marketplace API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/marketplace</td><td>Browse listings (paginated, filterable)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/marketplace</td><td>Create new listing (creator only)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/marketplace/:id</td><td>Get listing details with bid history</td></tr>
+      <tr><td><span class="method method-put">PUT</span></td><td class="endpoint">/api/marketplace/:id</td><td>Update listing (before any bids)</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/marketplace/:id</td><td>Delete listing (before any bids)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/marketplace/:id/bid</td><td>Place bid on auction listing</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/marketplace/:id/buy</td><td>Buy Now on fixed-price listing</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Marketplace Backend Logic</h2>
+  <ul>
+    <li><strong>Listings:</strong> Two types: fixed-price and auction. Up to 10 images. Categories: digital content, physical merchandise, experiences, custom content, shoutouts.</li>
+    <li><strong>Auctions:</strong> Starting bid, optional reserve price, duration (1&ndash;30 days). Minimum bid increment ($1 or 5%). Auto-close at end time. Winner notification. Anti-sniping: extend 5 minutes if bid in last 5 minutes.</li>
+    <li><strong>Buy Now:</strong> Immediate purchase. Deducts from wallet. Listing marked as sold. Seller notified.</li>
+    <li><strong>Bidding:</strong> Requires sufficient wallet balance (bid amount held). Outbid users have hold released. Winning bid charged on auction close.</li>
+  </ul>
+
+  <h2>Gamification API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/badges</td><td>Get all available badges</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/users/:id/badges</td><td>Get user's earned badges</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/leaderboard</td><td>Get leaderboard rankings (filterable)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Gamification Backend Logic</h2>
+  <ul>
+    <li><strong>Badges:</strong> Earned automatically based on criteria. Categories: content (post milestones), social (follower milestones), engagement (like/comment milestones), revenue (earning milestones), special (admin-awarded).</li>
+    <li><strong>Rarity levels:</strong> Common, Rare, Epic, Legendary. Displayed on profile with rarity glow effect.</li>
+    <li><strong>Badge engine:</strong> Event-driven. On relevant actions (post created, follower milestone), check badge criteria. Award if met. Notification sent.</li>
+    <li><strong>Leaderboard:</strong> Rankings by: subscribers count, tips received, posts created, engagement rate. Time periods: weekly, monthly, all-time. Creator-only leaderboards.</li>
+  </ul>
+
+  <h2>Frontend Components</h2>
+  <ul>
+    <li><code>MarketplaceBrowse</code> &mdash; Filterable grid of listing cards</li>
+    <li><code>ListingCard</code> &mdash; Image, title, price/bid, seller, time remaining</li>
+    <li><code>ListingDetail</code> &mdash; Full listing with gallery, bid history, action buttons</li>
+    <li><code>BidForm</code> &mdash; Bid amount input with validation and confirmation</li>
+    <li><code>CreateListingWizard</code> &mdash; Multi-step listing creation form</li>
+    <li><code>BadgeGrid</code> &mdash; Grid of earned/available badges with rarity styling</li>
+    <li><code>BadgeCard</code> &mdash; Single badge display with icon, name, description, progress</li>
+    <li><code>LeaderboardTable</code> &mdash; Rankings with rank, avatar, name, score, filter tabs</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 22: ADMIN PANEL FUNCTIONS ==================== -->
+<div class="page page-break" id="s22">
+  <h1><span class="section-num">Section 22:</span> Admin Panel Functions</h1>
+
+  <h2>API Endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/dashboard</td><td>Get dashboard metrics and charts data</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/users</td><td>Get users list (paginated, filterable, searchable)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/users/:id</td><td>Get detailed user info for admin</td></tr>
+      <tr><td><span class="method method-patch">PATCH</span></td><td class="endpoint">/api/admin/users/:id</td><td>Update user (role, status, verification)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/admin/users/:id/suspend</td><td>Suspend user (with duration and reason)</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/admin/users/:id/ban</td><td>Ban user permanently (with reason)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/content</td><td>Get flagged content for moderation</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/admin/content/:id/action</td><td>Take action on content (approve, remove, warn)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/reports</td><td>Get reports list (filterable by status, type)</td></tr>
+      <tr><td><span class="method method-patch">PATCH</span></td><td class="endpoint">/api/admin/reports/:id</td><td>Update report status (resolve, dismiss)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/payments</td><td>Get all transactions with filters</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/withdrawals</td><td>Get pending withdrawals</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/admin/withdrawals/:id/approve</td><td>Approve withdrawal request</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/admin/withdrawals/:id/reject</td><td>Reject withdrawal (with reason)</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/settings</td><td>Get platform settings</td></tr>
+      <tr><td><span class="method method-put">PUT</span></td><td class="endpoint">/api/admin/settings</td><td>Update platform settings</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/admin/badges</td><td>Create new badge</td></tr>
+      <tr><td><span class="method method-put">PUT</span></td><td class="endpoint">/api/admin/badges/:id</td><td>Update badge criteria/display</td></tr>
+      <tr><td><span class="method method-delete">DELETE</span></td><td class="endpoint">/api/admin/badges/:id</td><td>Delete badge</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/analytics</td><td>Get platform analytics data</td></tr>
+      <tr><td><span class="method method-post">POST</span></td><td class="endpoint">/api/admin/announcements</td><td>Create platform announcement</td></tr>
+      <tr><td><span class="method method-get">GET</span></td><td class="endpoint">/api/admin/audit-log</td><td>Get audit log entries (paginated, filterable)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Backend Logic</h2>
+  <ul>
+    <li><strong>Authorization:</strong> All admin endpoints protected by role middleware (<code>requireRole('ADMIN')</code>). 403 for non-admin users.</li>
+    <li><strong>Audit logging:</strong> Every admin action logged: admin user, action type, target entity, timestamp, IP address, details. Immutable records (no delete/edit).</li>
+    <li><strong>Dashboard metrics:</strong> Cached (5 min) aggregated queries. Total users, new users (24h/7d/30d), active users (DAU/MAU), total revenue, pending withdrawals, open reports.</li>
+    <li><strong>User management:</strong> Search by name/email/username. Filter by role, status, date range. Bulk actions supported. Impersonation for debugging (with audit log).</li>
+    <li><strong>Content moderation:</strong> Queue-based review. Priority sorting (most reported first). Quick actions with keyboard shortcuts. Context preservation (see full conversation/thread).</li>
+    <li><strong>Withdrawal processing:</strong> Manual approval workflow. Admin can batch approve. Rejected withdrawals: funds returned to creator wallet with reason notification.</li>
+  </ul>
+</div>
+
+<!-- ==================== SECTION 23: MONOREPO STRUCTURE ==================== -->
+<div class="page page-break" id="s23">
+  <h1><span class="section-num">Section 23:</span> Monorepo Structure</h1>
+
+  <div class="directory-tree">fansbook/
+├── package.json                    # Root workspace config
+├── turbo.json                      # Turborepo config (optional)
+├── tsconfig.base.json              # Shared TypeScript config
+├── .eslintrc.js                    # Root ESLint config (strict rules)
+├── .prettierrc                     # Prettier config
+├── .husky/                         # Git hooks
+│   └── pre-commit                  # lint-staged trigger
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                  # CI pipeline (lint, test, build, Lighthouse)
+│       └── deploy.yml              # Deployment pipeline
+│
+├── packages/
+│   └── shared/
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── src/
+│           ├── index.ts            # Barrel export
+│           ├── types/              # Shared TypeScript interfaces
+│           │   ├── user.ts
+│           │   ├── post.ts
+│           │   ├── chat.ts
+│           │   ├── payment.ts
+│           │   └── ...
+│           ├── schemas/            # Shared Zod validation schemas
+│           │   ├── auth.schema.ts
+│           │   ├── post.schema.ts
+│           │   ├── user.schema.ts
+│           │   ├── payment.schema.ts
+│           │   └── ...
+│           ├── constants/          # Shared constants and enums
+│           │   ├── roles.ts
+│           │   ├── limits.ts
+│           │   └── ...
+│           └── utils/              # Shared utility functions
+│               ├── format.ts
+│               ├── validation.ts
+│               └── ...
+│
+├── apps/
+│   ├── web/
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   ├── vite.config.ts
+│   │   ├── tailwind.config.ts      # Tailwind v3.4 config
+│   │   ├── index.html
+│   │   ├── public/
+│   │   │   ├── locales/            # i18n translation files
+│   │   │   │   ├── en/
+│   │   │   │   └── ...
+│   │   │   └── ...
+│   │   └── src/
+│   │       ├── main.tsx            # App entry point
+│   │       ├── App.tsx             # Root component + router
+│   │       ├── components/         # Reusable UI components
+│   │       │   ├── ui/             # shadcn/ui components
+│   │       │   ├── layout/         # Navbar, Sidebar, MobileNav
+│   │       │   ├── post/           # PostCard, PostComposer
+│   │       │   ├── chat/           # ChatWindow, MessageBubble
+│   │       │   ├── profile/        # ProfileHeader, FollowButton
+│   │       │   └── ...
+│   │       ├── pages/              # Route page components
+│   │       │   ├── auth/           # Login, Register, Verify, etc.
+│   │       │   ├── feed/           # Home, Explore
+│   │       │   ├── profile/        # Profile, Settings
+│   │       │   ├── creator/        # Dashboard, Analytics, Earnings
+│   │       │   ├── chat/           # Messages
+│   │       │   ├── admin/          # Admin panel pages
+│   │       │   └── ...
+│   │       ├── hooks/              # Custom React hooks
+│   │       │   ├── useAuth.ts
+│   │       │   ├── useSocket.ts
+│   │       │   ├── useInfiniteScroll.ts
+│   │       │   └── ...
+│   │       ├── stores/             # Zustand stores
+│   │       │   ├── authStore.ts
+│   │       │   ├── themeStore.ts
+│   │       │   └── ...
+│   │       ├── services/           # API service functions
+│   │       │   ├── api.ts          # Axios instance + interceptors
+│   │       │   ├── authService.ts
+│   │       │   ├── postService.ts
+│   │       │   └── ...
+│   │       ├── lib/                # Utilities and config
+│   │       │   ├── i18n.ts
+│   │       │   ├── socket.ts
+│   │       │   └── ...
+│   │       └── styles/
+│   │           └── globals.css     # Tailwind directives + CSS variables
+│   │
+│   └── server/
+│       ├── package.json
+│       ├── tsconfig.json
+│       ├── prisma/
+│       │   ├── schema.prisma       # Database schema (28 models)
+│       │   ├── migrations/         # Prisma migrations
+│       │   └── seed.ts             # Database seed script
+│       └── src/
+│           ├── index.ts            # Server entry point
+│           ├── app.ts              # Express app setup
+│           ├── config/             # Environment and app config
+│           │   ├── env.ts
+│           │   ├── database.ts
+│           │   └── ...
+│           ├── middleware/          # Express middleware
+│           │   ├── auth.ts         # JWT verification
+│           │   ├── roleGuard.ts    # Role-based access
+│           │   ├── rateLimiter.ts  # Rate limiting
+│           │   ├── validate.ts     # Zod validation middleware
+│           │   └── ...
+│           ├── routes/             # Route definitions
+│           │   ├── auth.routes.ts
+│           │   ├── post.routes.ts
+│           │   ├── user.routes.ts
+│           │   └── ...
+│           ├── controllers/        # Request handlers (THIN)
+│           │   ├── auth.controller.ts
+│           │   ├── post.controller.ts
+│           │   └── ...
+│           ├── services/           # Business logic
+│           │   ├── auth.service.ts
+│           │   ├── post.service.ts
+│           │   ├── feed.service.ts
+│           │   ├── payment.service.ts
+│           │   └── ...
+│           ├── socket/             # Socket.IO handlers
+│           │   ├── index.ts
+│           │   ├── chat.handler.ts
+│           │   └── ...
+│           ├── jobs/               # BullMQ job processors (Phase 5+)
+│           │   ├── email.job.ts
+│           │   └── ...
+│           └── utils/              # Server utilities
+│               ├── logger.ts       # Structured logger (pino/winston)
+│               ├── s3.ts           # S3 helper functions
+│               └── ...
+</div>
+</div>
+
+<!-- ==================== SECTION 24: DATABASE SCHEMA ==================== -->
+<div class="page page-break" id="s24">
+  <h1><span class="section-num">Section 24:</span> Database Schema</h1>
+
+  <p>The Prisma schema defines <strong>28 models</strong> and <strong>24 enums</strong>. Below is the complete schema overview organized by domain.</p>
+
+  <h2>Models by Domain</h2>
+
+  <h3>Authentication &amp; Users (Phase 0-1)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>User</strong></td><td>id, email, username, displayName, passwordHash, role, status, avatar, cover, bio, location, website, twoFactorSecret, twoFactorEnabled, onboardingStep, emailVerified, createdAt</td><td>Core user model</td></tr>
+      <tr><td><strong>OtpCode</strong></td><td>id, userId, code (hashed), type, expiresAt, used</td><td>Email verification &amp; password reset OTPs</td></tr>
+      <tr><td><strong>RefreshToken</strong></td><td>id, userId, token (hashed), expiresAt, deviceInfo</td><td>JWT refresh token storage</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Social Graph (Phase 2)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Follow</strong></td><td>id, followerId, followingId, createdAt</td><td>Follow relationships</td></tr>
+      <tr><td><strong>Block</strong></td><td>id, blockerId, blockedId, createdAt</td><td>Block relationships</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Content (Phase 2)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Post</strong></td><td>id, authorId, text, visibility, isPinned, ppvPrice, likeCount, commentCount, createdAt</td><td>User posts</td></tr>
+      <tr><td><strong>PostMedia</strong></td><td>id, postId, url, type (IMAGE/VIDEO), order, thumbnail</td><td>Post media attachments</td></tr>
+      <tr><td><strong>Comment</strong></td><td>id, postId, authorId, parentId, text, createdAt</td><td>Post comments (threaded)</td></tr>
+      <tr><td><strong>Like</strong></td><td>id, postId, userId, createdAt</td><td>Post likes</td></tr>
+      <tr><td><strong>Bookmark</strong></td><td>id, postId, userId, createdAt</td><td>Post bookmarks</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Payments (Phase 3)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SubscriptionTier</strong></td><td>id, creatorId, name, price, description, benefits (JSON), order, isActive</td><td>Creator subscription tiers</td></tr>
+      <tr><td><strong>Subscription</strong></td><td>id, subscriberId, tierId, creatorId, status, startDate, endDate, renewalDate</td><td>Active subscriptions</td></tr>
+      <tr><td><strong>Wallet</strong></td><td>id, userId, balance, pendingBalance, totalEarned, totalSpent</td><td>User wallet</td></tr>
+      <tr><td><strong>Transaction</strong></td><td>id, walletId, type, amount, description, referenceId, status, createdAt</td><td>Wallet transactions</td></tr>
+      <tr><td><strong>Payment</strong></td><td>id, userId, amount, gateway, gatewayTransactionId, status, type, createdAt</td><td>External payment records</td></tr>
+      <tr><td><strong>Tip</strong></td><td>id, senderId, receiverId, amount, postId, messageId, createdAt</td><td>Tips on posts/messages</td></tr>
+      <tr><td><strong>Withdrawal</strong></td><td>id, creatorId, amount, paymentMethod, status, processedAt, rejectionReason</td><td>Creator withdrawal requests</td></tr>
+      <tr><td><strong>PpvPurchase</strong></td><td>id, userId, postId, amount, createdAt</td><td>PPV post purchases</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Chat (Phase 4)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Conversation</strong></td><td>id, participant1Id, participant2Id, lastMessageAt, lastMessage</td><td>Chat conversations</td></tr>
+      <tr><td><strong>Message</strong></td><td>id, conversationId, senderId, text, mediaUrl, mediaType, tipAmount, readAt, createdAt</td><td>Chat messages</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Notifications (Phase 5)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Notification</strong></td><td>id, userId, type, actorId, entityId, entityType, message, read, createdAt</td><td>User notifications</td></tr>
+      <tr><td><strong>NotificationPreference</strong></td><td>id, userId, type, inApp, email</td><td>Per-type notification settings</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Stories (Phase 6)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Story</strong></td><td>id, authorId, mediaUrl, mediaType, overlays (JSON), expiresAt, viewCount, createdAt</td><td>24-hour stories</td></tr>
+      <tr><td><strong>StoryView</strong></td><td>id, storyId, viewerId, viewedAt</td><td>Story view tracking</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Live &amp; Video (Phase 7)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>LiveSession</strong></td><td>id, creatorId, title, streamKey, rtmpUrl, hlsUrl, status, viewerCount, startedAt, endedAt</td><td>Live stream sessions</td></tr>
+      <tr><td><strong>VideoCall</strong></td><td>id, callerId, calleeId, vonageSessionId, status, duration, startedAt, endedAt</td><td>1-on-1 video calls</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Marketplace &amp; Gamification (Phase 8)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MarketplaceListing</strong></td><td>id, sellerId, title, description, category, type (FIXED/AUCTION), price, startingBid, reservePrice, endsAt, status</td><td>Marketplace listings</td></tr>
+      <tr><td><strong>Bid</strong></td><td>id, listingId, bidderId, amount, createdAt</td><td>Auction bids</td></tr>
+      <tr><td><strong>Badge</strong></td><td>id, name, description, icon, rarity, criteria (JSON), category</td><td>Available badges</td></tr>
+      <tr><td><strong>UserBadge</strong></td><td>id, userId, badgeId, earnedAt</td><td>User-earned badges</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Admin (Phase 9)</h3>
+  <table>
+    <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Report</strong></td><td>id, reporterId, reportedUserId, reportedPostId, reason, description, status, resolvedBy, resolvedAt</td><td>Content/user reports</td></tr>
+      <tr><td><strong>AuditLog</strong></td><td>id, adminId, action, targetType, targetId, details (JSON), ipAddress, createdAt</td><td>Admin audit trail</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Enums (24 total)</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h4>User &amp; Auth</h4>
+      <ul>
+        <li><strong>UserRole:</strong> FAN, CREATOR, ADMIN</li>
+        <li><strong>UserStatus:</strong> ACTIVE, SUSPENDED, BANNED, DEACTIVATED</li>
+        <li><strong>OtpType:</strong> EMAIL_VERIFY, PASSWORD_RESET</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Content</h4>
+      <ul>
+        <li><strong>PostVisibility:</strong> PUBLIC, SUBSCRIBERS, TIER_SPECIFIC</li>
+        <li><strong>MediaType:</strong> IMAGE, VIDEO</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Payments</h4>
+      <ul>
+        <li><strong>SubscriptionStatus:</strong> ACTIVE, EXPIRED, CANCELLED, PAST_DUE</li>
+        <li><strong>TransactionType:</strong> DEPOSIT, SUBSCRIPTION, TIP_SENT, TIP_RECEIVED, PPV_PURCHASE, PPV_EARNING, WITHDRAWAL, REFUND, BID_HOLD, BID_RELEASE, MARKETPLACE_PURCHASE, MARKETPLACE_EARNING</li>
+        <li><strong>TransactionStatus:</strong> PENDING, COMPLETED, FAILED, REFUNDED</li>
+        <li><strong>PaymentGateway:</strong> CCBILL, MIREXPAY</li>
+        <li><strong>PaymentStatus:</strong> PENDING, COMPLETED, FAILED, REFUNDED</li>
+        <li><strong>WithdrawalStatus:</strong> PENDING, PROCESSING, COMPLETED, REJECTED</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Chat &amp; Notifications</h4>
+      <ul>
+        <li><strong>MessageType:</strong> TEXT, IMAGE, VIDEO, TIP</li>
+        <li><strong>NotificationType:</strong> LIKE, COMMENT, FOLLOW, SUBSCRIBE, TIP, MESSAGE, LIVE, STORY, MENTION, SYSTEM</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Live &amp; Marketplace</h4>
+      <ul>
+        <li><strong>LiveStatus:</strong> SCHEDULED, LIVE, ENDED</li>
+        <li><strong>CallStatus:</strong> RINGING, ACTIVE, ENDED, MISSED, REJECTED</li>
+        <li><strong>ListingType:</strong> FIXED_PRICE, AUCTION</li>
+        <li><strong>ListingStatus:</strong> ACTIVE, SOLD, EXPIRED, CANCELLED</li>
+        <li><strong>ListingCategory:</strong> DIGITAL_CONTENT, PHYSICAL_MERCH, EXPERIENCE, CUSTOM_CONTENT, SHOUTOUT</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Gamification &amp; Admin</h4>
+      <ul>
+        <li><strong>BadgeRarity:</strong> COMMON, RARE, EPIC, LEGENDARY</li>
+        <li><strong>BadgeCategory:</strong> CONTENT, SOCIAL, ENGAGEMENT, REVENUE, SPECIAL</li>
+        <li><strong>ReportReason:</strong> SPAM, HARASSMENT, NUDITY, COPYRIGHT, OTHER</li>
+        <li><strong>ReportStatus:</strong> OPEN, INVESTIGATING, RESOLVED, DISMISSED</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SECTION 25: DEVELOPMENT PHASES ==================== -->
+<div class="page page-break" id="s25">
+  <h1><span class="section-num">Section 25:</span> Development Phases &amp; Timeline <span class="badge-updated">Updated</span></h1>
+
+  <!-- PHASE 0 -->
+  <div class="phase-header">
+    <h3>Phase 0: Foundation <span class="weeks">(4 weeks)</span> <span class="badge-updated">Updated</span></h3>
+  </div>
+  <ul>
+    <li>Monorepo setup (npm workspaces, TypeScript, ESLint, Prettier)</li>
+    <li><span class="change-marker">&#9889;</span> ESLint strict config: max-lines 200, no-any, complexity 10, no-console</li>
+    <li><span class="change-marker">&#9889;</span> Husky + lint-staged pre-commit hooks (lint + typecheck + test)</li>
+    <li><code>packages/shared</code>: Zod schemas, types, constants, utils</li>
+    <li><code>apps/server</code>: Express skeleton, Prisma schema, PostgreSQL config</li>
+    <li><span class="change-marker">&#9889;</span> <strong>NO Redis in Phase 0</strong> (deferred to Phase 4)</li>
+    <li><code>apps/web</code>: Vite + React + Tailwind v3.4 + shadcn/ui, Router, i18n, theme</li>
+    <li>Layout components: Navbar, Sidebar, MobileNav, ThemeToggle, responsive</li>
+    <li><span class="change-marker">&#9889;</span> Sentry integration (error monitoring from day 1)</li>
+    <li><span class="change-marker">&#9889;</span> Vitest setup with example tests</li>
+    <li><span class="change-marker">&#9889;</span> Lighthouse CI setup in GitHub Actions</li>
+    <li>GitHub Actions CI (lint, type-check, test, Lighthouse)</li>
+    <li>Hetzner staging deployment (PM2 + Nginx)</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 0 Deliverable</h4>
+    <p>Running skeleton with CI/CD, design system, responsive layout, quality gates enforced from day 1.</p>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase-header">
+    <h3>Phase 1: Auth &amp; Users <span class="weeks">(4 weeks)</span></h3>
+  </div>
+  <ul>
+    <li>DB: User, OtpCode, RefreshToken migrations</li>
+    <li>Backend: Register, Login, Logout, Refresh, OTP, Reset, 2FA (all endpoints)</li>
+    <li>Backend: Profile CRUD, S3 uploads, role middleware</li>
+    <li>Frontend: All auth pages (login, register, verify, reset, 2FA)</li>
+    <li>Frontend: Onboarding wizard (4 steps), Settings pages (all sections)</li>
+    <li>Frontend: useAuth, authStore, auto token refresh, protected routes</li>
+    <li>Mobile: touch-friendly forms, keyboard handling, fullscreen modals</li>
+    <li><span class="change-marker">&#9889;</span> Unit tests for auth services, integration tests for auth API</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 1 Deliverable</h4>
+    <p>Full auth system with 2FA, user profiles, onboarding wizard, all settings pages.</p>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase-header">
+    <h3>Phase 2: Social &amp; Feed <span class="weeks">(4 weeks)</span></h3>
+  </div>
+  <ul>
+    <li>DB: Follow, Block, Post, PostMedia, Comment, Like migrations</li>
+    <li>Backend: Follow/unfollow, block, post CRUD, feed, comments, likes, bookmarks</li>
+    <li>Backend: S3 presigned uploads, visibility enforcement, explore algorithm</li>
+    <li>Frontend: PostComposer, PostCard, FeedList, InfiniteScroll, MediaGallery</li>
+    <li>Frontend: Creator profile page, Explore page, Single post view</li>
+    <li>Frontend: Follow button, BlurredOverlay, CommentSection</li>
+    <li>Mobile: pull-to-refresh, full-bleed media, bottom sheet composer</li>
+    <li><span class="change-marker">&#9889;</span> Unit tests for feed/post services, component tests</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 2 Deliverable</h4>
+    <p>Users can follow, post, like, comment, explore content.</p>
+  </div>
+
+  <!-- MVP CHECKPOINT -->
+  <div class="mvp-box">
+    <h3>&#9889; MVP CHECKPOINT (After Phase 2)</h3>
+    <p style="margin-bottom: 16px;"><strong>Phase 0 + 1 + 2 = Working Product</strong></p>
+    <ul>
+      <li>Signup, login, 2FA, profile, onboarding</li>
+      <li>Create posts, follow creators, home feed, explore</li>
+      <li>STOP and evaluate before Phase 3</li>
+      <li>Deploy MVP to staging environment</li>
+      <li>Get real user feedback</li>
+      <li>Review code quality metrics (coverage, Lighthouse scores, bundle size)</li>
+      <li>Acceptance criteria must be met before proceeding</li>
+      <li><strong>Decision point: proceed to Phase 3 or iterate on MVP</strong></li>
+    </ul>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase-header">
+    <h3>Phase 3: Subscriptions &amp; Payments <span class="weeks">(6 weeks)</span> <span class="badge-updated">Updated</span></h3>
+  </div>
+  <ul>
+    <li>DB: SubscriptionTier, Subscription, Wallet, Transaction, Payment, Tip, Withdrawal migrations</li>
+    <li>Backend: Tiers CRUD, subscribe/cancel</li>
+    <li><span class="change-marker">&#9889;</span> <strong>CCBill integration ONLY</strong> (sandbox &rarr; production)</li>
+    <li><span class="change-marker">&#9889;</span> MirexPay deferred to Phase 10</li>
+    <li>Backend: Wallet, tips, PPV, withdrawals</li>
+    <li><span class="change-marker">&#9889;</span> NO BullMQ yet &mdash; use direct processing for payments</li>
+    <li>Frontend: Tier management, Subscribe modal, Wallet, Earnings dashboard</li>
+    <li>Frontend: Tip modal, PPV unlock, Withdrawal form, Revenue charts</li>
+    <li>Mobile: bottom sheet modals, responsive charts</li>
+    <li><span class="change-marker">&#9889;</span> Payment webhook tests with mocks, wallet transaction tests</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 3 Deliverable</h4>
+    <p>Full payment flow with CCBill, tipping, wallet, withdrawals.</p>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase-header">
+    <h3>Phase 4: Chat + Redis <span class="weeks">(4 weeks)</span> <span class="badge-updated">Updated</span></h3>
+  </div>
+  <ul>
+    <li>DB: Conversation, Message migrations</li>
+    <li><span class="change-marker">&#9889;</span> <strong>Redis added here:</strong> Socket.IO adapter + online status + session store</li>
+    <li>Backend: Socket.IO with JWT, chat service, typing, read receipts, online status</li>
+    <li>Frontend: Chat page (split desktop, fullscreen mobile), MessageBubble, emoji</li>
+    <li>Frontend: Typing indicator, online dots, media in chat, tip in chat</li>
+    <li>Mobile: fullscreen chat, keyboard handling, camera/gallery attachment</li>
+    <li><span class="change-marker">&#9889;</span> Socket.IO integration tests</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 4 Deliverable</h4>
+    <p>Real-time messaging with all features + Redis infrastructure.</p>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase-header">
+    <h3>Phase 5: Notifications + BullMQ <span class="weeks">(2 weeks)</span> <span class="badge-updated">Updated</span></h3>
+  </div>
+  <ul>
+    <li>DB: Notification, NotificationPreference migrations</li>
+    <li><span class="change-marker">&#9889;</span> <strong>BullMQ added here:</strong> email queue + cron jobs</li>
+    <li>Backend: NotificationService, Socket.IO push, BullMQ + SES email, preferences</li>
+    <li>Frontend: Bell icon + badge, dropdown, full page, filters, toasts, preferences</li>
+    <li>Mobile: swipe to dismiss, pull-to-refresh</li>
+    <li><span class="change-marker">&#9889;</span> E2E tests for critical flows (Playwright setup)</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 5 Deliverable</h4>
+    <p>In-app + email notifications + background job infrastructure.</p>
+  </div>
+
+  <!-- PHASE 6 -->
+  <div class="phase-header">
+    <h3>Phase 6: Stories <span class="weeks">(2 weeks)</span></h3>
+  </div>
+  <ul>
+    <li>DB: Story, StoryView migrations</li>
+    <li>Backend: Story CRUD, S3 upload, 24h expiry cron, view tracking</li>
+    <li>Frontend: StoryRing, StoryViewer (fullscreen), StoryCreator</li>
+    <li>Mobile: horizontal scroll rings, fullscreen gestures, camera capture</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 6 Deliverable</h4>
+    <p>Instagram-style 24-hour disappearing stories.</p>
+  </div>
+
+  <!-- PHASE 7 -->
+  <div class="phase-header">
+    <h3>Phase 7: Live Streaming &amp; Video Calls <span class="weeks">(4 weeks)</span></h3>
+  </div>
+  <ul>
+    <li>DB: LiveSession, VideoCall migrations</li>
+    <li>Backend: RTMP/HLS, stream keys, live chat, viewer count, Vonage integration</li>
+    <li>Backend: Call signaling via Socket.IO, duration tracking</li>
+    <li>Frontend: Go Live page, Live viewer + chat, Video call UI</li>
+    <li>Mobile: portrait/landscape live view, fullscreen call</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 7 Deliverable</h4>
+    <p>Live streaming via OBS + 1-on-1 video calls.</p>
+  </div>
+
+  <!-- PHASE 8 -->
+  <div class="phase-header">
+    <h3>Phase 8: Marketplace &amp; Gamification <span class="weeks">(4 weeks)</span></h3>
+  </div>
+  <ul>
+    <li>DB: MarketplaceListing, Bid, Badge, UserBadge migrations</li>
+    <li>Backend: Listing CRUD, bidding, auction close, Buy Now, badge engine, leaderboard</li>
+    <li>Frontend: Marketplace browse/detail, bid form, create listing wizard</li>
+    <li>Frontend: Badge display, Leaderboard page</li>
+    <li>Mobile: 2-column grid, filter drawer, sticky bid form</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 8 Deliverable</h4>
+    <p>Full marketplace with auctions + gamification system.</p>
+  </div>
+
+  <!-- PHASE 9 -->
+  <div class="phase-header">
+    <h3>Phase 9: Admin Panel <span class="weeks">(4 weeks)</span></h3>
+  </div>
+  <ul>
+    <li>Backend: All admin API endpoints with audit logging</li>
+    <li>Frontend: Admin layout, Dashboard, User management, Content moderation</li>
+    <li>Frontend: Reports, Payments, Withdrawals, Settings, Badges, Analytics</li>
+    <li>Frontend: Announcements, Audit log</li>
+    <li>Mobile: admin responsive (cards instead of tables)</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 9 Deliverable</h4>
+    <p>Full admin panel for platform management.</p>
+  </div>
+
+  <!-- PHASE 10 -->
+  <div class="phase-header">
+    <h3>Phase 10: Polish &amp; Launch <span class="weeks">(4 weeks)</span> <span class="badge-updated">Updated</span></h3>
+  </div>
+  <ul>
+    <li><span class="change-marker">&#9889;</span> <strong>MirexPay integration</strong> as second payment gateway</li>
+    <li>Complete i18n, Creator analytics dashboard</li>
+    <li>Performance: lazy loading, code splitting, CDN, image optimization</li>
+    <li>Security audit: XSS, CSRF, CSP, rate limiting, input sanitization</li>
+    <li>AWS production deployment (ECS + RDS + ElastiCache + S3 + CloudFront)</li>
+    <li><span class="change-marker">&#9889;</span> Sentry already running since Phase 0 &mdash; review and tune alerts</li>
+    <li>Load testing, cross-browser QA</li>
+    <li>Mobile: final responsive QA across devices</li>
+  </ul>
+  <div class="callout callout-success">
+    <h4>Phase 10 Deliverable</h4>
+    <p>Production-ready platform with dual payment gateways.</p>
+  </div>
+
+  <h2>Timeline Summary</h2>
+  <table>
+    <thead>
+      <tr><th>Phase</th><th>Name</th><th>Weeks</th><th>Cumulative</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>Foundation</td><td>4</td><td>4 wk</td></tr>
+      <tr><td>1</td><td>Auth &amp; Users</td><td>4</td><td>8 wk</td></tr>
+      <tr><td>2</td><td>Social &amp; Feed</td><td>4</td><td>12 wk</td></tr>
+      <tr style="background: #f0fff4;"><td>-</td><td><strong>&#9889; MVP CHECKPOINT</strong></td><td>-</td><td><strong>STOP &amp; EVALUATE</strong></td></tr>
+      <tr><td>3</td><td>Subscriptions &amp; Payments</td><td>6</td><td>18 wk</td></tr>
+      <tr><td>4</td><td>Chat + Redis</td><td>4</td><td>22 wk</td></tr>
+      <tr><td>5</td><td>Notifications + BullMQ</td><td>2</td><td>24 wk</td></tr>
+      <tr><td>6</td><td>Stories</td><td>2</td><td>26 wk</td></tr>
+      <tr><td>7</td><td>Live &amp; Video</td><td>4</td><td>30 wk</td></tr>
+      <tr><td>8</td><td>Marketplace &amp; Gamification</td><td>4</td><td>34 wk</td></tr>
+      <tr><td>9</td><td>Admin Panel</td><td>4</td><td>38 wk</td></tr>
+      <tr><td>10</td><td>Polish &amp; Launch + MirexPay</td><td>4</td><td>42 wk</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <h4>Total Timeline</h4>
+    <p><strong>~42 weeks (~10 months) sequential.</strong> With 4&ndash;5 developers and phases 4&ndash;8 parallelized: <strong>~7&ndash;8 months.</strong></p>
+  </div>
+</div>
+
+<!-- ==================== SECTION 26: RISK RESOLUTION ==================== -->
+<div class="page page-break" id="s26">
+  <h1><span class="section-num">Section 26:</span> Risk Resolution <span class="badge-new">New</span></h1>
+  <div class="new-section-header">&#9889; NEW SECTION &mdash; Added in v2.1</div>
+
+  <p>6 identified risks with concrete mitigations built into this plan:</p>
+
+  <!-- Risk 1 -->
+  <div class="risk-card">
+    <h4>1. Scope Creep</h4>
+    <div class="risk-meta">
+      <span>Impact: <span class="impact-high">HIGH</span></span>
+      <span>Probability: <span class="impact-high">HIGH</span></span>
+    </div>
+    <p><strong>Mitigation:</strong> Phase gates with acceptance criteria. MVP checkpoint after Phase 2. Feature flags for experimental features. No new features added mid-phase. Each phase has clear deliverables that must be met before proceeding to the next.</p>
+  </div>
+
+  <!-- Risk 2 -->
+  <div class="risk-card medium">
+    <h4>2. Slow Site / Poor Performance</h4>
+    <div class="risk-meta">
+      <span>Impact: <span class="impact-high">HIGH</span></span>
+      <span>Probability: <span class="impact-medium">MEDIUM</span></span>
+    </div>
+    <p><strong>Mitigation:</strong> Lighthouse CI with hard limits (90/95/95). Bundle size budget (200KB gzipped). Every route lazy loaded. Virtual scrolling for lists. Image optimization pipeline. API response time monitoring via Sentry. Performance budget violations block deployment.</p>
+  </div>
+
+  <!-- Risk 3 -->
+  <div class="risk-card">
+    <h4>3. Code Becoming a Mess (Again)</h4>
+    <div class="risk-meta">
+      <span>Impact: <span class="impact-critical">CRITICAL</span></span>
+      <span>Probability: <span class="impact-high">HIGH</span></span>
+    </div>
+    <p><strong>Mitigation:</strong> ESLint strict config from day 1. Max 200 lines per file. No <code>any</code> type. Thin Controller &rarr; Service &rarr; Repository mandatory. Pre-commit hooks block bad code. Cyclomatic complexity limit of 10. No console.log. Code review required for all PRs. No exceptions.</p>
+  </div>
+
+  <!-- Risk 4 -->
+  <div class="risk-card">
+    <h4>4. Security Vulnerabilities</h4>
+    <div class="risk-meta">
+      <span>Impact: <span class="impact-critical">CRITICAL</span></span>
+      <span>Probability: <span class="impact-medium">MEDIUM</span></span>
+    </div>
+    <p><strong>Mitigation:</strong> Helmet.js + rate limiting from Phase 0. OWASP Top 10 checklist reviewed per phase. Input validation via shared Zod schemas. SQL injection prevented by Prisma ORM. XSS prevented by React's default escaping. CSRF tokens on state-changing requests. Content Security Policy headers.</p>
+  </div>
+
+  <!-- Risk 5 -->
+  <div class="risk-card medium">
+    <h4>5. Payment Integration Failures</h4>
+    <div class="risk-meta">
+      <span>Impact: <span class="impact-high">HIGH</span></span>
+      <span>Probability: <span class="impact-medium">MEDIUM</span></span>
+    </div>
+    <p><strong>Mitigation:</strong> CCBill sandbox testing first (Phase 3), production later. Webhook simulator for local testing. Mock payment service for unit tests. MirexPay deferred to Phase 10 (one gateway at a time). Idempotent webhook handlers. Transaction logging for debugging.</p>
+  </div>
+
+  <!-- Risk 6 -->
+  <div class="risk-card medium">
+    <h4>6. Scaling Issues</h4>
+    <div class="risk-meta">
+      <span>Impact: <span class="impact-medium">MEDIUM</span></span>
+      <span>Probability: LOW (at launch)</span>
+    </div>
+    <p><strong>Mitigation:</strong> Stateless server design from day 1. Redis adapter for Socket.IO when added (Phase 4). Database connection pooling via Prisma. Horizontal scaling ready (ECS auto-scaling). CDN for static assets. Database indexes defined with schema. Query performance monitoring via Sentry.</p>
+  </div>
+</div>
+
+<!-- ==================== SECTION 27: DEPLOYMENT STRATEGY ==================== -->
+<div class="page page-break" id="s27">
+  <h1><span class="section-num">Section 27:</span> Deployment Strategy <span class="badge-updated">Updated</span></h1>
+
+  <h2>Staging Environment (Hetzner)</h2>
+  <div class="code-block">Nginx (reverse proxy + SSL termination)
+├── /              -> React SPA (Vite build static files)
+├── /api           -> Express server (PM2, 2 instances)
+└── /socket.io     -> Socket.IO (sticky sessions via Nginx)
+
+PostgreSQL 15 (on same server or managed)
+⚡ Redis 7 (added in Phase 4, not initial setup)
+⚡ BullMQ worker process (added in Phase 5)</div>
+
+  <h2>Production Environment (AWS)</h2>
+  <div class="code-block">CloudFront CDN
+├── S3 bucket (React SPA static files)
+└── S3 bucket (user media uploads)
+
+ALB (Application Load Balancer, sticky sessions for Socket.IO)
+├── ECS Fargate / EC2 instances
+│   ├── Express API container (auto-scaling group)
+│   └── Socket.IO container (auto-scaling group)
+│
+├── BullMQ Worker container (Phase 5+)
+
+RDS PostgreSQL (Multi-AZ, automated backups, read replicas)
+ElastiCache Redis (cluster mode, 2 nodes) - added Phase 4+
+
+SES (transactional email, verified domain)
+Route 53 (DNS management)
+ACM (SSL/TLS certificates)
+CloudWatch (monitoring, alerts, dashboards)
+⚡ Sentry (error tracking from Phase 0 - external service)
+
+S3 (media uploads)
+├── Lifecycle policies (move to Glacier after 1 year)
+└── CloudFront distribution for fast media delivery</div>
+
+  <h2>CI/CD Pipeline (GitHub Actions)</h2>
+  <div class="code-block">on push to main:
+  1. Install dependencies (npm ci)
+  2. Lint (ESLint - strict rules, zero tolerance)
+  3. Type-check (tsc --noEmit - all packages)
+  4. Run tests (Vitest - coverage thresholds)
+  5. ⚡ Lighthouse CI check (90/95/95 minimums)
+  6. ⚡ Bundle size check (200KB gzipped max)
+  7. Build (vite build + tsc)
+  8. Deploy to Staging (automatic)
+  9. Smoke tests on staging
+  10. Manual approval gate
+  11. Deploy to Production
+  12. Post-deploy health check</div>
+
+  <div class="callout">
+    <h4>Deployment Notes</h4>
+    <ul>
+      <li><strong>Zero-downtime deploys:</strong> Rolling update strategy in ECS. Blue-green deployment option for major releases.</li>
+      <li><strong>Database migrations:</strong> Run before deploy via CI/CD. Backward-compatible migrations only (expand-contract pattern).</li>
+      <li><strong>Rollback:</strong> Automated rollback if health check fails. Previous container image retained. Database rollback via Prisma migrate.</li>
+      <li><strong>Secrets management:</strong> AWS Secrets Manager for production. Environment variables for staging. Never in code.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== SECTION 28: PHASE 0 CHECKLIST ==================== -->
+<div class="page page-break" id="s28">
+  <h1><span class="section-num">Section 28:</span> Phase 0 Verification Checklist <span class="badge-updated">Updated</span></h1>
+
+  <p>After Phase 0 completion, verify <strong>ALL</strong> of the following before moving to Phase 1:</p>
+
+  <table>
+    <thead>
+      <tr><th>#</th><th>Check</th><th>Expected Result</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Dev Server</strong></td><td><code>npm run dev</code> starts Vite (port 5173) AND Express API (port 4000) concurrently</td></tr>
+      <tr><td>2</td><td><strong>Frontend Loads</strong></td><td>React app loads in browser with Tailwind CSS v3.4 styling applied correctly</td></tr>
+      <tr><td>3</td><td><strong>Theme Toggle</strong></td><td>Dark/Light/System theme toggle works, persists to localStorage across refresh</td></tr>
+      <tr><td>4</td><td><strong>i18n</strong></td><td>Language switching works, English translations load, fallback works</td></tr>
+      <tr><td>5</td><td><strong>Navbar</strong></td><td>Top navbar renders correctly on all breakpoints (mobile/tablet/desktop)</td></tr>
+      <tr><td>6</td><td><strong>Sidebar</strong></td><td>Left sidebar renders on desktop (1024px+) with nav links</td></tr>
+      <tr><td>7</td><td><strong>Mobile Nav</strong></td><td>Bottom navigation bar shows on mobile (&lt;768px) with 5 icons</td></tr>
+      <tr><td>8</td><td><strong>Responsive</strong></td><td>Layout adapts correctly at all breakpoints (sm, md, lg, xl, 2xl)</td></tr>
+      <tr><td>9</td><td><strong>API Health</strong></td><td><code>GET http://localhost:4000/api/health</code> returns <code>{ status: "ok" }</code></td></tr>
+      <tr><td>10</td><td><strong>Database</strong></td><td>Prisma connects to PostgreSQL, migrations run successfully</td></tr>
+      <tr><td>11</td><td><strong>DB Seed</strong></td><td>Seed creates admin user + sample data</td></tr>
+      <tr><td>12</td><td><span class="change-marker">&#9889;</span> <strong>No Redis Check</strong></td><td>Redis NOT required in Phase 0 (deferred to Phase 4)</td></tr>
+      <tr><td>13</td><td><strong>Shared Package</strong></td><td><code>@fansbook/shared</code> imports work in both apps/web and apps/server</td></tr>
+      <tr><td>14</td><td><strong>CI Pipeline</strong></td><td>GitHub Actions runs on push: lint + typecheck + test + Lighthouse</td></tr>
+      <tr><td>15</td><td><strong>Staging</strong></td><td>Deployed to Hetzner, accessible via URL</td></tr>
+      <tr><td>16</td><td><strong>Components</strong></td><td>shadcn/ui components render correctly with Tailwind v3.4</td></tr>
+      <tr><td>17</td><td><strong>Router</strong></td><td>Routes work: /, /login, /register, /explore, /settings, /admin, 404</td></tr>
+      <tr><td>18</td><td><span class="change-marker">&#9889;</span> <strong>ESLint Strict</strong></td><td>All anti-mess rules active (max-lines, no-any, complexity, no-console)</td></tr>
+      <tr><td>19</td><td><span class="change-marker">&#9889;</span> <strong>Husky Hooks</strong></td><td>Pre-commit runs lint + typecheck + test, blocks on failure</td></tr>
+      <tr><td>20</td><td><span class="change-marker">&#9889;</span> <strong>Sentry</strong></td><td>Error tracking active, test error appears in Sentry dashboard</td></tr>
+      <tr><td>21</td><td><span class="change-marker">&#9889;</span> <strong>Vitest</strong></td><td>Test suite runs, example tests pass</td></tr>
+      <tr><td>22</td><td><span class="change-marker">&#9889;</span> <strong>Lighthouse CI</strong></td><td>Scores meet minimum thresholds (90/95/95)</td></tr>
+      <tr><td>23</td><td><span class="change-marker">&#9889;</span> <strong>Bundle Size</strong></td><td>Initial JS bundle under 200KB gzipped</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-critical">
+    <h4>Phase 0 Gate</h4>
+    <p><strong>ALL 23 checks must pass before starting Phase 1.</strong> This is not optional. Phase 0 establishes the foundation that every subsequent phase depends on. A weak foundation = a messy codebase by Phase 3.</p>
+  </div>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="page page-break" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 40vh; text-align: center;">
+  <hr class="section-divider" style="width: 60%;">
+  <h2 style="margin-top: 40px; color: #1a365d;">End of Document</h2>
+  <p style="color: #718096; margin-top: 12px;">Fansbook Platform &mdash; Complete Rebuild Plan</p>
+  <p style="color: #718096;">Version 2.1 &nbsp;|&nbsp; February 2026</p>
+  <p style="color: #a0aec0; margin-top: 24px; font-size: 12px;">28 Sections &nbsp;|&nbsp; 28 Database Models &nbsp;|&nbsp; 24 Enums &nbsp;|&nbsp; 11 Development Phases &nbsp;|&nbsp; ~42 Weeks</p>
+  <p style="color: #a0aec0; font-size: 12px; margin-top: 8px;">4 New Sections: Anti-Mess Rules, Performance Budget, Testing Strategy, Risk Resolution</p>
+  <hr class="section-divider" style="width: 60%; margin-top: 30px;">
+</div>
+
+</body>
+</html>

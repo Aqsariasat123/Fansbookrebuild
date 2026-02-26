@@ -1,0 +1,78 @@
+{
+  "common": {
+    "appName": "Fansbook",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "seeAll": "See All",
+    "viewAll": "View all",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "addPost": "Add Post",
+    "composePlaceholder": "Compose new post...",
+    "play": "Play",
+    "more": "More",
+    "tip": "Tip",
+    "likes": "Likes",
+    "comments": "Comments",
+    "share": "Share"
+  },
+  "nav": {
+    "home": "Home",
+    "myProfile": "My Profile",
+    "messages": "Messages",
+    "myWallet": "My wallet",
+    "myEarning": "My earning",
+    "myReferrals": "My referrals",
+    "myFollowersModel": "My Followers Model",
+    "mySubscription": "My Subscription",
+    "myBookings": "My bookings",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "helpSupport": "Help & Support",
+    "english": "English",
+    "logout": "Logout",
+    "explore": "Explore",
+    "profile": "Profile",
+    "create": "Create"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Sign Up",
+    "signup": "Signup",
+    "forgotPassword": "Forgot Password?",
+    "emailUsername": "Email / Username",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "displayName": "Display Name",
+    "confirmPassword": "Confirm Password",
+    "dateOfBirth": "Date of Birth",
+    "acceptTerms": "I accept the Terms of Service",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "welcomeBack": "Welcome Back to FansBook",
+    "loginSubtitle": "Log in to connect with your favorite creators and unlock exclusive content.",
+    "emailUsernamePlaceholder": "Enter your Email or username...",
+    "passwordPlaceholder": "Enter your password..."
+  },
+  "feed": {
+    "addYourStory": "Add Your Story",
+    "mostPopularModels": "Most Popular Models"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong",
+    "pageNotFound": "Page not found",
+    "unauthorized": "You must be logged in"
+  }
+}

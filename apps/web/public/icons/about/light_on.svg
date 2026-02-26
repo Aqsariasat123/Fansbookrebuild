@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="132" viewBox="0 0 132 132" width="132" fill="none">
+  <path d="M66 16C44.46 16 27 33.46 27 55c0 14.14 7.52 26.52 18.78 33.38V98c0 3.31 2.69 6 6 6h28.44c3.31 0 6-2.69 6-6v-9.62C97.48 81.52 105 69.14 105 55c0-21.54-17.46-39-39-39z" stroke="#f8f8f8" stroke-width="3" fill="none"/>
+  <line x1="51" y1="108" x2="81" y2="108" stroke="#f8f8f8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="54" y1="116" x2="78" y2="116" stroke="#f8f8f8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="66" y1="2" x2="66" y2="10" stroke="#f8f8f8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="20" y1="55" x2="12" y2="55" stroke="#f8f8f8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="120" y1="55" x2="112" y2="55" stroke="#f8f8f8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="30" y1="22" x2="24" y2="16" stroke="#f8f8f8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="102" y1="22" x2="108" y2="16" stroke="#f8f8f8" stroke-width="3" stroke-linecap="round"/>
+</svg>

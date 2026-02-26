@@ -1,0 +1,771 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────
+
+enum UserRole {
+  FAN
+  CREATOR
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+  DEACTIVATED
+}
+
+enum OtpType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+enum PostVisibility {
+  PUBLIC
+  SUBSCRIBERS
+  TIER_SPECIFIC
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PAST_DUE
+}
+
+enum TransactionType {
+  DEPOSIT
+  SUBSCRIPTION
+  TIP_SENT
+  TIP_RECEIVED
+  PPV_PURCHASE
+  PPV_EARNING
+  WITHDRAWAL
+  REFUND
+  BID_HOLD
+  BID_RELEASE
+  MARKETPLACE_PURCHASE
+  MARKETPLACE_EARNING
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentGateway {
+  CCBILL
+  MIREXPAY
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  REJECTED
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  TIP
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
+  SUBSCRIBE
+  TIP
+  MESSAGE
+  LIVE
+  STORY
+  MENTION
+  SYSTEM
+}
+
+enum LiveStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+}
+
+enum CallStatus {
+  RINGING
+  ACTIVE
+  ENDED
+  MISSED
+  REJECTED
+}
+
+enum ListingType {
+  FIXED_PRICE
+  AUCTION
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  EXPIRED
+  CANCELLED
+}
+
+enum ListingCategory {
+  DIGITAL_CONTENT
+  PHYSICAL_MERCH
+  EXPERIENCE
+  CUSTOM_CONTENT
+  SHOUTOUT
+}
+
+enum BadgeRarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum BadgeCategory {
+  CONTENT
+  SOCIAL
+  ENGAGEMENT
+  REVENUE
+  SPECIAL
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  NUDITY
+  COPYRIGHT
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+  DISMISSED
+}
+
+// ─── Auth & Users (Phase 0-1) ────────────────────────────
+
+model User {
+  id               String     @id @default(cuid())
+  email            String     @unique
+  username         String     @unique
+  displayName      String
+  passwordHash     String
+  role             UserRole   @default(FAN)
+  status           UserStatus @default(ACTIVE)
+  avatar           String?
+  cover            String?
+  bio              String?
+  location         String?
+  website          String?
+  gender           String?
+  country          String?
+  category         String?
+  isVerified       Boolean    @default(false)
+  statusText       String?
+  twoFactorSecret  String?
+  twoFactorEnabled Boolean    @default(false)
+  onboardingStep   Int        @default(0)
+  emailVerified    Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  // Relations
+  otpCodes             OtpCode[]
+  refreshTokens        RefreshToken[]
+  posts                Post[]
+  comments             Comment[]
+  likes                Like[]
+  bookmarks            Bookmark[]
+  followers            Follow[]              @relation("Following")
+  following            Follow[]              @relation("Followers")
+  blockedBy            Block[]               @relation("BlockedUser")
+  blocking             Block[]               @relation("BlockingUser")
+  subscriptionTiers    SubscriptionTier[]
+  subscriptionsAsFan   Subscription[]        @relation("Subscriber")
+  subscriptionsCreator Subscription[]        @relation("SubscriptionCreator")
+  wallet               Wallet?
+  paymentsMade         Payment[]
+  tipsSent             Tip[]                 @relation("TipSender")
+  tipsReceived         Tip[]                 @relation("TipReceiver")
+  withdrawals          Withdrawal[]
+  ppvPurchases         PpvPurchase[]
+  conversations1       Conversation[]        @relation("Participant1")
+  conversations2       Conversation[]        @relation("Participant2")
+  messagesSent         Message[]
+  notifications        Notification[]
+  notificationPrefs    NotificationPreference[]
+  stories              Story[]
+  storyViews           StoryView[]
+  liveSessions         LiveSession[]
+  callsMade            VideoCall[]           @relation("Caller")
+  callsReceived        VideoCall[]           @relation("Callee")
+  listings             MarketplaceListing[]
+  bids                 Bid[]
+  badges               UserBadge[]
+  reports              Report[]              @relation("Reporter")
+  reportedReports      Report[]              @relation("ReportedUser")
+  auditLogs            AuditLog[]
+
+  @@index([email])
+  @@index([username])
+  @@index([role])
+  @@index([status])
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  userId    String
+  code      String
+  type      OtpType
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([code])
+}
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  userId     String
+  token      String   @unique
+  expiresAt  DateTime
+  deviceInfo String?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+// ─── Social Graph (Phase 2) ──────────────────────────────
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model Block {
+  id        String   @id @default(cuid())
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  blocker User @relation("BlockingUser", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("BlockedUser", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+}
+
+// ─── Content (Phase 2) ──────────────────────────────────
+
+model Post {
+  id           String         @id @default(cuid())
+  authorId     String
+  text         String?
+  visibility   PostVisibility @default(PUBLIC)
+  isPinned     Boolean        @default(false)
+  ppvPrice     Float?
+  likeCount    Int            @default(0)
+  commentCount Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  author       User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  media        PostMedia[]
+  comments     Comment[]
+  likes        Like[]
+  bookmarks    Bookmark[]
+  tips         Tip[]
+  ppvPurchases PpvPurchase[]
+
+  @@index([authorId])
+  @@index([visibility])
+  @@index([createdAt])
+}
+
+model PostMedia {
+  id        String    @id @default(cuid())
+  postId    String
+  url       String
+  type      MediaType
+  order     Int       @default(0)
+  thumbnail String?
+  createdAt DateTime  @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  parentId  String?
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post     Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  children Comment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@index([authorId])
+  @@index([parentId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([userId])
+}
+
+// ─── Payments (Phase 3) ─────────────────────────────────
+
+model SubscriptionTier {
+  id          String   @id @default(cuid())
+  creatorId   String
+  name        String
+  price       Float
+  description String?
+  benefits    Json     @default("[]")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator       User           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  subscriptions Subscription[]
+
+  @@index([creatorId])
+}
+
+model Subscription {
+  id          String             @id @default(cuid())
+  subscriberId String
+  tierId      String
+  creatorId   String
+  status      SubscriptionStatus @default(ACTIVE)
+  startDate   DateTime           @default(now())
+  endDate     DateTime?
+  renewalDate DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  subscriber User             @relation("Subscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
+  tier       SubscriptionTier @relation(fields: [tierId], references: [id])
+  creator    User             @relation("SubscriptionCreator", fields: [creatorId], references: [id])
+
+  @@index([subscriberId])
+  @@index([creatorId])
+  @@index([status])
+}
+
+model Wallet {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  balance        Float    @default(0)
+  pendingBalance Float    @default(0)
+  totalEarned    Float    @default(0)
+  totalSpent     Float    @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  walletId    String
+  type        TransactionType
+  amount      Float
+  description String?
+  referenceId String?
+  status      TransactionStatus @default(PENDING)
+  createdAt   DateTime          @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([type])
+  @@index([status])
+}
+
+model Payment {
+  id                   String         @id @default(cuid())
+  userId               String
+  amount               Float
+  gateway              PaymentGateway
+  gatewayTransactionId String?
+  status               PaymentStatus  @default(PENDING)
+  type                 String
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([gateway])
+}
+
+model Tip {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  amount     Float
+  postId     String?
+  messageId  String?
+  createdAt  DateTime @default(now())
+
+  sender   User     @relation("TipSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User     @relation("TipReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  post     Post?    @relation(fields: [postId], references: [id])
+  message  Message? @relation(fields: [messageId], references: [id])
+
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+model Withdrawal {
+  id              String           @id @default(cuid())
+  creatorId       String
+  amount          Float
+  paymentMethod   String
+  status          WithdrawalStatus @default(PENDING)
+  processedAt     DateTime?
+  rejectionReason String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  creator User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId])
+  @@index([status])
+}
+
+model PpvPurchase {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  amount    Float
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+  @@index([userId])
+}
+
+// ─── Chat (Phase 4) ─────────────────────────────────────
+
+model Conversation {
+  id             String   @id @default(cuid())
+  participant1Id String
+  participant2Id String
+  lastMessageAt  DateTime @default(now())
+  lastMessage    String?
+  createdAt      DateTime @default(now())
+
+  participant1 User      @relation("Participant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2 User      @relation("Participant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  messages     Message[]
+
+  @@unique([participant1Id, participant2Id])
+  @@index([participant1Id])
+  @@index([participant2Id])
+  @@index([lastMessageAt])
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  conversationId String
+  senderId       String
+  text           String?
+  mediaUrl       String?
+  mediaType      MessageType @default(TEXT)
+  tipAmount      Float?
+  readAt         DateTime?
+  createdAt      DateTime    @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  tips         Tip[]
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+// ─── Notifications (Phase 5) ────────────────────────────
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  type       NotificationType
+  actorId    String?
+  entityId   String?
+  entityType String?
+  message    String
+  read       Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+model NotificationPreference {
+  id     String           @id @default(cuid())
+  userId String
+  type   NotificationType
+  inApp  Boolean          @default(true)
+  email  Boolean          @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+}
+
+// ─── Stories (Phase 6) ──────────────────────────────────
+
+model Story {
+  id        String    @id @default(cuid())
+  authorId  String
+  mediaUrl  String
+  mediaType MediaType
+  overlays  Json?
+  expiresAt DateTime
+  viewCount Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  author User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  views  StoryView[]
+
+  @@index([authorId])
+  @@index([expiresAt])
+}
+
+model StoryView {
+  id       String   @id @default(cuid())
+  storyId  String
+  viewerId String
+  viewedAt DateTime @default(now())
+
+  story  Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  viewer User  @relation(fields: [viewerId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, viewerId])
+}
+
+// ─── Live & Video (Phase 7) ─────────────────────────────
+
+model LiveSession {
+  id          String     @id @default(cuid())
+  creatorId   String
+  title       String
+  streamKey   String     @unique
+  rtmpUrl     String?
+  hlsUrl      String?
+  status      LiveStatus @default(SCHEDULED)
+  viewerCount Int        @default(0)
+  startedAt   DateTime?
+  endedAt     DateTime?
+  createdAt   DateTime   @default(now())
+
+  creator User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId])
+  @@index([status])
+}
+
+model VideoCall {
+  id               String     @id @default(cuid())
+  callerId         String
+  calleeId         String
+  vonageSessionId  String?
+  status           CallStatus @default(RINGING)
+  duration         Int?
+  startedAt        DateTime?
+  endedAt          DateTime?
+  createdAt        DateTime   @default(now())
+
+  caller User @relation("Caller", fields: [callerId], references: [id], onDelete: Cascade)
+  callee User @relation("Callee", fields: [calleeId], references: [id], onDelete: Cascade)
+
+  @@index([callerId])
+  @@index([calleeId])
+}
+
+// ─── Marketplace & Gamification (Phase 8) ───────────────
+
+model MarketplaceListing {
+  id           String          @id @default(cuid())
+  sellerId     String
+  title        String
+  description  String
+  category     ListingCategory
+  type         ListingType     @default(FIXED_PRICE)
+  price        Float?
+  startingBid  Float?
+  reservePrice Float?
+  endsAt       DateTime?
+  status       ListingStatus   @default(ACTIVE)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  seller User  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  bids   Bid[]
+
+  @@index([sellerId])
+  @@index([status])
+  @@index([category])
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  listingId String
+  bidderId  String
+  amount    Float
+  createdAt DateTime @default(now())
+
+  listing MarketplaceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  bidder  User               @relation(fields: [bidderId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+  @@index([bidderId])
+}
+
+model Badge {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  description String
+  icon        String
+  rarity      BadgeRarity   @default(COMMON)
+  criteria    Json?
+  category    BadgeCategory
+  createdAt   DateTime      @default(now())
+
+  users UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+}
+
+// ─── Admin (Phase 9) ────────────────────────────────────
+
+model Report {
+  id             String       @id @default(cuid())
+  reporterId     String
+  reportedUserId String?
+  reportedPostId String?
+  reason         ReportReason
+  description    String?
+  status         ReportStatus @default(OPEN)
+  resolvedBy     String?
+  resolvedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  reporter     User @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUser User? @relation("ReportedUser", fields: [reportedUserId], references: [id])
+
+  @@index([reporterId])
+  @@index([status])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  targetType String
+  targetId   String
+  details    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  admin User @relation(fields: [adminId], references: [id])
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+}

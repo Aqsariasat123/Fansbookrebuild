@@ -1,0 +1,19 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 104 104" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 1000006661">
+<circle id="Ellipse 146" cx="52" cy="52" r="51.5" fill="var(--fill-0, #0E1012)" stroke="url(#paint0_linear_10387_646)"/>
+<g id="videocam">
+<mask id="mask0_10387_646" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="32" y="32" width="40" height="40">
+<rect id="Bounding box" x="32" y="32" width="40" height="40" fill="var(--fill-0, #D9D9D9)"/>
+</mask>
+<g mask="url(#mask0_10387_646)">
+<path id="videocam_2" d="M38.6654 65.3327C37.7487 65.3327 36.964 65.0063 36.3112 64.3535C35.6584 63.7007 35.332 62.916 35.332 61.9993V41.9993C35.332 41.0827 35.6584 40.298 36.3112 39.6452C36.964 38.9924 37.7487 38.666 38.6654 38.666H58.6654C59.582 38.666 60.3668 38.9924 61.0195 39.6452C61.6723 40.298 61.9987 41.0827 61.9987 41.9993V49.4993L68.6654 42.8327V61.166L61.9987 54.4993V61.9993C61.9987 62.916 61.6723 63.7007 61.0195 64.3535C60.3668 65.0063 59.582 65.3327 58.6654 65.3327H38.6654Z" fill="var(--fill-0, white)"/>
+</g>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_10387_646" x1="104" y1="52" x2="0" y2="52" gradientUnits="userSpaceOnUse">
+<stop stop-color="#A61651"/>
+<stop offset="1" stop-color="#01ADF1"/>
+</linearGradient>
+</defs>
+</svg>

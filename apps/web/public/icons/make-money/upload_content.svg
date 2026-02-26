@@ -1,0 +1,19 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 104 104" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 1000006661">
+<circle id="Ellipse 146" cx="52" cy="52" r="51.5" fill="var(--fill-0, #0E1012)" stroke="url(#paint0_linear_10387_562)"/>
+<g id="upload_2">
+<mask id="mask0_10387_562" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="32" y="32" width="40" height="40">
+<rect id="Bounding box" x="32" y="32" width="40" height="40" fill="var(--fill-0, #D9D9D9)"/>
+</mask>
+<g mask="url(#mask0_10387_562)">
+<path id="upload_2_2" d="M38.668 68.6673V65.334H65.3346V68.6673H38.668ZM47.0013 62.0007V50.334H40.3346L52.0013 35.334L63.668 50.334H57.0013V62.0007H47.0013Z" fill="var(--fill-0, white)"/>
+</g>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_10387_562" x1="104" y1="52" x2="0" y2="52" gradientUnits="userSpaceOnUse">
+<stop stop-color="#A61651"/>
+<stop offset="1" stop-color="#01ADF1"/>
+</linearGradient>
+</defs>
+</svg>

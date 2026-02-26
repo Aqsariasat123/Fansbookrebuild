@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --gradient-from: #00bcd4;
+    --gradient-to: #e91e8c;
+  }
+
+  .dark {
+    --background: 216 27.8% 7.1%; /* #0D1117 */
+    --foreground: 207.7 35.1% 92.7%; /* #E6EDF3 */
+    --card: 215 21.4% 11%; /* #161B22 */
+    --card-foreground: 207.7 35.1% 92.7%; /* #E6EDF3 */
+    --primary: 186.8 100% 41.6%; /* #00BCD4 cyan */
+    --primary-foreground: 0 0% 100%; /* white text on primary */
+    --secondary: 215 21.4% 11%; /* #161B22 */
+    --secondary-foreground: 207.7 35.1% 92.7%; /* #E6EDF3 */
+    --muted: 215 21.4% 11%; /* #161B22 */
+    --muted-foreground: 214.7 7.9% 52.7%; /* #7D8590 */
+    --accent: 186.8 100% 41.6%; /* #00BCD4 cyan */
+    --accent-foreground: 0 0% 100%; /* white text on accent */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 207.7 35.1% 92.7%;
+    --border: 215 15.4% 15.3%; /* #21262D */
+    --input: 212.3 11.9% 21.4%; /* #30363D */
+    --ring: 186.8 100% 41.6%; /* #00BCD4 cyan */
+    --radius: 0.5rem;
+
+    /* Fansbook gradient accent: cyan #00BCD4 -> pink #E91E8C */
+    --gradient-from: #00bcd4;
+    --gradient-to: #e91e8c;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body,
+  #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
