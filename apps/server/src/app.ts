@@ -39,8 +39,8 @@ app.use(
 // Rate limiting
 app.use('/api', apiLimiter);
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+// Serve uploaded files (under /api so Nginx proxies it)
+app.use('/api/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Routes
 app.use('/api', healthRouter);

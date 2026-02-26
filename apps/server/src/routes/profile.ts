@@ -141,7 +141,7 @@ router.post('/avatar', authenticate, upload.single('avatar'), async (req, res, n
       throw new AppError(400, 'No image file provided');
     }
 
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    const avatarUrl = `/api/uploads/avatars/${req.file.filename}`;
 
     // Delete old avatar file if it's an upload (not default)
     const current = await prisma.user.findUnique({
@@ -149,8 +149,9 @@ router.post('/avatar', authenticate, upload.single('avatar'), async (req, res, n
       select: { avatar: true },
     });
 
-    if (current?.avatar?.startsWith('/uploads/avatars/')) {
-      const oldPath = path.join(process.cwd(), current.avatar);
+    if (current?.avatar?.includes('/uploads/avatars/')) {
+      const filename = current.avatar.split('/uploads/avatars/').pop();
+      const oldPath = path.join(process.cwd(), 'uploads', 'avatars', filename ?? '');
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }
