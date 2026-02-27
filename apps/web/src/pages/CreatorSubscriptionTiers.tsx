@@ -20,7 +20,7 @@ export default function CreatorSubscriptionTiers() {
     api
       .get('/creator/tiers')
       .then(({ data: res }) => {
-        const raw = res.data || [];
+        const raw = Array.isArray(res.data) ? res.data : (res.data?.items ?? []);
         setTiers(
           raw.map((t: Record<string, unknown>) => ({
             id: t.id as string,

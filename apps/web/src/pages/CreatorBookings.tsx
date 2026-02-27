@@ -25,7 +25,8 @@ export default function CreatorBookings() {
       if (statusFilter !== 'All') params.status = statusFilter.toUpperCase().replace(' ', '_');
       if (search) params.search = search;
       const { data: res } = await api.get('/creator/bookings', { params });
-      setBookings(res.data || []);
+      const d = res.data;
+      setBookings(Array.isArray(d) ? d : (d?.items ?? []));
     } catch {
       setBookings([]);
     } finally {

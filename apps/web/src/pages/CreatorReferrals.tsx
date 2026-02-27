@@ -22,7 +22,7 @@ export default function CreatorReferrals() {
       api.get('/creator/referrals').catch(() => null),
     ])
       .then(([codeRes, refRes]) => {
-        if (codeRes?.data?.success) setCode(codeRes.data.data.code);
+        if (codeRes?.data?.success) setCode(codeRes.data.data?.referralCode ?? '');
         if (refRes?.data?.success) setReferrals(refRes.data.data ?? []);
       })
       .finally(() => setLoading(false));
