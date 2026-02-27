@@ -1,3 +1,7 @@
+import { useState } from 'react';
+import { PostActions } from './PostActions';
+import { MediaViewer } from './MediaViewer';
+
 const IMG = '/icons/dashboard';
 
 interface Author {
@@ -25,6 +29,7 @@ export interface FeedPost {
   createdAt: string;
   author: Author;
   media: Media[];
+  isLiked?: boolean;
 }
 
 function timeAgo(dateStr: string) {
@@ -33,33 +38,6 @@ function timeAgo(dateStr: string) {
   if (hours < 1) return 'Just now';
   if (hours < 24) return `${hours}h ago`;
   return `${Math.floor(hours / 24)}d ago`;
-}
-
-function PostActions({ post }: { post: FeedPost }) {
-  return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-[16px] md:gap-[36px]">
-        <button className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]">
-          <img src={`${IMG}/favorite.svg`} alt="" className="size-[12px] md:size-[20px]" />
-          <span className="text-[10px] font-normal md:text-[16px]">{post.likeCount} Likes</span>
-        </button>
-        <button className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]">
-          <img src={`${IMG}/mode-comment.svg`} alt="" className="size-[12px] md:size-[20px]" />
-          <span className="text-[10px] font-normal md:text-[16px]">
-            {post.commentCount} Comments
-          </span>
-        </button>
-        <button className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]">
-          <img src={`${IMG}/share.svg`} alt="" className="size-[12px] md:size-[20px]" />
-          <span className="text-[10px] font-normal md:text-[16px]">{post.shareCount} Share</span>
-        </button>
-      </div>
-      <button className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]">
-        <img src={`${IMG}/volunteer-activism.svg`} alt="" className="size-[12px] md:size-[20px]" />
-        <span className="text-[10px] font-normal md:text-[16px]">Tip</span>
-      </button>
-    </div>
-  );
 }
 
 function PostHeader({ post }: { post: FeedPost }) {
@@ -102,6 +80,9 @@ function PostHeader({ post }: { post: FeedPost }) {
 
 export function ImagePost({ post }: { post: FeedPost }) {
   const images = post.media.filter((m) => m.type === 'IMAGE');
+  const [viewerIdx, setViewerIdx] = useState<number | null>(null);
+  const extraCount = images.length > 2 ? images.length - 2 : 0;
+
   return (
     <div className="rounded-[11px] bg-[#0e1012] px-[9px] py-[6px] md:rounded-[22px] md:px-[20px] md:py-[13px]">
       <div className="flex w-full flex-col gap-[11px] md:gap-[25px]">
@@ -109,7 +90,10 @@ export function ImagePost({ post }: { post: FeedPost }) {
         <div className="flex w-full flex-col gap-[11px] md:gap-[20px]">
           {images.length > 0 && (
             <div className="flex w-full gap-[11px] md:gap-[20px]">
-              <div className="relative h-[160px] w-[60%] shrink-0 overflow-hidden rounded-[22px] md:h-[356px] md:w-[518px]">
+              <div
+                className="relative h-[160px] w-[60%] shrink-0 cursor-pointer overflow-hidden rounded-[22px] md:h-[356px] md:w-[518px]"
+                onClick={() => setViewerIdx(0)}
+              >
                 <img
                   src={images[0]?.url}
                   alt=""
@@ -118,35 +102,29 @@ export function ImagePost({ post }: { post: FeedPost }) {
               </div>
               {images.length > 1 && (
                 <div className="flex flex-1 flex-col gap-[10px] md:gap-[20px]">
-                  <div className="relative h-[75px] overflow-hidden rounded-[22px] md:h-[168px]">
+                  <div
+                    className="relative h-[75px] cursor-pointer overflow-hidden rounded-[22px] md:h-[168px]"
+                    onClick={() => setViewerIdx(1)}
+                  >
                     <img
                       src={images[1]?.url}
                       alt=""
                       className="absolute inset-0 h-full w-full object-cover"
                     />
                   </div>
-                  {images.length > 2 && (
-                    <div className="relative h-[75px] overflow-hidden rounded-[22px] md:h-[168px]">
-                      <div
-                        className="absolute inset-0 rounded-[22px] blur-[30.3px]"
-                        style={{
-                          maskImage: `url('${IMG}/post-image-mask.webp')`,
-                          WebkitMaskImage: `url('${IMG}/post-image-mask.webp')`,
-                          maskSize: 'cover',
-                          WebkitMaskSize: 'cover',
-                          maskRepeat: 'no-repeat',
-                          WebkitMaskRepeat: 'no-repeat',
-                        }}
-                      >
-                        <img
-                          src={images[2]?.url}
-                          alt=""
-                          className="absolute inset-0 h-full w-full object-cover"
-                        />
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center">
+                  {extraCount > 0 && (
+                    <div
+                      className="relative h-[75px] cursor-pointer overflow-hidden rounded-[22px] md:h-[168px]"
+                      onClick={() => setViewerIdx(2)}
+                    >
+                      <img
+                        src={images[2]?.url}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover blur-sm"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                         <p className="text-center text-[12px] font-normal text-[#f8f8f8] md:text-[20px]">
-                          +08
+                          +{String(extraCount).padStart(2, '0')}
                           <br />
                           More
                         </p>
@@ -157,29 +135,41 @@ export function ImagePost({ post }: { post: FeedPost }) {
               )}
             </div>
           )}
-          <PostActions post={post} />
+          <PostActions
+            postId={post.id}
+            likeCount={post.likeCount}
+            commentCount={post.commentCount}
+            shareCount={post.shareCount}
+            isLiked={post.isLiked ?? false}
+          />
         </div>
       </div>
+      {viewerIdx !== null && (
+        <MediaViewer media={images} initialIndex={viewerIdx} onClose={() => setViewerIdx(null)} />
+      )}
     </div>
   );
 }
 
 export function VideoPost({ post }: { post: FeedPost }) {
   const video = post.media.find((m) => m.type === 'VIDEO');
+  const [showViewer, setShowViewer] = useState(false);
+
   return (
     <div className="relative rounded-[11px] bg-[#0e1012] md:rounded-[22px]">
       <div className="flex items-start justify-between gap-[10px] px-[9px] pt-[6px] md:gap-[25px] md:px-[20px] md:pt-[13px]">
         <PostHeader post={post} />
       </div>
       {video && (
-        <div className="relative mx-[9px] mt-[11px] h-[161px] overflow-hidden rounded-[10px] md:mx-[20px] md:mt-[25px] md:h-[356px] md:rounded-[22px]">
-          <div className="absolute inset-0 overflow-hidden rounded-[10px] md:rounded-[22px]">
-            <img
-              src={video.thumbnail || video.url}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          </div>
+        <div
+          className="relative mx-[9px] mt-[11px] h-[161px] cursor-pointer overflow-hidden rounded-[10px] md:mx-[20px] md:mt-[25px] md:h-[356px] md:rounded-[22px]"
+          onClick={() => setShowViewer(true)}
+        >
+          <img
+            src={video.thumbnail || video.url}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
           <div className="absolute inset-0 rounded-[10px] bg-[rgba(21,25,28,0.55)] md:rounded-[22px]" />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <button className="flex items-center justify-center gap-[5px] rounded-[56px] bg-[#15191c] py-px pl-px pr-[15px] md:gap-[10px] md:rounded-[124px] md:pr-[34px]">
@@ -191,21 +181,20 @@ export function VideoPost({ post }: { post: FeedPost }) {
               <span className="text-[9px] font-normal text-[#f8f8f8] md:text-[20px]">Play</span>
             </button>
           </div>
-          <div className="absolute bottom-[20px] left-[12px] h-[9px] w-[calc(100%-24px)] md:bottom-[34px] md:left-[15px] md:h-[24px] md:w-[calc(100%-30px)]">
-            <img
-              src={`${IMG}/video-progress.svg`}
-              alt=""
-              className="absolute block size-full max-w-none"
-            />
-          </div>
-          <p className="absolute bottom-[8px] left-[27px] text-[8px] font-normal text-[#f8f8f8] md:bottom-[11px] md:left-[43px] md:text-[16px]">
-            00:00 / 03:15
-          </p>
         </div>
       )}
       <div className="px-[9px] py-[11px] md:px-[20px] md:py-[20px]">
-        <PostActions post={post} />
+        <PostActions
+          postId={post.id}
+          likeCount={post.likeCount}
+          commentCount={post.commentCount}
+          shareCount={post.shareCount}
+          isLiked={post.isLiked ?? false}
+        />
       </div>
+      {showViewer && video && (
+        <MediaViewer media={[video]} initialIndex={0} onClose={() => setShowViewer(false)} />
+      )}
     </div>
   );
 }

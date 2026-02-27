@@ -125,9 +125,38 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
     { url: `${IMG}/post-image-main.webp`, type: 'IMAGE' as const, order: 0 },
     { url: `${IMG}/post-image-right-top.webp`, type: 'IMAGE' as const, order: 1 },
     { url: `${IMG}/post-image-blur.webp`, type: 'IMAGE' as const, order: 2 },
+    { url: `${IMG}/story-bg-1.webp`, type: 'IMAGE' as const, order: 3 },
+    { url: `${IMG}/story-bg-2.webp`, type: 'IMAGE' as const, order: 4 },
+    { url: `${IMG}/story-bg-3.webp`, type: 'IMAGE' as const, order: 5 },
+    { url: `${IMG}/story-bg-4.webp`, type: 'IMAGE' as const, order: 6 },
+    { url: `${IMG}/story-bg-5.webp`, type: 'IMAGE' as const, order: 7 },
+    { url: '/images/creators/creator1.webp', type: 'IMAGE' as const, order: 8 },
+    { url: '/images/creators/creator2.webp', type: 'IMAGE' as const, order: 9 },
   ];
   for (const m of media) {
     await prisma.postMedia.create({ data: { postId: imagePost.id, ...m } });
+  }
+
+  // Second image post with different images
+  const imagePost2 = await prisma.post.create({
+    data: {
+      authorId: emlia.id,
+      text: 'New week, new vibes! Which look is your favorite? Let me know in the comments 💋',
+      visibility: 'PUBLIC',
+      likeCount: 156,
+      commentCount: 42,
+      createdAt: new Date(Date.now() - 3600000),
+    },
+  });
+  const media2 = [
+    { url: '/images/creators/creator3.webp', type: 'IMAGE' as const, order: 0 },
+    { url: '/images/creators/creator4.webp', type: 'IMAGE' as const, order: 1 },
+    { url: '/images/creators/creator5.webp', type: 'IMAGE' as const, order: 2 },
+    { url: '/images/creators/creator6.webp', type: 'IMAGE' as const, order: 3 },
+    { url: '/images/creators/creator7.webp', type: 'IMAGE' as const, order: 4 },
+  ];
+  for (const m of media2) {
+    await prisma.postMedia.create({ data: { postId: imagePost2.id, ...m } });
   }
 
   const videoPost = await prisma.post.create({

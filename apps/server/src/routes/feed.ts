@@ -5,8 +5,9 @@ import { authenticate } from '../middleware/auth.js';
 const router = Router();
 
 // ─── GET /api/feed ──────────────────────────────────────
-router.get('/', authenticate, async (_req, res, next) => {
+router.get('/', authenticate, async (req, res, next) => {
   try {
+    const userId = req.user!.userId;
     const posts = await prisma.post.findMany({
       where: { visibility: 'PUBLIC' },
       orderBy: { createdAt: 'desc' },
@@ -31,6 +32,11 @@ router.get('/', authenticate, async (_req, res, next) => {
             thumbnail: true,
           },
         },
+        likes: {
+          where: { userId },
+          select: { id: true },
+          take: 1,
+        },
       },
     });
 
@@ -43,6 +49,7 @@ router.get('/', authenticate, async (_req, res, next) => {
       createdAt: post.createdAt,
       author: post.author,
       media: post.media,
+      isLiked: post.likes.length > 0,
     }));
 
     res.json({ success: true, data: formatted });
