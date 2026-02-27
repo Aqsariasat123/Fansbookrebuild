@@ -1,4 +1,7 @@
 import { Router } from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { requireRole } from '../middleware/requireRole.js';
@@ -6,6 +9,17 @@ import { AppError } from '../middleware/errorHandler.js';
 import commentsRouter from './posts-comments.js';
 
 const router = Router();
+const postsUploadsDir = path.join(process.cwd(), 'uploads', 'posts');
+if (!fs.existsSync(postsUploadsDir)) fs.mkdirSync(postsUploadsDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, postsUploadsDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, `${req.user!.userId}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}${ext}`);
+  },
+});
+const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
 const AUTHOR_SELECT = {
   id: true,
@@ -15,40 +29,85 @@ const AUTHOR_SELECT = {
   isVerified: true,
 };
 
+const POST_INCLUDE = {
+  author: { select: AUTHOR_SELECT },
+  media: { orderBy: { order: 'asc' as const } },
+};
+
+type PostVisibility = 'PUBLIC' | 'SUBSCRIBERS' | 'TIER_SPECIFIC';
+const VALID_VISIBILITIES: PostVisibility[] = ['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'];
+
+function resolveVisibility(visibility?: string): PostVisibility {
+  return VALID_VISIBILITIES.includes(visibility as PostVisibility)
+    ? (visibility as PostVisibility)
+    : 'PUBLIC';
+}
+
+async function createPostMedia(postId: string, files: Express.Multer.File[]) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    await prisma.postMedia.create({
+      data: {
+        postId,
+        url: `/api/posts/file/${file.filename}`,
+        type: file.mimetype.startsWith('video/') ? 'VIDEO' : 'IMAGE',
+        order: i,
+      },
+    });
+  }
+}
+
 // Mount comments sub-router
 router.use('/', commentsRouter);
 
-// ─── POST /api/posts ── create post (CREATOR only) ─────────
-router.post('/', authenticate, requireRole('CREATOR'), async (req, res, next) => {
+// ─── GET /api/posts/file/:filename ── serve uploaded files ──
+router.get('/file/:filename', (req, res, next) => {
   try {
-    const userId = req.user!.userId;
-    const { text, visibility } = req.body;
-
-    if (!text || typeof text !== 'string' || text.trim().length === 0) {
-      throw new AppError(400, 'Text is required');
-    }
-
-    const validVisibilities = ['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'];
-    const postVisibility =
-      visibility && validVisibilities.includes(visibility) ? visibility : 'PUBLIC';
-
-    const post = await prisma.post.create({
-      data: {
-        authorId: userId,
-        text: text.trim(),
-        visibility: postVisibility,
-      },
-      include: {
-        author: { select: AUTHOR_SELECT },
-        media: { orderBy: { order: 'asc' } },
-      },
-    });
-
-    res.status(201).json({ success: true, data: post });
+    const sanitized = path.basename(req.params.filename);
+    const filePath = path.join(postsUploadsDir, sanitized);
+    if (!fs.existsSync(filePath)) throw new AppError(404, 'File not found');
+    res.sendFile(filePath);
   } catch (err) {
     next(err);
   }
 });
+
+// ─── POST /api/posts ── create post (CREATOR only) ─────────
+router.post(
+  '/',
+  authenticate,
+  requireRole('CREATOR'),
+  upload.array('media', 10),
+  async (req, res, next) => {
+    try {
+      const userId = req.user!.userId;
+      const { text, visibility } = req.body;
+      const files = (req.files as Express.Multer.File[]) || [];
+
+      if ((!text || !text.trim()) && files.length === 0) {
+        throw new AppError(400, 'Text or media is required');
+      }
+
+      const post = await prisma.post.create({
+        data: {
+          authorId: userId,
+          text: text?.trim() || '',
+          visibility: resolveVisibility(visibility),
+        },
+      });
+
+      if (files.length > 0) await createPostMedia(post.id, files);
+
+      const fullPost = await prisma.post.findUnique({
+        where: { id: post.id },
+        include: POST_INCLUDE,
+      });
+      res.status(201).json({ success: true, data: fullPost });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 // ─── PUT /api/posts/:id ── edit post (owner only) ──────────
 router.put('/:id', authenticate, async (req, res, next) => {
