@@ -8,6 +8,7 @@ import { seedWallet } from './seed-wallet.js';
 import { seedFollows } from './seed-follows.js';
 import { seedNotifications } from './seed-notifications.js';
 import { seedSupport } from './seed-support.js';
+import { seedCreatorData } from './seed-creator-data.js';
 
 const prisma = new PrismaClient();
 
@@ -83,6 +84,7 @@ async function main() {
   await seedFollows(prisma, await bcrypt.hash('Test12345', 12));
   await seedNotifications(prisma);
   await seedSupport();
+  await seedCreatorData(prisma, await bcrypt.hash('Creator12345', 12));
 
   // eslint-disable-next-line no-console
   console.log('Seed completed successfully');

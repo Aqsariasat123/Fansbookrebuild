@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MainLayout } from './components/layout/MainLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { RoleRoute } from './components/RoleRoute';
 import { useAuthStore } from './stores/authStore';
 import { getMeApi } from './lib/auth';
 
@@ -33,6 +34,18 @@ const Terms = lazy(() => import('./pages/Terms'));
 const Cookies = lazy(() => import('./pages/Cookies'));
 const Complaints = lazy(() => import('./pages/Complaints'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+
+// Creator pages
+const CreatorProfileOwner = lazy(() => import('./pages/CreatorProfileOwner'));
+const CreatorProfileEdit = lazy(() => import('./pages/CreatorProfileEdit'));
+const CreatorWallet = lazy(() => import('./pages/CreatorWallet'));
+const CreatorEarnings = lazy(() => import('./pages/CreatorEarnings'));
+const CreatorReferrals = lazy(() => import('./pages/CreatorReferrals'));
+const CreatorSubscriptionTiers = lazy(() => import('./pages/CreatorSubscriptionTiers'));
+const CreatorBookings = lazy(() => import('./pages/CreatorBookings'));
+const CreatorPublicProfile = lazy(() => import('./pages/CreatorPublicProfile'));
+const CreatePost = lazy(() => import('./pages/CreatePost'));
+const GoLive = lazy(() => import('./pages/GoLive'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -100,19 +113,40 @@ export default function App() {
               {/* Protected app routes with layout */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
+                  {/* Shared routes (both fan + creator) */}
                   <Route path="/feed" element={<Home />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/profile/edit" element={<ProfileEdit />} />
                   <Route path="/messages" element={<Messages />} />
                   <Route path="/messages/:conversationId" element={<MessageChat />} />
-                  <Route path="/wallet" element={<Wallet />} />
-                  <Route path="/followers" element={<Followers />} />
-                  <Route path="/subscription" element={<Subscriptions />} />
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/help-support" element={<HelpSupport />} />
                   <Route path="/language" element={<Language />} />
+
+                  {/* Public creator profile (any logged-in user) */}
+                  <Route path="/u/:username" element={<CreatorPublicProfile />} />
+
+                  {/* Fan-only routes */}
+                  <Route element={<RoleRoute allowedRoles={['FAN', 'ADMIN']} />}>
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/profile/edit" element={<ProfileEdit />} />
+                    <Route path="/wallet" element={<Wallet />} />
+                    <Route path="/followers" element={<Followers />} />
+                    <Route path="/subscription" element={<Subscriptions />} />
+                  </Route>
+
+                  {/* Creator-only routes */}
+                  <Route element={<RoleRoute allowedRoles={['CREATOR', 'ADMIN']} />}>
+                    <Route path="/creator/profile" element={<CreatorProfileOwner />} />
+                    <Route path="/creator/profile/edit" element={<CreatorProfileEdit />} />
+                    <Route path="/creator/wallet" element={<CreatorWallet />} />
+                    <Route path="/creator/earnings" element={<CreatorEarnings />} />
+                    <Route path="/creator/referrals" element={<CreatorReferrals />} />
+                    <Route path="/creator/subscriptions" element={<CreatorSubscriptionTiers />} />
+                    <Route path="/creator/bookings" element={<CreatorBookings />} />
+                    <Route path="/creator/post/new" element={<CreatePost />} />
+                    <Route path="/creator/go-live" element={<GoLive />} />
+                  </Route>
                 </Route>
               </Route>
 

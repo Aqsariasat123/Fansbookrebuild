@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import { useAuthStore } from '../stores/authStore';
 import { ImagePost, VideoPost } from '../components/feed/FeedPosts';
+import { PostComposerBar } from '../components/feed/PostComposerBar';
 import type { FeedPost } from '../components/feed/FeedPosts';
 
 interface Author {
@@ -18,6 +20,7 @@ interface StoryItem {
 }
 
 export default function Home() {
+  const user = useAuthStore((s) => s.user);
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [stories, setStories] = useState<StoryItem[]>([]);
   const [models, setModels] = useState<Author[]>([]);
@@ -53,6 +56,9 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-[16px] md:gap-[22px]">
+      {/* Post Composer (Creator only) */}
+      {user?.role === 'CREATOR' && <PostComposerBar />}
+
       {/* Stories Row */}
       {stories.length > 0 && (
         <div className="flex gap-[16px] overflow-x-auto scrollbar-hide md:gap-[20px]">

@@ -170,6 +170,14 @@ enum ReportStatus {
   DISMISSED
 }
 
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  NO_SHOW
+}
+
 // ─── Auth & Users (Phase 0-1) ────────────────────────────
 
 model User {
@@ -192,6 +200,20 @@ model User {
   gender           String?
   country          String?
   category         String?
+  dateOfBirth      DateTime?
+  age              Int?
+  region           String?
+  profileType      String?
+  aboutMe          String?
+  timezone         String?
+  socialLinks      Json       @default("[]")
+  blockedCountries Json       @default("[]")
+  referralCode     String?    @unique
+  bankCountry      String?
+  bankDetails      Json?
+  idDocumentUrl    String?
+  selfieUrl        String?
+  introVideoUrl    String?
   isVerified       Boolean    @default(false)
   statusText       String?
   twoFactorSecret  String?
@@ -238,6 +260,10 @@ model User {
   reportedReports      Report[]              @relation("ReportedUser")
   auditLogs            AuditLog[]
   supportTickets       SupportTicket[]
+  referralsMade        Referral[]            @relation("Referrer")
+  referralsReceived    Referral[]            @relation("Referred")
+  bookingsAsCreator    Booking[]             @relation("BookingCreator")
+  bookingsAsFan        Booking[]             @relation("BookingFan")
 
   @@index([email])
   @@index([username])
@@ -734,6 +760,42 @@ model UserBadge {
   badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
 
   @@unique([userId, badgeId])
+}
+
+// ─── Referrals & Bookings ───────────────────────────────
+
+model Referral {
+  id         String   @id @default(cuid())
+  referrerId String
+  referredId String
+  earnings   Float    @default(0)
+  createdAt  DateTime @default(now())
+
+  referrer User @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred User @relation("Referred", fields: [referredId], references: [id], onDelete: Cascade)
+
+  @@unique([referrerId, referredId])
+  @@index([referrerId])
+  @@index([referredId])
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  creatorId String
+  fanId     String
+  date      DateTime
+  timeSlot  String
+  status    BookingStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  creator User @relation("BookingCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  fan     User @relation("BookingFan", fields: [fanId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId])
+  @@index([fanId])
+  @@index([status])
 }
 
 // ─── Admin (Phase 9) ────────────────────────────────────

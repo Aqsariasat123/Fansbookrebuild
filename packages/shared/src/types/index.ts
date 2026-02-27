@@ -193,6 +193,16 @@ export interface NotificationData {
   createdAt: string;
 }
 
+// Re-export creator dashboard types
+export type {
+  SubscriptionTierData,
+  EarningRecord,
+  BookingData,
+  ReferralData,
+  WithdrawalData,
+  CreatorWalletData,
+} from './creator.js';
+
 // Re-export creator/live types + socket events
 export type {
   CreatorCard,
