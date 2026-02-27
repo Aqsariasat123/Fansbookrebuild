@@ -52,14 +52,14 @@ export default function Notifications() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      {/* Search bar */}
-      <div className="flex items-center gap-[10px] rounded-[52px] bg-[#15191c] px-[16px] py-[10px]">
-        <img src="/icons/dashboard/search.svg" alt="" className="size-[20px] md:size-[24px]" />
+      {/* Search bar - matching header search rounded pill style */}
+      <div className="flex items-center gap-[12px] rounded-[52px] border border-[#2a2a2a] bg-[#15191c] px-[20px] py-[14px]">
+        <img src="/icons/dashboard/search.svg" alt="" className="size-[22px] md:size-[24px]" />
         <input
-          placeholder="Search notifications..."
+          placeholder="Search..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 bg-transparent text-[12px] text-[#f8f8f8] outline-none placeholder:text-[#5d5d5d] md:text-[16px]"
+          className="flex-1 bg-transparent text-[14px] text-[#f8f8f8] outline-none placeholder:text-[#5d5d5d] md:text-[16px]"
         />
       </div>
 
