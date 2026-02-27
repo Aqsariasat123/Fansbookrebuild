@@ -12,9 +12,17 @@ import creatorsRouter from './routes/creators.js';
 import liveRouter from './routes/live.js';
 import feedRouter from './routes/feed.js';
 import messagesRouter from './routes/messages.js';
+import walletRouter from './routes/wallet.js';
+import followersRouter from './routes/followers.js';
+import subscriptionsRouter from './routes/subscriptions.js';
+import notificationsRouter from './routes/notifications.js';
+import supportRouter from './routes/support.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
+
+// Trust Nginx proxy (fixes express-rate-limit X-Forwarded-For error)
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet());
@@ -47,6 +55,11 @@ app.use('/api/creators', creatorsRouter);
 app.use('/api/live', liveRouter);
 app.use('/api/feed', feedRouter);
 app.use('/api/messages', messagesRouter);
+app.use('/api/wallet', walletRouter);
+app.use('/api/followers', followersRouter);
+app.use('/api/subscriptions', subscriptionsRouter);
+app.use('/api/notifications', notificationsRouter);
+app.use('/api/support', supportRouter);
 
 // Error handling
 app.use(errorHandler);

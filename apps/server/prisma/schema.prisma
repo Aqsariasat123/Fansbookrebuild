@@ -188,6 +188,7 @@ model User {
   firstName        String?
   lastName         String?
   mobileNumber     String?
+  secondaryEmail   String?
   gender           String?
   country          String?
   category         String?
@@ -236,6 +237,7 @@ model User {
   reports              Report[]              @relation("Reporter")
   reportedReports      Report[]              @relation("ReportedUser")
   auditLogs            AuditLog[]
+  supportTickets       SupportTicket[]
 
   @@index([email])
   @@index([username])
@@ -771,4 +773,26 @@ model AuditLog {
   @@index([adminId])
   @@index([action])
   @@index([createdAt])
+}
+
+// ─── Support (Help & Support) ──────────────────────────
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model SupportTicket {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  description String
+  photoUrl    String?
+  status      String   @default("OPEN")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

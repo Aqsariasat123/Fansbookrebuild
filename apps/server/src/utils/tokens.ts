@@ -30,6 +30,7 @@ export const ME_SELECT = {
   firstName: true,
   lastName: true,
   mobileNumber: true,
+  secondaryEmail: true,
   role: true,
   status: true,
   avatar: true,

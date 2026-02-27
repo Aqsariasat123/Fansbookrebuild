@@ -17,8 +17,14 @@ const Profile = lazy(() => import('./pages/Profile'));
 const ProfileEdit = lazy(() => import('./pages/ProfileEdit'));
 const Messages = lazy(() => import('./pages/Messages'));
 const MessageChat = lazy(() => import('./pages/MessageChat'));
+const Wallet = lazy(() => import('./pages/Wallet'));
+const Followers = lazy(() => import('./pages/Followers'));
+const Subscriptions = lazy(() => import('./pages/Subscriptions'));
+const Notifications = lazy(() => import('./pages/Notifications'));
 const Explore = lazy(() => import('./pages/Explore'));
 const Settings = lazy(() => import('./pages/Settings'));
+const HelpSupport = lazy(() => import('./pages/HelpSupport'));
+const Language = lazy(() => import('./pages/Language'));
 const About = lazy(() => import('./pages/About'));
 const Contact = lazy(() => import('./pages/Contact'));
 const HowItWorks = lazy(() => import('./pages/HowItWorks'));
@@ -99,8 +105,14 @@ export default function App() {
                   <Route path="/profile/edit" element={<ProfileEdit />} />
                   <Route path="/messages" element={<Messages />} />
                   <Route path="/messages/:conversationId" element={<MessageChat />} />
+                  <Route path="/wallet" element={<Wallet />} />
+                  <Route path="/followers" element={<Followers />} />
+                  <Route path="/subscription" element={<Subscriptions />} />
+                  <Route path="/notifications" element={<Notifications />} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/help-support" element={<HelpSupport />} />
+                  <Route path="/language" element={<Language />} />
                 </Route>
               </Route>
 

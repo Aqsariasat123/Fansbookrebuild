@@ -6,6 +6,13 @@ import { ChangePasswordModal } from '../components/profile/ChangePasswordModal';
 
 const IMG = '/icons/dashboard';
 
+function getDisplayName(
+  user: { firstName?: string | null; lastName?: string | null; displayName?: string | null } | null,
+): string {
+  if (user?.firstName && user?.lastName) return `${user.firstName} ${user.lastName}`;
+  return user?.displayName || 'User';
+}
+
 function AvatarSection({
   avatar,
   displayName,
@@ -82,7 +89,7 @@ export default function Profile() {
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  const displayName = user?.displayName || 'User';
+  const displayName = getDisplayName(user);
   const username = user?.username || 'unknown';
   const avatar = user?.avatar || null;
 

@@ -9,10 +9,18 @@ const navItems = [
   { to: '/messages', icon: '/icons/dashboard/chat.svg', labelKey: 'nav.messages' },
   { to: '/wallet', icon: '/icons/dashboard/account-balance-wallet.svg', labelKey: 'nav.myWallet' },
   { to: '/followers', icon: '/icons/dashboard/person-heart.svg', labelKey: 'nav.myFollowersModel' },
-  { to: '/subscription', icon: '/icons/dashboard/workspace-premium.svg', labelKey: 'nav.mySubscription' },
-  { to: '/notifications', icon: '/icons/dashboard/notifications.svg', labelKey: 'nav.notifications' },
+  {
+    to: '/subscription',
+    icon: '/icons/dashboard/workspace-premium.svg',
+    labelKey: 'nav.mySubscription',
+  },
+  {
+    to: '/notifications',
+    icon: '/icons/dashboard/notifications.svg',
+    labelKey: 'nav.notifications',
+  },
   { to: '/settings', icon: '/icons/dashboard/settings.svg', labelKey: 'nav.settings' },
-  { to: '/help', icon: '/icons/dashboard/help-center.svg', labelKey: 'nav.helpSupport' },
+  { to: '/help-support', icon: '/icons/dashboard/help-center.svg', labelKey: 'nav.helpSupport' },
 ];
 
 const fallbackLabels: Record<string, string> = {
@@ -29,10 +37,24 @@ const fallbackLabels: Record<string, string> = {
   'nav.logout': 'Logout',
 };
 
+const REVERSE_LANG: Record<string, string> = {
+  en: 'English',
+  es: 'Spanish',
+  fr: 'French',
+  de: 'German',
+  ur: 'Urdu',
+  ar: 'Arabic',
+  zh: 'Chinese',
+  hi: 'Hindi',
+  bn: 'Bangla',
+  tr: 'Turkish',
+};
+
 export function Sidebar() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
+  const currentLangName = REVERSE_LANG[i18n.language] || 'English';
 
   function label(key: string) {
     const translated = t(key);
@@ -65,23 +87,18 @@ export function Sidebar() {
                   }`
                 }
               >
-                <img
-                  src={icon}
-                  alt=""
-                  className="h-[20px] w-[20px]"
-                />
+                <img src={icon} alt="" className="h-[20px] w-[20px]" />
                 {label(labelKey)}
               </NavLink>
             ))}
 
             {/* Language */}
-            <button className="flex items-center gap-[15px] text-[16px] text-[#5d5d5d] transition-colors hover:text-[#f8f8f8]">
-              <img
-                src="/icons/dashboard/language.svg"
-                alt=""
-                className="h-[20px] w-[20px]"
-              />
-              {label('nav.english')}
+            <button
+              onClick={() => navigate('/language')}
+              className="flex items-center gap-[15px] text-[16px] text-[#5d5d5d] transition-colors hover:text-[#f8f8f8]"
+            >
+              <img src="/icons/dashboard/language.svg" alt="" className="h-[20px] w-[20px]" />
+              {currentLangName}
               <img
                 src="/icons/dashboard/chevron-forward.svg"
                 alt=""
@@ -95,11 +112,7 @@ export function Sidebar() {
             onClick={handleLogout}
             className="flex items-center gap-[15px] text-[16px] text-[#5d5d5d] transition-colors hover:text-[#f8f8f8]"
           >
-            <img
-              src="/icons/dashboard/logout.svg"
-              alt=""
-              className="h-[20px] w-[20px]"
-            />
+            <img src="/icons/dashboard/logout.svg" alt="" className="h-[20px] w-[20px]" />
             {label('nav.logout')}
           </button>
         </div>

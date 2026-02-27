@@ -1,108 +1,42 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { z } from 'zod';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
+import {
+  upload,
+  coverUpload,
+  uploadsDir,
+  coversDir,
+  USER_SELECT,
+  updateProfileSchema,
+  changePasswordSchema,
+  buildProfileUpdate,
+  generateUsername,
+} from './profile-helpers.js';
 
 const router = Router();
 
-const uploadsDir = path.join(process.cwd(), 'uploads', 'avatars');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const MIME_EXT: Record<string, string> = {
-  'image/jpeg': '.jpeg',
-  'image/png': '.png',
-  'image/webp': '.webp',
-  'image/gif': '.gif',
-};
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const ext = MIME_EXT[file.mimetype] ?? '.bin';
-    cb(null, `${req.user!.userId}-${Date.now()}${ext}`);
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-  fileFilter: (_req, file, cb) => {
-    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (allowed.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new AppError(400, 'Only JPEG, PNG, WebP and GIF images are allowed'));
-    }
-  },
-});
-
-const USER_SELECT = {
-  id: true,
-  username: true,
-  email: true,
-  displayName: true,
-  firstName: true,
-  lastName: true,
-  mobileNumber: true,
-  role: true,
-  avatar: true,
-  cover: true,
-  bio: true,
-  location: true,
-  website: true,
-  isVerified: true,
-  createdAt: true,
-} as const;
-
-const updateProfileSchema = z.object({
-  displayName: z.string().min(1).max(50).optional(),
-  firstName: z.string().max(50).optional().or(z.literal('')),
-  lastName: z.string().max(50).optional().or(z.literal('')),
-  mobileNumber: z.string().max(20).optional().or(z.literal('')),
-  bio: z.string().max(1000).optional(),
-  location: z.string().max(100).optional(),
-  website: z.string().url().max(200).optional().or(z.literal('')),
-});
-
-const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1, 'Current password is required'),
-    newPassword: z
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .regex(/[A-Z]/, 'Must contain uppercase letter')
-      .regex(/[a-z]/, 'Must contain lowercase letter')
-      .regex(/[0-9]/, 'Must contain a number'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-const PROFILE_FIELDS = ['displayName', 'bio', 'location', 'website'] as const;
-const NULLABLE_FIELDS = ['firstName', 'lastName', 'mobileNumber'] as const;
-
-function buildProfileUpdate(body: Record<string, unknown>) {
-  const data: Record<string, unknown> = {};
-  for (const f of PROFILE_FIELDS) if (body[f] !== undefined) data[f] = body[f];
-  for (const f of NULLABLE_FIELDS) if (body[f] !== undefined) data[f] = body[f] || null;
-  return data;
-}
-
 router.put('/', authenticate, validate(updateProfileSchema), async (req, res, next) => {
   try {
+    const updateData = buildProfileUpdate(req.body);
+
+    // Auto-update username when firstName+lastName change
+    const fn = (req.body.firstName || '').trim();
+    const ln = (req.body.lastName || '').trim();
+    if (fn && ln) {
+      const newUsername = await generateUsername(fn, ln, req.user!.userId, (args) =>
+        prisma.user.findUnique({ where: args.where, select: { id: true } }),
+      );
+      if (newUsername) updateData.username = newUsername;
+    }
+
     const user = await prisma.user.update({
       where: { id: req.user!.userId },
-      data: buildProfileUpdate(req.body),
+      data: updateData,
       select: USER_SELECT,
     });
     res.json({ success: true, data: user });
@@ -183,6 +117,90 @@ router.get('/avatar/:id', (req, res, next) => {
     const match = files.find((f) => f.startsWith(req.params.id));
     if (!match) throw new AppError(404, 'Avatar not found');
     res.sendFile(path.join(uploadsDir, match));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/cover', authenticate, coverUpload.single('cover'), async (req, res, next) => {
+  try {
+    if (!req.file) throw new AppError(400, 'No image file provided');
+    const nameNoExt = path.parse(req.file.filename).name;
+    const coverUrl = `/api/profile/cover/${nameNoExt}`;
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: { cover: coverUrl },
+      select: USER_SELECT,
+    });
+    res.json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/cover', authenticate, async (req, res, next) => {
+  try {
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: { cover: null },
+      select: USER_SELECT,
+    });
+    res.json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/cover/:id', (req, res, next) => {
+  try {
+    const files = fs.readdirSync(coversDir);
+    const match = files.find((f) => f.startsWith(req.params.id));
+    if (!match) throw new AppError(404, 'Cover not found');
+    res.sendFile(path.join(coversDir, match));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/avatar', authenticate, async (req, res, next) => {
+  try {
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: { avatar: null },
+      select: USER_SELECT,
+    });
+    res.json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Secondary email
+router.put('/secondary-email', authenticate, async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new AppError(400, 'Please enter a valid email address');
+    }
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: { secondaryEmail: email },
+      select: USER_SELECT,
+    });
+    res.json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/secondary-email', authenticate, async (req, res, next) => {
+  try {
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: { secondaryEmail: null },
+      select: USER_SELECT,
+    });
+    res.json({ success: true, data: user });
   } catch (err) {
     next(err);
   }

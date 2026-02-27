@@ -160,7 +160,7 @@ export interface UserPublicProfile {
   lastName?: string | null;
   mobileNumber?: string | null;
   avatar: string | null;
-  coverImage: string | null;
+  cover: string | null;
   bio: string | null;
   role: UserRole;
   isVerified: boolean;

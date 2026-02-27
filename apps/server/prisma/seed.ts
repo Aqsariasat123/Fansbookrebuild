@@ -4,6 +4,10 @@ import { seedCreators } from './seed-creators.js';
 import { seedLiveSessions } from './seed-live.js';
 import { seedFeed } from './seed-feed.js';
 import { seedMessages } from './seed-messages.js';
+import { seedWallet } from './seed-wallet.js';
+import { seedFollows } from './seed-follows.js';
+import { seedNotifications } from './seed-notifications.js';
+import { seedSupport } from './seed-support.js';
 
 const prisma = new PrismaClient();
 
@@ -75,9 +79,13 @@ async function main() {
   await seedLiveSessions(prisma, defaultPasswordHash);
   await seedFeed(prisma, defaultPasswordHash);
   await seedMessages(prisma, await bcrypt.hash('Test12345', 12));
+  await seedWallet(prisma);
+  await seedFollows(prisma, await bcrypt.hash('Test12345', 12));
+  await seedNotifications(prisma);
+  await seedSupport();
 
   // eslint-disable-next-line no-console
-  console.log('Seed completed: all data + feed demo + messages');
+  console.log('Seed completed successfully');
 }
 
 main()

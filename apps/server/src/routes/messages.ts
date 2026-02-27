@@ -150,7 +150,7 @@ router.post(
 router.delete('/message/:messageId', authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.userId;
-    const { messageId } = req.params;
+    const messageId = req.params.messageId as string;
     const mode = (req.query.mode as string) || 'forEveryone';
     const msg = await prisma.message.findUnique({ where: { id: messageId } });
     if (!msg) throw new AppError(404, 'Message not found');
