@@ -1,127 +1,161 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../lib/api';
-import { BookingCard } from '../components/creator-bookings/BookingCard';
-import type { Booking } from '../components/creator-bookings/BookingCard';
-import type { BookingStatus } from '../components/creator-bookings/BookingStatusBadge';
 
-const STATUS_TABS: BookingStatus[] = [
-  'ALL',
-  'ACCEPTED',
-  'PENDING',
-  'REJECTED',
-  'COMPLETED',
-  'NO_SHOW',
-];
-
-function tabLabel(tab: BookingStatus) {
-  return tab === 'NO_SHOW' ? 'No Show' : tab.charAt(0) + tab.slice(1).toLowerCase();
+interface Booking {
+  id: string;
+  fanUsername: string;
+  date: string;
+  timeSlot: string;
+  status: string;
 }
+
+const STATUSES = ['All', 'Accepted', 'Pending', 'Rejected', 'Completed', 'No Show'];
 
 export default function CreatorBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<BookingStatus>('ALL');
-  const [updating, setUpdating] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const fetchBookings = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
-      const params = activeTab !== 'ALL' ? { status: activeTab } : {};
+      const params: Record<string, string> = {};
+      if (statusFilter !== 'All') params.status = statusFilter.toUpperCase().replace(' ', '_');
+      if (search) params.search = search;
       const { data: res } = await api.get('/creator/bookings', { params });
       setBookings(res.data || []);
     } catch {
-      setError('Failed to load bookings');
+      setBookings([]);
     } finally {
       setLoading(false);
     }
-  }, [activeTab]);
+  }, [statusFilter, search]);
 
   useEffect(() => {
     fetchBookings();
   }, [fetchBookings]);
 
-  async function handleStatusChange(bookingId: string, newStatus: string) {
-    setUpdating(bookingId);
-    try {
-      const { data: res } = await api.put(`/creator/bookings/${bookingId}/status`, {
-        status: newStatus,
-      });
-      if (res.data) {
-        setBookings((prev) => prev.map((b) => (b.id === bookingId ? res.data : b)));
-      } else {
-        setBookings((prev) =>
-          prev.map((b) =>
-            b.id === bookingId ? { ...b, status: newStatus as Booking['status'] } : b,
-          ),
-        );
-      }
-    } catch {
-      setError('Failed to update booking status');
-    } finally {
-      setUpdating(null);
-    }
-  }
-
-  const counts = bookings.length;
-
   return (
-    <div className="flex flex-col gap-[16px] md:gap-[22px]">
-      <div className="flex items-center justify-between">
-        <p className="text-[20px] font-bold text-[#f8f8f8] md:text-[28px]">Bookings</p>
-        <span className="text-[14px] text-[#5d5d5d]">
-          {counts} booking{counts !== 1 ? 's' : ''}
-        </span>
+    <div className="flex flex-col gap-[20px]">
+      <p className="text-[24px] font-semibold text-[#f8f8f8]">My Bookings</p>
+
+      {/* Search + Filter */}
+      <div className="flex flex-col gap-[12px] md:flex-row md:items-center md:gap-[16px]">
+        <div className="flex flex-1 items-center gap-[10px] rounded-[8px] bg-[#0e1012] px-[16px] py-[10px]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#5d5d5d">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+          </svg>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search"
+            className="flex-1 bg-transparent text-[14px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+          />
+        </div>
+        <div className="relative">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex w-full items-center justify-between gap-[8px] rounded-[8px] bg-[#0e1012] px-[16px] py-[10px] text-[14px] text-[#f8f8f8] md:min-w-[160px]"
+          >
+            {statusFilter}{' '}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#5d5d5d">
+              <path d="M7 10l5 5 5-5z" />
+            </svg>
+          </button>
+          {dropdownOpen && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
+              <div className="absolute right-0 top-[42px] z-20 min-w-[160px] rounded-[8px] bg-white py-[4px] shadow-lg">
+                {STATUSES.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => {
+                      setStatusFilter(s);
+                      setDropdownOpen(false);
+                    }}
+                    className="flex w-full px-[14px] py-[8px] text-[14px] text-[#1a1a1a] hover:bg-[#f0f0f0]"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex gap-[6px] overflow-x-auto scrollbar-hide">
-        {STATUS_TABS.map((tab) => (
+      {/* Table */}
+      <div className="overflow-x-auto rounded-[16px]">
+        <table className="w-full min-w-[700px]">
+          <thead>
+            <tr className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7]">
+              {['Username', 'Bookings Date', 'Slot (Show From-To Time)', 'Status', 'Actions'].map(
+                (h) => (
+                  <th
+                    key={h}
+                    className="px-[16px] py-[14px] text-left text-[14px] font-semibold text-white"
+                  >
+                    {h}
+                  </th>
+                ),
+              )}
+            </tr>
+          </thead>
+          <tbody className="bg-[#0e1012]">
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="py-[40px] text-center">
+                  <div className="mx-auto size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+                </td>
+              </tr>
+            ) : bookings.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+                  No bookings yet
+                </td>
+              </tr>
+            ) : (
+              bookings.map((b) => (
+                <tr key={b.id} className="border-b border-[#15191c] last:border-0">
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {b.fanUsername || 'John Doe'}
+                  </td>
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {b.date ? new Date(b.date).toLocaleDateString('en-GB') : '21-08-2025'}
+                  </td>
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {b.timeSlot || 'Lorem Ipsum'}
+                  </td>
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {b.status || 'Accepted'}
+                  </td>
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {b.status === 'PENDING' ? 'Accept/Reject' : 'Lorem Ipsum'}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-center gap-[6px]">
+        {[1, 2, 3, 4, 5, 6].map((n) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`shrink-0 rounded-[20px] px-[16px] py-[8px] text-[13px] font-medium transition-colors ${
-              activeTab === tab
-                ? 'bg-gradient-to-l from-[#a61651] to-[#01adf1] text-[#f8f8f8]'
-                : 'bg-[#0e1012] text-[#5d5d5d] hover:text-[#f8f8f8]'
-            }`}
+            key={n}
+            className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${n === 1 ? 'bg-[#01adf1] text-white' : 'bg-[#0e1012] text-[#5d5d5d] hover:text-white'}`}
           >
-            {tabLabel(tab)}
+            {n}
           </button>
         ))}
+        <span className="text-[13px] text-[#5d5d5d]">...</span>
+        <button className="rounded-[4px] bg-[#0e1012] px-[12px] py-[6px] text-[13px] text-[#5d5d5d] hover:text-white">
+          Next
+        </button>
       </div>
-
-      {error && (
-        <div className="rounded-[10px] bg-red-500/10 px-[16px] py-[10px]">
-          <p className="text-[13px] text-red-400">{error}</p>
-        </div>
-      )}
-
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
-        </div>
-      ) : bookings.length === 0 ? (
-        <div className="rounded-[22px] bg-[#0e1012] px-[20px] py-[40px] text-center">
-          <p className="text-[16px] text-[#5d5d5d]">
-            {activeTab === 'ALL'
-              ? 'No bookings yet'
-              : `No ${tabLabel(activeTab).toLowerCase()} bookings`}
-          </p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-[12px]">
-          {bookings.map((booking) => (
-            <BookingCard
-              key={booking.id}
-              booking={booking}
-              onAction={handleStatusChange}
-              updating={updating}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }

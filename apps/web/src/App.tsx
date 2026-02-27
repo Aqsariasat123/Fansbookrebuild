@@ -46,6 +46,7 @@ const CreatorBookings = lazy(() => import('./pages/CreatorBookings'));
 const CreatorPublicProfile = lazy(() => import('./pages/CreatorPublicProfile'));
 const CreatePost = lazy(() => import('./pages/CreatePost'));
 const GoLive = lazy(() => import('./pages/GoLive'));
+const LiveBroadcasting = lazy(() => import('./pages/LiveBroadcasting'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -146,6 +147,7 @@ export default function App() {
                     <Route path="/creator/bookings" element={<CreatorBookings />} />
                     <Route path="/creator/post/new" element={<CreatePost />} />
                     <Route path="/creator/go-live" element={<GoLive />} />
+                    <Route path="/creator/live" element={<LiveBroadcasting />} />
                   </Route>
                 </Route>
               </Route>

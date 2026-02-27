@@ -29,17 +29,67 @@ interface ProfileData {
   isFollowing: boolean;
   isSubscribed: boolean;
   tiers: Tier[];
+  likesCount?: number;
+  socialLinks?: Record<string, string>;
+  hashtags?: string[];
 }
 
-type ContentTab = 'feed' | 'photos' | 'videos';
+type ContentTab = 'posts' | 'media';
+
+function TabBar({
+  activeTab,
+  onTabChange,
+  postCount,
+  mediaCount,
+}: {
+  activeTab: ContentTab;
+  onTabChange: (t: ContentTab) => void;
+  postCount: number;
+  mediaCount: number;
+}) {
+  const tabs: { key: ContentTab; label: string; count: number; icon: string }[] = [
+    {
+      key: 'posts',
+      count: postCount,
+      label: 'Posts',
+      icon: 'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z',
+    },
+    {
+      key: 'media',
+      count: mediaCount,
+      label: 'Media',
+      icon: 'M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z',
+    },
+  ];
+  return (
+    <div className="flex rounded-t-[22px] bg-[#0e1012]">
+      {tabs.map((tab) => (
+        <button
+          key={tab.key}
+          onClick={() => onTabChange(tab.key)}
+          className={`flex flex-1 items-center justify-center gap-[8px] py-[14px] text-[14px] font-medium transition-colors ${activeTab === tab.key ? 'border-b-2 border-[#e91e8c] text-[#f8f8f8]' : 'text-[#5d5d5d]'}`}
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill={activeTab === tab.key ? '#f8f8f8' : '#5d5d5d'}
+          >
+            <path d={tab.icon} />
+          </svg>
+          {tab.count} {tab.label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function CreatorPublicProfile() {
   const { username } = useParams<{ username: string }>();
   const currentUser = useAuthStore((s) => s.user);
-
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [posts, setPosts] = useState<PublicPost[]>([]);
-  const [activeTab, setActiveTab] = useState<ContentTab>('feed');
+  const [activeTab, setActiveTab] = useState<ContentTab>('posts');
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
@@ -47,39 +97,20 @@ export default function CreatorPublicProfile() {
   useEffect(() => {
     if (!username) return;
     setLoading(true);
-    setNotFound(false);
-
-    async function load() {
-      try {
-        const [profileRes, postsRes] = await Promise.all([
-          api.get(`/creator-profile/${username}`),
-          api.get(`/creator-profile/${username}/posts?tab=feed`),
-        ]);
-        if (profileRes.data.success) setProfile(profileRes.data.data);
+    Promise.all([
+      api.get(`/creator-profile/${username}`),
+      api.get(`/creator-profile/${username}/posts?tab=feed`),
+    ])
+      .then(([pRes, postsRes]) => {
+        if (pRes.data.success) setProfile(pRes.data.data);
         if (postsRes.data.success) setPosts(postsRes.data.data?.items || postsRes.data.data || []);
-      } catch (err: unknown) {
-        const status = (err as { response?: { status?: number } })?.response?.status;
-        if (status === 404) setNotFound(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+      })
+      .catch((err: unknown) => {
+        if ((err as { response?: { status?: number } })?.response?.status === 404)
+          setNotFound(true);
+      })
+      .finally(() => setLoading(false));
   }, [username]);
-
-  useEffect(() => {
-    if (!username || !activeTab) return;
-
-    async function loadPosts() {
-      try {
-        const res = await api.get(`/creator-profile/${username}/posts?tab=${activeTab}`);
-        if (res.data.success) setPosts(res.data.data?.items || res.data.data || []);
-      } catch {
-        /* keep current posts */
-      }
-    }
-    loadPosts();
-  }, [username, activeTab]);
 
   async function handleFollow() {
     if (!profile) return;
@@ -87,13 +118,13 @@ export default function CreatorPublicProfile() {
     try {
       if (profile.isFollowing) {
         await api.delete(`/creator-profile/${username}/follow`);
-        setProfile((prev) =>
-          prev ? { ...prev, isFollowing: false, followersCount: prev.followersCount - 1 } : prev,
+        setProfile((p) =>
+          p ? { ...p, isFollowing: false, followersCount: p.followersCount - 1 } : p,
         );
       } else {
         await api.post(`/creator-profile/${username}/follow`);
-        setProfile((prev) =>
-          prev ? { ...prev, isFollowing: true, followersCount: prev.followersCount + 1 } : prev,
+        setProfile((p) =>
+          p ? { ...p, isFollowing: true, followersCount: p.followersCount + 1 } : p,
         );
       }
     } catch {
@@ -107,55 +138,29 @@ export default function CreatorPublicProfile() {
     void tierId;
   }
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+      <div className="flex justify-center py-20">
+        <div className="size-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
       </div>
     );
-  }
-
-  if (notFound || !profile) {
+  if (notFound || !profile)
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#5d5d5d"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M16 16s-1.5-2-4-2-4 2-4 2" />
-          <line x1="9" y1="9" x2="9.01" y2="9" />
-          <line x1="15" y1="9" x2="15.01" y2="9" />
-        </svg>
-        <p className="mt-[12px] text-[18px] font-medium text-[#f8f8f8]">Creator not found</p>
+        <p className="text-[18px] font-medium text-[#f8f8f8]">Creator not found</p>
         <p className="mt-[4px] text-[14px] text-[#5d5d5d]">
           The profile you are looking for does not exist.
         </p>
       </div>
     );
-  }
 
   const isOwnProfile = currentUser?.username === profile.username;
-  const tabs: { key: ContentTab; label: string }[] = [
-    { key: 'feed', label: 'Feed' },
-    { key: 'photos', label: 'Photos' },
-    { key: 'videos', label: 'Videos' },
-  ];
-
-  const filteredPosts = posts.filter((p) => {
-    if (activeTab === 'photos') return p.media.some((m) => m.type === 'IMAGE');
-    if (activeTab === 'videos') return p.media.some((m) => m.type === 'VIDEO');
-    return true;
-  });
+  const filteredPosts = activeTab === 'media' ? posts.filter((p) => p.media.length > 0) : posts;
+  const postCount = profile.postsCount || posts.length;
+  const mediaCount = posts.filter((p) => p.media.length > 0).length;
 
   return (
-    <div className="flex flex-col gap-[12px] md:gap-[20px]">
+    <div className="flex flex-col gap-[20px]">
       <PublicProfileHeader
         profile={profile}
         isOwnProfile={isOwnProfile}
@@ -165,32 +170,17 @@ export default function CreatorPublicProfile() {
       />
 
       <div className="flex gap-[20px]">
-        {/* Main Content */}
         <div className="min-w-0 flex-1">
-          <div className="rounded-t-[11px] bg-[#0e1012] md:rounded-t-[22px]">
-            <div className="flex border-b border-[#2a2d30]">
-              {tabs.map((t) => (
-                <button
-                  key={t.key}
-                  onClick={() => setActiveTab(t.key)}
-                  className={`flex-1 py-[12px] text-center text-[13px] font-medium transition-colors md:py-[16px] md:text-[16px] ${
-                    activeTab === t.key
-                      ? 'border-b-2 border-purple-500 text-purple-400'
-                      : 'text-[#5d5d5d] hover:text-[#a0a0a0]'
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-[12px] pt-[12px] md:gap-[20px] md:pt-[20px]">
+          <TabBar
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            postCount={postCount}
+            mediaCount={mediaCount}
+          />
+          <div className="flex flex-col gap-[20px] pt-[20px]">
             {filteredPosts.length === 0 ? (
-              <div className="rounded-[11px] bg-[#0e1012] p-[40px] text-center md:rounded-[22px]">
-                <p className="text-[14px] text-[#5d5d5d] md:text-[16px]">
-                  {activeTab === 'feed' ? 'No posts yet.' : `No ${activeTab} yet.`}
-                </p>
+              <div className="rounded-[22px] bg-[#0e1012] p-[40px] text-center">
+                <p className="text-[14px] text-[#5d5d5d]">No {activeTab} yet.</p>
               </div>
             ) : (
               filteredPosts.map((post) => (

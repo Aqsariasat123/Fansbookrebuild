@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api, extractError } from './shared';
+import { api, extractError, saveButtonClass } from './shared';
 
 interface DeactivateTabProps {
   onToast: (type: 'success' | 'error', message: string) => void;
@@ -25,22 +25,13 @@ export function DeactivateTab({ onToast }: DeactivateTabProps) {
   }
 
   return (
-    <div className="flex flex-col gap-[24px] max-w-[600px]">
-      <div className="rounded-[12px] border border-red-500/40 bg-red-500/10 px-[20px] py-[18px]">
-        <p className="text-[14px] text-red-300 leading-[1.6]">
-          Once you deactivate your account, all your content and data will become inaccessible. This
-          action can be reversed by contacting support.
-        </p>
-      </div>
-      <div className="flex justify-center">
-        <button
-          onClick={handleDeactivate}
-          disabled={saving}
-          className="w-full max-w-[280px] h-[45px] rounded-[80px] bg-red-600 text-[16px] text-[#f8f8f8] hover:bg-red-700 transition-colors disabled:opacity-50"
-        >
-          {saving ? 'Processing...' : 'Deactivate Account'}
-        </button>
-      </div>
+    <div className="flex flex-col items-center gap-[24px] py-[40px]">
+      <p className="text-[18px] text-[#5d5d5d]">
+        You Can Deactive Account By Clicking Below Button
+      </p>
+      <button onClick={handleDeactivate} disabled={saving} className={saveButtonClass}>
+        {saving ? 'Processing...' : 'Deactivate Account'}
+      </button>
     </div>
   );
 }

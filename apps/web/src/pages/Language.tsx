@@ -22,8 +22,8 @@ const LANGUAGES = [
 function RadioChecked() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="#f8f8f8" strokeWidth="2" />
-      <circle cx="12" cy="12" r="5" fill="#f8f8f8" />
+      <circle cx="12" cy="12" r="10" stroke="#f8f8f8" strokeWidth="2" />
+      <circle cx="12" cy="12" r="6" fill="#f8f8f8" />
     </svg>
   );
 }
@@ -31,7 +31,7 @@ function RadioChecked() {
 function RadioUnchecked() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="#15191c" strokeWidth="2" />
+      <circle cx="12" cy="12" r="10" stroke="#15191c" strokeWidth="2" />
     </svg>
   );
 }
@@ -77,19 +77,9 @@ export default function Language() {
       onClick={handleBackdropClick}
     >
       <div className="mx-[16px] w-full max-w-[580px] rounded-[22px] bg-[#f8f8f8] p-[20px] shadow-[0px_13px_142.4px_0px_rgba(0,0,0,0.25)] md:mx-0 md:p-[30px]">
-        <h2
-          className="text-[20px] text-[#15191c] font-semibold"
-          style={{ fontFamily: 'Outfit, sans-serif' }}
-        >
-          Languages
-        </h2>
+        <h2 className="text-[20px] text-[#15191c]">Languages</h2>
 
-        <p
-          className="text-[16px] text-[#5d5d5d] mt-[20px] mb-[16px]"
-          style={{ fontFamily: 'Outfit, sans-serif' }}
-        >
-          Select Language
-        </p>
+        <p className="mt-[20px] mb-[16px] text-[16px] text-[#5d5d5d]">Select Language</p>
 
         <div className="grid grid-cols-1 gap-[10px] md:grid-cols-2 md:gap-[16px]">
           {LANGUAGES.map((lang) => {
@@ -104,9 +94,8 @@ export default function Language() {
                     ? 'bg-[#01adf1] text-[#f8f8f8]'
                     : 'border border-[#15191c] text-[#15191c]'
                 }`}
-                style={{ fontFamily: 'Outfit, sans-serif' }}
               >
-                <span className="text-[14px]">{lang}</span>
+                <span className="text-[16px]">{lang}</span>
                 {isSelected ? <RadioChecked /> : <RadioUnchecked />}
               </button>
             );

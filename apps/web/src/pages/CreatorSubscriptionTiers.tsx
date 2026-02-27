@@ -1,198 +1,144 @@
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
-import { TierForm, emptyForm } from '../components/creator-subscriptions/TierForm';
-import type { TierFormData } from '../components/creator-subscriptions/TierForm';
-import { TierCard } from '../components/creator-subscriptions/TierCard';
 
 interface Tier {
   id: string;
   name: string;
+  duration: string;
+  defaultPrice: number;
   price: number;
-  description: string;
-  benefits: string[];
-  isActive: boolean;
+  discount: number;
+  remainingUsers: number;
 }
 
 export default function CreatorSubscriptionTiers() {
   const [tiers, setTiers] = useState<Tier[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
-  const [showCreate, setShowCreate] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<TierFormData>({ ...emptyForm });
 
   useEffect(() => {
-    fetchTiers();
+    api
+      .get('/creator/tiers')
+      .then(({ data: res }) => {
+        const raw = res.data || [];
+        setTiers(
+          raw.map((t: Record<string, unknown>) => ({
+            id: t.id as string,
+            name: t.name as string,
+            duration: (t.duration as string) || 'monthly',
+            defaultPrice: (t.price as number) || 0,
+            price: (t.price as number) || 0,
+            discount: 0,
+            remainingUsers: 0,
+          })),
+        );
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  async function fetchTiers() {
-    try {
-      const { data: res } = await api.get('/creator/tiers');
-      setTiers(res.data || []);
-    } catch {
-      setError('Failed to load subscription tiers');
-    } finally {
-      setLoading(false);
-    }
+  function updateTier(id: string, field: keyof Tier, value: string | number) {
+    setTiers((prev) => prev.map((t) => (t.id === id ? { ...t, [field]: value } : t)));
   }
 
-  function startCreate() {
-    setEditingId(null);
-    setForm({ ...emptyForm });
-    setShowCreate(true);
-  }
-
-  function startEdit(tier: Tier) {
-    setShowCreate(false);
-    setEditingId(tier.id);
-    setForm({
-      name: tier.name,
-      price: tier.price.toString(),
-      description: tier.description,
-      benefits: [...tier.benefits],
-      newBenefit: '',
-    });
-  }
-
-  function cancelForm() {
-    setShowCreate(false);
-    setEditingId(null);
-    setForm({ ...emptyForm });
-  }
-
-  async function handleSaveNew() {
-    if (!form.name.trim() || !form.price) {
-      setError('Name and price are required');
-      return;
-    }
+  async function handleSave() {
     setSaving(true);
-    setError('');
     try {
-      const { data: res } = await api.post('/creator/tiers', {
-        name: form.name.trim(),
-        price: parseFloat(form.price),
-        description: form.description.trim(),
-        benefits: form.benefits,
-      });
-      if (res.data) setTiers((prev) => [...prev, res.data]);
-      cancelForm();
-    } catch (err: unknown) {
-      const e = err as { response?: { data?: { error?: string } } };
-      setError(e?.response?.data?.error || 'Failed to create tier');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleSaveEdit() {
-    if (!editingId || !form.name.trim() || !form.price) {
-      setError('Name and price are required');
-      return;
-    }
-    setSaving(true);
-    setError('');
-    try {
-      const { data: res } = await api.put(`/creator/tiers/${editingId}`, {
-        name: form.name.trim(),
-        price: parseFloat(form.price),
-        description: form.description.trim(),
-        benefits: form.benefits,
-      });
-      if (res.data) setTiers((prev) => prev.map((t) => (t.id === editingId ? res.data : t)));
-      cancelForm();
-    } catch (err: unknown) {
-      const e = err as { response?: { data?: { error?: string } } };
-      setError(e?.response?.data?.error || 'Failed to update tier');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleToggleActive(tier: Tier) {
-    try {
-      const { data: res } = await api.delete(`/creator/tiers/${tier.id}`);
-      if (res.data) {
-        setTiers((prev) => prev.map((t) => (t.id === tier.id ? res.data : t)));
-      } else {
-        setTiers((prev) =>
-          prev.map((t) => (t.id === tier.id ? { ...t, isActive: !t.isActive } : t)),
-        );
+      for (const t of tiers) {
+        await api.put(`/creator/tiers/${t.id}`, {
+          name: t.name,
+          price: t.price,
+          description: '',
+          benefits: [],
+        });
       }
     } catch {
-      setError('Failed to update tier status');
+      /* ignore */
+    } finally {
+      setSaving(false);
     }
   }
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+      <div className="flex justify-center py-20">
+        <div className="size-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
       </div>
     );
-  }
 
   return (
-    <div className="flex flex-col gap-[16px] md:gap-[22px]">
-      <div className="flex items-center justify-between">
-        <p className="text-[20px] font-bold text-[#f8f8f8] md:text-[28px]">My Subscription Tiers</p>
-        {!showCreate && !editingId && (
-          <button
-            onClick={startCreate}
-            className="h-[40px] rounded-[80px] bg-gradient-to-l from-[#a61651] to-[#01adf1] px-[22px] text-[14px] font-medium text-[#f8f8f8] hover:opacity-90 transition-opacity"
-          >
-            + Create New Tier
-          </button>
-        )}
+    <div className="flex flex-col gap-[20px]">
+      <p className="text-[24px] font-semibold text-[#f8f8f8]">My Subscriptions</p>
+
+      <div className="overflow-x-auto rounded-[16px]">
+        <table className="w-full min-w-[800px]">
+          <thead>
+            <tr className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7]">
+              {[
+                'Subscription Name',
+                'Duration',
+                'Default Subscription Price',
+                'My Subscription Price',
+                'Discount Percentage',
+                'Remaining Users / No. of Users',
+              ].map((h) => (
+                <th
+                  key={h}
+                  className="px-[14px] py-[14px] text-left text-[13px] font-semibold text-white"
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="bg-[#0e1012]">
+            {tiers.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+                  No subscription tiers yet
+                </td>
+              </tr>
+            ) : (
+              tiers.map((t) => (
+                <tr key={t.id} className="border-b border-[#15191c] last:border-0">
+                  <td className="px-[14px] py-[12px] text-[14px] text-[#f8f8f8]">{t.name}</td>
+                  <td className="px-[14px] py-[12px] text-[14px] text-[#f8f8f8]">{t.duration}</td>
+                  <td className="px-[14px] py-[12px] text-[14px] text-[#f8f8f8]">
+                    {t.defaultPrice.toFixed(2)}
+                  </td>
+                  <td className="px-[14px] py-[12px]">
+                    <input
+                      type="number"
+                      value={t.price}
+                      onChange={(e) => updateTier(t.id, 'price', Number(e.target.value))}
+                      className="w-[80px] rounded-[4px] border border-[#5d5d5d] bg-transparent px-[8px] py-[4px] text-[14px] text-[#f8f8f8] outline-none"
+                    />
+                  </td>
+                  <td className="px-[14px] py-[12px] text-[14px] text-[#5d5d5d]">
+                    {t.discount || '-'}
+                  </td>
+                  <td className="px-[14px] py-[12px] text-[14px] text-[#5d5d5d]">
+                    {t.remainingUsers || '-'}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {error && (
-        <div className="rounded-[10px] bg-red-500/10 px-[16px] py-[10px]">
-          <p className="text-[13px] text-red-400">{error}</p>
-        </div>
-      )}
-
-      {showCreate && (
-        <TierForm
-          form={form}
-          setForm={setForm}
-          onSave={handleSaveNew}
-          onCancel={cancelForm}
-          saving={saving}
-          title="Create New Tier"
-        />
-      )}
-
-      {tiers.length === 0 && !showCreate ? (
-        <div className="rounded-[22px] bg-[#0e1012] px-[20px] py-[40px] text-center">
-          <p className="text-[16px] text-[#5d5d5d]">
-            No subscription tiers yet. Create your first tier to start earning.
-          </p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-[14px]">
-          {tiers.map((tier) =>
-            editingId === tier.id ? (
-              <TierForm
-                key={tier.id}
-                form={form}
-                setForm={setForm}
-                onSave={handleSaveEdit}
-                onCancel={cancelForm}
-                saving={saving}
-                title={`Edit: ${tier.name}`}
-              />
-            ) : (
-              <TierCard
-                key={tier.id}
-                tier={tier}
-                onEdit={() => startEdit(tier)}
-                onDelete={() => handleToggleActive(tier)}
-              />
-            ),
-          )}
-        </div>
-      )}
+      <div className="flex flex-col items-center gap-[16px]">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="w-full max-w-[306px] rounded-[80px] bg-gradient-to-l from-[#a61651] to-[#01adf1] py-[12px] text-[18px] text-white shadow-md hover:opacity-90 transition-opacity disabled:opacity-50"
+        >
+          {saving ? 'Saving...' : 'Save'}
+        </button>
+        <button className="w-full max-w-[306px] rounded-[80px] border border-[#2e4882] bg-[#f8f8f8] py-[12px] text-[18px] text-black shadow-md hover:opacity-90 transition-opacity">
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }

@@ -49,12 +49,10 @@ export default function HelpSupport() {
   }
 
   return (
-    <div className="flex flex-col gap-[12px] md:gap-[20px]">
-      {/* Page title */}
+    <div className="flex flex-col gap-[20px]">
       <p className="text-[20px] text-[#f8f8f8]">Help &amp; Support</p>
 
-      {/* Main card */}
-      <div className="flex flex-col rounded-[11px] bg-[#0e1012] px-[16px] py-[16px] md:rounded-[22px] md:px-[20px] md:py-[20px]">
+      <div className="flex flex-col rounded-[22px] bg-[#0e1012] px-[20px] py-[20px]">
         {/* ── FAQ's Section ── */}
         <div className="flex flex-col gap-[16px]">
           <p className="text-[16px] text-[#f8f8f8]">FAQ&apos;s</p>

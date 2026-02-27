@@ -1,53 +1,24 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { EarningsFilterBar } from '../components/creator-earnings/EarningsFilterBar';
-import type { CategoryFilter } from '../components/creator-earnings/EarningsFilterBar';
 
 interface EarningItem {
   id: string;
   date: string;
-  description: string;
-  category: string;
-  amount: number;
+  username: string;
+  totalCoins: number;
+  receivedVia: string;
   status: string;
 }
 
-const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
-  TIP_RECEIVED: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
-  SUBSCRIPTION: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
-  PPV_EARNING: { bg: 'bg-green-500/20', text: 'text-green-400' },
-  WITHDRAWAL: { bg: 'bg-red-500/20', text: 'text-red-400' },
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  TIP_RECEIVED: 'Tip Received',
-  SUBSCRIPTION: 'Subscription',
-  PPV_EARNING: 'PPV Earning',
-  WITHDRAWAL: 'Withdrawal',
-};
-
-function CategoryBadge({ category }: { category: string }) {
-  const colors = CATEGORY_COLORS[category] ?? { bg: 'bg-gray-500/20', text: 'text-gray-400' };
-  const label = CATEGORY_LABELS[category] ?? category;
-  return (
-    <span
-      className={`inline-block rounded-full px-[10px] py-[3px] text-[12px] font-medium ${colors.bg} ${colors.text}`}
-    >
-      {label}
-    </span>
-  );
-}
-
-function StatusPill({ status }: { status: string }) {
-  const isCompleted = status === 'COMPLETED';
-  return (
-    <span
-      className={`inline-block rounded-full px-[10px] py-[3px] text-[12px] font-medium ${isCompleted ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}
-    >
-      {isCompleted ? 'Completed' : 'Pending'}
-    </span>
-  );
-}
+const CATEGORIES = [
+  'All',
+  'Chat',
+  'One-to-one call',
+  'Tip',
+  'Referral',
+  'Subscription',
+  'Post Purchased',
+];
 
 export default function CreatorEarnings() {
   const [items, setItems] = useState<EarningItem[]>([]);
@@ -55,25 +26,25 @@ export default function CreatorEarnings() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<CategoryFilter>('');
+  const [category, setCategory] = useState('All');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const limit = 20;
 
   useEffect(() => {
     setLoading(true);
     const params: Record<string, string | number> = { page, limit };
-    if (category) params.category = category;
+    if (category !== 'All') params.category = category;
     if (search) params.search = search;
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
-
     api
       .get('/creator/earnings', { params })
       .then(({ data: r }) => {
         if (r.success) {
-          setItems(r.data.items);
-          setTotal(r.data.total);
+          setItems(r.data.items ?? []);
+          setTotal(r.data.total ?? 0);
         }
       })
       .catch(() => {
@@ -88,113 +59,171 @@ export default function CreatorEarnings() {
   }, [search, category, startDate, endDate]);
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
-  const hasFilters = !!(search || category || startDate || endDate);
 
   return (
-    <div className="flex flex-col gap-[12px] md:gap-[20px]">
-      <p className="text-[20px] text-[#f8f8f8]">My Earnings</p>
+    <div className="flex flex-col gap-[20px]">
+      <p className="text-[24px] font-semibold text-[#f8f8f8]">My Earning</p>
 
-      <EarningsFilterBar
-        search={search}
-        onSearchChange={setSearch}
-        startDate={startDate}
-        onStartDateChange={setStartDate}
-        endDate={endDate}
-        onEndDateChange={setEndDate}
-        category={category}
-        onCategoryChange={setCategory}
-      />
-
-      <div className="rounded-[22px] bg-[#0e1012]">
-        {loading ? (
-          <div className="flex justify-center py-[60px]">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
-          </div>
-        ) : items.length === 0 ? (
-          <p className="py-[40px] text-center text-[16px] text-[#5d5d5d]">
-            {hasFilters ? 'No matching earnings found' : 'No earnings yet'}
-          </p>
-        ) : (
-          <>
-            {/* Desktop Table */}
-            <div className="hidden md:block">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-[#15191c] text-left text-[14px] text-[#5d5d5d]">
-                    <th className="px-[20px] py-[16px] font-medium">Date</th>
-                    <th className="px-[20px] py-[16px] font-medium">Description</th>
-                    <th className="px-[20px] py-[16px] font-medium">Category</th>
-                    <th className="px-[20px] py-[16px] font-medium">Amount</th>
-                    <th className="px-[20px] py-[16px] font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item) => (
-                    <tr key={item.id} className="border-b border-[#15191c] last:border-b-0">
-                      <td className="px-[20px] py-[14px] text-[14px] text-[#f8f8f8]">
-                        {new Date(item.date).toLocaleDateString()}
-                      </td>
-                      <td className="px-[20px] py-[14px] text-[14px] text-[#f8f8f8]">
-                        {item.description}
-                      </td>
-                      <td className="px-[20px] py-[14px]">
-                        <CategoryBadge category={item.category} />
-                      </td>
-                      <td className="px-[20px] py-[14px] text-[14px] font-medium text-green-400">
-                        +${item.amount.toFixed(2)}
-                      </td>
-                      <td className="px-[20px] py-[14px]">
-                        <StatusPill status={item.status} />
-                      </td>
-                    </tr>
+      {/* Filters */}
+      <div className="flex flex-col gap-[12px] rounded-[16px] bg-[#0e1012] p-[20px]">
+        <div className="flex items-center gap-[10px] rounded-[52px] bg-[#15191c] px-[16px] py-[10px]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#5d5d5d">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+          </svg>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search"
+            className="flex-1 bg-transparent text-[14px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-[12px]">
+          {/* Category Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center gap-[8px] rounded-[8px] border border-[#5d5d5d] px-[14px] py-[8px] text-[14px] text-[#f8f8f8]"
+            >
+              {category}{' '}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#5d5d5d">
+                <path d="M7 10l5 5 5-5z" />
+              </svg>
+            </button>
+            {dropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
+                <div className="absolute left-0 top-[40px] z-20 min-w-[180px] rounded-[8px] bg-white py-[4px] shadow-lg">
+                  {CATEGORIES.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => {
+                        setCategory(c);
+                        setDropdownOpen(false);
+                      }}
+                      className="flex w-full px-[14px] py-[8px] text-[14px] text-[#1a1a1a] hover:bg-[#f0f0f0]"
+                    >
+                      {c}
+                    </button>
                   ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile Cards */}
-            <div className="flex flex-col gap-[12px] p-[12px] md:hidden">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex flex-col gap-[8px] rounded-[12px] bg-[#15191c] p-[12px]"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[12px] text-[#5d5d5d]">
-                      {new Date(item.date).toLocaleDateString()}
-                    </span>
-                    <StatusPill status={item.status} />
-                  </div>
-                  <p className="text-[14px] text-[#f8f8f8]">{item.description}</p>
-                  <div className="flex items-center justify-between">
-                    <CategoryBadge category={item.category} />
-                    <span className="text-[14px] font-medium text-green-400">
-                      +${item.amount.toFixed(2)}
-                    </span>
-                  </div>
                 </div>
-              ))}
-            </div>
-          </>
-        )}
+              </>
+            )}
+          </div>
+          <div className="flex items-center gap-[8px]">
+            <span className="text-[14px] text-[#5d5d5d]">From:</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="rounded-[6px] border border-[#5d5d5d] bg-transparent px-[10px] py-[6px] text-[13px] text-[#f8f8f8] outline-none"
+            />
+          </div>
+          <div className="flex items-center gap-[8px]">
+            <span className="text-[14px] text-[#5d5d5d]">To:</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="rounded-[6px] border border-[#5d5d5d] bg-transparent px-[10px] py-[6px] text-[13px] text-[#f8f8f8] outline-none"
+            />
+          </div>
+          {(startDate || endDate) && (
+            <button
+              onClick={() => {
+                setStartDate('');
+                setEndDate('');
+              }}
+              className="rounded-[50px] bg-[#01adf1] px-[14px] py-[6px] text-[13px] text-white"
+            >
+              Clear Dates
+            </button>
+          )}
+        </div>
       </div>
 
+      {/* Table */}
+      <div className="overflow-x-auto rounded-[16px]">
+        <table className="w-full min-w-[700px]">
+          <thead>
+            <tr className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7]">
+              {[
+                'Date & Time',
+                'Username',
+                'Total Coins',
+                'Coins Received Via',
+                'Payment Status',
+              ].map((h) => (
+                <th
+                  key={h}
+                  className="px-[16px] py-[14px] text-left text-[14px] font-semibold text-white"
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="bg-[#0e1012]">
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="py-[40px] text-center">
+                  <div className="mx-auto size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+                </td>
+              </tr>
+            ) : items.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+                  No earnings yet
+                </td>
+              </tr>
+            ) : (
+              items.map((item) => (
+                <tr key={item.id} className="border-b border-[#15191c] last:border-0">
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {new Date(item.date).toLocaleDateString('en-GB')}
+                    <br />
+                    <span className="text-[12px] text-[#5d5d5d]">
+                      {new Date(item.date).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </td>
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {item.username || 'John Doe'}
+                  </td>
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {item.totalCoins || 100}
+                  </td>
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {item.receivedVia || 'PayPal'}
+                  </td>
+                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                    {item.status || 'Paid'}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-[16px]">
-          <button
-            disabled={page <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded-[12px] bg-[#0e1012] px-[16px] py-[8px] text-[14px] text-[#f8f8f8] transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Prev
-          </button>
-          <span className="text-[14px] text-[#5d5d5d]">
-            Page {page} of {totalPages}
-          </span>
+        <div className="flex items-center justify-center gap-[6px]">
+          {Array.from({ length: Math.min(totalPages, 6) }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${page === i + 1 ? 'bg-[#01adf1] text-white' : 'bg-[#0e1012] text-[#5d5d5d] hover:text-white'}`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          {totalPages > 6 && <span className="text-[13px] text-[#5d5d5d]">...</span>}
           <button
             disabled={page >= totalPages}
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="rounded-[12px] bg-[#0e1012] px-[16px] py-[8px] text-[14px] text-[#f8f8f8] transition-opacity hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
+            onClick={() => setPage((p) => p + 1)}
+            className="rounded-[4px] bg-[#0e1012] px-[12px] py-[6px] text-[13px] text-[#5d5d5d] hover:text-white disabled:opacity-40"
           >
             Next
           </button>
