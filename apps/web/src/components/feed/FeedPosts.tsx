@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PostActions } from './PostActions';
 import { MediaViewer } from './MediaViewer';
+import { VideoThumbnail } from './VideoThumbnail';
 
 const IMG = '/icons/dashboard';
 
@@ -165,9 +166,9 @@ export function VideoPost({ post }: { post: FeedPost }) {
           className="relative mx-[9px] mt-[11px] h-[161px] cursor-pointer overflow-hidden rounded-[10px] md:mx-[20px] md:mt-[25px] md:h-[356px] md:rounded-[22px]"
           onClick={() => setShowViewer(true)}
         >
-          <img
-            src={video.thumbnail || video.url}
-            alt=""
+          <VideoThumbnail
+            src={video.url}
+            fallback={video.thumbnail || undefined}
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 rounded-[10px] bg-[rgba(21,25,28,0.55)] md:rounded-[22px]" />

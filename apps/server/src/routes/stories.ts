@@ -132,4 +132,59 @@ router.delete('/:id', authenticate, async (req, res, next) => {
   }
 });
 
+// React to a story (heart)
+router.post('/:id/react', authenticate, async (req, res, next) => {
+  try {
+    const story = await prisma.story.findUnique({ where: { id: req.params.id } });
+    if (!story) throw new AppError(404, 'Story not found');
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Reply to a story (creates a DM to the creator)
+router.post('/:id/reply', authenticate, async (req, res, next) => {
+  try {
+    const { text } = req.body;
+    if (!text?.trim()) throw new AppError(400, 'Reply text is required');
+    const story = await prisma.story.findUnique({ where: { id: req.params.id } });
+    if (!story) throw new AppError(404, 'Story not found');
+
+    const senderId = req.user!.userId;
+    const receiverId = story.authorId;
+    if (senderId === receiverId) throw new AppError(400, 'Cannot reply to your own story');
+
+    // Find or create conversation
+    let conv = await prisma.conversation.findFirst({
+      where: {
+        OR: [
+          { participant1Id: senderId, participant2Id: receiverId },
+          { participant1Id: receiverId, participant2Id: senderId },
+        ],
+      },
+    });
+
+    if (!conv) {
+      conv = await prisma.conversation.create({
+        data: { participant1Id: senderId, participant2Id: receiverId },
+      });
+    }
+
+    const replyText = `Replied to your story: ${text.trim()}`;
+    await prisma.message.create({
+      data: { conversationId: conv.id, senderId, text: replyText, mediaType: 'TEXT' },
+    });
+
+    await prisma.conversation.update({
+      where: { id: conv.id },
+      data: { lastMessage: replyText, lastMessageAt: new Date() },
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

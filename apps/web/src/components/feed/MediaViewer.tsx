@@ -36,17 +36,25 @@ export function MediaViewer({ media, initialIndex, onClose }: MediaViewerProps) 
     return () => window.removeEventListener('keydown', handler);
   }, [onClose, goNext, goPrev]);
 
+  // Lock body scroll
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   if (!item) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
       onClick={onClose}
     >
-      {/* Close button */}
+      {/* Close */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-20 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
+        className="absolute right-4 top-4 z-20 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path
@@ -60,12 +68,12 @@ export function MediaViewer({ media, initialIndex, onClose }: MediaViewerProps) 
 
       {/* Counter */}
       {media.length > 1 && (
-        <div className="absolute top-4 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
+        <div className="absolute left-1/2 top-4 z-20 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
           {idx + 1} / {media.length}
         </div>
       )}
 
-      {/* Prev arrow */}
+      {/* Prev */}
       {hasPrev && (
         <button
           onClick={(e) => {
@@ -86,15 +94,23 @@ export function MediaViewer({ media, initialIndex, onClose }: MediaViewerProps) 
         </button>
       )}
 
-      {/* Media */}
-      <div className="max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
+      {/* Media - full screen for video */}
+      <div
+        className={
+          item.type === 'VIDEO'
+            ? 'h-full w-full max-w-[100vw] md:h-[95vh] md:w-[85vw] md:max-w-[1200px]'
+            : 'max-h-[90vh] max-w-[90vw]'
+        }
+        onClick={(e) => e.stopPropagation()}
+      >
         {item.type === 'VIDEO' ? (
           <video
             key={item.id}
             src={item.url}
             controls
             autoPlay
-            className="max-h-[90vh] max-w-[90vw] rounded-lg"
+            playsInline
+            className="h-full w-full rounded-none object-contain md:rounded-xl"
           />
         ) : (
           <img
@@ -106,7 +122,7 @@ export function MediaViewer({ media, initialIndex, onClose }: MediaViewerProps) 
         )}
       </div>
 
-      {/* Next arrow */}
+      {/* Next */}
       {hasNext && (
         <button
           onClick={(e) => {

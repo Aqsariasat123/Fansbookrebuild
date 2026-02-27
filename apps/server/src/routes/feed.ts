@@ -95,6 +95,7 @@ router.get('/stories', authenticate, async (_req, res, next) => {
         mediaUrl: s.mediaUrl,
         mediaType: s.mediaType,
         createdAt: s.createdAt,
+        viewCount: s.viewCount,
       };
       if (existing) {
         existing.stories.push(storyItem);
