@@ -53,15 +53,7 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res,
         role,
         avatar: '/images/creators/default-avatar.webp',
       },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        displayName: true,
-        role: true,
-        avatar: true,
-        createdAt: true,
-      },
+      select: ME_SELECT,
     });
     await prisma.wallet.create({ data: { userId: user.id, balance: 0 } });
     const tokens = await generateAndStoreTokens(user.id, user.role);
@@ -84,18 +76,14 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res, next)
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) throw new AppError(401, 'Invalid credentials');
     const tokens = await generateAndStoreTokens(user.id, user.role);
+    const profile = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: ME_SELECT,
+    });
     res.json({
       success: true,
       data: {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          displayName: user.displayName,
-          role: user.role,
-          avatar: user.avatar,
-          createdAt: user.createdAt,
-        },
+        user: profile,
         ...tokens,
       },
     });

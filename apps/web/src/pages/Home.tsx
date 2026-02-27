@@ -3,8 +3,6 @@ import { api } from '../lib/api';
 import { ImagePost, VideoPost } from '../components/feed/FeedPosts';
 import type { FeedPost } from '../components/feed/FeedPosts';
 
-const IMG = '/icons/dashboard';
-
 interface Author {
   id: string;
   username: string;
@@ -55,24 +53,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-[16px] md:gap-[22px]">
-      {/* Mobile search bar */}
-      <div className="flex items-center gap-[10px] rounded-[68px] bg-[#0e1012] px-[15px] py-[9px] lg:hidden">
-        <img src={`${IMG}/search.svg`} alt="" className="size-[15px]" />
-        <input
-          type="text"
-          placeholder="Search..."
-          className="flex-1 bg-transparent text-[12px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
-        />
-      </div>
-
-      {/* Compose post bar (mobile) */}
-      <div className="flex h-[37px] items-center justify-between rounded-[46px] bg-[#0e1012] px-[16px] py-[8px] md:hidden">
-        <p className="text-[8px] text-[#5d5d5d]">Compose new post...</p>
-        <button className="rounded-[36px] bg-gradient-to-l from-[#a61651] to-[#01adf1] px-[11px] py-[6px] text-[12px] font-medium text-[#f8f8f8] shadow-sm">
-          Add Post
-        </button>
-      </div>
-
       {/* Stories Row */}
       {stories.length > 0 && (
         <div className="flex gap-[16px] overflow-x-auto scrollbar-hide md:gap-[20px]">

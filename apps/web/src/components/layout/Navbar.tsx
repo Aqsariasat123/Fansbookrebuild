@@ -14,7 +14,15 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
         <button onClick={onMenuToggle} className="shrink-0" aria-label="Menu">
           <img src="/icons/dashboard/menu.svg" alt="" className="size-[30px]" />
         </button>
-        <NavbarUserMenu />
+        <div className="flex items-center gap-[6px]">
+          <Link to="/notifications" className="shrink-0" aria-label="Notifications">
+            <img src="/icons/dashboard/bell-icon.svg" alt="" className="h-[30px] w-[30px]" />
+          </Link>
+          <Link to="/messages" className="shrink-0" aria-label="Messages">
+            <img src="/icons/dashboard/message-icon.svg" alt="" className="h-[30px] w-[30px]" />
+          </Link>
+          <NavbarUserMenu />
+        </div>
       </div>
 
       {/* Desktop header */}

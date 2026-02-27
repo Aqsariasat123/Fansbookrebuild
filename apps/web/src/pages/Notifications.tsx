@@ -35,6 +35,7 @@ function parseEntity(entityType: string | null) {
 export default function Notifications() {
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     api
@@ -64,20 +65,42 @@ export default function Notifications() {
     }
   };
 
+  const filtered = search
+    ? items.filter((n) => n.message.toLowerCase().includes(search.toLowerCase()))
+    : items;
+
   return (
     <div className="flex flex-col gap-[12px] md:gap-[20px]">
       <p className="text-[20px] text-[#f8f8f8]">Notifications</p>
 
       <div className="rounded-[11px] bg-[#0e1012] p-[10px] md:rounded-[22px] md:p-[16px]">
+        {/* Search bar */}
+        <div className="mb-[12px] flex items-center gap-[10px] rounded-[52px] bg-[#15191c] py-[8px] pl-[12px] pr-[12px] md:mb-[16px] md:py-[10px] md:pl-[15px] md:pr-[15px]">
+          <img
+            src="/icons/dashboard/search.svg"
+            alt=""
+            className="size-[21px] shrink-0 md:size-[24px]"
+          />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search notifications..."
+            className="flex-1 bg-transparent text-[12px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none md:text-[16px]"
+          />
+        </div>
+
         {loading ? (
           <div className="flex justify-center py-[60px]">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
           </div>
-        ) : items.length === 0 ? (
-          <p className="text-center text-[#5d5d5d] py-[40px] text-[16px]">No notifications</p>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-[#5d5d5d] py-[40px] text-[16px]">
+            {search ? 'No matching notifications' : 'No notifications'}
+          </p>
         ) : (
           <div className="flex flex-col gap-[20px]">
-            {items.map((n) => (
+            {filtered.map((n) => (
               <NotificationRow
                 key={n.id}
                 notification={n}
