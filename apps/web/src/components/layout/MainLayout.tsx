@@ -1,19 +1,22 @@
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
-import { MobileNav } from './MobileNav';
+import { MobileSidebar } from './MobileSidebar';
 
 export function MainLayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#15191c] font-outfit">
-      <Navbar />
-      <div className="flex gap-[22px] px-[26px] pt-[22px]">
+      <Navbar onMenuToggle={() => setSidebarOpen(true)} />
+      <div className="flex gap-0 px-[16px] pt-[16px] lg:gap-[22px] lg:px-[26px] lg:pt-[22px]">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto pb-20 lg:pb-6">
+        <main className="flex-1 overflow-y-auto pb-6">
           <Outlet />
         </main>
       </div>
-      <MobileNav />
+      <MobileSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </div>
   );
 }

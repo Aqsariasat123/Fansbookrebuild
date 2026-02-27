@@ -20,7 +20,7 @@ function getCreatorBadges(creator: CreatorCardType): BadgeType[] {
   return badges;
 }
 
-function getCategoryIcon(category: string | undefined): string {
+function getCategoryIcon(category: string | null | undefined): string {
   if (!category) return 'palette';
   return CATEGORY_ICONS[category] || 'palette';
 }

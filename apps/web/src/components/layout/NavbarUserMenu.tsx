@@ -43,20 +43,24 @@ export function NavbarUserMenu() {
         onClick={() => setDropdownOpen(!dropdownOpen)}
         className="flex items-center gap-[6px]"
       >
-        <div className="text-right">
+        <div className="hidden text-right lg:block">
           <p className="text-[16px] text-[#f8f8f8] leading-tight">{getDisplayName(user)}</p>
           <p className="text-[12px] text-[#5d5d5d] leading-tight">@{user?.username || 'user'}</p>
         </div>
-        <div className="h-[44px] w-[44px] shrink-0 overflow-hidden rounded-full">
+        <div className="h-[34px] w-[34px] lg:h-[44px] lg:w-[44px] shrink-0 overflow-hidden rounded-full">
           {user?.avatar ? (
             <img src={user.avatar} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[16px] font-medium text-white">
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[14px] lg:text-[16px] font-medium text-white">
               {(user?.firstName || user?.displayName || 'U').charAt(0).toUpperCase()}
             </div>
           )}
         </div>
-        <img src="/icons/dashboard/arrow-drop-down.svg" alt="" className="h-[24px] w-[24px]" />
+        <img
+          src="/icons/dashboard/arrow-drop-down.svg"
+          alt=""
+          className="hidden h-[24px] w-[24px] lg:block"
+        />
       </button>
 
       {/* Dropdown */}

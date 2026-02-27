@@ -18,14 +18,14 @@ function FormField({
 }) {
   return (
     <div className="flex flex-col gap-[10px] w-full">
-      <p className="capitalize font-medium text-[20px] text-[#f8f8f8]">{label}</p>
+      <p className="capitalize font-medium text-[14px] md:text-[20px] text-[#f8f8f8]">{label}</p>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
         readOnly={readOnly}
-        className={`h-[46px] rounded-[6px] border border-[#5d5d5d] bg-transparent px-[12px] py-[14px] text-[13px] font-extralight outline-none transition-colors ${
+        className={`h-[40px] md:h-[46px] rounded-[6px] border border-[#5d5d5d] bg-transparent px-[12px] py-[10px] md:py-[14px] text-[13px] font-extralight outline-none transition-colors ${
           readOnly ? 'text-[#5d5d5d] cursor-not-allowed' : 'text-[#f8f8f8] focus:border-[#2e80c8]'
         }`}
       />
@@ -74,10 +74,10 @@ export default function ProfileEdit() {
   }
 
   return (
-    <div className="flex flex-col gap-[22px]">
-      <p className="text-[32px] font-bold text-[#f8f8f8] capitalize">my profile</p>
-      <div className="rounded-[22px] bg-[#0e1012] px-[26px] py-[35px]">
-        <div className="flex flex-col gap-[20px] items-center">
+    <div className="flex flex-col gap-[12px] md:gap-[22px]">
+      <p className="text-[20px] md:text-[32px] font-bold text-[#f8f8f8] capitalize">my profile</p>
+      <div className="rounded-[11px] md:rounded-[22px] bg-[#0e1012] px-[16px] py-[20px] md:px-[26px] md:py-[35px]">
+        <div className="flex flex-col gap-[16px] md:gap-[20px] items-center">
           <FormField
             label="First Name"
             value={firstName}
@@ -99,17 +99,17 @@ export default function ProfileEdit() {
           />
           <FormField label="Email" value={user?.email ?? ''} readOnly />
           {error && <p className="text-[14px] text-red-500 w-full">{error}</p>}
-          <div className="flex flex-col items-center w-[306px] mt-[10px]">
+          <div className="flex flex-col items-center w-full max-w-[306px] mt-[10px]">
             <button
               onClick={handleUpdate}
               disabled={saving}
-              className="w-full h-[45px] rounded-[80px] bg-gradient-to-l from-[#a61651] to-[#01adf1] text-[20px] text-[#f8f8f8] shadow-[0px_2px_18px_0px_rgba(34,34,34,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full h-[40px] md:h-[45px] rounded-[80px] bg-gradient-to-l from-[#a61651] to-[#01adf1] text-[16px] md:text-[20px] text-[#f8f8f8] shadow-[0px_2px_18px_0px_rgba(34,34,34,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {saving ? 'Updating...' : 'Update'}
             </button>
             <button
               onClick={() => navigate('/profile')}
-              className="w-full h-[45px] mt-[25px] rounded-[80px] border border-[#2e4882] bg-[#f8f8f8] text-[20px] text-black shadow-[0px_2px_18px_0px_rgba(34,34,34,0.25)] hover:opacity-90 transition-opacity"
+              className="w-full h-[40px] md:h-[45px] mt-[16px] md:mt-[25px] rounded-[80px] border border-[#2e4882] bg-[#f8f8f8] text-[16px] md:text-[20px] text-black shadow-[0px_2px_18px_0px_rgba(34,34,34,0.25)] hover:opacity-90 transition-opacity"
             >
               Cancel
             </button>

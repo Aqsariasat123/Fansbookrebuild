@@ -65,10 +65,10 @@ export default function Notifications() {
   };
 
   return (
-    <div className="flex flex-col gap-[20px]">
+    <div className="flex flex-col gap-[12px] md:gap-[20px]">
       <p className="text-[20px] text-[#f8f8f8]">Notifications</p>
 
-      <div className="bg-[#0e1012] rounded-[22px] p-[16px]">
+      <div className="rounded-[11px] bg-[#0e1012] p-[10px] md:rounded-[22px] md:p-[16px]">
         {loading ? (
           <div className="flex justify-center py-[60px]">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
@@ -106,16 +106,22 @@ function NotificationRow({
 
   return (
     <div
-      className={`flex items-center justify-between px-[10px] py-[8px] rounded-[8px] ${isUnread ? 'bg-[#15191c]' : 'border border-[#15191c]'}`}
+      className={`flex items-center justify-between gap-[8px] rounded-[8px] px-[8px] py-[8px] md:px-[10px] ${isUnread ? 'bg-[#15191c]' : 'border border-[#15191c]'}`}
     >
-      <div className="flex items-center gap-[16px]">
-        {/* Checkbox placeholder */}
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="3" width="18" height="18" rx="2" stroke="#5d5d5d" strokeWidth="2" />
-        </svg>
-        <img src={avatar} alt="" className="size-[40px] rounded-full object-cover shrink-0" />
-        {/* Star icon */}
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <div className="flex min-w-0 flex-1 items-center gap-[10px] md:gap-[16px]">
+        <img
+          src={avatar}
+          alt=""
+          className="size-[32px] shrink-0 rounded-full object-cover md:size-[40px]"
+        />
+        {/* Star icon - hidden on mobile */}
+        <svg
+          className="hidden shrink-0 md:block"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
           <path
             d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
             stroke="#5d5d5d"
@@ -123,22 +129,24 @@ function NotificationRow({
             strokeLinejoin="round"
           />
         </svg>
-        <div className="flex flex-col">
+        <div className="flex min-w-0 flex-col">
           <p
-            className={`text-[16px] text-[#f8f8f8] leading-[normal] ${isUnread ? 'font-medium' : ''}`}
+            className={`truncate text-[12px] leading-[normal] text-[#f8f8f8] md:text-[16px] ${isUnread ? 'font-medium' : ''}`}
           >
             {n.message}
           </p>
-          <p className="text-[12px] text-[#5d5d5d] leading-[normal]">{timeAgo(n.createdAt)}</p>
+          <p className="text-[10px] leading-[normal] text-[#5d5d5d] md:text-[12px]">
+            {timeAgo(n.createdAt)}
+          </p>
         </div>
       </div>
-      <div className="flex items-center gap-[12px]">
+      <div className="flex shrink-0 items-center gap-[6px] md:gap-[12px]">
         {/* Archive */}
         <button
           onClick={() => onMarkRead(n)}
           className="opacity-60 hover:opacity-100 transition-opacity"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg className="size-[18px] md:size-[24px]" viewBox="0 0 24 24" fill="none">
             <path
               d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"
               fill="#5d5d5d"
@@ -147,7 +155,7 @@ function NotificationRow({
         </button>
         {/* Notification bell */}
         <button className="opacity-60 hover:opacity-100 transition-opacity">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg className="size-[18px] md:size-[24px]" viewBox="0 0 24 24" fill="none">
             <path
               d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
               fill="#5d5d5d"
@@ -159,7 +167,7 @@ function NotificationRow({
           onClick={() => onDelete(n.id)}
           className="opacity-60 hover:opacity-100 transition-opacity"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg className="size-[18px] md:size-[24px]" viewBox="0 0 24 24" fill="none">
             <path
               d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
               fill="#5d5d5d"

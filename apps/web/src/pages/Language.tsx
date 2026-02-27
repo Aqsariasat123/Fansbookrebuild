@@ -76,7 +76,7 @@ export default function Language() {
       className="fixed inset-0 bg-black/12 backdrop-blur-[3.4px] z-50 flex items-center justify-center"
       onClick={handleBackdropClick}
     >
-      <div className="bg-[#f8f8f8] rounded-[22px] shadow-[0px_13px_142.4px_0px_rgba(0,0,0,0.25)] w-[580px] p-[30px]">
+      <div className="mx-[16px] w-full max-w-[580px] rounded-[22px] bg-[#f8f8f8] p-[20px] shadow-[0px_13px_142.4px_0px_rgba(0,0,0,0.25)] md:mx-0 md:p-[30px]">
         <h2
           className="text-[20px] text-[#15191c] font-semibold"
           style={{ fontFamily: 'Outfit, sans-serif' }}
@@ -91,7 +91,7 @@ export default function Language() {
           Select Language
         </p>
 
-        <div className="grid grid-cols-2 gap-[16px]">
+        <div className="grid grid-cols-1 gap-[10px] md:grid-cols-2 md:gap-[16px]">
           {LANGUAGES.map((lang) => {
             const isSelected = selected === lang;
             return (

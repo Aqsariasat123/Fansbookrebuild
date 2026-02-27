@@ -1,173 +1,25 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../lib/api';
 import { PurchaseModal } from '../components/wallet/PurchaseModal';
+import { PurchaseTable, SpendingTable } from '../components/wallet/WalletTables';
 
 const IMG = '/icons/dashboard';
-
-interface Transaction {
-  id: string;
-  type: string;
-  amount: number;
-  description: string | null;
-  referenceId: string | null;
-  status: string;
-  createdAt: string;
-}
-
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
-}
-
-function Pagination({
-  page,
-  total,
-  limit,
-  onPage,
-}: {
-  page: number;
-  total: number;
-  limit: number;
-  onPage: (p: number) => void;
-}) {
-  const totalPages = Math.ceil(total / limit);
-  if (totalPages <= 1) return null;
-  const pages = Array.from({ length: Math.min(6, totalPages) }, (_, i) => i + 1);
-  return (
-    <div className="flex items-center justify-center gap-[6px] py-[24px]">
-      {pages.map((p) => (
-        <button
-          key={p}
-          onClick={() => onPage(p)}
-          className={`h-[28px] w-[28px] rounded-[2px] border border-[#5d5d5d] flex items-center justify-center text-[10px] text-[#f8f8f8] ${p === page ? 'bg-[#5d5d5d]' : ''}`}
-        >
-          {p}
-        </button>
-      ))}
-      {totalPages > 6 && (
-        <span className="h-[28px] w-[28px] rounded-[2px] border border-[#5d5d5d] flex items-center justify-center text-[10px] text-[#f8f8f8]">
-          ...
-        </span>
-      )}
-      {page < totalPages && (
-        <button
-          onClick={() => onPage(page + 1)}
-          className="h-[38px] px-[10px] rounded-[4px] border border-[#5d5d5d] flex items-center justify-center text-[10px] text-[#f8f8f8]"
-        >
-          Next
-        </button>
-      )}
-    </div>
-  );
-}
-
-function PurchaseTable({
-  items,
-  page,
-  total,
-  limit,
-  onPage,
-}: {
-  items: Transaction[];
-  page: number;
-  total: number;
-  limit: number;
-  onPage: (p: number) => void;
-}) {
-  return (
-    <>
-      <div className="bg-[#0e1012] rounded-[22px] overflow-hidden">
-        <div className="bg-[#01adf1] grid grid-cols-5 px-[45px] py-[22px]">
-          {['Date', 'No Of Coins Purchased', 'Transaction ID', 'Amount Paid', 'Payment Status'].map(
-            (h) => (
-              <p key={h} className="text-[16px] font-bold text-[#f8f8f8] text-center">
-                {h}
-              </p>
-            ),
-          )}
-        </div>
-        {items.length === 0 ? (
-          <p className="text-center text-[#5d5d5d] py-[40px]">No purchase history</p>
-        ) : (
-          items.map((t, i) => {
-            const parts = t.description?.split('|') || [];
-            const amountPaid = parts[1] || `€${t.amount.toFixed(2)}`;
-            return (
-              <div
-                key={t.id}
-                className={`grid grid-cols-5 px-[45px] py-[20px] ${i < items.length - 1 ? 'border-b border-[#15191c]' : ''}`}
-              >
-                <p className="text-[16px] text-[#f8f8f8] text-center">{formatDate(t.createdAt)}</p>
-                <p className="text-[16px] text-[#f8f8f8] text-center">{t.amount}</p>
-                <p className="text-[16px] text-[#f8f8f8] text-center">{t.referenceId || '-'}</p>
-                <p className="text-[16px] text-[#f8f8f8] text-center">{amountPaid}</p>
-                <p className="text-[16px] text-[#f8f8f8] text-center">
-                  {t.status === 'COMPLETED' ? 'Paid' : t.status}
-                </p>
-              </div>
-            );
-          })
-        )}
-      </div>
-      <Pagination page={page} total={total} limit={limit} onPage={onPage} />
-    </>
-  );
-}
-
-function SpendingTable({
-  items,
-  page,
-  total,
-  limit,
-  onPage,
-}: {
-  items: Transaction[];
-  page: number;
-  total: number;
-  limit: number;
-  onPage: (p: number) => void;
-}) {
-  return (
-    <>
-      <div className="bg-[#0e1012] rounded-[22px] overflow-hidden">
-        <div className="bg-[#01adf1] grid grid-cols-4 px-[45px] py-[22px]">
-          {['Date', 'No Of Coins Spent', 'Modal Name', 'Spent Type'].map((h) => (
-            <p key={h} className="text-[16px] font-bold text-[#f8f8f8] text-center">
-              {h}
-            </p>
-          ))}
-        </div>
-        {items.length === 0 ? (
-          <p className="text-center text-[#5d5d5d] py-[40px]">No spending history</p>
-        ) : (
-          items.map((t, i) => {
-            const parts = t.description?.split('|') || [];
-            const modelName = parts[0] || '-';
-            const spentType = parts[1] || t.type;
-            return (
-              <div
-                key={t.id}
-                className={`grid grid-cols-4 px-[45px] py-[20px] ${i < items.length - 1 ? 'border-b border-[#15191c]' : ''}`}
-              >
-                <p className="text-[16px] text-[#f8f8f8] text-center">{formatDate(t.createdAt)}</p>
-                <p className="text-[16px] text-[#f8f8f8] text-center">{t.amount}</p>
-                <p className="text-[16px] text-[#f8f8f8] text-center">{modelName}</p>
-                <p className="text-[16px] text-[#f8f8f8] text-center">{spentType}</p>
-              </div>
-            );
-          })
-        )}
-      </div>
-      <Pagination page={page} total={total} limit={limit} onPage={onPage} />
-    </>
-  );
-}
 
 export default function Wallet() {
   const [balance, setBalance] = useState(0);
   const [tab, setTab] = useState<'purchases' | 'spending'>('purchases');
-  const [purchases, setPurchases] = useState<Transaction[]>([]);
-  const [spending, setSpending] = useState<Transaction[]>([]);
+  const [purchases, setPurchases] = useState<
+    {
+      id: string;
+      type: string;
+      amount: number;
+      description: string | null;
+      referenceId: string | null;
+      status: string;
+      createdAt: string;
+    }[]
+  >([]);
+  const [spending, setSpending] = useState<typeof purchases>([]);
   const [purchaseTotal, setPurchaseTotal] = useState(0);
   const [spendingTotal, setSpendingTotal] = useState(0);
   const [purchasePage, setPurchasePage] = useState(1);
@@ -215,18 +67,22 @@ export default function Wallet() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-[20px]">
+    <div className="flex flex-col gap-[12px] md:gap-[20px]">
       <p className="text-[20px] text-[#f8f8f8]">My Wallet</p>
 
       {/* Balance card */}
-      <div className="bg-[#0e1012]/55 rounded-[22px] flex items-center gap-[40px] px-[48px] py-[36px]">
-        <img src={`${IMG}/wallet-card.svg`} alt="" className="size-[70px] shrink-0" />
+      <div className="flex flex-col gap-[10px] rounded-[22px] bg-[#0e1012]/55 px-[20px] py-[20px] md:flex-row md:items-center md:gap-[40px] md:px-[48px] md:py-[36px]">
+        <img
+          src={`${IMG}/wallet-card.svg`}
+          alt=""
+          className="hidden size-[70px] shrink-0 md:block"
+        />
         <div className="flex flex-col gap-[10px]">
           <div className="flex items-baseline gap-[10px]">
-            <p className="text-[24px] font-medium text-[#f8f8f8]">Total Coins |</p>
-            <p className="text-[48px] font-semibold text-[#f8f8f8]">{balance}</p>
+            <p className="text-[18px] font-medium text-[#f8f8f8] md:text-[24px]">Total Coins |</p>
+            <p className="text-[32px] font-semibold text-[#f8f8f8] md:text-[48px]">{balance}</p>
           </div>
-          <p className="text-[16px] text-[#f8f8f8] max-w-[700px]">
+          <p className="max-w-[700px] text-[12px] text-[#f8f8f8] md:text-[16px]">
             Coins can be used for tipping models, joining live broadcasts, one-on-one video calls,
             and accessing upcoming features as they&apos;re released
           </p>
@@ -237,7 +93,7 @@ export default function Wallet() {
       <div className="flex justify-center">
         <button
           onClick={() => setShowPurchase(true)}
-          className="bg-gradient-to-r from-[#01adf1] to-[#a61651] rounded-[12px] px-[127px] py-[16px] text-[20px] font-semibold text-[#f8f8f8] hover:opacity-90 transition-opacity"
+          className="w-full rounded-[12px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[40px] py-[14px] text-[16px] font-semibold text-[#f8f8f8] transition-opacity hover:opacity-90 md:w-auto md:px-[127px] md:py-[16px] md:text-[20px]"
         >
           Purchase Coins
         </button>
@@ -245,21 +101,21 @@ export default function Wallet() {
 
       {/* Tabs */}
       <div className="relative">
-        <div className="flex gap-[40px]">
+        <div className="flex gap-[20px] md:gap-[40px]">
           <button
             onClick={() => setTab('purchases')}
-            className={`px-[10px] py-[11px] text-[20px] transition-colors ${tab === 'purchases' ? 'text-[#01adf1] border-b border-[#01adf1]' : 'text-[#5d5d5d]/84'}`}
+            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[20px] ${tab === 'purchases' ? 'border-b border-[#01adf1] text-[#01adf1]' : 'text-[#5d5d5d]/84'}`}
           >
             Coins Purchase History
           </button>
           <button
             onClick={() => setTab('spending')}
-            className={`px-[10px] py-[11px] text-[20px] transition-colors ${tab === 'spending' ? 'text-[#01adf1] border-b border-[#01adf1]' : 'text-[#5d5d5d]/84'}`}
+            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[20px] ${tab === 'spending' ? 'border-b border-[#01adf1] text-[#01adf1]' : 'text-[#5d5d5d]/84'}`}
           >
             Coin Spending History
           </button>
         </div>
-        <div className="h-px bg-[#5d5d5d] w-full" />
+        <div className="h-px w-full bg-[#5d5d5d]" />
       </div>
 
       {/* Table */}

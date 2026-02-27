@@ -88,12 +88,12 @@ export default function Messages() {
   const userInitial = user?.displayName?.charAt(0)?.toUpperCase() || '?';
 
   return (
-    <div className="bg-[#0e1012] rounded-[22px] flex flex-col h-[calc(100vh-130px)]">
+    <div className="flex flex-col rounded-[11px] bg-[#0e1012] md:rounded-[22px] md:h-[calc(100vh-130px)]">
       <MessagePageHeader />
 
-      <div className="border border-[#15191c] rounded-[8px] mx-[22px] mb-[22px] flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto border border-[#15191c] rounded-[8px] mx-[10px] mb-[10px] md:mx-[22px] md:mb-[22px]">
         {/* Avatar + Search + filter icons */}
-        <div className="flex items-center justify-between pl-[20px] pr-[40px] pt-[28px] pb-[20px]">
+        <div className="flex items-center justify-between gap-[12px] pl-[12px] pr-[12px] pt-[16px] pb-[12px] md:pl-[20px] md:pr-[40px] md:pt-[28px] md:pb-[20px]">
           {user?.avatar ? (
             <img
               src={user.avatar}
@@ -105,18 +105,18 @@ export default function Messages() {
               <span className="text-[16px] font-medium text-[#f8f8f8]">{userInitial}</span>
             </div>
           )}
-          <div className="flex-1 mx-[40px] flex items-center gap-[10px] bg-[#15191c] rounded-[52px] pl-[15px] py-[10px]">
-            <img src={`${IMG}/search.svg`} alt="" className="size-[24px] shrink-0" />
+          <div className="flex flex-1 items-center gap-[10px] rounded-[52px] bg-[#15191c] py-[8px] pl-[10px] pr-[10px] md:mx-[40px] md:py-[10px] md:pl-[15px]">
+            <img src={`${IMG}/search.svg`} alt="" className="size-[21px] shrink-0 md:size-[24px]" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search..."
-              className="flex-1 bg-transparent text-[16px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+              className="flex-1 bg-transparent text-[12px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none md:text-[16px]"
             />
           </div>
-          <div className="flex items-center gap-[8px] shrink-0">
-            <button className="hover:opacity-80">
+          <div className="flex shrink-0 items-center gap-[8px]">
+            <button className="hidden hover:opacity-80 md:block">
               <img src={`${IMG}/settings.svg`} alt="" className="size-[20px] opacity-50" />
             </button>
             <button className="hover:opacity-80">

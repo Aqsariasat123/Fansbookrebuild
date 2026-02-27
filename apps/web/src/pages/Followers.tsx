@@ -45,7 +45,7 @@ export default function Followers() {
           You are not following anyone yet
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-[30px]">
+        <div className="grid grid-cols-1 gap-[16px] md:grid-cols-2 md:gap-[30px]">
           {creators.map((c) => (
             <FollowerCard key={c.id} creator={c} onUnfollow={handleUnfollow} />
           ))}
@@ -66,16 +66,20 @@ function FollowerCard({
   const avatarSrc = creator.avatar || '/icons/dashboard/person.svg';
 
   return (
-    <div className="bg-[#0e1012] rounded-[12px] h-[92px] flex items-center justify-between px-[27px]">
-      <div className="flex items-center gap-[29px]">
+    <div className="flex h-[72px] items-center justify-between rounded-[12px] bg-[#0e1012] px-[16px] md:h-[92px] md:px-[27px]">
+      <div className="flex items-center gap-[16px] md:gap-[29px]">
         <img
           src={avatarSrc}
           alt={creator.displayName}
-          className="size-[58px] rounded-full object-cover shrink-0"
+          className="size-[48px] shrink-0 rounded-full object-cover md:size-[58px]"
         />
         <div className="flex flex-col">
-          <p className="text-[16px] text-[#f8f8f8] leading-[normal]">{creator.displayName}</p>
-          <p className="text-[12px] text-[#5d5d5d] leading-[normal]">@{creator.username}</p>
+          <p className="text-[14px] leading-[normal] text-[#f8f8f8] md:text-[16px]">
+            {creator.displayName}
+          </p>
+          <p className="text-[10px] leading-[normal] text-[#5d5d5d] md:text-[12px]">
+            @{creator.username}
+          </p>
         </div>
       </div>
       <button
@@ -84,7 +88,7 @@ function FollowerCard({
           onUnfollow(creator.id);
         }}
         disabled={busy}
-        className="px-[18px] py-[12px] rounded-[80px] text-[20px] font-medium text-[#f8f8f8] shadow-[0px_2px_18px_0px_rgba(34,34,34,0.25)] hover:opacity-90 transition-opacity disabled:opacity-50"
+        className="rounded-[80px] px-[14px] py-[8px] text-[14px] font-medium text-[#f8f8f8] shadow-[0px_2px_18px_0px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90 disabled:opacity-50 md:px-[18px] md:py-[12px] md:text-[20px]"
         style={{
           backgroundImage: 'linear-gradient(-90deg, rgb(166, 22, 81) 0%, rgb(1, 173, 241) 100%)',
         }}
