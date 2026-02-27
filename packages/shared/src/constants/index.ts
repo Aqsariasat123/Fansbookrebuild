@@ -64,8 +64,8 @@ export const AUTH_CONFIG = {
 // ─── Rate Limits ─────────────────────────────────────────
 
 export const RATE_LIMITS = {
-  AUTH: { windowMs: 15 * 60 * 1000, max: 10 },
-  API: { windowMs: 15 * 60 * 1000, max: 100 },
+  AUTH: { windowMs: 15 * 60 * 1000, max: 30 },
+  API: { windowMs: 15 * 60 * 1000, max: 500 },
   UPLOAD: { windowMs: 60 * 60 * 1000, max: 50 },
 } as const;
 
