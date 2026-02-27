@@ -20,6 +20,17 @@ const popularModelNames = [
   { email: 'evilia7@fansbook.com', username: 'evilia_7', displayName: 'Evilia' },
 ];
 
+const COMMENT_TEXTS = [
+  'Absolutely stunning! 🔥',
+  'You look amazing as always!',
+  'Best content on Fansbook 💯',
+  "Can't wait for more!",
+  'This is incredible work',
+  'Love this photo set so much 😍',
+  'You never disappoint!',
+  'Goals!! 🙌',
+];
+
 async function upsertCreator(
   prisma: PrismaClient,
   opts: {
@@ -55,13 +66,29 @@ async function upsertCreator(
   return c;
 }
 
+async function seedComments(prisma: PrismaClient, postIds: string[], authorIds: string[]) {
+  let offset = 0;
+  for (const postId of postIds) {
+    for (let i = 0; i < 8; i++) {
+      await prisma.comment.create({
+        data: {
+          postId,
+          authorId: authorIds[i % authorIds.length],
+          text: COMMENT_TEXTS[(offset + i) % COMMENT_TEXTS.length],
+          createdAt: new Date(Date.now() - (8 - i) * 600000),
+        },
+      });
+    }
+    await prisma.post.update({ where: { id: postId }, data: { commentCount: 8 } });
+    offset += 3;
+  }
+}
+
 export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
-  // Stories
   const storyIds: string[] = [];
   for (let i = 1; i <= 5; i++) {
-    const sn = storyNames[i - 1];
     const c = await upsertCreator(prisma, {
-      ...sn,
+      ...storyNames[i - 1],
       avatar: `${IMG}/story-avatar-${i}.webp`,
       passwordHash,
     });
@@ -80,7 +107,6 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
     });
   }
 
-  // Post creators
   const sarah = await upsertCreator(prisma, {
     email: 'olivia_hart@fansbook.com',
     username: 'olivia_hart',
@@ -88,7 +114,7 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
     avatar: '/images/creators/creator8.webp',
     passwordHash,
   });
-  const emlia = await upsertCreator(prisma, {
+  const chloe = await upsertCreator(prisma, {
     email: 'chloe_reign@fansbook.com',
     username: 'chloe_reign',
     displayName: 'Chloe Reign',
@@ -96,8 +122,6 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
     passwordHash,
     isVerified: false,
   });
-
-  // Popular models
   for (let i = 1; i <= 7; i++) {
     await upsertCreator(prisma, {
       ...popularModelNames[i - 1],
@@ -107,107 +131,101 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
     });
   }
 
-  // Posts
   await prisma.postMedia.deleteMany({});
   await prisma.post.deleteMany({});
-  const imagePost = await prisma.post.create({
+  await prisma.comment.deleteMany({});
+
+  const imgPost1 = await prisma.post.create({
     data: {
       authorId: sarah.id,
-      text: 'Just dropped a new exclusive photo set for my subscribers! Thank you all for the amazing support on Fansbook. You guys make creating content so much fun 💕',
       visibility: 'PUBLIC',
       likeCount: 80,
-      commentCount: 24,
+      commentCount: 8,
+      text: 'Just dropped a new exclusive photo set for my subscribers! Thank you all for the amazing support on Fansbook. You guys make creating content so much fun 💕',
       createdAt: new Date(Date.now() - 7200000),
     },
   });
-
-  const media = [
-    { url: `${IMG}/post-image-main.webp`, type: 'IMAGE' as const, order: 0 },
-    { url: `${IMG}/post-image-right-top.webp`, type: 'IMAGE' as const, order: 1 },
-    { url: `${IMG}/post-image-blur.webp`, type: 'IMAGE' as const, order: 2 },
-    { url: `${IMG}/story-bg-1.webp`, type: 'IMAGE' as const, order: 3 },
-    { url: `${IMG}/story-bg-2.webp`, type: 'IMAGE' as const, order: 4 },
-    { url: `${IMG}/story-bg-3.webp`, type: 'IMAGE' as const, order: 5 },
-    { url: `${IMG}/story-bg-4.webp`, type: 'IMAGE' as const, order: 6 },
-    { url: `${IMG}/story-bg-5.webp`, type: 'IMAGE' as const, order: 7 },
-    { url: '/images/creators/creator1.webp', type: 'IMAGE' as const, order: 8 },
-    { url: '/images/creators/creator2.webp', type: 'IMAGE' as const, order: 9 },
+  const m1 = [
+    `${IMG}/post-image-main.webp`,
+    `${IMG}/post-image-right-top.webp`,
+    `${IMG}/post-image-blur.webp`,
+    `${IMG}/story-bg-1.webp`,
+    `${IMG}/story-bg-2.webp`,
+    `${IMG}/story-bg-3.webp`,
+    `${IMG}/story-bg-4.webp`,
+    `${IMG}/story-bg-5.webp`,
+    '/images/creators/creator1.webp',
+    '/images/creators/creator2.webp',
   ];
-  for (const m of media) {
-    await prisma.postMedia.create({ data: { postId: imagePost.id, ...m } });
+  for (let i = 0; i < m1.length; i++) {
+    await prisma.postMedia.create({
+      data: { postId: imgPost1.id, url: m1[i], type: 'IMAGE', order: i },
+    });
   }
 
-  // Second image post with different images
-  const imagePost2 = await prisma.post.create({
+  const imgPost2 = await prisma.post.create({
     data: {
-      authorId: emlia.id,
-      text: 'New week, new vibes! Which look is your favorite? Let me know in the comments 💋',
+      authorId: chloe.id,
       visibility: 'PUBLIC',
       likeCount: 156,
-      commentCount: 42,
+      commentCount: 8,
+      text: 'New week, new vibes! Which look is your favorite? Let me know in the comments 💋',
       createdAt: new Date(Date.now() - 3600000),
     },
   });
-  const media2 = [
-    { url: '/images/creators/creator3.webp', type: 'IMAGE' as const, order: 0 },
-    { url: '/images/creators/creator4.webp', type: 'IMAGE' as const, order: 1 },
-    { url: '/images/creators/creator5.webp', type: 'IMAGE' as const, order: 2 },
-    { url: '/images/creators/creator6.webp', type: 'IMAGE' as const, order: 3 },
-    { url: '/images/creators/creator7.webp', type: 'IMAGE' as const, order: 4 },
+  const m2 = [
+    '/images/creators/creator3.webp',
+    '/images/creators/creator4.webp',
+    '/images/creators/creator5.webp',
+    '/images/creators/creator6.webp',
+    '/images/creators/creator7.webp',
   ];
-  for (const m of media2) {
-    await prisma.postMedia.create({ data: { postId: imagePost2.id, ...m } });
-  }
-
-  // Seed comments for image posts
-  await prisma.comment.deleteMany({});
-  const commentTexts = [
-    'Absolutely stunning! 🔥',
-    'You look amazing as always!',
-    'Best content on Fansbook 💯',
-    "Can't wait for more!",
-    'This is incredible work',
-    'Love this photo set so much 😍',
-    'You never disappoint!',
-    'Goals!! 🙌',
-  ];
-  const commenters = [sarah.id, emlia.id, ...storyIds.slice(0, 3)];
-  let commentIdx = 0;
-  for (const postObj of [imagePost, imagePost2]) {
-    for (let i = 0; i < 8; i++) {
-      await prisma.comment.create({
-        data: {
-          postId: postObj.id,
-          authorId: commenters[i % commenters.length],
-          text: commentTexts[(commentIdx + i) % commentTexts.length],
-          createdAt: new Date(Date.now() - (8 - i) * 600000),
-        },
-      });
-    }
-    await prisma.post.update({
-      where: { id: postObj.id },
-      data: { commentCount: 8 },
+  for (let i = 0; i < m2.length; i++) {
+    await prisma.postMedia.create({
+      data: { postId: imgPost2.id, url: m2[i], type: 'IMAGE', order: i },
     });
-    commentIdx += 3;
   }
 
-  const videoPost = await prisma.post.create({
+  const vidPost1 = await prisma.post.create({
     data: {
-      authorId: emlia.id,
-      text: "Behind the scenes of today's shoot! Subscribe to see the full video. Going live tonight at 9 PM — don't miss it 🎥🔥",
+      authorId: chloe.id,
       visibility: 'PUBLIC',
       likeCount: 80,
-      commentCount: 24,
+      commentCount: 8,
+      text: "Behind the scenes of today's shoot! Subscribe to see the full video. Going live tonight at 9 PM — don't miss it 🎥🔥",
       createdAt: new Date(Date.now() - 7200000),
     },
   });
   await prisma.postMedia.create({
     data: {
-      postId: videoPost.id,
-      url: `${IMG}/video-thumbnail.webp`,
+      postId: vidPost1.id,
+      url: '/videos/sample-1.mp4',
       type: 'VIDEO',
       order: 0,
       thumbnail: `${IMG}/video-thumbnail.webp`,
     },
   });
+
+  const vidPost2 = await prisma.post.create({
+    data: {
+      authorId: sarah.id,
+      visibility: 'PUBLIC',
+      likeCount: 210,
+      commentCount: 8,
+      text: 'Sneak peek of the new content dropping this weekend! Stay tuned 🔥✨',
+      createdAt: new Date(Date.now() - 5400000),
+    },
+  });
+  await prisma.postMedia.create({
+    data: {
+      postId: vidPost2.id,
+      url: '/videos/sample-2.mp4',
+      type: 'VIDEO',
+      order: 0,
+      thumbnail: `${IMG}/story-bg-3.webp`,
+    },
+  });
+
+  const commenters = [sarah.id, chloe.id, ...storyIds.slice(0, 3)];
+  await seedComments(prisma, [imgPost1.id, imgPost2.id, vidPost1.id, vidPost2.id], commenters);
 }
