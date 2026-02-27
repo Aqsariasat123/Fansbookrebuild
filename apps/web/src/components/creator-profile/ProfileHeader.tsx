@@ -1,6 +1,7 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CoverIcon, Stat, BioSocialSection } from './ProfileHeaderParts';
+import { ProfileSharePopup } from './ProfileSharePopup';
 
 interface ProfileHeaderProps {
   displayName: string;
@@ -21,28 +22,28 @@ interface ProfileHeaderProps {
   onScheduleLive?: () => void;
 }
 
-export function ProfileHeader(props: ProfileHeaderProps) {
-  const {
-    displayName,
-    username,
-    avatar,
-    cover,
-    bio,
-    hashtags,
-    isVerified,
-    followersCount,
-    followingCount,
-    likesCount,
-    socialLinks,
-    uploadingAvatar,
-    uploadingCover,
-    onAvatarUpload,
-    onCoverUpload,
-    onScheduleLive,
-  } = props;
+export function ProfileHeader({
+  displayName,
+  username,
+  avatar,
+  cover,
+  bio,
+  hashtags,
+  isVerified,
+  followersCount,
+  followingCount,
+  likesCount,
+  socialLinks,
+  uploadingAvatar,
+  uploadingCover,
+  onAvatarUpload,
+  onCoverUpload,
+  onScheduleLive,
+}: ProfileHeaderProps) {
   const navigate = useNavigate();
   const avatarRef = useRef<HTMLInputElement>(null);
   const coverRef = useRef<HTMLInputElement>(null);
+  const [showShare, setShowShare] = useState(false);
   const initial = displayName.charAt(0).toUpperCase();
 
   const handleFile = (cb: (f: File) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,7 +77,7 @@ export function ProfileHeader(props: ProfileHeaderProps) {
           />
           <CoverIcon
             d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"
-            onClick={() => {}}
+            onClick={() => setShowShare(true)}
           />
         </div>
         <input
@@ -187,7 +188,6 @@ export function ProfileHeader(props: ProfileHeaderProps) {
             ))}
           </div>
         )}
-
         <div className="mt-[20px] flex items-center gap-[16px]">
           <button
             onClick={() => navigate('/creator/go-live')}
@@ -203,6 +203,8 @@ export function ProfileHeader(props: ProfileHeaderProps) {
           </button>
         </div>
       </div>
+
+      {showShare && <ProfileSharePopup username={username} onClose={() => setShowShare(false)} />}
     </div>
   );
 }

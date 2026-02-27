@@ -159,6 +159,38 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
     await prisma.postMedia.create({ data: { postId: imagePost2.id, ...m } });
   }
 
+  // Seed comments for image posts
+  await prisma.comment.deleteMany({});
+  const commentTexts = [
+    'Absolutely stunning! 🔥',
+    'You look amazing as always!',
+    'Best content on Fansbook 💯',
+    "Can't wait for more!",
+    'This is incredible work',
+    'Love this photo set so much 😍',
+    'You never disappoint!',
+    'Goals!! 🙌',
+  ];
+  const commenters = [sarah.id, emlia.id, ...storyIds.slice(0, 3)];
+  let commentIdx = 0;
+  for (const postObj of [imagePost, imagePost2]) {
+    for (let i = 0; i < 8; i++) {
+      await prisma.comment.create({
+        data: {
+          postId: postObj.id,
+          authorId: commenters[i % commenters.length],
+          text: commentTexts[(commentIdx + i) % commentTexts.length],
+          createdAt: new Date(Date.now() - (8 - i) * 600000),
+        },
+      });
+    }
+    await prisma.post.update({
+      where: { id: postObj.id },
+      data: { commentCount: 8 },
+    });
+    commentIdx += 3;
+  }
+
   const videoPost = await prisma.post.create({
     data: {
       authorId: emlia.id,

@@ -40,12 +40,29 @@ export function PostActions({
     }
   };
 
+  const [copied, setCopied] = useState(false);
+
   const handleShare = async () => {
     const url = `${window.location.origin}/post/${postId}`;
-    try {
-      await navigator.clipboard.writeText(url);
-    } catch {
-      /* ignore */
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Check this post', url });
+      } catch {
+        /* user cancelled */
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -88,7 +105,9 @@ export function PostActions({
             className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]"
           >
             <img src={`${IMG}/share.svg`} alt="" className="size-[12px] md:size-[20px]" />
-            <span className="text-[10px] font-normal md:text-[16px]">{shareCount} Share</span>
+            <span className="text-[10px] font-normal md:text-[16px]">
+              {copied ? 'Copied!' : `${shareCount} Share`}
+            </span>
           </button>
         </div>
         <button className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]">
