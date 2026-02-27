@@ -69,15 +69,40 @@ router.get('/stories', authenticate, async (_req, res, next) => {
       },
     });
 
-    const formatted = stories.map((s) => ({
-      id: s.id,
-      mediaUrl: s.mediaUrl,
-      mediaType: s.mediaType,
-      viewCount: s.viewCount,
-      author: s.author,
-    }));
+    // Group stories by author
+    const groupMap = new Map<
+      string,
+      {
+        authorId: string;
+        username: string;
+        displayName: string;
+        avatar: string | null;
+        stories: { id: string; mediaUrl: string; mediaType: string; createdAt: Date }[];
+      }
+    >();
 
-    res.json({ success: true, data: formatted });
+    for (const s of stories) {
+      const existing = groupMap.get(s.authorId);
+      const storyItem = {
+        id: s.id,
+        mediaUrl: s.mediaUrl,
+        mediaType: s.mediaType,
+        createdAt: s.createdAt,
+      };
+      if (existing) {
+        existing.stories.push(storyItem);
+      } else {
+        groupMap.set(s.authorId, {
+          authorId: s.author.id,
+          username: s.author.username,
+          displayName: s.author.displayName,
+          avatar: s.author.avatar,
+          stories: [storyItem],
+        });
+      }
+    }
+
+    res.json({ success: true, data: Array.from(groupMap.values()) });
   } catch (err) {
     next(err);
   }

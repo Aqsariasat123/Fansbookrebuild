@@ -1,22 +1,11 @@
 import { useRef, useState } from 'react';
 import { api } from '../../lib/api';
 
-interface StoryItem {
-  id: string;
-  mediaUrl: string;
-  author: {
-    id: string;
-    username: string;
-    displayName: string;
-    avatar: string | null;
-  };
-}
-
 interface AddStoryCardProps {
-  onStoryAdded: (story: StoryItem) => void;
+  onStoryUploaded: () => void;
 }
 
-export function AddStoryCard({ onStoryAdded }: AddStoryCardProps) {
+export function AddStoryCard({ onStoryUploaded }: AddStoryCardProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,8 +14,8 @@ export function AddStoryCard({ onStoryAdded }: AddStoryCardProps) {
     try {
       const form = new FormData();
       form.append('media', file);
-      const res = await api.post('/stories', form);
-      onStoryAdded(res.data.data);
+      await api.post('/stories', form);
+      onStoryUploaded();
     } catch {
       /* upload failed silently */
     } finally {

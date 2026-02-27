@@ -78,6 +78,36 @@ router.post(
   },
 );
 
+// Track story view
+router.post('/:id/view', authenticate, async (req, res, next) => {
+  try {
+    const storyId = req.params.id as string;
+    const viewerId = req.user!.userId;
+
+    const story = await prisma.story.findUnique({ where: { id: storyId } });
+    if (!story) throw new AppError(404, 'Story not found');
+    if (story.expiresAt < new Date()) throw new AppError(410, 'Story has expired');
+
+    const existing = await prisma.storyView.findUnique({
+      where: { storyId_viewerId: { storyId, viewerId } },
+    });
+
+    if (!existing) {
+      await prisma.$transaction([
+        prisma.storyView.create({ data: { storyId, viewerId } }),
+        prisma.story.update({
+          where: { id: storyId },
+          data: { viewCount: { increment: 1 } },
+        }),
+      ]);
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Delete own story
 router.delete('/:id', authenticate, async (req, res, next) => {
   try {
