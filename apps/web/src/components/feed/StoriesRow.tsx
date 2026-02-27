@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AddStoryCard } from './AddStoryCard';
 import { StoryViewer } from './StoryViewer';
+import { VideoThumbnail } from './VideoThumbnail';
 import type { StoryGroup } from './StoryViewer';
 
 interface StoriesRowProps {
@@ -23,11 +24,18 @@ export function StoriesRow({ groups, isCreator, onRefetch }: StoriesRowProps) {
             onClick={() => setViewerIndex(idx)}
           >
             <div className="relative size-[52px] overflow-hidden rounded-full md:h-[186px] md:w-[133px] md:rounded-[16px]">
-              <img
-                src={group.stories[0]?.mediaUrl || ''}
-                alt=""
-                className="absolute inset-0 h-full w-full max-w-none object-cover"
-              />
+              {group.stories[0]?.mediaType === 'VIDEO' ? (
+                <VideoThumbnail
+                  src={group.stories[0].mediaUrl}
+                  className="absolute inset-0 h-full w-full max-w-none object-cover"
+                />
+              ) : (
+                <img
+                  src={group.stories[0]?.mediaUrl || ''}
+                  alt=""
+                  className="absolute inset-0 h-full w-full max-w-none object-cover"
+                />
+              )}
               <div className="absolute inset-0 hidden rounded-[16px] bg-gradient-to-b from-[rgba(14,16,18,0)] from-[44%] to-[rgba(14,16,18,0.88)] to-[80%] md:block" />
               <div className="absolute bottom-[30px] left-1/2 hidden -translate-x-1/2 md:block">
                 <img
