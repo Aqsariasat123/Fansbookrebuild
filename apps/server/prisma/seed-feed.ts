@@ -3,21 +3,21 @@ import { PrismaClient } from '@prisma/client';
 const IMG = '/icons/dashboard';
 
 const storyNames = [
-  { email: 'bella1@fansbook.com', username: 'bella_rose_1', displayName: 'Bella Rose' },
-  { email: 'nina2@fansbook.com', username: 'nina_pearl_2', displayName: 'Nina Pearl' },
-  { email: 'aria3@fansbook.com', username: 'aria_sky_3', displayName: 'Aria Sky' },
-  { email: 'zara4@fansbook.com', username: 'zara_luxe_4', displayName: 'Zara Luxe' },
-  { email: 'ivy5@fansbook.com', username: 'ivy_bloom_5', displayName: 'Ivy Bloom' },
+  { email: 'emma1@fansbook.com', username: 'emma_joens_1', displayName: 'Emma Joens' },
+  { email: 'emma2@fansbook.com', username: 'emma_joens_2', displayName: 'Emma Joens' },
+  { email: 'emma3@fansbook.com', username: 'emma_joens_3', displayName: 'Emma Joens' },
+  { email: 'emma4@fansbook.com', username: 'emma_joens_4', displayName: 'Emma Joens' },
+  { email: 'emma5@fansbook.com', username: 'emma_joens_5', displayName: 'Emma Joens' },
 ];
 
 const popularModelNames = [
-  { email: 'dani_nova@fansbook.com', username: 'dani_nova', displayName: 'Dani Nova' },
-  { email: 'lexi_mae@fansbook.com', username: 'lexi_mae', displayName: 'Lexi Mae' },
-  { email: 'ruby_voss@fansbook.com', username: 'ruby_voss', displayName: 'Ruby Voss' },
-  { email: 'maya_quinn@fansbook.com', username: 'maya_quinn', displayName: 'Maya Quinn' },
-  { email: 'tessa_lane@fansbook.com', username: 'tessa_lane', displayName: 'Tessa Lane' },
-  { email: 'jade_fox@fansbook.com', username: 'jade_fox', displayName: 'Jade Fox' },
-  { email: 'kira_blaze@fansbook.com', username: 'kira_blaze', displayName: 'Kira Blaze' },
+  { email: 'evilia1@fansbook.com', username: 'evilia_1', displayName: 'Evilia' },
+  { email: 'evilia2@fansbook.com', username: 'evilia_2', displayName: 'Evilia' },
+  { email: 'evilia3@fansbook.com', username: 'evilia_3', displayName: 'Evilia' },
+  { email: 'evilia4@fansbook.com', username: 'evilia_4', displayName: 'Evilia' },
+  { email: 'evilia5@fansbook.com', username: 'evilia_5', displayName: 'Evilia' },
+  { email: 'evilia6@fansbook.com', username: 'evilia_6', displayName: 'Evilia' },
+  { email: 'evilia7@fansbook.com', username: 'evilia_7', displayName: 'Evilia' },
 ];
 
 async function upsertCreator(
@@ -62,7 +62,7 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
     const sn = storyNames[i - 1];
     const c = await upsertCreator(prisma, {
       ...sn,
-      avatar: `/images/creators/creator${i + 5 > 10 ? i : i + 5}.webp`,
+      avatar: `${IMG}/story-avatar-${i}.webp`,
       passwordHash,
     });
     storyIds.push(c.id);
@@ -101,7 +101,7 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
   for (let i = 1; i <= 7; i++) {
     await upsertCreator(prisma, {
       ...popularModelNames[i - 1],
-      avatar: `/images/creators/creator${i}.webp`,
+      avatar: `${IMG}/model-${i}.webp`,
       passwordHash,
       category: 'Model',
     });

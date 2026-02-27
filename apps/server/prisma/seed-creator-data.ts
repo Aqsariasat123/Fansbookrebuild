@@ -20,7 +20,7 @@ export async function seedCreatorData(prisma: PrismaClient, passwordHash: string
         isVerified: true,
         bio: 'Professional content creator | \u{1F3A8} Art & Lifestyle | Subscribe for exclusive content',
         location: 'Los Angeles, CA',
-        category: 'Model',
+        category: 'Creator',
         gender: 'Female',
         country: 'US',
         aboutMe:
@@ -48,7 +48,7 @@ export async function seedCreatorData(prisma: PrismaClient, passwordHash: string
         isVerified: true,
         bio: 'Professional content creator | \u{1F3A8} Art & Lifestyle | Subscribe for exclusive content',
         location: 'Los Angeles, CA',
-        category: 'Model',
+        category: 'Creator',
         gender: 'Female',
         country: 'US',
         aboutMe:

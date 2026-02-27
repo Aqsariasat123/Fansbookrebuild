@@ -9,7 +9,7 @@ const router = Router();
 // All routes require auth + CREATOR role
 router.use(authenticate, requireRole('CREATOR'));
 
-const EARNING_TYPES = ['TIP_RECEIVED', 'SUBSCRIPTION', 'PPV_EARNING', 'REFERRAL'] as const;
+const EARNING_TYPES = ['TIP_RECEIVED', 'SUBSCRIPTION', 'PPV_EARNING'] as const;
 
 interface EarningsQuery {
   category?: string;

@@ -3,6 +3,7 @@ import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { ImagePost, VideoPost } from '../components/feed/FeedPosts';
 import { PostComposerBar } from '../components/feed/PostComposerBar';
+import { AddStoryCard } from '../components/feed/AddStoryCard';
 import type { FeedPost } from '../components/feed/FeedPosts';
 
 interface Author {
@@ -60,8 +61,12 @@ export default function Home() {
       {user?.role === 'CREATOR' && <PostComposerBar />}
 
       {/* Stories Row */}
-      {stories.length > 0 && (
+      {(stories.length > 0 || user?.role === 'CREATOR') && (
         <div className="flex gap-[16px] overflow-x-auto scrollbar-hide md:gap-[20px]">
+          {/* Add Your Story (Creator only) */}
+          {user?.role === 'CREATOR' && (
+            <AddStoryCard onStoryAdded={(story) => setStories((prev) => [story, ...prev])} />
+          )}
           {stories.map((story) => (
             <div
               key={story.id}

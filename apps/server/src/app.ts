@@ -25,6 +25,7 @@ import creatorEarningsRouter from './routes/creator-earnings.js';
 import creatorReferralsRouter from './routes/creator-referrals.js';
 import creatorTiersRouter from './routes/creator-tiers.js';
 import creatorBookingsRouter from './routes/creator-bookings.js';
+import storiesRouter from './routes/stories.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -76,6 +77,7 @@ app.use('/api/creator/earnings', creatorEarningsRouter);
 app.use('/api/creator/referrals', creatorReferralsRouter);
 app.use('/api/creator/tiers', creatorTiersRouter);
 app.use('/api/creator/bookings', creatorBookingsRouter);
+app.use('/api/stories', storiesRouter);
 
 // Error handling
 app.use(errorHandler);
