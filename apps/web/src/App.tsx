@@ -34,6 +34,13 @@ const Terms = lazy(() => import('./pages/Terms'));
 const Cookies = lazy(() => import('./pages/Cookies'));
 const Complaints = lazy(() => import('./pages/Complaints'));
 const FAQ = lazy(() => import('./pages/FAQ'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
+const SinglePost = lazy(() => import('./pages/SinglePost'));
+const Bookmarks = lazy(() => import('./pages/Bookmarks'));
+const Following = lazy(() => import('./pages/Following'));
+const CreateStory = lazy(() => import('./pages/CreateStory'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Creator pages
@@ -48,6 +55,8 @@ const CreatorPublicProfile = lazy(() => import('./pages/CreatorPublicProfile'));
 const CreatePost = lazy(() => import('./pages/CreatePost'));
 const GoLive = lazy(() => import('./pages/GoLive'));
 const LiveBroadcasting = lazy(() => import('./pages/LiveBroadcasting'));
+const CreatorDashboardHome = lazy(() => import('./pages/CreatorDashboardHome'));
+const CreatorAnalytics = lazy(() => import('./pages/CreatorAnalytics'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -112,12 +121,19 @@ export default function App() {
               {/* Auth pages (no layout) */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
 
               {/* Protected app routes with layout */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
                   {/* Shared routes (both fan + creator) */}
                   <Route path="/feed" element={<Home />} />
+                  <Route path="/post/:id" element={<SinglePost />} />
+                  <Route path="/bookmarks" element={<Bookmarks />} />
+                  <Route path="/following" element={<Following />} />
+                  <Route path="/stories/create" element={<CreateStory />} />
                   <Route path="/messages" element={<Messages />} />
                   <Route path="/messages/:conversationId" element={<MessageChat />} />
                   <Route path="/notifications" element={<Notifications />} />
@@ -140,6 +156,8 @@ export default function App() {
 
                   {/* Creator-only routes */}
                   <Route element={<RoleRoute allowedRoles={['CREATOR', 'ADMIN']} />}>
+                    <Route path="/creator/dashboard" element={<CreatorDashboardHome />} />
+                    <Route path="/creator/analytics" element={<CreatorAnalytics />} />
                     <Route path="/creator/profile" element={<CreatorProfileOwner />} />
                     <Route path="/creator/profile/edit" element={<CreatorProfileEdit />} />
                     <Route path="/creator/wallet" element={<CreatorWallet />} />

@@ -219,13 +219,19 @@ model User {
   twoFactorSecret  String?
   twoFactorEnabled Boolean    @default(false)
   onboardingStep   Int        @default(0)
-  emailVerified    Boolean    @default(false)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  emailVerified      Boolean    @default(false)
+  emailVerifyToken   String?
+  passwordResetToken String?
+  passwordResetExpiry DateTime?
+  notifSettings      Json       @default("{}")
+  privacySettings    Json       @default("{}")
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
 
   // Relations
   otpCodes             OtpCode[]
   refreshTokens        RefreshToken[]
+  sessions             Session[]
   posts                Post[]
   comments             Comment[]
   likes                Like[]
@@ -299,6 +305,19 @@ model RefreshToken {
 
   @@index([userId])
   @@index([token])
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  deviceInfo String?
+  ipAddress  String?
+  lastActive DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // ─── Social Graph (Phase 2) ──────────────────────────────

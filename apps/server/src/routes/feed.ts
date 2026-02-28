@@ -8,6 +8,8 @@ const router = Router();
 router.get('/', authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.userId;
+    const cursor = req.query.cursor as string | undefined;
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 10, 1), 50);
 
     // Get IDs of creators this user follows
     const follows = await prisma.follow.findMany({
@@ -21,7 +23,8 @@ router.get('/', authenticate, async (req, res, next) => {
     const posts = await prisma.post.findMany({
       where: { visibility: 'PUBLIC', authorId: { in: followedIds } },
       orderBy: { createdAt: 'desc' },
-      take: 20,
+      take: limit,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       include: {
         author: {
           select: {
@@ -47,6 +50,11 @@ router.get('/', authenticate, async (req, res, next) => {
           select: { id: true },
           take: 1,
         },
+        bookmarks: {
+          where: { userId },
+          select: { id: true },
+          take: 1,
+        },
       },
     });
 
@@ -60,9 +68,13 @@ router.get('/', authenticate, async (req, res, next) => {
       author: post.author,
       media: post.media,
       isLiked: post.likes.length > 0,
+      isBookmarked: post.bookmarks.length > 0,
     }));
 
-    res.json({ success: true, data: formatted });
+    const nextCursor =
+      formatted.length === limit ? (formatted[formatted.length - 1]?.id ?? null) : null;
+
+    res.json({ success: true, data: { posts: formatted, nextCursor } });
   } catch (err) {
     next(err);
   }

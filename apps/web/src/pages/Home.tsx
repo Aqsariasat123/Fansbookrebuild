@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
@@ -22,6 +22,9 @@ export default function Home() {
   const [storyGroups, setStoryGroups] = useState<StoryGroup[]>([]);
   const [models, setModels] = useState<Author[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const isCreator = user?.role === 'CREATOR';
 
   const fetchStories = useCallback(async () => {
@@ -37,21 +40,51 @@ export default function Home() {
     async function load() {
       try {
         const [feedRes, storiesRes, modelsRes] = await Promise.all([
-          api.get('/feed'),
+          api.get('/feed?limit=10'),
           api.get('/feed/stories'),
           api.get('/feed/popular-models'),
         ]);
-        setPosts(feedRes.data.data || []);
+        const feedData = feedRes.data.data;
+        setPosts(feedData.posts || feedData || []);
+        setCursor(feedData.nextCursor || null);
         setStoryGroups(storiesRes.data.data || []);
         setModels(modelsRes.data.data || []);
       } catch {
-        /* will show empty state */
+        /* empty state */
       } finally {
         setLoading(false);
       }
     }
     load();
   }, []);
+
+  const loadMore = useCallback(async () => {
+    if (!cursor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const res = await api.get(`/feed?cursor=${cursor}&limit=10`);
+      const data = res.data.data;
+      setPosts((prev) => [...prev, ...(data.posts || [])]);
+      setCursor(data.nextCursor || null);
+    } catch {
+      /* ignore */
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [cursor, loadingMore]);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) loadMore();
+      },
+      { rootMargin: '200px' },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [loadMore]);
 
   if (loading) {
     return (
@@ -79,7 +112,9 @@ export default function Home() {
         <div className="flex flex-col gap-[8px] md:gap-[17px]">
           <div className="flex items-center justify-between text-[12px] font-medium text-[#f8f8f8] md:text-[16px]">
             <p>Most Popular Models</p>
-            <p className="cursor-pointer underline decoration-solid">View all</p>
+            <Link to="/explore" className="cursor-pointer underline decoration-solid">
+              View all
+            </Link>
           </div>
           <div className="flex items-center gap-[21px] overflow-x-auto scrollbar-hide md:gap-[42px]">
             {models.map((model) => (
@@ -109,6 +144,14 @@ export default function Home() {
         .map((post) => (
           <VideoPost key={post.id} post={post} />
         ))}
+
+      {/* Infinite scroll sentinel */}
+      <div ref={sentinelRef} className="h-1" />
+      {loadingMore && (
+        <div className="flex justify-center py-4">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
+        </div>
+      )}
     </div>
   );
 }

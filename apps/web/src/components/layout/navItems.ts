@@ -25,7 +25,13 @@ export const fanNavItems: NavItem[] = [
 ];
 
 export const creatorNavItems: NavItem[] = [
+  { to: '/creator/dashboard', icon: '/icons/dashboard/home.svg', labelKey: 'nav.dashboard' },
   { to: '/feed', icon: '/icons/dashboard/home.svg', labelKey: 'nav.home' },
+  {
+    to: '/creator/analytics',
+    icon: '/icons/dashboard/account-balance-wallet.svg',
+    labelKey: 'nav.analytics',
+  },
   { to: '/creator/profile', icon: '/icons/dashboard/person.svg', labelKey: 'nav.myProfile' },
   { to: '/messages', icon: '/icons/dashboard/chat.svg', labelKey: 'nav.messages' },
   {
@@ -71,6 +77,8 @@ export const fallbackLabels: Record<string, string> = {
   'nav.myEarning': 'My Earning',
   'nav.myReferrals': 'My Referrals',
   'nav.myBookings': 'My Bookings',
+  'nav.dashboard': 'Dashboard',
+  'nav.analytics': 'Analytics',
   'nav.english': 'English',
   'nav.logout': 'Logout',
 };
