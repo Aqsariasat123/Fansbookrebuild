@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import { prisma } from '../config/database.js';
 import { AppError } from '../middleware/errorHandler.js';
-import { tryExtractViewer, checkIsFollowing } from './creator-profile-helpers.js';
+import {
+  tryExtractViewer,
+  checkIsFollowing,
+  checkIsSubscriber,
+} from './creator-profile-helpers.js';
 
 const router = Router();
 
@@ -51,6 +55,7 @@ router.get('/:username', async (req, res, next) => {
 
     const viewerId = await tryExtractViewer(req);
     const isFollowing = viewerId ? await checkIsFollowing(viewerId, creator.id) : false;
+    const isSubscribed = viewerId ? await checkIsSubscriber(viewerId, creator.id) : false;
 
     const { _count, subscriptionTiers, ...profile } = creator;
     res.json({
@@ -65,6 +70,7 @@ router.get('/:username', async (req, res, next) => {
           benefits: typeof t.benefits === 'string' ? JSON.parse(t.benefits) : t.benefits,
         })),
         isFollowing,
+        isSubscribed,
       },
     });
   } catch (err) {
