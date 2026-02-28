@@ -111,7 +111,7 @@ function ThemeSwitch() {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="flex size-[40px] items-center justify-center rounded-full border border-foreground/20 text-foreground transition-colors hover:bg-foreground/10"
+      className="flex size-[40px] items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:bg-white/10"
       aria-label="Toggle theme"
     >
       {isDark ? (
@@ -131,7 +131,7 @@ export function MarketingNav() {
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const linkColor = (path: string) => (pathname === path ? 'text-primary' : 'text-foreground');
+  const linkColor = (path: string) => (pathname === path ? 'text-primary' : 'text-white');
 
   return (
     <>
@@ -176,13 +176,13 @@ export function MarketingNav() {
           <ThemeSwitch />
           <Link
             to="/login"
-            className="rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[24px] py-[14px] text-[18px] font-normal text-foreground shadow-[0px_2px_18px_rgba(34,34,34,0.25)]"
+            className="rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[24px] py-[14px] text-[18px] font-normal text-white shadow-[0px_2px_18px_rgba(34,34,34,0.25)]"
           >
             Login
           </Link>
           <Link
             to="/register"
-            className="rounded-[80px] border border-[#01adf1] px-[24px] py-[14px] text-[18px] font-normal text-foreground shadow-[0px_2px_18px_rgba(34,34,34,0.25)]"
+            className="rounded-[80px] border border-[#01adf1] px-[24px] py-[14px] text-[18px] font-normal text-white shadow-[0px_2px_18px_rgba(34,34,34,0.25)]"
           >
             Signup
           </Link>
@@ -193,7 +193,7 @@ export function MarketingNav() {
           <ThemeSwitch />
           <Link
             to="/login"
-            className="rounded-[53px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[16px] py-[9px] text-[12px] font-medium text-foreground shadow-[0px_1.3px_12px_rgba(34,34,34,0.25)]"
+            className="rounded-[53px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[16px] py-[9px] text-[12px] font-medium text-white shadow-[0px_1.3px_12px_rgba(34,34,34,0.25)]"
           >
             Login
           </Link>
@@ -202,9 +202,9 @@ export function MarketingNav() {
             className="flex h-[30px] w-[30px] flex-col items-center justify-center gap-[6px]"
             aria-label="Open menu"
           >
-            <span className="h-[2px] w-[22px] bg-foreground" />
-            <span className="h-[2px] w-[22px] bg-foreground" />
-            <span className="h-[2px] w-[22px] bg-foreground" />
+            <span className="h-[2px] w-[22px] bg-white" />
+            <span className="h-[2px] w-[22px] bg-white" />
+            <span className="h-[2px] w-[22px] bg-white" />
           </button>
         </div>
       </nav>

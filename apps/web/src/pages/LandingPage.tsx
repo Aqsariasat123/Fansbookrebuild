@@ -25,17 +25,17 @@ function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-[20px] pt-[100px] pb-[40px] md:pt-[40px] md:pb-0">
-        <h1 className="max-w-[580px] text-center text-[28px] font-medium leading-[1.2] text-foreground sm:text-[36px] md:text-[48px]">
+        <h1 className="max-w-[580px] text-center text-[28px] font-medium leading-[1.2] text-white sm:text-[36px] md:text-[48px]">
           Connect with Creators.
           <br />
           Watch. Subscribe. Support.
         </h1>
-        <p className="mt-[12px] text-center text-[14px] font-medium text-foreground md:mt-[16px] md:text-[16px]">
+        <p className="mt-[12px] text-center text-[14px] font-medium text-white md:mt-[16px] md:text-[16px]">
           Get in here and help your favorite creators do thier thing!
         </p>
         <Link
           to="/register"
-          className="mt-[32px] flex items-center gap-[10px] rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[40px] py-[14px] text-[16px] font-medium text-foreground shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90 md:mt-[48px] md:px-[70px] md:py-[17px] md:text-[20px]"
+          className="mt-[32px] flex items-center gap-[10px] rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[40px] py-[14px] text-[16px] font-medium text-white shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90 md:mt-[48px] md:px-[70px] md:py-[17px] md:text-[20px]"
         >
           Join Now
           <img
