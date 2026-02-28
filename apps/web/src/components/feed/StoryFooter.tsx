@@ -107,7 +107,7 @@ export function StoryFooter({ storyId, authorId, viewCount }: StoryFooterProps) 
 
   return (
     <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/80 to-transparent px-3 pb-4 pt-8">
-      {viewCount > 0 && <ViewCount count={viewCount} large={isOwner} />}
+      {isOwner && viewCount > 0 && <ViewCount count={viewCount} large />}
       {!isOwner && <ReplyBar storyId={storyId} />}
     </div>
   );
