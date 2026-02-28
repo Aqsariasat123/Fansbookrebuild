@@ -52,7 +52,7 @@ export function EditProfileModal({ open, onClose }: { open: boolean; onClose: ()
             placeholder="Tell us about yourself"
             maxLength={1000}
             rows={3}
-            className="rounded-[12px] bg-muted px-[16px] py-[12px] text-[16px] text-foreground outline-none border border-[#2a2d30] focus:border-[#2e80c8] transition-colors resize-none"
+            className="rounded-[12px] bg-muted px-[16px] py-[12px] text-[16px] text-foreground outline-none border border-border focus:border-[#2e80c8] transition-colors resize-none"
           />
         </div>
         <Field
@@ -73,14 +73,14 @@ export function EditProfileModal({ open, onClose }: { open: boolean; onClose: ()
         <div className="flex gap-[12px] mt-[8px]">
           <button
             onClick={onClose}
-            className="flex-1 h-[44px] rounded-[12px] border border-[#2a2d30] text-[16px] text-muted-foreground hover:text-foreground transition-colors"
+            className="flex-1 h-[44px] rounded-[12px] border border-border text-[16px] text-muted-foreground hover:text-foreground transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 h-[44px] rounded-[12px] bg-[#2e4882] text-[16px] text-foreground hover:bg-[#3a5a9e] transition-colors disabled:opacity-50"
+            className="flex-1 h-[44px] rounded-[12px] bg-primary/30 text-[16px] text-foreground hover:bg-[#3a5a9e] transition-colors disabled:opacity-50"
           >
             {saving ? 'Saving...' : 'Save'}
           </button>

@@ -55,7 +55,7 @@ export default function Contact() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter name..."
-                className="w-full rounded-[7px] md:rounded-[12px] bg-[#252d32] py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-foreground placeholder-muted-foreground outline-none"
+                className="w-full rounded-[7px] md:rounded-[12px] bg-muted py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-foreground placeholder-muted-foreground outline-none"
               />
             </div>
 
@@ -71,7 +71,7 @@ export default function Contact() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter email..."
-                className="w-full rounded-[7px] md:rounded-[12px] bg-[#252d32] py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-foreground placeholder-muted-foreground outline-none"
+                className="w-full rounded-[7px] md:rounded-[12px] bg-muted py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-foreground placeholder-muted-foreground outline-none"
               />
             </div>
 
@@ -86,7 +86,7 @@ export default function Contact() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Write message..."
-                className="h-[100px] md:h-[152px] w-full resize-none rounded-[7px] md:rounded-[12px] bg-[#252d32] py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-foreground placeholder-muted-foreground outline-none"
+                className="h-[100px] md:h-[152px] w-full resize-none rounded-[7px] md:rounded-[12px] bg-muted py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-foreground placeholder-muted-foreground outline-none"
               />
             </div>
           </div>

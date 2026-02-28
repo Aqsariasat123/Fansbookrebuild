@@ -44,7 +44,7 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
                 <div key={item.id} className="flex items-center py-[12px] md:py-[20px]">
                   {/* Creator */}
                   <div className="flex flex-1 items-center justify-center gap-[8px] md:gap-[17px]">
-                    <div className="h-[20px] w-[20px] shrink-0 overflow-hidden rounded-full bg-[#333] md:h-[38px] md:w-[38px]">
+                    <div className="h-[20px] w-[20px] shrink-0 overflow-hidden rounded-full bg-muted md:h-[38px] md:w-[38px]">
                       {item.avatar ? (
                         <img
                           src={item.avatar}
@@ -52,7 +52,7 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-[8px] font-bold text-[#555] md:text-[14px]">
+                        <div className="flex h-full w-full items-center justify-center text-[8px] font-bold text-muted-foreground md:text-[14px]">
                           {item.username.charAt(0).toUpperCase()}
                         </div>
                       )}
@@ -83,7 +83,7 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
                 </div>
               ))
             ) : (
-              <div className="py-[40px] text-center font-outfit text-[16px] text-[#999]">
+              <div className="py-[40px] text-center font-outfit text-[16px] text-muted-foreground">
                 No upcoming lives scheduled.
               </div>
             )}

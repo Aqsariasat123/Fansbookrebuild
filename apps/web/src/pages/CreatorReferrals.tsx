@@ -89,7 +89,7 @@ export default function CreatorReferrals() {
               ].map((row, i, arr) => (
                 <div
                   key={row.label}
-                  className={`flex items-center justify-between py-[8px] ${i < arr.length - 1 ? 'border-b border-[#1a1d20]' : ''}`}
+                  className={`flex items-center justify-between py-[8px] ${i < arr.length - 1 ? 'border-b border-border' : ''}`}
                 >
                   <span className="text-[12px] text-muted-foreground">{row.label}</span>
                   <span className="text-[13px] text-foreground">{row.value}</span>

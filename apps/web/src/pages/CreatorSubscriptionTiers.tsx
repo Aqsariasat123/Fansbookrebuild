@@ -62,7 +62,7 @@ export default function CreatorSubscriptionTiers() {
   if (loading)
     return (
       <div className="flex justify-center py-20">
-        <div className="size-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+        <div className="size-8 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
       </div>
     );
 
@@ -86,13 +86,13 @@ export default function CreatorSubscriptionTiers() {
               ].map((r) => (
                 <div
                   key={r.label}
-                  className="flex items-center justify-between border-b border-[#1a1d20] py-[8px]"
+                  className="flex items-center justify-between border-b border-border py-[8px]"
                 >
                   <span className="text-[12px] text-muted-foreground">{r.label}</span>
                   <span className="text-[13px] text-foreground">{r.value}</span>
                 </div>
               ))}
-              <div className="flex items-center justify-between border-b border-[#1a1d20] py-[8px]">
+              <div className="flex items-center justify-between border-b border-border py-[8px]">
                 <span className="text-[12px] text-muted-foreground">My Price</span>
                 <input
                   type="number"
@@ -107,7 +107,7 @@ export default function CreatorSubscriptionTiers() {
               ].map((r, i) => (
                 <div
                   key={r.label}
-                  className={`flex items-center justify-between py-[8px] ${i === 0 ? 'border-b border-[#1a1d20]' : ''}`}
+                  className={`flex items-center justify-between py-[8px] ${i === 0 ? 'border-b border-border' : ''}`}
                 >
                   <span className="text-[12px] text-muted-foreground">{r.label}</span>
                   <span className="text-[13px] text-muted-foreground">{r.value}</span>
@@ -184,7 +184,7 @@ export default function CreatorSubscriptionTiers() {
         >
           {saving ? 'Saving...' : 'Save'}
         </button>
-        <button className="w-full max-w-[306px] rounded-[80px] border border-[#2e4882] bg-foreground py-[12px] text-[18px] text-black shadow-md hover:opacity-90 transition-opacity">
+        <button className="w-full max-w-[306px] rounded-[80px] border border-[#2e4882] bg-foreground py-[12px] text-[18px] text-foreground shadow-md hover:opacity-90 transition-opacity">
           Cancel
         </button>
       </div>

@@ -37,7 +37,7 @@ function AvatarSection({
             className="size-[94px] md:size-[150px] rounded-full object-cover"
           />
         ) : (
-          <div className="size-[94px] md:size-[150px] rounded-full bg-[#2e4882] flex items-center justify-center">
+          <div className="size-[94px] md:size-[150px] rounded-full bg-primary/30 flex items-center justify-center">
             <span className="text-[32px] md:text-[48px] font-medium text-foreground">
               {initial}
             </span>
@@ -45,7 +45,7 @@ function AvatarSection({
         )}
         {uploading && (
           <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
-            <div className="size-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+            <div className="size-8 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
           </div>
         )}
       </div>
@@ -63,7 +63,7 @@ function AvatarSection({
       <button
         onClick={() => fileRef.current?.click()}
         disabled={uploading}
-        className="absolute bottom-[6px] right-[6px] size-[30px] rounded-[20px] bg-[#2e4882] flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-50"
+        className="absolute bottom-[6px] right-[6px] size-[30px] rounded-[20px] bg-primary/30 flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-50"
       >
         <img src={`${IMG}/camera-edit.svg`} alt="Edit avatar" className="size-[20px]" />
       </button>
@@ -78,7 +78,7 @@ function ActionRow({ icon, label, onClick }: { icon: string; label: string; onCl
       className="flex items-center justify-between w-full hover:opacity-80 transition-opacity"
     >
       <div className="flex items-center gap-[10px] md:gap-[15px]">
-        <div className="size-[24px] md:size-[30px] rounded-[20px] bg-[#2e4882] flex items-center justify-center shrink-0">
+        <div className="size-[24px] md:size-[30px] rounded-[20px] bg-primary/30 flex items-center justify-center shrink-0">
           <img src={icon} alt="" className="size-[12px] md:size-[15px]" />
         </div>
         <span className="text-[14px] md:text-[20px] font-normal text-foreground">{label}</span>
@@ -137,13 +137,13 @@ export default function Profile() {
             label="Edit Profile"
             onClick={() => navigate('/profile/edit')}
           />
-          <div className="w-full h-px bg-[#2a2d30] my-[12px] md:my-[16px]" />
+          <div className="w-full h-px bg-muted my-[12px] md:my-[16px]" />
           <ActionRow
             icon={`${IMG}/password-lock.svg`}
             label="Change Password"
             onClick={() => setPasswordOpen(true)}
           />
-          <div className="w-full h-px bg-[#2a2d30] my-[12px] md:my-[16px]" />
+          <div className="w-full h-px bg-muted my-[12px] md:my-[16px]" />
         </div>
       </div>
       <ChangePasswordModal open={passwordOpen} onClose={() => setPasswordOpen(false)} />

@@ -51,7 +51,7 @@ function DotsMenu({ postId }: { postId: string }) {
 
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen(!open)} className="rounded-full p-1 hover:bg-white/5">
+      <button onClick={() => setOpen(!open)} className="rounded-full p-1 hover:bg-card/5">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <circle cx="10" cy="3" r="1.5" fill="currentColor" />
           <circle cx="10" cy="10" r="1.5" fill="currentColor" />
@@ -62,7 +62,7 @@ function DotsMenu({ postId }: { postId: string }) {
         <div className="absolute right-0 top-[28px] z-30 min-w-[160px] rounded-[12px] bg-muted py-[6px] shadow-lg">
           <button
             onClick={copyLink}
-            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-foreground hover:bg-white/5"
+            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-foreground hover:bg-card/5"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
@@ -71,7 +71,7 @@ function DotsMenu({ postId }: { postId: string }) {
           </button>
           <button
             onClick={() => setOpen(false)}
-            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-foreground hover:bg-white/5"
+            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-foreground hover:bg-card/5"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zM2 16h8v-2H2v2zm19.5-4.5L23 13l-6.99 7-4.51-4.5L13 14l3.01 3 5.49-5.5z" />

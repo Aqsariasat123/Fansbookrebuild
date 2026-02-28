@@ -26,7 +26,7 @@ export function BalanceCards({ balance }: { balance: BalanceData | null }) {
           </svg>
         </div>
         <div>
-          <p className="text-[16px] text-[#a0a0a0]">Coins Balance</p>
+          <p className="text-[16px] text-muted-foreground">Coins Balance</p>
           <p className="text-[28px] font-bold text-foreground md:text-[40px]">
             {balance?.balance ?? 0}
           </p>
@@ -39,7 +39,7 @@ export function BalanceCards({ balance }: { balance: BalanceData | null }) {
           </svg>
         </div>
         <div>
-          <p className="text-[16px] text-[#a0a0a0]">Total Equivalent Amount</p>
+          <p className="text-[16px] text-muted-foreground">Total Equivalent Amount</p>
           <p className="text-[28px] font-bold text-foreground md:text-[40px]">
             &euro;{balance?.eurEquivalent ?? 0}
           </p>
@@ -105,21 +105,21 @@ export function WithdrawModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[400px] rounded-[16px] bg-white p-[24px]"
+        className="w-full max-w-[400px] rounded-[16px] bg-card p-[24px]"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="mb-[16px] text-[20px] font-semibold text-[#1a1a1a]">Withdraw</h3>
+        <h3 className="mb-[16px] text-[20px] font-semibold text-foreground">Withdraw</h3>
         <input
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Amount"
-          className="mb-[12px] w-full rounded-[8px] border border-[#d0d0d0] px-[14px] py-[10px] text-[14px] outline-none"
+          className="mb-[12px] w-full rounded-[8px] border border-border px-[14px] py-[10px] text-[14px] outline-none"
         />
         <select
           value={method}
           onChange={(e) => setMethod(e.target.value)}
-          className="mb-[16px] w-full rounded-[8px] border border-[#d0d0d0] px-[14px] py-[10px] text-[14px] outline-none"
+          className="mb-[16px] w-full rounded-[8px] border border-border px-[14px] py-[10px] text-[14px] outline-none"
         >
           <option value="bank">Bank Transfer</option>
           <option value="paypal">PayPal</option>

@@ -176,8 +176,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function DocRow({ label, btnText }: { label: string; btnText: string }) {
   return (
     <div className="flex items-center justify-between">
-      <p className="text-[20px] font-medium text-white">{label}</p>
-      <button className="rounded-[6px] bg-foreground px-[19px] py-[8px] text-[20px] font-medium text-foreground hover:opacity-90 transition-opacity">
+      <p className="text-[20px] font-medium text-foreground">{label}</p>
+      <button className="rounded-[6px] bg-primary px-[19px] py-[8px] text-[20px] font-medium text-primary-foreground hover:opacity-90 transition-opacity">
         {btnText}
       </button>
     </div>

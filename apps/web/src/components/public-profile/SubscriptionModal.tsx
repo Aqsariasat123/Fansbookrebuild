@@ -34,7 +34,7 @@ export function SubscriptionModal({ tiers, onClose, onSubscribe }: Props) {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute right-[20px] top-[20px] flex size-[40px] items-center justify-center rounded-full border border-[#d0d0d0] bg-white transition-colors hover:bg-[#eee]"
+          className="absolute right-[20px] top-[20px] flex size-[40px] items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-muted"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="#333">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />

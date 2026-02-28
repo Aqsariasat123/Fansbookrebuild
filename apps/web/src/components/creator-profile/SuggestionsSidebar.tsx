@@ -60,7 +60,7 @@ export function SuggestionsSidebar({ creatorUsername }: SuggestionsSidebarProps)
                   <img
                     src={creator.avatar}
                     alt=""
-                    className="size-[30px] rounded-full border border-white/20 object-cover"
+                    className="size-[30px] rounded-full border border-border object-cover"
                   />
                 ) : (
                   <div className="flex size-[30px] items-center justify-center rounded-full bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[12px] font-medium text-white">

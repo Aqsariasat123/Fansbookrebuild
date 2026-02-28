@@ -22,7 +22,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
         {/* Live indicator */}
         {creator.isLive && (
           <span className="absolute top-[10px] left-[10px] flex items-center gap-[4px] rounded-[4px] bg-[#e02a2a] px-[8px] py-[3px]">
-            <span className="h-[6px] w-[6px] rounded-full bg-white animate-pulse" />
+            <span className="h-[6px] w-[6px] rounded-full bg-card animate-pulse" />
             <span className="font-outfit text-[11px] font-medium text-white">LIVE</span>
           </span>
         )}
@@ -43,7 +43,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-[28px] font-bold text-white">
+            <div className="flex h-full w-full items-center justify-center text-[28px] font-bold text-foreground">
               {creator.displayName.charAt(0).toUpperCase()}
             </div>
           )}

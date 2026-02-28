@@ -66,7 +66,7 @@ function LiveGrid({
 }) {
   if (isError) {
     return (
-      <div className="w-full py-[60px] text-center font-outfit text-[18px] text-[#999]">
+      <div className="w-full py-[60px] text-center font-outfit text-[18px] text-muted-foreground">
         Something went wrong. Please try again.
       </div>
     );
@@ -84,7 +84,7 @@ function LiveGrid({
 
   if (!sessions || sessions.length === 0) {
     return (
-      <div className="w-full py-[60px] text-center font-outfit text-[18px] text-[#999]">
+      <div className="w-full py-[60px] text-center font-outfit text-[18px] text-muted-foreground">
         No live sessions right now. Check back soon!
       </div>
     );

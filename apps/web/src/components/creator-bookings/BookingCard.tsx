@@ -50,7 +50,7 @@ export function BookingCard({ booking, onAction, updating }: BookingCardProps) {
               className="size-[44px] rounded-full object-cover shrink-0"
             />
           ) : (
-            <div className="size-[44px] rounded-full bg-[#2e4882] flex items-center justify-center shrink-0">
+            <div className="size-[44px] rounded-full bg-primary/30 flex items-center justify-center shrink-0">
               <span className="text-[16px] font-medium text-foreground">{initial}</span>
             </div>
           )}

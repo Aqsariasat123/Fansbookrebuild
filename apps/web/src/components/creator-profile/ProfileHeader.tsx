@@ -62,7 +62,7 @@ export function ProfileHeader({
         )}
         {uploadingCover && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-            <div className="size-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+            <div className="size-8 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -100,13 +100,13 @@ export function ProfileHeader({
             )}
             {uploadingAvatar && (
               <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-                <div className="size-6 animate-spin rounded-full border-4 border-white border-t-transparent" />
+                <div className="size-6 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
               </div>
             )}
             <button
               onClick={() => avatarRef.current?.click()}
               disabled={uploadingAvatar}
-              className="absolute bottom-[2px] right-[2px] flex size-[30px] items-center justify-center rounded-full bg-[#2e4882] text-white hover:opacity-80 md:size-[36px]"
+              className="absolute bottom-[2px] right-[2px] flex size-[30px] items-center justify-center rounded-full bg-primary/30 text-white hover:opacity-80 md:size-[36px]"
             >
               <svg
                 width="14"

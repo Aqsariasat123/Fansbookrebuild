@@ -71,10 +71,10 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
   return (
     <Link
       to={`/u/${creator.username}`}
-      className="block w-full overflow-hidden rounded-[12px] bg-white transition-transform hover:scale-[1.02] sm:w-[244px] sm:rounded-[22px]"
+      className="block w-full overflow-hidden rounded-[12px] bg-card transition-transform hover:scale-[1.02] sm:w-[244px] sm:rounded-[22px]"
     >
       {/* Image with badges */}
-      <div className="relative h-[160px] w-full overflow-hidden bg-[#2a2a2a] sm:h-[243px]">
+      <div className="relative h-[160px] w-full overflow-hidden bg-muted sm:h-[243px]">
         {creator.avatar ? (
           <img
             src={creator.avatar}
@@ -82,7 +82,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-[48px] font-bold text-[#555]">
+          <div className="flex h-full w-full items-center justify-center text-[48px] font-bold text-muted-foreground">
             {creator.displayName.charAt(0).toUpperCase()}
           </div>
         )}
@@ -102,7 +102,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
 
       {/* Info section */}
       <div className="px-[12px] pt-[10px] pb-[12px] sm:px-[22px] sm:pt-[15px] sm:pb-[18px]">
-        <p className="font-outfit text-[12px] font-normal leading-normal text-black sm:text-[16px]">
+        <p className="font-outfit text-[12px] font-normal leading-normal text-foreground sm:text-[16px]">
           {creator.displayName}
         </p>
         <p className="mt-[2px] font-outfit text-[10px] font-normal leading-normal text-muted-foreground sm:text-[12px]">

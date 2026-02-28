@@ -16,7 +16,7 @@ function MobileCard({ rows }: { rows: { label: string; value: string }[] }) {
       {rows.map((r, i) => (
         <div
           key={r.label}
-          className={`flex items-center justify-between py-[8px] ${i < rows.length - 1 ? 'border-b border-[#1a1d20]' : ''}`}
+          className={`flex items-center justify-between py-[8px] ${i < rows.length - 1 ? 'border-b border-border' : ''}`}
         >
           <span className="text-[12px] text-muted-foreground">{r.label}</span>
           <span className="text-[13px] text-foreground">{r.value}</span>

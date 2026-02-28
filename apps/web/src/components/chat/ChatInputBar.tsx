@@ -49,7 +49,7 @@ export function ChatInputBar({
                 onChange(value + e);
                 setShowEmoji(false);
               }}
-              className="text-[18px] md:text-[22px] hover:bg-[#2a2d30] rounded-[6px] p-[4px] md:p-[6px]"
+              className="text-[18px] md:text-[22px] hover:bg-muted rounded-[6px] p-[4px] md:p-[6px]"
             >
               {e}
             </button>

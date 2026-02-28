@@ -44,7 +44,7 @@ export function ReviewsSection() {
         {reviews.map((r) => (
           <div
             key={r.name}
-            className="rounded-[22px] border border-[#725757] bg-foreground p-[20px] shadow-[0px_0px_17.8px_1px_rgba(0,0,0,0.25)] md:p-[24px]"
+            className="rounded-[22px] border border-border bg-foreground p-[20px] shadow-[0px_0px_17.8px_1px_rgba(0,0,0,0.25)] md:p-[24px]"
           >
             <div className="flex gap-[8px] md:gap-[10px]">
               {[1, 2, 3, 4, 5].map((s) => (
@@ -56,11 +56,11 @@ export function ReviewsSection() {
                 </span>
               ))}
             </div>
-            <p className="mt-[12px] text-[14px] font-normal leading-[1.5] text-[#15191c] md:mt-[16px] md:text-[16px]">
+            <p className="mt-[12px] text-[14px] font-normal leading-[1.5] text-foreground md:mt-[16px] md:text-[16px]">
               {r.text}
             </p>
             <div className="mt-[16px] flex items-center gap-[12px] md:mt-[20px]">
-              <div className="h-[44px] w-[44px] overflow-hidden rounded-full bg-[#d9d9d9] md:h-[52px] md:w-[52px]">
+              <div className="h-[44px] w-[44px] overflow-hidden rounded-full bg-muted md:h-[52px] md:w-[52px]">
                 <img
                   src={`/images/landing/reviewer-${r.img}.webp`}
                   alt={r.name}
@@ -68,7 +68,7 @@ export function ReviewsSection() {
                 />
               </div>
               <div>
-                <p className="text-[14px] font-semibold text-[#15191c] md:text-[16px]">{r.name}</p>
+                <p className="text-[14px] font-semibold text-foreground md:text-[16px]">{r.name}</p>
                 <p className="text-[11px] font-normal text-muted-foreground md:text-[12px]">
                   {r.role}
                 </p>
@@ -126,7 +126,7 @@ export function TrendingSection() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-[10px] md:gap-[12px]">
-                  <div className="h-[65px] w-[60px] flex-none overflow-hidden rounded-[16px] bg-[#333] md:h-[95px] md:w-[89px] md:rounded-[22px]">
+                  <div className="h-[65px] w-[60px] flex-none overflow-hidden rounded-[16px] bg-muted md:h-[95px] md:w-[89px] md:rounded-[22px]">
                     <img
                       src={`/images/landing/trending-profile-${c.idx}.webp`}
                       alt={c.name}
@@ -151,7 +151,7 @@ export function TrendingSection() {
               </div>
 
               <div className="mt-[8px] flex gap-[8px] md:mt-[10px] md:gap-[10px]">
-                <div className="h-[180px] flex-[1.25] overflow-hidden rounded-[16px] bg-[#333] md:h-[264px] md:rounded-[22px]">
+                <div className="h-[180px] flex-[1.25] overflow-hidden rounded-[16px] bg-muted md:h-[264px] md:rounded-[22px]">
                   <img
                     src={`/images/landing/trending-gallery-${c.idx}a.webp`}
                     alt=""
@@ -159,14 +159,14 @@ export function TrendingSection() {
                   />
                 </div>
                 <div className="flex flex-1 flex-col gap-[8px] md:gap-[10px]">
-                  <div className="h-[86px] overflow-hidden rounded-[16px] bg-[#333] md:h-[127px] md:rounded-[22px]">
+                  <div className="h-[86px] overflow-hidden rounded-[16px] bg-muted md:h-[127px] md:rounded-[22px]">
                     <img
                       src={`/images/landing/trending-gallery-${c.idx}b.webp`}
                       alt=""
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  <div className="h-[86px] overflow-hidden rounded-[16px] bg-[#333] md:h-[127px] md:rounded-[22px]">
+                  <div className="h-[86px] overflow-hidden rounded-[16px] bg-muted md:h-[127px] md:rounded-[22px]">
                     <img
                       src={`/images/landing/trending-gallery-${c.idx}c.webp`}
                       alt=""

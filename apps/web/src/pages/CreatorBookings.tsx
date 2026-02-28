@@ -68,7 +68,7 @@ export default function CreatorBookings() {
           {dropdownOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
-              <div className="absolute right-0 top-[42px] z-20 min-w-[160px] rounded-[8px] bg-white py-[4px] shadow-lg">
+              <div className="absolute right-0 top-[42px] z-20 min-w-[160px] rounded-[8px] bg-card py-[4px] shadow-lg">
                 {STATUSES.map((s) => (
                   <button
                     key={s}
@@ -76,7 +76,7 @@ export default function CreatorBookings() {
                       setStatusFilter(s);
                       setDropdownOpen(false);
                     }}
-                    className="flex w-full px-[14px] py-[8px] text-[14px] text-[#1a1a1a] hover:bg-[#f0f0f0]"
+                    className="flex w-full px-[14px] py-[8px] text-[14px] text-foreground hover:bg-muted"
                   >
                     {s}
                   </button>
@@ -109,7 +109,7 @@ export default function CreatorBookings() {
               ].map((r) => (
                 <div
                   key={r.label}
-                  className="flex items-center justify-between border-b border-[#1a1d20] py-[8px]"
+                  className="flex items-center justify-between border-b border-border py-[8px]"
                 >
                   <span className="text-[12px] text-muted-foreground">{r.label}</span>
                   <span className="text-[13px] text-foreground">{r.value}</span>

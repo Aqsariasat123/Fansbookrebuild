@@ -30,7 +30,7 @@ export function AddStoryCard({ onStoryUploaded }: AddStoryCardProps) {
     >
       <div className="relative flex size-[52px] items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#a61651] to-[#01adf1] md:h-[186px] md:w-[133px] md:rounded-[16px]">
         {uploading ? (
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
         ) : (
           <img
             src="/icons/dashboard/add-circle.svg"

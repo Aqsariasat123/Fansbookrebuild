@@ -30,7 +30,7 @@ function parseSortBy(val: string): 'viewers' | 'newest' | undefined {
 export function MobileFilterBar({ pending, onChange, onApply, onReset, filterOptions }: Props) {
   return (
     <div className="flex w-full items-center gap-[16px] lg:hidden">
-      <div className="flex flex-1 items-center gap-[16px] rounded-[8px] bg-[#252d32] px-[24px] py-[12px]">
+      <div className="flex flex-1 items-center gap-[16px] rounded-[8px] bg-muted px-[24px] py-[12px]">
         <img src="/icons/creators/filter_list.svg" alt="" className="h-[24px] w-[24px]" />
         <Dropdown
           label="Filters"

@@ -52,10 +52,10 @@ function PriceDropdown({
         <img src="/icons/creators/arrow_drop_down.svg" alt="" className="h-[24px] w-[24px]" />
       </button>
       {open && (
-        <div className="absolute top-full left-0 z-50 mt-[4px] min-w-[160px] rounded-[8px] bg-[#252d32] py-[8px] shadow-lg">
+        <div className="absolute top-full left-0 z-50 mt-[4px] min-w-[160px] rounded-[8px] bg-muted py-[8px] shadow-lg">
           <button
             onClick={() => selectRange('', '')}
-            className="block w-full px-[16px] py-[8px] text-left font-outfit text-[14px] text-[#999] hover:bg-[#333]"
+            className="block w-full px-[16px] py-[8px] text-left font-outfit text-[14px] text-muted-foreground hover:bg-muted"
           >
             Any Price
           </button>
@@ -63,7 +63,7 @@ function PriceDropdown({
             <button
               key={range.label}
               onClick={() => selectRange(range.min, range.max)}
-              className="block w-full px-[16px] py-[8px] text-left font-outfit text-[14px] text-foreground hover:bg-[#333]"
+              className="block w-full px-[16px] py-[8px] text-left font-outfit text-[14px] text-foreground hover:bg-muted"
             >
               {range.label}
             </button>
@@ -108,7 +108,7 @@ export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
   return (
     <div className="flex items-center justify-center px-[16px] pt-[30px] pb-[30px] md:px-0 md:pt-[55px] md:pb-[50px]">
       <div className="flex w-full flex-col items-stretch md:w-auto md:flex-row md:items-center">
-        <div className="flex flex-wrap items-center gap-[20px] rounded-t-[8px] bg-[#252d32] px-[16px] py-[16px] md:flex-nowrap md:gap-[50px] md:rounded-l-[8px] md:rounded-tr-none md:px-[32px] md:py-[22px]">
+        <div className="flex flex-wrap items-center gap-[20px] rounded-t-[8px] bg-muted px-[16px] py-[16px] md:flex-nowrap md:gap-[50px] md:rounded-l-[8px] md:rounded-tr-none md:px-[32px] md:py-[22px]">
           {/* Search */}
           <div className="flex w-full items-center gap-[12px] md:w-auto md:gap-[18px]">
             <img src="/icons/creators/search.svg" alt="" className="h-[24px] w-[24px]" />
@@ -117,7 +117,7 @@ export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
               placeholder="Search creators..."
               value={searchValue}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full bg-transparent font-outfit text-[16px] font-normal text-foreground placeholder-[#888] outline-none md:w-[120px]"
+              className="w-full bg-transparent font-outfit text-[16px] font-normal text-foreground placeholder-muted-foreground outline-none md:w-[120px]"
             />
           </div>
 

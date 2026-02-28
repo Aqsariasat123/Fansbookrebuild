@@ -93,7 +93,7 @@ export default function Login() {
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
                   placeholder="Enter your Email or username..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-muted bg-transparent px-[12px] text-[10px] font-normal text-foreground placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]"
+                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-muted bg-transparent px-[12px] text-[10px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]"
                   required
                 />
               </div>
@@ -110,7 +110,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-muted bg-transparent px-[12px] pr-[40px] text-[10px] font-normal text-foreground placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]"
+                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-muted bg-transparent px-[12px] pr-[40px] text-[10px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]"
                   required
                 />
                 <button

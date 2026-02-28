@@ -33,7 +33,7 @@ export function SettingsSessions() {
   if (loading) {
     return (
       <div className="flex justify-center py-8">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
       </div>
     );
   }

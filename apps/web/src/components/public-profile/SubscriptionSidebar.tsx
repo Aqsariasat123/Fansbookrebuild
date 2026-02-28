@@ -55,7 +55,7 @@ export function SubscriptionSidebar({
             <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
           </svg>
           Subscribe
-          <span className="rounded-[12px] bg-white/20 px-[8px] py-[2px] text-[11px]">For free</span>
+          <span className="rounded-[12px] bg-card/20 px-[8px] py-[2px] text-[11px]">For free</span>
         </button>
       </div>
 
@@ -90,7 +90,7 @@ export function SubscriptionSidebar({
                     <img
                       src={creator.avatar}
                       alt=""
-                      className="size-[30px] rounded-full border border-white/20 object-cover"
+                      className="size-[30px] rounded-full border border-border object-cover"
                     />
                   ) : (
                     <div className="flex size-[30px] items-center justify-center rounded-full bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[12px] font-medium text-white">

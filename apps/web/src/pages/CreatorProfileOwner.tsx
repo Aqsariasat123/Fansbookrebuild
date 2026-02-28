@@ -72,7 +72,7 @@ export default function CreatorProfileOwner() {
   if (loading)
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="size-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+        <div className="size-8 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
       </div>
     );
 

@@ -126,7 +126,7 @@ export function CommentThread({
       )}
 
       {showReplies && replies.length > 0 && (
-        <div className="ml-[36px] mt-[8px] flex flex-col gap-[10px] border-l border-[#1a1d20] pl-[12px]">
+        <div className="ml-[36px] mt-[8px] flex flex-col gap-[10px] border-l border-border pl-[12px]">
           {replies.map((r) => (
             <CommentItem
               key={r.id}

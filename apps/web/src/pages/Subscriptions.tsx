@@ -157,7 +157,7 @@ export default function Subscriptions() {
                 key={s.id}
                 className={`grid grid-cols-5 px-[16px] py-[14px] md:px-[30px] md:py-[20px] ${i < displayed.length - 1 ? 'border-b border-muted' : ''}`}
               >
-                <p className="text-center text-[12px] text-white md:text-[16px]">
+                <p className="text-center text-[12px] text-foreground md:text-[16px]">
                   #{s.id.slice(-7)}
                 </p>
                 <p className="text-center text-[12px] text-foreground md:text-[16px]">

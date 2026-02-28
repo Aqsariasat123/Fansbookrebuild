@@ -35,7 +35,7 @@ function CreatorsGrid({
 }) {
   if (isError) {
     return (
-      <div className="py-[60px] text-center font-outfit text-[18px] text-[#999]">
+      <div className="py-[60px] text-center font-outfit text-[18px] text-muted-foreground">
         Something went wrong. Please try again.
       </div>
     );
@@ -59,7 +59,7 @@ function CreatorsGrid({
     );
   }
   return (
-    <div className="py-[60px] text-center font-outfit text-[18px] text-[#999]">
+    <div className="py-[60px] text-center font-outfit text-[18px] text-muted-foreground">
       No creators found. Try adjusting your filters.
     </div>
   );
@@ -82,17 +82,17 @@ function Pagination({
       <button
         disabled={currentPage <= 1}
         onClick={() => onPageChange(String(currentPage - 1))}
-        className="rounded-[8px] bg-[#252d32] px-[16px] py-[10px] font-outfit text-[14px] text-foreground disabled:opacity-40"
+        className="rounded-[8px] bg-muted px-[16px] py-[10px] font-outfit text-[14px] text-foreground disabled:opacity-40"
       >
         Previous
       </button>
-      <span className="font-outfit text-[14px] text-[#999]">
+      <span className="font-outfit text-[14px] text-muted-foreground">
         Page {currentPage} of {totalPages}
       </span>
       <button
         disabled={!hasMore}
         onClick={() => onPageChange(String(currentPage + 1))}
-        className="rounded-[8px] bg-[#252d32] px-[16px] py-[10px] font-outfit text-[14px] text-foreground disabled:opacity-40"
+        className="rounded-[8px] bg-muted px-[16px] py-[10px] font-outfit text-[14px] text-foreground disabled:opacity-40"
       >
         Next
       </button>

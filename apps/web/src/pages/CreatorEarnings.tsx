@@ -84,7 +84,7 @@ export default function CreatorEarnings() {
             {dropdownOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
-                <div className="absolute left-0 top-[40px] z-20 min-w-[180px] rounded-[8px] bg-white py-[4px] shadow-lg">
+                <div className="absolute left-0 top-[40px] z-20 min-w-[180px] rounded-[8px] bg-card py-[4px] shadow-lg">
                   {CATEGORIES.map((c) => (
                     <button
                       key={c}
@@ -92,7 +92,7 @@ export default function CreatorEarnings() {
                         setCategory(c);
                         setDropdownOpen(false);
                       }}
-                      className="flex w-full px-[14px] py-[8px] text-[14px] text-[#1a1a1a] hover:bg-[#f0f0f0]"
+                      className="flex w-full px-[14px] py-[8px] text-[14px] text-foreground hover:bg-muted"
                     >
                       {c}
                     </button>

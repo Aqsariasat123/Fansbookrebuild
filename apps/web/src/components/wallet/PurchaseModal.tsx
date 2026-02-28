@@ -88,7 +88,7 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
       >
         <button
           onClick={onClose}
-          className="absolute top-[16px] right-[16px] size-[36px] rounded-full bg-muted flex items-center justify-center hover:bg-[#2a2d30]"
+          className="absolute top-[16px] right-[16px] size-[36px] rounded-full bg-muted flex items-center justify-center hover:bg-muted"
         >
           <svg
             width="18"
@@ -114,7 +114,7 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
               className={`relative flex flex-col items-center gap-[8px] rounded-[16px] border-2 p-[20px] transition-all ${
                 selected === pkg.id
                   ? 'border-[#01adf1] bg-[#01adf1]/10'
-                  : 'border-muted bg-muted hover:border-[#2a2d30]'
+                  : 'border-muted bg-muted hover:border-border'
               }`}
             >
               {pkg.tag && (

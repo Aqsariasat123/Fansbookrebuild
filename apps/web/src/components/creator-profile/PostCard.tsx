@@ -100,7 +100,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
       {author && (
         <div className="mb-[10px] flex items-start justify-between md:mb-[14px]">
           <div className="flex items-center gap-[10px]">
-            <div className="size-[36px] overflow-hidden rounded-full bg-[#2e4882] md:size-[42px]">
+            <div className="size-[36px] overflow-hidden rounded-full bg-primary/30 md:size-[42px]">
               <AuthorAvatar author={author} />
             </div>
             <div>

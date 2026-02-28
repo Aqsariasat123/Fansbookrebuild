@@ -90,7 +90,7 @@ export function SettingsPrivacy() {
           className={`h-[26px] w-[46px] rounded-full transition-colors ${settings.showOnlineStatus ? 'bg-[#01adf1]' : 'bg-muted-foreground'}`}
         >
           <div
-            className={`h-[22px] w-[22px] rounded-full bg-white transition-transform ${settings.showOnlineStatus ? 'translate-x-[22px]' : 'translate-x-[2px]'}`}
+            className={`h-[22px] w-[22px] rounded-full bg-card transition-transform ${settings.showOnlineStatus ? 'translate-x-[22px]' : 'translate-x-[2px]'}`}
           />
         </button>
       </div>

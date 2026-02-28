@@ -28,7 +28,7 @@ export function ContentTabs({
 }: ContentTabsProps) {
   const counts = [postCount, mediaCount];
   return (
-    <div className="flex border-b border-[#2a2d30]">
+    <div className="flex border-b border-border">
       {TABS.map((t, i) => {
         const active = activeTab === t.key || (t.key === 'photos' && activeTab === 'videos');
         const tabKey = t.key === 'feed' ? 'feed' : activeTab === 'videos' ? 'videos' : 'photos';
@@ -39,7 +39,7 @@ export function ContentTabs({
             className={`flex flex-1 items-center justify-center gap-[8px] py-[12px] text-[13px] font-medium transition-colors md:py-[16px] md:text-[15px] ${
               active
                 ? 'border-b-[3px] border-[#e91e8c] text-[#e91e8c]'
-                : 'text-muted-foreground hover:text-[#a0a0a0]'
+                : 'text-muted-foreground hover:text-muted-foreground'
             }`}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">

@@ -58,7 +58,7 @@ function CoverAvatar({
           {avatar ? (
             <img src={avatar} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-[#2e4882] text-[28px] font-medium text-white md:text-[36px]">
+            <div className="flex h-full w-full items-center justify-center bg-primary/30 text-[28px] font-medium text-white md:text-[36px]">
               {initial}
             </div>
           )}

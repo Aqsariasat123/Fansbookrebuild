@@ -37,7 +37,7 @@ export function LiveCard({ session }: { session: LiveCreatorCard }) {
 
         {/* Creator info */}
         <div className="flex items-center gap-[8px] sm:gap-[10px]">
-          <div className="h-[34px] w-[34px] shrink-0 overflow-hidden rounded-full bg-[#333] sm:h-[40px] sm:w-[40px]">
+          <div className="h-[34px] w-[34px] shrink-0 overflow-hidden rounded-full bg-muted sm:h-[40px] sm:w-[40px]">
             {session.avatar ? (
               <img
                 src={session.avatar}
@@ -45,7 +45,7 @@ export function LiveCard({ session }: { session: LiveCreatorCard }) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-[14px] font-bold text-[#555] sm:text-[16px]">
+              <div className="flex h-full w-full items-center justify-center text-[14px] font-bold text-muted-foreground sm:text-[16px]">
                 {session.displayName.charAt(0).toUpperCase()}
               </div>
             )}
@@ -105,20 +105,20 @@ export function LiveCardSkeleton() {
   return (
     <div className="flex h-[235px] w-full animate-pulse items-center rounded-[22px] bg-card px-[16px] py-[16px] sm:h-[278px] sm:w-[227px] sm:px-[23px] sm:py-[20px]">
       <div className="flex w-[180px] flex-col items-start gap-[22px]">
-        <div className="h-[22px] w-[50px] rounded bg-[#333]" />
+        <div className="h-[22px] w-[50px] rounded bg-muted" />
         <div className="flex items-center gap-[10px]">
-          <div className="h-[40px] w-[40px] rounded-full bg-[#333]" />
+          <div className="h-[40px] w-[40px] rounded-full bg-muted" />
           <div>
-            <div className="h-[14px] w-[80px] rounded bg-[#333]" />
-            <div className="mt-[4px] h-[10px] w-[60px] rounded bg-[#333]" />
+            <div className="h-[14px] w-[80px] rounded bg-muted" />
+            <div className="mt-[4px] h-[10px] w-[60px] rounded bg-muted" />
           </div>
         </div>
         <div className="flex w-full flex-col gap-[10px]">
-          <div className="h-[14px] w-[100px] rounded bg-[#333]" />
-          <div className="h-[14px] w-[90px] rounded bg-[#333]" />
-          <div className="h-[14px] w-full rounded bg-[#333]" />
+          <div className="h-[14px] w-[100px] rounded bg-muted" />
+          <div className="h-[14px] w-[90px] rounded bg-muted" />
+          <div className="h-[14px] w-full rounded bg-muted" />
         </div>
-        <div className="h-[32px] w-[120px] rounded bg-[#333]" />
+        <div className="h-[32px] w-[120px] rounded bg-muted" />
       </div>
     </div>
   );

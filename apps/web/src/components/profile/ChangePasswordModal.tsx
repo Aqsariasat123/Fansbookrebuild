@@ -49,14 +49,14 @@ function PasswordField({
   const [visible, setVisible] = useState(false);
   return (
     <div className="flex flex-col gap-[10px] w-full">
-      <p className="font-medium text-[16px] text-black">{label}</p>
+      <p className="font-medium text-[16px] text-foreground">{label}</p>
       <div className="relative">
         <input
           type={visible ? 'text' : 'password'}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="••••••••••"
-          className="w-full h-[46px] rounded-[6px] border border-[#ccc] bg-white px-[12px] pr-[44px] text-[14px] text-black outline-none focus:border-[#2e80c8] transition-colors"
+          className="w-full h-[46px] rounded-[6px] border border-border bg-card px-[12px] pr-[44px] text-[14px] text-foreground outline-none focus:border-[#2e80c8] transition-colors"
         />
         <button
           type="button"
@@ -124,12 +124,12 @@ export function ChangePasswordModal({ open, onClose }: { open: boolean; onClose:
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-[460px] rounded-[22px] bg-white p-[32px] mx-4"
+        className="relative w-full max-w-[460px] rounded-[22px] bg-card p-[32px] mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-[16px] right-[16px] size-[36px] rounded-full bg-[#333] flex items-center justify-center hover:bg-[#555] transition-colors"
+          className="absolute top-[16px] right-[16px] size-[36px] rounded-full bg-muted flex items-center justify-center hover:bg-[#555] transition-colors"
         >
           <svg
             width="16"
@@ -145,7 +145,9 @@ export function ChangePasswordModal({ open, onClose }: { open: boolean; onClose:
           </svg>
         </button>
 
-        <h2 className="text-[20px] font-bold text-black text-center mb-[24px]">Change Password</h2>
+        <h2 className="text-[20px] font-bold text-foreground text-center mb-[24px]">
+          Change Password
+        </h2>
 
         <div className="flex flex-col gap-[16px]">
           <PasswordField

@@ -24,8 +24,8 @@ export function ScheduleLiveModal({ onClose }: ScheduleLiveModalProps) {
   const [audience, setAudience] = useState('');
 
   const inputClass =
-    'w-full rounded-[8px] border border-[#d0d0d0] bg-white px-[14px] py-[10px] text-[14px] text-[#333] placeholder-[#aaa] outline-none focus:border-[#01adf1]';
-  const labelClass = 'mb-[6px] text-[14px] font-medium text-[#333]';
+    'w-full rounded-[8px] border border-border bg-card px-[14px] py-[10px] text-[14px] text-foreground placeholder-muted-foreground outline-none focus:border-[#01adf1]';
+  const labelClass = 'mb-[6px] text-[14px] font-medium text-foreground';
 
   return (
     <div
@@ -33,13 +33,13 @@ export function ScheduleLiveModal({ onClose }: ScheduleLiveModalProps) {
       onClick={onClose}
     >
       <div
-        className="relative max-h-[90vh] w-full max-w-[460px] overflow-y-auto rounded-[16px] bg-white p-[24px] md:p-[32px]"
+        className="relative max-h-[90vh] w-full max-w-[460px] overflow-y-auto rounded-[16px] bg-card p-[24px] md:p-[32px]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute right-[16px] top-[16px] flex size-[32px] items-center justify-center rounded-full bg-[#1a1a2e] text-white"
+          className="absolute right-[16px] top-[16px] flex size-[32px] items-center justify-center rounded-full bg-foreground text-white"
         >
           <svg
             width="14"
@@ -53,7 +53,7 @@ export function ScheduleLiveModal({ onClose }: ScheduleLiveModalProps) {
           </svg>
         </button>
 
-        <h2 className="mb-[20px] text-center text-[20px] font-semibold text-[#1a1a1a]">
+        <h2 className="mb-[20px] text-center text-[20px] font-semibold text-foreground">
           Schedule Live
         </h2>
 
@@ -97,8 +97,8 @@ export function ScheduleLiveModal({ onClose }: ScheduleLiveModalProps) {
 
           <div>
             <p className={labelClass}>Cover Thumbnail</p>
-            <div className="flex items-center gap-[10px] rounded-[8px] border border-[#d0d0d0] px-[14px] py-[10px]">
-              <span className="flex-1 text-[14px] text-[#aaa]">Upload Your Photo</span>
+            <div className="flex items-center gap-[10px] rounded-[8px] border border-border px-[14px] py-[10px]">
+              <span className="flex-1 text-[14px] text-muted-foreground">Upload Your Photo</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="#666">
                 <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
               </svg>
@@ -142,7 +142,7 @@ export function ScheduleLiveModal({ onClose }: ScheduleLiveModalProps) {
           </button>
           <button
             onClick={onClose}
-            className="w-full rounded-[50px] border border-[#d0d0d0] py-[12px] text-[15px] text-[#333] transition-colors hover:bg-[#f5f5f5]"
+            className="w-full rounded-[50px] border border-border py-[12px] text-[15px] text-foreground transition-colors hover:bg-muted"
           >
             Cancel
           </button>

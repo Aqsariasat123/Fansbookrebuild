@@ -42,7 +42,7 @@ function ConvRow({
         {other.avatar ? (
           <img src={other.avatar} alt="" className="size-[40px] rounded-full object-cover" />
         ) : (
-          <div className="size-[40px] rounded-full bg-[#2e4882] flex items-center justify-center">
+          <div className="size-[40px] rounded-full bg-primary/30 flex items-center justify-center">
             <span className="text-[14px] font-medium text-foreground">{initial}</span>
           </div>
         )}
@@ -105,7 +105,7 @@ export default function Messages() {
               className="size-[44px] rounded-full object-cover shrink-0"
             />
           ) : (
-            <div className="size-[44px] rounded-full bg-[#2e4882] flex items-center justify-center shrink-0">
+            <div className="size-[44px] rounded-full bg-primary/30 flex items-center justify-center shrink-0">
               <span className="text-[16px] font-medium text-foreground">{userInitial}</span>
             </div>
           )}

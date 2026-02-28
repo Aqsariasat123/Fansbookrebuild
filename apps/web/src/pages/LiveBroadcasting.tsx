@@ -37,7 +37,7 @@ export default function LiveBroadcasting() {
       {/* About */}
       <div>
         <p className="text-[18px] font-semibold text-foreground">About Live Stream</p>
-        <p className="mt-[8px] text-[14px] text-[#a0a0a0]">
+        <p className="mt-[8px] text-[14px] text-muted-foreground">
           Lorem ipsum is a simply dummy text for printing.
         </p>
       </div>
@@ -48,7 +48,7 @@ export default function LiveBroadcasting() {
         <div className="overflow-hidden rounded-[16px] border border-[#e91e8c]">
           <div className="flex items-center justify-between bg-[#e91e8c] px-[20px] py-[10px]">
             <p className="text-[16px] font-semibold text-white">Video Broadcasting</p>
-            <button className="rounded-[8px] bg-white px-[20px] py-[6px] text-[14px] font-medium text-[#e91e8c]">
+            <button className="rounded-[8px] bg-card px-[20px] py-[6px] text-[14px] font-medium text-[#e91e8c]">
               Leave
             </button>
           </div>
@@ -85,7 +85,7 @@ export default function LiveBroadcasting() {
               <button className="flex items-center gap-[6px] rounded-[20px] border border-white px-[12px] py-[4px] text-[12px] text-white">
                 Go Private <span className="text-yellow-400">&#x1F4B0;</span> 1
               </button>
-              <div className="flex items-center gap-[4px] rounded-[20px] bg-white/20 px-[12px] py-[4px] text-[12px] text-white">
+              <div className="flex items-center gap-[4px] rounded-[20px] bg-card/20 px-[12px] py-[4px] text-[12px] text-white">
                 <span className="text-yellow-400">&#x1F4B0;</span> 83.00
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function LiveBroadcasting() {
                     <img src={m.avatar} alt="" className="size-[32px] shrink-0 rounded-full" />
                     <div>
                       <p className="mb-[4px] text-[12px] font-medium text-foreground">{m.user}</p>
-                      <div className="rounded-[12px] bg-[#2a2d30] px-[14px] py-[10px]">
+                      <div className="rounded-[12px] bg-muted px-[14px] py-[10px]">
                         <p className="text-[13px] text-foreground">{m.text}</p>
                       </div>
                     </div>
@@ -112,7 +112,7 @@ export default function LiveBroadcasting() {
                 {m.isMine && (
                   <div className="flex flex-col items-end">
                     <p className="mb-[4px] text-[10px] text-[#e91e8c]">{m.time}</p>
-                    <div className="rounded-[12px] bg-[#2a2d30] px-[14px] py-[10px]">
+                    <div className="rounded-[12px] bg-muted px-[14px] py-[10px]">
                       <p className="text-[13px] text-foreground">{m.text}</p>
                     </div>
                     <svg
@@ -131,7 +131,7 @@ export default function LiveBroadcasting() {
           </div>
 
           {/* Chat Input */}
-          <div className="flex items-center gap-[10px] border-t border-[#2a2d30] bg-card px-[16px] py-[10px]">
+          <div className="flex items-center gap-[10px] border-t border-border bg-card px-[16px] py-[10px]">
             <button>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />

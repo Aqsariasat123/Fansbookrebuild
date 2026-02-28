@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryNav } from './useStoryNav';
 import { StoryFooter } from './StoryFooter';
+import { ProgressBars, NavArrow, getTimeAgo } from './StoryViewerParts';
 
 interface StoryMedia {
   id: string;
@@ -58,7 +59,7 @@ function StoryHeader({
         <span className="text-sm font-medium text-white">{displayName}</span>
         <span className="text-xs text-white/60">{timeAgo}</span>
       </div>
-      <button onClick={onClose} className="rounded-full p-1 text-white hover:bg-white/10">
+      <button onClick={onClose} className="rounded-full p-1 text-white hover:bg-card/10">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path
             d="M18 6L6 18M6 6l12 12"
@@ -166,59 +167,4 @@ export function StoryViewer({ groups, initialGroupIndex, onClose, onRefetch }: S
       {canGoNext && <NavArrow direction="right" onClick={goNext} />}
     </div>
   );
-}
-
-function ProgressBars({
-  total,
-  current,
-  progress,
-}: {
-  total: number;
-  current: number;
-  progress: number;
-}) {
-  return (
-    <div className="absolute left-0 right-0 top-0 z-20 flex gap-[3px] px-3 pt-3">
-      {Array.from({ length: total }).map((_, i) => {
-        const width = i < current ? 100 : i === current ? progress * 100 : 0;
-        return (
-          <div key={i} className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/30">
-            <div
-              className="h-full rounded-full bg-white transition-none"
-              style={{ width: `${width}%` }}
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function NavArrow({ direction, onClick }: { direction: 'left' | 'right'; onClick: () => void }) {
-  const isLeft = direction === 'left';
-  return (
-    <button
-      onClick={onClick}
-      className={`absolute ${isLeft ? 'left-4' : 'right-4'} top-1/2 hidden -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 md:block`}
-    >
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path
-          d={isLeft ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6'}
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </button>
-  );
-}
-
-function getTimeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  return `${Math.floor(hrs / 24)}d`;
 }

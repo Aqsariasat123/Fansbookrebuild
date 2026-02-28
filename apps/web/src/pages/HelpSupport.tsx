@@ -59,7 +59,7 @@ export default function HelpSupport() {
 
           {loadingFaqs ? (
             <div className="flex items-center justify-center py-10">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
             </div>
           ) : faqs.length === 0 ? (
             <p className="text-[12px] text-muted-foreground">No FAQs available.</p>

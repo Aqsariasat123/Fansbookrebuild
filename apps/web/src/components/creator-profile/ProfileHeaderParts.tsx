@@ -31,7 +31,7 @@ export function CoverIconAlt({ d, onClick }: { d: string; onClick: () => void })
   return (
     <button
       onClick={onClick}
-      className="flex size-[38px] items-center justify-center rounded-full bg-muted/80 text-white hover:bg-muted transition-colors"
+      className="flex size-[38px] items-center justify-center rounded-full bg-muted/80 text-foreground hover:bg-muted transition-colors"
     >
       <svg
         width="18"
@@ -143,7 +143,7 @@ export function BioSocialSection({
   return (
     <div className="mt-[12px] max-w-[380px] md:mt-0 md:text-right">
       {bio && (
-        <p className="text-[13px] leading-[1.6] text-[#a0a0a0] md:text-[14px]">
+        <p className="text-[13px] leading-[1.6] text-muted-foreground md:text-[14px]">
           {displayBio}
           {truncated && <span className="cursor-pointer font-medium text-primary">More</span>}
         </p>

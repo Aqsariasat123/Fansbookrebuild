@@ -13,7 +13,7 @@ export default function GoLive() {
       {/* Broadcasting Info */}
       <div className="flex flex-col items-center gap-[16px] rounded-[22px] bg-card px-[20px] py-[32px]">
         <p className="text-[20px] font-semibold text-foreground">Start Your broadcasting now</p>
-        <p className="max-w-[800px] text-center text-[14px] leading-[1.8] text-[#a0a0a0]">
+        <p className="max-w-[800px] text-center text-[14px] leading-[1.8] text-muted-foreground">
           Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
           been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer
           took a galley of type and scrambled it to make a type specimen book.

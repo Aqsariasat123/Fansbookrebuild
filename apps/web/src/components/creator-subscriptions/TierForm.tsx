@@ -109,7 +109,7 @@ export function TierForm({ form, setForm, onSave, onCancel, saving, title }: Tie
             />
             <button
               onClick={addBenefit}
-              className="h-[38px] rounded-[8px] bg-muted px-[14px] text-[13px] text-foreground hover:bg-[#1e2328] transition-colors"
+              className="h-[38px] rounded-[8px] bg-muted px-[14px] text-[13px] text-foreground hover:bg-muted transition-colors"
             >
               Add
             </button>

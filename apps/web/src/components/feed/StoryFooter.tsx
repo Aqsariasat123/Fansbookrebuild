@@ -59,7 +59,7 @@ function ReplyBar({ storyId }: { storyId: string }) {
 
   return (
     <div className="flex items-center gap-2">
-      <div className="flex flex-1 items-center rounded-full border border-white/30 px-3 py-2">
+      <div className="flex flex-1 items-center rounded-full border border-border px-3 py-2">
         <input
           type="text"
           value={reply}
@@ -146,7 +146,7 @@ function DeleteButton({
             e.stopPropagation();
             setConfirming(false);
           }}
-          className="rounded-full bg-white/20 px-3 py-1 text-sm text-white"
+          className="rounded-full bg-card/20 px-3 py-1 text-sm text-white"
         >
           Cancel
         </button>
@@ -160,7 +160,7 @@ function DeleteButton({
         e.stopPropagation();
         setConfirming(true);
       }}
-      className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/20"
+      className="flex items-center gap-1.5 rounded-full bg-card/10 px-3 py-1.5 text-sm text-white/80 hover:bg-card/20"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path

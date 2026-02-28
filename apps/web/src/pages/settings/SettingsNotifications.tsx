@@ -71,7 +71,7 @@ export function SettingsNotifications() {
             className={`h-[26px] w-[46px] rounded-full transition-colors ${settings[key] ? 'bg-[#01adf1]' : 'bg-muted-foreground'}`}
           >
             <div
-              className={`h-[22px] w-[22px] rounded-full bg-white transition-transform ${settings[key] ? 'translate-x-[22px]' : 'translate-x-[2px]'}`}
+              className={`h-[22px] w-[22px] rounded-full bg-card transition-transform ${settings[key] ? 'translate-x-[22px]' : 'translate-x-[2px]'}`}
             />
           </button>
         </div>

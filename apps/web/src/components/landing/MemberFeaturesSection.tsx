@@ -81,27 +81,27 @@ export function MemberFeaturesSection() {
       <div className="mx-auto mt-[24px] flex w-fit rounded-[57px] bg-[#a61651] p-[6px] md:mt-[30px] md:p-[8px]">
         <button
           onClick={() => switchTab('creators')}
-          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'creators' ? 'bg-foreground text-[#15191c]' : 'text-foreground'}`}
+          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'creators' ? 'bg-foreground text-foreground' : 'text-foreground'}`}
         >
           Creators
         </button>
         <button
           onClick={() => switchTab('subscribers')}
-          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'subscribers' ? 'bg-foreground text-[#15191c]' : 'text-foreground'}`}
+          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'subscribers' ? 'bg-foreground text-foreground' : 'text-foreground'}`}
         >
           Subscribers
         </button>
       </div>
 
       {/* Sub-tabs */}
-      <div className="mx-auto mt-[20px] flex w-fit border-b-[2px] border-[#b4b4b4] md:mt-[30px]">
+      <div className="mx-auto mt-[20px] flex w-fit border-b-[2px] border-border md:mt-[30px]">
         {subTabs.map((t) => {
           const active = t === activeSubTab;
           return (
             <button
               key={t}
               onClick={() => setSubTab(t)}
-              className={`px-[12px] pb-[10px] text-[14px] font-medium sm:px-[16px] md:px-[22px] md:pb-[12px] md:text-[20px] ${active ? 'border-b-[2px] border-[#a61651] text-foreground' : 'text-[#b4b4b4]'}`}
+              className={`px-[12px] pb-[10px] text-[14px] font-medium sm:px-[16px] md:px-[22px] md:pb-[12px] md:text-[20px] ${active ? 'border-b-[2px] border-[#a61651] text-foreground' : 'text-muted-foreground'}`}
               style={active ? { borderRadius: '4px 4px 0 0', background: '#252d32' } : {}}
             >
               {t}
@@ -116,7 +116,7 @@ export function MemberFeaturesSection() {
           {items.map((item) => (
             <li
               key={item}
-              className="flex items-start gap-[12px] text-[14px] font-normal text-[#15191c] md:text-[16px]"
+              className="flex items-start gap-[12px] text-[14px] font-normal text-foreground md:text-[16px]"
             >
               <span className="mt-[4px] inline-block h-0 w-0 border-l-[6px] border-r-[6px] border-t-[10px] border-l-transparent border-r-transparent border-t-[#a61651]" />
               {item}
@@ -163,7 +163,7 @@ export function FAQSection() {
               </span>
             </button>
             {open === i && item.a && (
-              <p className="mt-[10px] pl-[44px] text-[13px] font-normal leading-[1.6] text-[#b4b4b4] md:mt-[12px] md:pl-[52px] md:text-[16px]">
+              <p className="mt-[10px] pl-[44px] text-[13px] font-normal leading-[1.6] text-muted-foreground md:mt-[12px] md:pl-[52px] md:text-[16px]">
                 {item.a}
               </p>
             )}

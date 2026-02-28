@@ -46,7 +46,7 @@ export function Field({
       <label className="text-[14px] text-muted-foreground">{label}</label>
       <input
         {...props}
-        className="h-[44px] rounded-[12px] bg-muted px-[16px] text-[16px] text-foreground outline-none border border-[#2a2d30] focus:border-[#2e80c8] transition-colors"
+        className="h-[44px] rounded-[12px] bg-muted px-[16px] text-[16px] text-foreground outline-none border border-border focus:border-[#2e80c8] transition-colors"
       />
     </div>
   );

@@ -110,7 +110,7 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
   };
 
   return (
-    <div className="flex flex-col gap-[12px] border-t border-[#1a1d20] pt-[12px]">
+    <div className="flex flex-col gap-[12px] border-t border-border pt-[12px]">
       {loading ? (
         <div className="flex justify-center py-3">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground border-t-transparent" />

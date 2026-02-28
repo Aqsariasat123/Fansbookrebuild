@@ -53,7 +53,7 @@ export function TierCard({ tier, onEdit, onDelete }: TierCardProps) {
       <div className="mt-[4px] flex gap-[10px]">
         <button
           onClick={onEdit}
-          className="h-[36px] rounded-[8px] bg-muted px-[18px] text-[13px] text-foreground hover:bg-[#1e2328] transition-colors"
+          className="h-[36px] rounded-[8px] bg-muted px-[18px] text-[13px] text-foreground hover:bg-muted transition-colors"
         >
           Edit
         </button>

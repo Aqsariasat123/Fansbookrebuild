@@ -76,14 +76,14 @@ function DeleteMenu({
         <div className="absolute top-full right-0 bg-muted rounded-[8px] py-[4px] w-[180px] z-20 shadow-lg">
           <button
             onClick={() => handleDelete('forMe')}
-            className="w-full text-left px-[14px] py-[8px] text-[13px] text-foreground hover:bg-[#2a2d30]"
+            className="w-full text-left px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
           >
             Delete for me
           </button>
           {isSelf && (
             <button
               onClick={() => handleDelete('forEveryone')}
-              className="w-full text-left px-[14px] py-[8px] text-[13px] text-red-400 hover:bg-[#2a2d30]"
+              className="w-full text-left px-[14px] py-[8px] text-[13px] text-red-400 hover:bg-muted"
             >
               Delete for everyone
             </button>
@@ -127,7 +127,7 @@ export function OtherBubble({ msg, onDelete, onViewImage }: BubbleProps) {
           className="size-[32px] rounded-full object-cover shrink-0"
         />
       ) : (
-        <div className="size-[32px] rounded-full bg-[#2e4882] flex items-center justify-center shrink-0">
+        <div className="size-[32px] rounded-full bg-primary/30 flex items-center justify-center shrink-0">
           <span className="text-[11px] font-medium text-foreground">{initial}</span>
         </div>
       )}

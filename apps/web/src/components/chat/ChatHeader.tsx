@@ -48,7 +48,7 @@ export function ChatUserHeader({ otherName, otherAvatar, onBack }: ChatUserHeade
         {otherAvatar ? (
           <img src={otherAvatar} alt="" className="size-[40px] rounded-full object-cover" />
         ) : (
-          <div className="size-[40px] rounded-full bg-[#2e4882] flex items-center justify-center">
+          <div className="size-[40px] rounded-full bg-primary/30 flex items-center justify-center">
             <span className="text-[14px] font-medium text-foreground">{initial}</span>
           </div>
         )}
@@ -70,13 +70,13 @@ export function ChatUserHeader({ otherName, otherAvatar, onBack }: ChatUserHeade
         </button>
         {showMenu && (
           <div className="absolute top-full right-0 mt-[4px] bg-muted rounded-[8px] py-[4px] w-[160px] z-20 shadow-lg">
-            <button className="w-full text-left px-[14px] py-[10px] text-[14px] text-foreground hover:bg-[#2a2d30]">
+            <button className="w-full text-left px-[14px] py-[10px] text-[14px] text-foreground hover:bg-muted">
               Mute
             </button>
-            <button className="w-full text-left px-[14px] py-[10px] text-[14px] text-foreground hover:bg-[#2a2d30]">
+            <button className="w-full text-left px-[14px] py-[10px] text-[14px] text-foreground hover:bg-muted">
               Block
             </button>
-            <button className="w-full text-left px-[14px] py-[10px] text-[14px] text-red-400 hover:bg-[#2a2d30]">
+            <button className="w-full text-left px-[14px] py-[10px] text-[14px] text-red-400 hover:bg-muted">
               Delete Chat
             </button>
           </div>

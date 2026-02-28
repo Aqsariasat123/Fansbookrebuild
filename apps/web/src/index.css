@@ -76,3 +76,14 @@
     display: none;
   }
 }
+
+/* Theme-adaptive dashboard SVG icons: gray (#5D5D5D) in light, white in dark */
+.dark img[src*='/icons/dashboard/'] {
+  filter: brightness(0) invert(1);
+}
+/* Preserve colored icons (cyan verified badge, logo, play button) */
+.dark img[src*='verified.svg'],
+.dark img[src*='fansbook-logo'],
+.dark img[src*='play-button'] {
+  filter: none;
+}

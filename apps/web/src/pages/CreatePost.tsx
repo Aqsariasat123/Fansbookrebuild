@@ -135,7 +135,7 @@ export default function CreatePost() {
         {images.length === 0 && (
           <div
             onClick={() => fileRef.current?.click()}
-            className="mt-[16px] flex h-[300px] cursor-pointer items-center justify-center rounded-[16px] border-2 border-dashed border-[#2a2d30] bg-muted transition-colors hover:border-border"
+            className="mt-[16px] flex h-[300px] cursor-pointer items-center justify-center rounded-[16px] border-2 border-dashed border-border bg-muted transition-colors hover:border-border"
           >
             <div className="flex flex-col items-center gap-[12px]">
               <svg

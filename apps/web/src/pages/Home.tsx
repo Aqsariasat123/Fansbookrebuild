@@ -89,7 +89,7 @@ export default function Home() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
       </div>
     );
   }
@@ -149,7 +149,7 @@ export default function Home() {
       <div ref={sentinelRef} className="h-1" />
       {loadingMore && (
         <div className="flex justify-center py-4">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
         </div>
       )}
     </div>
