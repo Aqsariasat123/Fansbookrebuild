@@ -2,7 +2,7 @@
   <circle cx="66" cy="66" r="60" stroke="#f8f8f8" stroke-width="3" fill="none"/>
   <circle cx="66" cy="66" r="44" stroke="#f8f8f8" stroke-width="3" fill="none"/>
   <circle cx="66" cy="66" r="28" stroke="#f8f8f8" stroke-width="3" fill="none"/>
-  <circle cx="66" cy="66" r="12" fill="#f8f8f8"/>
+  <circle cx="66" cy="66" r="12" fill="#5D5D5D"/>
   <line x1="66" y1="2" x2="66" y2="20" stroke="#f8f8f8" stroke-width="3"/>
   <path d="M90 42L66 66" stroke="#f8f8f8" stroke-width="3" stroke-linecap="round"/>
   <path d="M90 42L78 42" stroke="#f8f8f8" stroke-width="3" stroke-linecap="round"/>
