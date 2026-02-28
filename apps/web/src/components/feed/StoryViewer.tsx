@@ -22,6 +22,7 @@ interface StoryViewerProps {
   groups: StoryGroup[];
   initialGroupIndex: number;
   onClose: () => void;
+  onRefetch?: () => void;
 }
 
 function StoryHeader({
@@ -77,7 +78,7 @@ function HeartOverlay() {
   );
 }
 
-export function StoryViewer({ groups, initialGroupIndex, onClose }: StoryViewerProps) {
+export function StoryViewer({ groups, initialGroupIndex, onClose, onRefetch }: StoryViewerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const nav = useStoryNav(groups, initialGroupIndex, onClose);
   const { group, story, isVideo, groupIdx, storyIdx, progress, setProgress, goNext, goPrev } = nav;
@@ -145,6 +146,8 @@ export function StoryViewer({ groups, initialGroupIndex, onClose }: StoryViewerP
           storyId={story.id}
           authorId={group.authorId}
           viewCount={story.viewCount || 0}
+          onClose={onClose}
+          onRefetch={onRefetch}
         />
       </div>
 

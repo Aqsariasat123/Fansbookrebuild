@@ -9,6 +9,29 @@ import { AppError } from '../middleware/errorHandler.js';
 
 const router = Router();
 const storiesDir = path.join(process.cwd(), 'uploads', 'stories');
+
+async function createStoryNotification(
+  ownerId: string,
+  actorId: string,
+  storyId: string,
+  message: string,
+) {
+  const actor = await prisma.user.findUnique({
+    where: { id: actorId },
+    select: { displayName: true, username: true, avatar: true },
+  });
+  const name = actor?.displayName || actor?.username || 'Someone';
+  await prisma.notification.create({
+    data: {
+      userId: ownerId,
+      type: 'STORY',
+      actorId,
+      entityId: storyId,
+      entityType: `avatar:${actor?.avatar || ''}`,
+      message: message.replace('{name}', name),
+    },
+  });
+}
 if (!fs.existsSync(storiesDir)) fs.mkdirSync(storiesDir, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -135,8 +158,20 @@ router.delete('/:id', authenticate, async (req, res, next) => {
 // React to a story (heart)
 router.post('/:id/react', authenticate, async (req, res, next) => {
   try {
-    const story = await prisma.story.findUnique({ where: { id: req.params.id } });
+    const storyId = req.params.id as string;
+    const story = await prisma.story.findUnique({ where: { id: storyId } });
     if (!story) throw new AppError(404, 'Story not found');
+
+    const reactorId = req.user!.userId;
+    if (reactorId !== story.authorId) {
+      await createStoryNotification(
+        story.authorId,
+        reactorId,
+        story.id,
+        '{name} liked your story ❤️',
+      );
+    }
+
     res.json({ success: true });
   } catch (err) {
     next(err);
@@ -148,7 +183,8 @@ router.post('/:id/reply', authenticate, async (req, res, next) => {
   try {
     const { text } = req.body;
     if (!text?.trim()) throw new AppError(400, 'Reply text is required');
-    const story = await prisma.story.findUnique({ where: { id: req.params.id } });
+    const storyId = req.params.id as string;
+    const story = await prisma.story.findUnique({ where: { id: storyId } });
     if (!story) throw new AppError(404, 'Story not found');
 
     const senderId = req.user!.userId;
@@ -180,6 +216,8 @@ router.post('/:id/reply', authenticate, async (req, res, next) => {
       where: { id: conv.id },
       data: { lastMessage: replyText, lastMessageAt: new Date() },
     });
+
+    await createStoryNotification(receiverId, senderId, story.id, '{name} replied to your story');
 
     res.json({ success: true });
   } catch (err) {

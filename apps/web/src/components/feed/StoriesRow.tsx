@@ -57,6 +57,7 @@ export function StoriesRow({ groups, isCreator, onRefetch }: StoriesRowProps) {
           groups={groups}
           initialGroupIndex={viewerIndex}
           onClose={() => setViewerIndex(null)}
+          onRefetch={onRefetch}
         />
       )}
     </>

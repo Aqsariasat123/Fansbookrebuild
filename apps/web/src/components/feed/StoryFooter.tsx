@@ -6,6 +6,8 @@ interface StoryFooterProps {
   storyId: string;
   authorId: string;
   viewCount: number;
+  onClose?: () => void;
+  onRefetch?: () => void;
 }
 
 const EYE_PATH =
@@ -101,13 +103,90 @@ function ReplyBar({ storyId }: { storyId: string }) {
   );
 }
 
-export function StoryFooter({ storyId, authorId, viewCount }: StoryFooterProps) {
+function DeleteButton({
+  storyId,
+  onClose,
+  onRefetch,
+}: {
+  storyId: string;
+  onClose?: () => void;
+  onRefetch?: () => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await api.delete(`/stories/${storyId}`);
+      onRefetch?.();
+      onClose?.();
+    } catch {
+      setDeleting(false);
+      setConfirming(false);
+    }
+  };
+
+  if (confirming) {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-white/80">Delete this story?</span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete();
+          }}
+          disabled={deleting}
+          className="rounded-full bg-red-500 px-3 py-1 text-sm font-medium text-white"
+        >
+          {deleting ? 'Deleting...' : 'Yes, delete'}
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setConfirming(false);
+          }}
+          className="rounded-full bg-white/20 px-3 py-1 text-sm text-white"
+        >
+          Cancel
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        setConfirming(true);
+      }}
+      className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/20"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+          fill="currentColor"
+        />
+      </svg>
+      Delete Story
+    </button>
+  );
+}
+
+export function StoryFooter({
+  storyId,
+  authorId,
+  viewCount,
+  onClose,
+  onRefetch,
+}: StoryFooterProps) {
   const user = useAuthStore((s) => s.user);
   const isOwner = user?.id === authorId;
 
   return (
     <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/80 to-transparent px-3 pb-4 pt-8">
       {isOwner && viewCount > 0 && <ViewCount count={viewCount} large />}
+      {isOwner && <DeleteButton storyId={storyId} onClose={onClose} onRefetch={onRefetch} />}
       {!isOwner && <ReplyBar storyId={storyId} />}
     </div>
   );
