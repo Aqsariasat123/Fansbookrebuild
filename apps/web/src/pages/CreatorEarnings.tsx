@@ -158,7 +158,7 @@ export default function CreatorEarnings() {
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${page === i + 1 ? 'bg-[#01adf1] text-white' : 'bg-card text-muted-foreground hover:text-white'}`}
+              className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${page === i + 1 ? 'bg-[#01adf1] text-white' : 'bg-card text-muted-foreground hover:text-foreground'}`}
             >
               {i + 1}
             </button>
@@ -167,7 +167,7 @@ export default function CreatorEarnings() {
           <button
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-[4px] bg-card px-[12px] py-[6px] text-[13px] text-muted-foreground hover:text-white disabled:opacity-40"
+            className="rounded-[4px] bg-card px-[12px] py-[6px] text-[13px] text-muted-foreground hover:text-foreground disabled:opacity-40"
           >
             Next
           </button>

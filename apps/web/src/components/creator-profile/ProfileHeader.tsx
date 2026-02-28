@@ -153,11 +153,11 @@ export function ProfileHeader({
         <div className="mt-[20px] flex items-center gap-[10px]">
           <button
             onClick={() => navigate('/creator/profile/edit')}
-            className="rounded-[11px] border border-border px-[36px] py-[12px] text-[16px] font-medium text-foreground shadow-[0px_6px_10px_rgba(34,34,34,0.25)] transition-colors hover:border-white"
+            className="rounded-[11px] border border-border px-[36px] py-[12px] text-[16px] font-medium text-foreground shadow-[0px_6px_10px_rgba(34,34,34,0.25)] transition-colors hover:border-foreground"
           >
             Edit Profile
           </button>
-          <button className="flex size-[46px] items-center justify-center rounded-[11px] border border-border text-muted-foreground hover:border-white hover:text-white transition-colors">
+          <button className="flex size-[46px] items-center justify-center rounded-[11px] border border-border text-muted-foreground hover:border-foreground hover:text-foreground transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="12" cy="5" r="2" />
               <circle cx="12" cy="12" r="2" />
@@ -176,7 +176,7 @@ export function ProfileHeader({
           </button>
           <button
             onClick={onScheduleLive}
-            className="flex-1 rounded-[50px] border border-border py-[12px] text-center text-[14px] text-white transition-colors hover:border-white"
+            className="flex-1 rounded-[50px] border border-border py-[12px] text-center text-[14px] text-foreground transition-colors hover:border-foreground"
           >
             Schedule Live
           </button>

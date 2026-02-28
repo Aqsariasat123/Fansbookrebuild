@@ -5,9 +5,9 @@
 <rect id="Bounding box" width="24" height="24" fill="var(--fill-0, #D9D9D9)"/>
 </mask>
 <g mask="url(#mask0_10346_3)">
-<path id="play_arrow_2" d="M8 19V5L19 12L8 19Z" fill="var(--fill-0, #F8F8F8)"/>
+<path id="play_arrow_2" d="M8 19V5L19 12L8 19Z" fill="var(--fill-0, #5D5D5D)"/>
 </g>
 </g>
-<line id="Line 7" x1="28" y1="11.5" x2="814" y2="11.5" stroke="var(--stroke-0, #F8F8F8)"/>
+<line id="Line 7" x1="28" y1="11.5" x2="814" y2="11.5" stroke="var(--stroke-0, #5D5D5D)"/>
 </g>
 </svg>

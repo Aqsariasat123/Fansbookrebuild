@@ -194,13 +194,13 @@ export default function CreatorBookings() {
         {[1, 2, 3, 4, 5, 6].map((n) => (
           <button
             key={n}
-            className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${n === 1 ? 'bg-[#01adf1] text-white' : 'bg-card text-muted-foreground hover:text-white'}`}
+            className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${n === 1 ? 'bg-[#01adf1] text-white' : 'bg-card text-muted-foreground hover:text-foreground'}`}
           >
             {n}
           </button>
         ))}
         <span className="text-[13px] text-muted-foreground">...</span>
-        <button className="rounded-[4px] bg-card px-[12px] py-[6px] text-[13px] text-muted-foreground hover:text-white">
+        <button className="rounded-[4px] bg-card px-[12px] py-[6px] text-[13px] text-muted-foreground hover:text-foreground">
           Next
         </button>
       </div>

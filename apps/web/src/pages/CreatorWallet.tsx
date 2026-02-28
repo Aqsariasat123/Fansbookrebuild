@@ -68,7 +68,7 @@ export default function CreatorWallet() {
         >
           Withdraw
         </button>
-        <button className="rounded-[50px] border border-border py-[14px] text-[16px] text-white hover:border-white transition-colors">
+        <button className="rounded-[50px] border border-border py-[14px] text-[16px] text-foreground hover:border-foreground transition-colors">
           Withdraw Tax Form
         </button>
       </div>
@@ -77,13 +77,13 @@ export default function CreatorWallet() {
       <div className="flex gap-[24px] border-b border-border/30">
         <button
           onClick={() => setActiveTab('history')}
-          className={`pb-[10px] text-[16px] font-medium transition-colors ${activeTab === 'history' ? 'border-b-2 border-[#01adf1] text-primary' : 'text-muted-foreground hover:text-white'}`}
+          className={`pb-[10px] text-[16px] font-medium transition-colors ${activeTab === 'history' ? 'border-b-2 border-[#01adf1] text-primary' : 'text-muted-foreground hover:text-foreground'}`}
         >
           Withdrawal History
         </button>
         <button
           onClick={() => setActiveTab('form')}
-          className={`pb-[10px] text-[16px] font-medium transition-colors ${activeTab === 'form' ? 'border-b-2 border-[#01adf1] text-primary' : 'text-muted-foreground hover:text-white'}`}
+          className={`pb-[10px] text-[16px] font-medium transition-colors ${activeTab === 'form' ? 'border-b-2 border-[#01adf1] text-primary' : 'text-muted-foreground hover:text-foreground'}`}
         >
           Withdrawal Form History
         </button>

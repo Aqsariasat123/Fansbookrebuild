@@ -144,13 +144,13 @@ export function Pagination({ total, perPage }: { total: number; perPage: number 
       {Array.from({ length: Math.min(pages, 6) }, (_, i) => (
         <button
           key={i}
-          className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${i === 0 ? 'bg-[#01adf1] text-white' : 'bg-card text-muted-foreground hover:text-white'}`}
+          className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${i === 0 ? 'bg-[#01adf1] text-white' : 'bg-card text-muted-foreground hover:text-foreground'}`}
         >
           {i + 1}
         </button>
       ))}
       {pages > 6 && <span className="text-[13px] text-muted-foreground">...</span>}
-      <button className="rounded-[4px] bg-card px-[12px] py-[6px] text-[13px] text-muted-foreground hover:text-white">
+      <button className="rounded-[4px] bg-card px-[12px] py-[6px] text-[13px] text-muted-foreground hover:text-foreground">
         Next
       </button>
     </div>

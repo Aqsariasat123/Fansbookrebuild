@@ -104,7 +104,7 @@ export function ProfileSidebar({
             className={`rounded-[11px] border px-[36px] py-[12px] text-[16px] font-medium shadow-[0px_6px_10px_rgba(34,34,34,0.25)] transition-colors disabled:opacity-50 md:px-[48px] ${
               profile.isFollowing
                 ? 'border-[#01adf1] bg-[#01adf1]/10 text-primary'
-                : 'border-border text-foreground hover:border-white'
+                : 'border-border text-foreground hover:border-foreground'
             }`}
           >
             {profile.isFollowing ? 'Following' : 'Follow'}
@@ -122,7 +122,7 @@ export function ProfileSidebar({
       {!isOwnProfile && (
         <button
           onClick={onSubscribe}
-          className="mt-[16px] flex w-full items-center justify-between rounded-[11px] border border-border px-[20px] py-[14px] text-[16px] text-foreground transition-colors hover:border-white"
+          className="mt-[16px] flex w-full items-center justify-between rounded-[11px] border border-border px-[20px] py-[14px] text-[16px] text-foreground transition-colors hover:border-foreground"
         >
           View Subscription Plans
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

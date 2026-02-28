@@ -137,7 +137,7 @@ export default function GoLive() {
         </button>
         <button
           onClick={() => navigate(-1)}
-          className="w-[240px] rounded-[8px] border border-border py-[14px] text-[16px] text-foreground transition-colors hover:border-white"
+          className="w-[240px] rounded-[8px] border border-border py-[14px] text-[16px] text-foreground transition-colors hover:border-foreground"
         >
           Cancel
         </button>
