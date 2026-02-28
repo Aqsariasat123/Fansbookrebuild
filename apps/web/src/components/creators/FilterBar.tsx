@@ -108,7 +108,7 @@ export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
   return (
     <div className="flex items-center justify-center px-[16px] pt-[30px] pb-[30px] md:px-0 md:pt-[55px] md:pb-[50px]">
       <div className="flex w-full flex-col items-stretch md:w-auto md:flex-row md:items-center">
-        <div className="flex flex-wrap items-center gap-[20px] rounded-t-[52px] bg-muted px-[16px] py-[16px] md:flex-nowrap md:gap-[50px] md:rounded-l-[52px] md:rounded-tr-none md:px-[32px] md:py-[22px]">
+        <div className="flex flex-wrap items-center gap-[20px] rounded-t-[52px] bg-card px-[16px] py-[16px] md:flex-nowrap md:gap-[50px] md:rounded-l-[52px] md:rounded-tr-none md:px-[32px] md:py-[22px]">
           {/* Search */}
           <div className="flex w-full items-center gap-[12px] md:w-auto md:gap-[18px]">
             <img src="/icons/creators/search.svg" alt="" className="h-[24px] w-[24px]" />
@@ -144,7 +144,7 @@ export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
 
         <button
           onClick={clearAll}
-          className="flex items-center justify-center gap-[10px] rounded-b-[52px] bg-card px-[20px] py-[14px] md:rounded-b-none md:rounded-r-[52px] md:py-[22px]"
+          className="flex items-center justify-center gap-[10px] rounded-b-[52px] bg-card px-[20px] py-[14px] md:rounded-b-none md:rounded-r-[52px] md:py-[22px] border-l border-border"
         >
           <img src="/icons/creators/filter_list.svg" alt="" className="h-[24px] w-[24px]" />
           <span className="font-outfit text-[16px] font-normal text-foreground">Clear</span>
