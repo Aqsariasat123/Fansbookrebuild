@@ -66,11 +66,11 @@ export default function Register() {
       />
 
       {/* Desktop: plain bg + hero on right */}
-      <div className="absolute inset-0 hidden bg-foreground lg:block" />
+      <div className="absolute inset-0 hidden bg-card lg:block" />
 
       {/* Form */}
       <div className="relative z-10 flex w-full items-center justify-center overflow-y-auto px-[20px] lg:flex-1 lg:px-0">
-        <div className="w-full max-w-[374px] flex flex-col items-center rounded-[22px] bg-foreground px-[22px] py-[21px] lg:max-w-[392px] lg:rounded-none lg:bg-transparent lg:px-0 lg:py-10 lg:shadow-none">
+        <div className="w-full max-w-[374px] flex flex-col items-center rounded-[22px] bg-card px-[22px] py-[21px] lg:max-w-[392px] lg:rounded-none lg:bg-transparent lg:px-0 lg:py-10 lg:shadow-none">
           {/* Heading */}
           <div className="w-full text-center lg:max-w-[500px]">
             <h1 className="font-medium text-[36px] leading-[1.25] text-foreground lg:text-[48px]">

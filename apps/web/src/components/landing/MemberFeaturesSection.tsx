@@ -81,13 +81,13 @@ export function MemberFeaturesSection() {
       <div className="mx-auto mt-[24px] flex w-fit rounded-[57px] bg-[#a61651] p-[6px] md:mt-[30px] md:p-[8px]">
         <button
           onClick={() => switchTab('creators')}
-          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'creators' ? 'bg-foreground text-foreground' : 'text-foreground'}`}
+          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'creators' ? 'bg-white text-[#15191c]' : 'text-white'}`}
         >
           Creators
         </button>
         <button
           onClick={() => switchTab('subscribers')}
-          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'subscribers' ? 'bg-foreground text-foreground' : 'text-foreground'}`}
+          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'subscribers' ? 'bg-white text-[#15191c]' : 'text-white'}`}
         >
           Subscribers
         </button>
@@ -111,7 +111,7 @@ export function MemberFeaturesSection() {
       </div>
 
       {/* Content box */}
-      <div className="mx-auto mt-[20px] flex max-w-[781px] flex-col items-center gap-[24px] rounded-[12px] bg-foreground px-[24px] py-[24px] md:mt-[24px] md:flex-row md:gap-[40px] md:px-[35px] md:py-[30px]">
+      <div className="mx-auto mt-[20px] flex max-w-[781px] flex-col items-center gap-[24px] rounded-[12px] bg-card px-[24px] py-[24px] md:mt-[24px] md:flex-row md:gap-[40px] md:px-[35px] md:py-[30px]">
         <ul className="flex-1 space-y-[18px] md:space-y-[26px]">
           {items.map((item) => (
             <li

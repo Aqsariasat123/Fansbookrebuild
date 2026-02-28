@@ -144,7 +144,7 @@ export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
 
         <button
           onClick={clearAll}
-          className="flex items-center justify-center gap-[10px] rounded-b-[8px] bg-foreground px-[20px] py-[14px] md:rounded-b-none md:rounded-r-[8px] md:py-[22px]"
+          className="flex items-center justify-center gap-[10px] rounded-b-[8px] bg-card px-[20px] py-[14px] md:rounded-b-none md:rounded-r-[8px] md:py-[22px]"
         >
           <img src="/icons/creators/filter_list.svg" alt="" className="h-[24px] w-[24px]" />
           <span className="font-outfit text-[16px] font-normal text-foreground">Clear</span>

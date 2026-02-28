@@ -44,7 +44,7 @@ export function ReviewsSection() {
         {reviews.map((r) => (
           <div
             key={r.name}
-            className="rounded-[22px] border border-border bg-foreground p-[20px] shadow-[0px_0px_17.8px_1px_rgba(0,0,0,0.25)] md:p-[24px]"
+            className="rounded-[22px] border border-border bg-card p-[20px] shadow-[0px_0px_17.8px_1px_rgba(0,0,0,0.25)] md:p-[24px]"
           >
             <div className="flex gap-[8px] md:gap-[10px]">
               {[1, 2, 3, 4, 5].map((s) => (

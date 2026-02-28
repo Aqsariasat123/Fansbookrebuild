@@ -76,7 +76,7 @@ export default function Language() {
       className="fixed inset-0 bg-black/12 backdrop-blur-[3.4px] z-50 flex items-center justify-center"
       onClick={handleBackdropClick}
     >
-      <div className="mx-[16px] w-full max-w-[580px] rounded-[22px] bg-foreground p-[20px] shadow-[0px_13px_142.4px_0px_rgba(0,0,0,0.25)] md:mx-0 md:p-[30px]">
+      <div className="mx-[16px] w-full max-w-[580px] rounded-[22px] bg-card p-[20px] shadow-[0px_13px_142.4px_0px_rgba(0,0,0,0.25)] md:mx-0 md:p-[30px]">
         <h2 className="text-[20px] text-foreground">Languages</h2>
 
         <p className="mt-[20px] mb-[16px] text-[16px] text-muted-foreground">Select Language</p>

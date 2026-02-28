@@ -111,7 +111,7 @@ export default function ProfileEdit() {
             </button>
             <button
               onClick={() => navigate('/profile')}
-              className="w-full h-[40px] md:h-[45px] mt-[16px] md:mt-[25px] rounded-[80px] border border-[#2e4882] bg-foreground text-[16px] md:text-[20px] text-foreground shadow-[0px_2px_18px_0px_rgba(34,34,34,0.25)] hover:opacity-90 transition-opacity"
+              className="w-full h-[40px] md:h-[45px] mt-[16px] md:mt-[25px] rounded-[80px] border border-[#2e4882] bg-card text-[16px] md:text-[20px] text-foreground shadow-[0px_2px_18px_0px_rgba(34,34,34,0.25)] hover:opacity-90 transition-opacity"
             >
               Cancel
             </button>

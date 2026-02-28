@@ -41,7 +41,7 @@ export default function Login() {
       />
 
       {/* Desktop: plain bg + clipped hero on left */}
-      <div className="absolute inset-0 hidden bg-foreground lg:block" />
+      <div className="absolute inset-0 hidden bg-card lg:block" />
       <div
         className="hidden lg:block"
         style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: '52%' }}
@@ -59,7 +59,7 @@ export default function Login() {
 
       {/* Form */}
       <div className="relative z-10 flex w-full items-center justify-center px-[20px] lg:w-[54.77%] lg:ml-auto lg:px-0">
-        <div className="w-full max-w-[336px] flex flex-col items-center rounded-[22px] bg-foreground px-[22px] py-[21px] lg:max-w-[392px] lg:rounded-none lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
+        <div className="w-full max-w-[336px] flex flex-col items-center rounded-[22px] bg-card px-[22px] py-[21px] lg:max-w-[392px] lg:rounded-none lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
           {/* Heading */}
           <div className="w-full text-center">
             <h1 className="font-medium text-[36px] leading-[1.25] text-foreground lg:text-[48px]">
@@ -93,7 +93,7 @@ export default function Login() {
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
                   placeholder="Enter your Email or username..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-muted bg-transparent px-[12px] text-[10px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]"
+                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-border bg-transparent px-[12px] text-[10px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]"
                   required
                 />
               </div>
@@ -110,7 +110,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-muted bg-transparent px-[12px] pr-[40px] text-[10px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]"
+                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-border bg-transparent px-[12px] pr-[40px] text-[10px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]"
                   required
                 />
                 <button

@@ -67,7 +67,7 @@ export function NavbarUserMenu() {
 
       {/* Dropdown */}
       {dropdownOpen && (
-        <div className="absolute right-0 top-full mt-[4px] w-[101px] rounded-[10px] bg-foreground py-[10px] shadow-[0px_-5px_20px_0px_rgba(0,0,0,0.1)]">
+        <div className="absolute right-0 top-full mt-[4px] w-[101px] rounded-[10px] bg-card py-[10px] shadow-[0px_-5px_20px_0px_rgba(0,0,0,0.1)]">
           <Link
             to="/profile"
             onClick={() => setDropdownOpen(false)}

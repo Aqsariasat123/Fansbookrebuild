@@ -75,7 +75,7 @@ export default function About() {
       </div>
 
       {/* Our Purpose Section — light bg */}
-      <div className="flex flex-col items-center bg-foreground px-[28px] pt-[60px] pb-[80px]">
+      <div className="flex flex-col items-center bg-card px-[28px] pt-[60px] pb-[80px]">
         {/* Heading */}
         <div className="flex w-full max-w-[335px] flex-col items-center gap-[20px] text-center text-foreground">
           <h2 className="w-full text-[30px] md:text-[48px] font-medium">Our Purpose</h2>

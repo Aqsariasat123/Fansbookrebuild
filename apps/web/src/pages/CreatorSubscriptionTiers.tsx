@@ -184,7 +184,7 @@ export default function CreatorSubscriptionTiers() {
         >
           {saving ? 'Saving...' : 'Save'}
         </button>
-        <button className="w-full max-w-[306px] rounded-[80px] border border-[#2e4882] bg-foreground py-[12px] text-[18px] text-foreground shadow-md hover:opacity-90 transition-opacity">
+        <button className="w-full max-w-[306px] rounded-[80px] border border-[#2e4882] bg-card py-[12px] text-[18px] text-foreground shadow-md hover:opacity-90 transition-opacity">
           Cancel
         </button>
       </div>

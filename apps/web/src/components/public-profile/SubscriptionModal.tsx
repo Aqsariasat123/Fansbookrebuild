@@ -30,7 +30,7 @@ export function SubscriptionModal({ tiers, onClose, onSubscribe }: Props) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative mx-[16px] max-h-[90vh] w-full max-w-[730px] overflow-y-auto rounded-[22px] bg-foreground px-[40px] py-[36px]">
+      <div className="relative mx-[16px] max-h-[90vh] w-full max-w-[730px] overflow-y-auto rounded-[22px] bg-card px-[40px] py-[36px]">
         {/* Close button */}
         <button
           onClick={onClose}

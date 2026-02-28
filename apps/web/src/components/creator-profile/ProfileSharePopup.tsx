@@ -59,7 +59,7 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 md:items-center">
       <div
         ref={popupRef}
-        className="w-full max-w-[226px] rounded-[22px] bg-foreground px-[25px] pb-[25px] pt-[16px] md:max-w-[280px]"
+        className="w-full max-w-[226px] rounded-[22px] bg-card px-[25px] pb-[25px] pt-[16px] md:max-w-[280px]"
       >
         {/* Drag handle */}
         <div className="mx-auto mb-[20px] h-[2px] w-[60px] rounded-full bg-muted" />
