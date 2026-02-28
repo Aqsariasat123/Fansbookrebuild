@@ -16,10 +16,10 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
         </button>
         <div className="flex items-center gap-[6px]">
           <Link to="/notifications" className="shrink-0" aria-label="Notifications">
-            <img src="/icons/dashboard/bell-icon.svg" alt="" className="h-[30px] w-[30px]" />
+            <img src="/icons/dashboard/bell-icon.svg" alt="" className="h-[24px] w-[24px]" />
           </Link>
           <Link to="/messages" className="shrink-0" aria-label="Messages">
-            <img src="/icons/dashboard/message-icon.svg" alt="" className="h-[30px] w-[30px]" />
+            <img src="/icons/dashboard/message-icon.svg" alt="" className="h-[24px] w-[24px]" />
           </Link>
           <NavbarUserMenu />
         </div>
@@ -39,10 +39,10 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
             <div className="flex items-center gap-[6px]">
               <NavbarSearch />
               <Link to="/notifications" className="shrink-0" aria-label="Notifications">
-                <img src="/icons/dashboard/bell-icon.svg" alt="" className="h-[44px] w-[44px]" />
+                <img src="/icons/dashboard/bell-icon.svg" alt="" className="h-[24px] w-[24px]" />
               </Link>
               <Link to="/messages" className="shrink-0" aria-label="Messages">
-                <img src="/icons/dashboard/message-icon.svg" alt="" className="h-[44px] w-[44px]" />
+                <img src="/icons/dashboard/message-icon.svg" alt="" className="h-[24px] w-[24px]" />
               </Link>
             </div>
             <NavbarUserMenu />
