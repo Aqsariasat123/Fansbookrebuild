@@ -4,6 +4,8 @@ import {
   BalanceCards,
   HistoryRow,
   FormRow,
+  MobileHistoryCard,
+  MobileFormCard,
   WithdrawModal,
   Pagination,
   HISTORY_COLS,
@@ -87,8 +89,23 @@ export default function CreatorWallet() {
         </button>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-[16px]">
+      {/* Mobile Cards */}
+      <div className="flex flex-col gap-[12px] md:hidden">
+        {withdrawals.length === 0 ? (
+          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">No records yet</p>
+        ) : (
+          withdrawals.map((w, i) =>
+            activeTab === 'history' ? (
+              <MobileHistoryCard key={w.id} w={w} index={i} />
+            ) : (
+              <MobileFormCard key={w.id} w={w} index={i} />
+            ),
+          )
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden overflow-x-auto rounded-[16px] md:block">
         <table className="w-full min-w-[700px]">
           <thead>
             <tr className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7]">

@@ -70,7 +70,56 @@ export default function CreatorSubscriptionTiers() {
     <div className="flex flex-col gap-[20px]">
       <p className="text-[24px] font-semibold text-[#f8f8f8]">My Subscriptions</p>
 
-      <div className="overflow-x-auto rounded-[16px]">
+      {/* Mobile Cards */}
+      <div className="flex flex-col gap-[12px] md:hidden">
+        {tiers.length === 0 ? (
+          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+            No subscription tiers yet
+          </p>
+        ) : (
+          tiers.map((t) => (
+            <div key={t.id} className="rounded-[16px] bg-[#0e1012] p-[16px]">
+              {[
+                { label: 'Name', value: t.name },
+                { label: 'Duration', value: t.duration },
+                { label: 'Default Price', value: t.defaultPrice.toFixed(2) },
+              ].map((r) => (
+                <div
+                  key={r.label}
+                  className="flex items-center justify-between border-b border-[#1a1d20] py-[8px]"
+                >
+                  <span className="text-[12px] text-[#5d5d5d]">{r.label}</span>
+                  <span className="text-[13px] text-[#f8f8f8]">{r.value}</span>
+                </div>
+              ))}
+              <div className="flex items-center justify-between border-b border-[#1a1d20] py-[8px]">
+                <span className="text-[12px] text-[#5d5d5d]">My Price</span>
+                <input
+                  type="number"
+                  value={t.price}
+                  onChange={(e) => updateTier(t.id, 'price', Number(e.target.value))}
+                  className="w-[80px] rounded-[4px] border border-[#5d5d5d] bg-transparent px-[8px] py-[4px] text-right text-[13px] text-[#f8f8f8] outline-none"
+                />
+              </div>
+              {[
+                { label: 'Discount', value: String(t.discount || '-') },
+                { label: 'Users', value: String(t.remainingUsers || '-') },
+              ].map((r, i) => (
+                <div
+                  key={r.label}
+                  className={`flex items-center justify-between py-[8px] ${i === 0 ? 'border-b border-[#1a1d20]' : ''}`}
+                >
+                  <span className="text-[12px] text-[#5d5d5d]">{r.label}</span>
+                  <span className="text-[13px] text-[#5d5d5d]">{r.value}</span>
+                </div>
+              ))}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden overflow-x-auto rounded-[16px] md:block">
         <table className="w-full min-w-[800px]">
           <thead>
             <tr className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7]">

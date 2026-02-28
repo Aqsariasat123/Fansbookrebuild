@@ -87,8 +87,56 @@ export default function CreatorBookings() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-[16px]">
+      {/* Mobile Cards */}
+      <div className="flex flex-col gap-[12px] md:hidden">
+        {loading ? (
+          <div className="flex justify-center py-[40px]">
+            <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+          </div>
+        ) : bookings.length === 0 ? (
+          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">No bookings yet</p>
+        ) : (
+          bookings.map((b) => (
+            <div key={b.id} className="rounded-[16px] bg-[#0e1012] p-[16px]">
+              {[
+                { label: 'Username', value: b.fanUsername || 'John Doe' },
+                {
+                  label: 'Date',
+                  value: b.date ? new Date(b.date).toLocaleDateString('en-GB') : '21-08-2025',
+                },
+                { label: 'Slot', value: b.timeSlot || 'Lorem Ipsum' },
+                { label: 'Status', value: b.status || 'Accepted' },
+              ].map((r) => (
+                <div
+                  key={r.label}
+                  className="flex items-center justify-between border-b border-[#1a1d20] py-[8px]"
+                >
+                  <span className="text-[12px] text-[#5d5d5d]">{r.label}</span>
+                  <span className="text-[13px] text-[#f8f8f8]">{r.value}</span>
+                </div>
+              ))}
+              {b.status === 'PENDING' ? (
+                <div className="flex gap-[8px] pt-[12px]">
+                  <button className="flex-1 rounded-[8px] bg-green-600 py-[8px] text-[13px] text-white">
+                    Accept
+                  </button>
+                  <button className="flex-1 rounded-[8px] bg-red-600 py-[8px] text-[13px] text-white">
+                    Reject
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between py-[8px]">
+                  <span className="text-[12px] text-[#5d5d5d]">Actions</span>
+                  <span className="text-[13px] text-[#f8f8f8]">Lorem Ipsum</span>
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden overflow-x-auto rounded-[16px] md:block">
         <table className="w-full min-w-[700px]">
           <thead>
             <tr className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7]">
@@ -142,7 +190,6 @@ export default function CreatorBookings() {
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="flex items-center justify-center gap-[6px]">
         {[1, 2, 3, 4, 5, 6].map((n) => (
           <button

@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
-
-interface EarningItem {
-  id: string;
-  date: string;
-  username: string;
-  totalCoins: number;
-  receivedVia: string;
-  status: string;
-}
+import { EarningsMobileCards, EarningsTable } from './CreatorEarningsParts';
+import type { EarningItem } from './CreatorEarningsParts';
 
 const CATEGORIES = [
   'All',
@@ -78,7 +71,6 @@ export default function CreatorEarnings() {
           />
         </div>
         <div className="flex flex-wrap items-center gap-[12px]">
-          {/* Category Dropdown */}
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -141,70 +133,22 @@ export default function CreatorEarnings() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-[16px]">
-        <table className="w-full min-w-[700px]">
-          <thead>
-            <tr className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7]">
-              {[
-                'Date & Time',
-                'Username',
-                'Total Coins',
-                'Coins Received Via',
-                'Payment Status',
-              ].map((h) => (
-                <th
-                  key={h}
-                  className="px-[16px] py-[14px] text-left text-[14px] font-semibold text-white"
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="bg-[#0e1012]">
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="py-[40px] text-center">
-                  <div className="mx-auto size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
-                </td>
-              </tr>
-            ) : items.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
-                  No earnings yet
-                </td>
-              </tr>
-            ) : (
-              items.map((item) => (
-                <tr key={item.id} className="border-b border-[#15191c] last:border-0">
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
-                    {new Date(item.date).toLocaleDateString('en-GB')}
-                    <br />
-                    <span className="text-[12px] text-[#5d5d5d]">
-                      {new Date(item.date).toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </td>
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
-                    {item.username || 'John Doe'}
-                  </td>
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
-                    {item.totalCoins || 100}
-                  </td>
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
-                    {item.receivedVia || 'PayPal'}
-                  </td>
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
-                    {item.status || 'Paid'}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      {/* Mobile Cards */}
+      <div className="flex flex-col gap-[12px] md:hidden">
+        {loading ? (
+          <div className="flex justify-center py-[40px]">
+            <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+          </div>
+        ) : items.length === 0 ? (
+          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">No earnings yet</p>
+        ) : (
+          <EarningsMobileCards items={items} />
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden overflow-x-auto rounded-[16px] md:block">
+        <EarningsTable items={items} loading={loading} />
       </div>
 
       {/* Pagination */}

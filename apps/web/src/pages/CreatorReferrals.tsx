@@ -50,7 +50,7 @@ export default function CreatorReferrals() {
       <div className="rounded-[16px] bg-[#0e1012] p-[24px]">
         <p className="mb-[16px] text-[18px] font-semibold text-[#f8f8f8]">Your Referral Code</p>
         <div className="flex flex-col items-start gap-[16px] md:flex-row md:items-center">
-          <div className="flex h-[50px] min-w-[300px] items-center justify-center rounded-[8px] bg-[#15191c] px-[24px]">
+          <div className="flex h-[50px] w-full items-center justify-center rounded-[8px] bg-[#15191c] px-[24px] md:min-w-[300px] md:w-auto">
             <span className="text-[18px] tracking-wider text-[#f8f8f8]">{code || '------'}</span>
           </div>
           <button
@@ -65,7 +65,43 @@ export default function CreatorReferrals() {
 
       {/* Referral Code History */}
       <p className="text-[20px] font-semibold text-[#f8f8f8]">Referral Code History</p>
-      <div className="overflow-x-auto rounded-[16px]">
+
+      {/* Mobile Cards */}
+      <div className="flex flex-col gap-[12px] md:hidden">
+        {referrals.length === 0 ? (
+          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+            No referrals yet. Share your code to start earning!
+          </p>
+        ) : (
+          referrals.map((r) => (
+            <div key={r.id} className="rounded-[16px] bg-[#0e1012] p-[16px]">
+              {[
+                { label: 'Code', value: r.code || code },
+                { label: 'Username', value: r.username || 'John Doe' },
+                {
+                  label: 'Registered',
+                  value: r.registeredAt
+                    ? new Date(r.registeredAt).toLocaleDateString('en-GB')
+                    : '24-06-2025',
+                },
+                { label: 'Subscription', value: r.subscriptionCompleted || 'Lorem Ipsum' },
+                { label: 'Coins', value: String(r.coins || 100) },
+              ].map((row, i, arr) => (
+                <div
+                  key={row.label}
+                  className={`flex items-center justify-between py-[8px] ${i < arr.length - 1 ? 'border-b border-[#1a1d20]' : ''}`}
+                >
+                  <span className="text-[12px] text-[#5d5d5d]">{row.label}</span>
+                  <span className="text-[13px] text-[#f8f8f8]">{row.value}</span>
+                </div>
+              ))}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden overflow-x-auto rounded-[16px] md:block">
         <table className="w-full min-w-[700px]">
           <thead>
             <tr className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7]">

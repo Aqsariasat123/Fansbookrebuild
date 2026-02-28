@@ -27,7 +27,9 @@ export function BalanceCards({ balance }: { balance: BalanceData | null }) {
         </div>
         <div>
           <p className="text-[16px] text-[#a0a0a0]">Coins Balance</p>
-          <p className="text-[40px] font-bold text-[#f8f8f8]">{balance?.balance ?? 0}</p>
+          <p className="text-[28px] font-bold text-[#f8f8f8] md:text-[40px]">
+            {balance?.balance ?? 0}
+          </p>
         </div>
       </div>
       <div className="flex items-center gap-[20px] rounded-[16px] bg-[#0e1012] p-[24px]">
@@ -38,7 +40,7 @@ export function BalanceCards({ balance }: { balance: BalanceData | null }) {
         </div>
         <div>
           <p className="text-[16px] text-[#a0a0a0]">Total Equivalent Amount</p>
-          <p className="text-[40px] font-bold text-[#f8f8f8]">
+          <p className="text-[28px] font-bold text-[#f8f8f8] md:text-[40px]">
             &euro;{balance?.eurEquivalent ?? 0}
           </p>
         </div>
@@ -152,6 +154,51 @@ export function Pagination({ total, perPage }: { total: number; perPage: number 
         Next
       </button>
     </div>
+  );
+}
+
+function MobileCard({ rows }: { rows: { label: string; value: string }[] }) {
+  return (
+    <div className="rounded-[16px] bg-[#0e1012] p-[16px]">
+      {rows.map((r, i) => (
+        <div
+          key={r.label}
+          className={`flex items-center justify-between py-[8px] ${i < rows.length - 1 ? 'border-b border-[#1a1d20]' : ''}`}
+        >
+          <span className="text-[12px] text-[#5d5d5d]">{r.label}</span>
+          <span className="text-[13px] text-[#f8f8f8]">{r.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function MobileHistoryCard({ w, index }: { w: Withdrawal; index: number }) {
+  return (
+    <MobileCard
+      rows={[
+        { label: 'Withdrawal ID', value: `#${String(index + 1).padStart(4, '0')}` },
+        { label: 'Coins', value: String(w.coins || 500) },
+        { label: 'Amount', value: `€${w.amount?.toFixed(2)}` },
+        { label: 'Commission', value: `€${w.commission?.toFixed(2) || '5.00'}` },
+        { label: 'Transaction ID', value: w.transactionId || 'TX12345' },
+        { label: 'Status', value: w.status || 'Paid' },
+      ]}
+    />
+  );
+}
+
+export function MobileFormCard({ w, index }: { w: Withdrawal; index: number }) {
+  return (
+    <MobileCard
+      rows={[
+        { label: 'Sr. No', value: `#${String(index + 1).padStart(4, '0')}` },
+        { label: 'Coins', value: String(w.coins || 500) },
+        { label: 'Amount', value: `€${w.amount?.toFixed(2)}` },
+        { label: 'Commission', value: `€${w.commission?.toFixed(2) || '5.00'}` },
+        { label: 'Transaction ID', value: w.transactionId || 'TX12345' },
+      ]}
+    />
   );
 }
 
