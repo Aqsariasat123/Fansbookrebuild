@@ -18,10 +18,10 @@ function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center px-[20px] pt-[120px] pb-[40px] md:px-[76px] md:pt-[140px] md:pb-[60px] lg:px-[210px]">
-        <h1 className="w-full max-w-[864px] text-center font-outfit text-[24px] md:text-[40px] font-medium leading-normal text-foreground">
+        <h1 className="w-full max-w-[864px] text-center font-outfit text-[24px] md:text-[40px] font-medium leading-normal text-white">
           Make Money on FansBook
         </h1>
-        <p className="mt-[12px] w-full max-w-[864px] text-center font-outfit text-[10px] md:text-[16px] font-medium leading-[1.6] text-foreground md:mt-[16px]">
+        <p className="mt-[12px] w-full max-w-[864px] text-center font-outfit text-[10px] md:text-[16px] font-medium leading-[1.6] text-white md:mt-[16px]">
           On FansBook, you can monetize your content creation skills through subscriptions, tips,
           and paid shoutouts. Creators also benefit from the referral program, where bringing in new
           users earns them commissions. The more you engage with your audience and share exclusive

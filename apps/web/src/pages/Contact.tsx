@@ -28,7 +28,7 @@ export default function Contact() {
           <div className="absolute inset-0 bg-[rgba(21,25,28,0.9)]" />
         </div>
         <MarketingNav />
-        <div className="absolute inset-x-0 top-[100px] px-[20px] md:top-[135px] md:px-0 flex flex-col items-center gap-[14px] text-foreground">
+        <div className="absolute inset-x-0 top-[100px] px-[20px] md:top-[135px] md:px-0 flex flex-col items-center gap-[14px] text-white">
           <h1 className="text-center text-[30px] md:text-[48px] font-medium">Contact FansBook</h1>
           <p className="text-center text-[10px] md:text-[20px] font-normal">
             Got a question or just wanna talk? We're here for it.

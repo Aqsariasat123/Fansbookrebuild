@@ -16,7 +16,7 @@ export default function About() {
           <div className="absolute inset-0 bg-[rgba(21,25,28,0.94)]" />
         </div>
         <MarketingNav />
-        <div className="absolute inset-x-0 top-[100px] md:top-[135px] flex flex-col items-center gap-[14px] px-[20px] md:px-[76px] text-foreground">
+        <div className="absolute inset-x-0 top-[100px] md:top-[135px] flex flex-col items-center gap-[14px] px-[20px] md:px-[76px] text-white">
           <h1 className="w-full text-center text-[30px] md:text-[48px] font-medium">
             About FansBook
           </h1>

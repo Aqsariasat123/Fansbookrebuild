@@ -11,7 +11,7 @@ export default function Cookies() {
           <div className="absolute inset-0 bg-[rgba(21,25,28,0.94)]" />
         </div>
         <MarketingNav />
-        <div className="absolute inset-x-0 top-[100px] flex flex-col items-center gap-[10px] px-[20px] text-foreground md:top-[135px] md:gap-[14px]">
+        <div className="absolute inset-x-0 top-[100px] flex flex-col items-center gap-[10px] px-[20px] text-white md:top-[135px] md:gap-[14px]">
           <h1 className="text-center text-[32px] font-medium md:text-[48px]">Cookie Policy</h1>
           <p className="text-center text-[16px] font-normal md:text-[20px]">
             Please read this cookie policy carefully before using our platform.

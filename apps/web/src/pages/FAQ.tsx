@@ -54,10 +54,10 @@ export default function FAQ() {
         <div className="absolute inset-0 bg-[rgba(21,25,28,0.94)]" />
         <MarketingNav />
         <div className="absolute inset-x-0 top-[100px] flex flex-col items-center gap-[14px] px-[20px] md:top-[135px] md:px-[76px]">
-          <h1 className="text-center text-[30px] font-medium text-foreground md:text-[48px]">
+          <h1 className="text-center text-[30px] font-medium text-white md:text-[48px]">
             Frequently Asked Questions
           </h1>
-          <p className="text-center text-[10px] font-normal text-foreground md:text-[20px]">
+          <p className="text-center text-[10px] font-normal text-white md:text-[20px]">
             Find answers to common questions about FansBook.
           </p>
         </div>

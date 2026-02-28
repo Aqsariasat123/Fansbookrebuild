@@ -11,7 +11,7 @@ export default function HowItWorks() {
           <div className="absolute inset-0 bg-[rgba(21,25,28,0.94)]" />
         </div>
         <MarketingNav />
-        <div className="absolute inset-x-0 top-[100px] flex flex-col items-center gap-[10px] px-[20px] md:top-[115px] md:gap-[14px] md:px-[76px] lg:px-[200px] text-foreground">
+        <div className="absolute inset-x-0 top-[100px] flex flex-col items-center gap-[10px] px-[20px] md:top-[115px] md:gap-[14px] md:px-[76px] lg:px-[200px] text-white">
           <h1 className="text-center text-[32px] font-medium md:text-[48px]">How It Works</h1>
           <p className="max-w-[680px] text-center text-[16px] font-normal leading-[1.5] md:text-[20px]">
             Discover how our platform connects fans and creators in a seamless, interactive
