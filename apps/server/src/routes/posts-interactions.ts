@@ -68,4 +68,44 @@ router.delete('/:id/like', authenticate, async (req, res, next) => {
   }
 });
 
+// ─── POST /api/posts/:id/tip ── send tip to post author ──────
+router.post('/:id/tip', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const postId = req.params.id as string;
+    const amount = Number(req.body.amount);
+    if (!amount || amount < 1) throw new AppError(400, 'Minimum tip is $1');
+
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) throw new AppError(404, 'Post not found');
+    if (post.authorId === userId) throw new AppError(400, 'Cannot tip yourself');
+
+    const fanWallet = await prisma.wallet.findUnique({ where: { userId } });
+    if (!fanWallet || fanWallet.balance < amount) {
+      throw new AppError(400, 'Insufficient balance');
+    }
+
+    const creatorWallet = await prisma.wallet.findUnique({ where: { userId: post.authorId } });
+    if (!creatorWallet) throw new AppError(500, 'Creator wallet not found');
+
+    await prisma.$transaction([
+      prisma.wallet.update({
+        where: { id: fanWallet.id },
+        data: { balance: { decrement: amount } },
+      }),
+      prisma.wallet.update({
+        where: { id: creatorWallet.id },
+        data: { balance: { increment: amount }, totalEarned: { increment: amount } },
+      }),
+      prisma.transaction.create({
+        data: { walletId: creatorWallet.id, type: 'TIP', amount, description: `Tip on post` },
+      }),
+    ]);
+
+    res.json({ success: true, message: 'Tip sent!' });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

@@ -11,7 +11,8 @@ export function VideoThumbnail({ src, className = '', fallback }: VideoThumbnail
   const attempted = useRef(false);
 
   useEffect(() => {
-    if (attempted.current || !src) return;
+    // Skip generation if we already have a usable fallback image
+    if (attempted.current || !src || fallback) return;
     attempted.current = true;
 
     const video = document.createElement('video');
@@ -45,7 +46,7 @@ export function VideoThumbnail({ src, className = '', fallback }: VideoThumbnail
     };
 
     video.src = src;
-  }, [src]);
+  }, [src, fallback]);
 
   if (!thumb) {
     return <div className={`bg-[#15191c] ${className}`} />;

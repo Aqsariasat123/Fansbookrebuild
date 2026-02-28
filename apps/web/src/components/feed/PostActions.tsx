@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
 import { CommentsSection } from './CommentsSection';
+import { TipModal } from './TipModal';
 
 const IMG = '/icons/dashboard';
 
@@ -11,6 +12,7 @@ interface PostActionsProps {
   shareCount: number;
   isLiked: boolean;
   isBookmarked?: boolean;
+  authorName?: string;
 }
 
 export function PostActions({
@@ -20,12 +22,14 @@ export function PostActions({
   shareCount,
   isLiked,
   isBookmarked = false,
+  authorName = 'Creator',
 }: PostActionsProps) {
   const [liked, setLiked] = useState(isLiked);
   const [likes, setLikes] = useState(likeCount);
   const [comments, setComments] = useState(commentCount);
   const [showComments, setShowComments] = useState(false);
   const [bookmarked, setBookmarked] = useState(isBookmarked);
+  const [showTip, setShowTip] = useState(false);
 
   const toggleLike = async () => {
     const wasLiked = liked;
@@ -141,7 +145,10 @@ export function PostActions({
               />
             </svg>
           </button>
-          <button className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]">
+          <button
+            onClick={() => setShowTip(true)}
+            className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]"
+          >
             <img
               src={`${IMG}/volunteer-activism.svg`}
               alt=""
@@ -153,6 +160,9 @@ export function PostActions({
       </div>
       {showComments && (
         <CommentsSection postId={postId} onCountChange={(d) => setComments((c) => c + d)} />
+      )}
+      {showTip && (
+        <TipModal postId={postId} creatorName={authorName} onClose={() => setShowTip(false)} />
       )}
     </div>
   );

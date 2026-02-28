@@ -33,6 +33,7 @@ export interface FeedPost {
   author: Author;
   media: Media[];
   isLiked?: boolean;
+  isBookmarked?: boolean;
 }
 
 function timeAgo(dateStr: string) {
@@ -118,6 +119,8 @@ export function ImagePost({ post }: { post: FeedPost }) {
             commentCount={post.commentCount}
             shareCount={post.shareCount}
             isLiked={post.isLiked ?? false}
+            isBookmarked={post.isBookmarked ?? false}
+            authorName={post.author.displayName}
           />
         </div>
       </div>
@@ -169,6 +172,8 @@ export function VideoPost({ post }: { post: FeedPost }) {
           commentCount={post.commentCount}
           shareCount={post.shareCount}
           isLiked={post.isLiked ?? false}
+          isBookmarked={post.isBookmarked ?? false}
+          authorName={post.author.displayName}
         />
       </div>
       {showViewer && video && (
