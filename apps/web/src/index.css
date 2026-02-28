@@ -77,25 +77,19 @@
   }
 }
 
-/* Theme-adaptive SVG icons across all icon directories */
-/* Light mode: make gray icons near-black to match text-foreground */
-img[src$='.svg'][src*='/icons/dashboard/'],
-img[src$='.svg'][src*='/icons/creators/'],
-img[src$='.svg'][src*='/icons/landing/'],
-img[src$='.svg'][src*='/icons/about/'] {
-  filter: brightness(0);
-}
-/* Dark mode: invert to white */
+/* Theme-adaptive SVG icons — dark mode only */
+/* Icons have #5D5D5D fill which is visible in light mode as-is */
+/* Dark mode: invert gray to white */
 .dark img[src$='.svg'][src*='/icons/dashboard/'],
 .dark img[src$='.svg'][src*='/icons/creators/'],
 .dark img[src$='.svg'][src*='/icons/landing/'],
 .dark img[src$='.svg'][src*='/icons/about/'] {
   filter: brightness(0) invert(1);
 }
-/* Preserve colored icons (cyan verified, brand colors) in both modes */
-img[src*='verified.svg'],
-img[src*='twitter.svg'],
-img[src*='instagram.svg'],
-img[src*='facebook.svg'] {
-  filter: none !important;
+/* Preserve colored icons (cyan verified, brand colors) */
+.dark img[src*='verified.svg'],
+.dark img[src*='twitter.svg'],
+.dark img[src*='instagram.svg'],
+.dark img[src*='facebook.svg'] {
+  filter: none;
 }

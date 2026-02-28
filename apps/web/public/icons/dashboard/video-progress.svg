@@ -8,6 +8,6 @@
 <path id="play_arrow_2" d="M8 19V5L19 12L8 19Z" fill="#5D5D5D"/>
 </g>
 </g>
-<line id="Line 7" x1="28" y1="11.5" x2="814" y2="11.5" stroke="var(--stroke-0, #5D5D5D)"/>
+<line id="Line 7" x1="28" y1="11.5" x2="814" y2="11.5" stroke="#5D5D5D"/>
 </g>
 </svg>
