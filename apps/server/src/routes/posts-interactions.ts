@@ -98,7 +98,12 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
         data: { balance: { increment: amount }, totalEarned: { increment: amount } },
       }),
       prisma.transaction.create({
-        data: { walletId: creatorWallet.id, type: 'TIP', amount, description: `Tip on post` },
+        data: {
+          walletId: creatorWallet.id,
+          type: 'TIP_RECEIVED',
+          amount,
+          description: 'Tip on post',
+        },
       }),
     ]);
 
