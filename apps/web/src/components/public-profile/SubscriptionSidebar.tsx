@@ -99,12 +99,14 @@ export function SubscriptionSidebar({
                   )}
                   <div>
                     <div className="flex items-center gap-[4px]">
-                      <p className="text-[12px] font-medium text-white">{creator.displayName}</p>
+                      <p className="text-[12px] font-medium text-foreground">
+                        {creator.displayName}
+                      </p>
                       {creator.isVerified && (
                         <img src="/icons/dashboard/verified.svg" alt="" className="size-[10px]" />
                       )}
                     </div>
-                    <p className="text-[10px] text-white/60">@{creator.username}</p>
+                    <p className="text-[10px] text-muted-foreground">@{creator.username}</p>
                   </div>
                 </div>
               </Link>

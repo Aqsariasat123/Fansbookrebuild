@@ -172,7 +172,7 @@ export default function Register() {
           className="absolute top-0 left-0 bottom-0"
           style={{
             width: '12%',
-            background: '#f8f8f8',
+            background: 'hsl(var(--card))',
             clipPath: 'polygon(0% 0%, 100% 0%, 0% 100%)',
           }}
         />

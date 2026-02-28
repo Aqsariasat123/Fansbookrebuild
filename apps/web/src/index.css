@@ -78,12 +78,11 @@
 }
 
 /* Theme-adaptive dashboard SVG icons: gray (#5D5D5D) in light, white in dark */
-.dark img[src*='/icons/dashboard/'] {
+/* Only target .svg files — not .webp/.png content images */
+.dark img[src$='.svg'][src*='/icons/dashboard/'] {
   filter: brightness(0) invert(1);
 }
-/* Preserve colored icons (cyan verified badge, logo, play button) */
-.dark img[src*='verified.svg'],
-.dark img[src*='fansbook-logo'],
-.dark img[src*='play-button'] {
+/* Preserve colored icons (cyan verified badge) */
+.dark img[src*='verified.svg'] {
   filter: none;
 }

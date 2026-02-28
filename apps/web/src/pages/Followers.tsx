@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 
 interface FollowedCreator {
@@ -67,7 +68,7 @@ function FollowerCard({
 
   return (
     <div className="flex h-[72px] items-center justify-between rounded-[12px] bg-card px-[16px] md:h-[92px] md:px-[27px]">
-      <div className="flex items-center gap-[16px] md:gap-[29px]">
+      <Link to={`/u/${creator.username}`} className="flex items-center gap-[16px] md:gap-[29px]">
         <img
           src={avatarSrc}
           alt={creator.displayName}
@@ -81,7 +82,7 @@ function FollowerCard({
             @{creator.username}
           </p>
         </div>
-      </div>
+      </Link>
       <button
         onClick={() => {
           setBusy(true);

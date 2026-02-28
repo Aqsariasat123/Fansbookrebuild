@@ -39,7 +39,7 @@ export function ScheduleLiveModal({ onClose }: ScheduleLiveModalProps) {
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute right-[16px] top-[16px] flex size-[32px] items-center justify-center rounded-full bg-card text-white"
+          className="absolute right-[16px] top-[16px] flex size-[32px] items-center justify-center rounded-full bg-muted text-foreground"
         >
           <svg
             width="14"

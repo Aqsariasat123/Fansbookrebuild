@@ -47,7 +47,7 @@ function AuthorAvatar({ author }: { author: PostAuthor }) {
     return <img src={author.avatar} alt="" className="h-full w-full object-cover" />;
   }
   return (
-    <div className="flex h-full w-full items-center justify-center text-[14px] text-white">
+    <div className="flex h-full w-full items-center justify-center text-[14px] text-primary">
       {author.displayName[0]}
     </div>
   );
@@ -67,7 +67,7 @@ function VideoCard({ media, onClick }: { media: PostMedia; onClick: () => void }
       <div className="absolute inset-0 flex items-center justify-center bg-[rgba(21,25,28,0.55)]">
         <div className="flex items-center gap-[8px] rounded-[50px] bg-muted/90 py-[6px] pl-[6px] pr-[16px]">
           <img src={`${IMG}/play-button.webp`} alt="" className="size-[28px] md:size-[36px]" />
-          <span className="text-[14px] text-white md:text-[16px]">Play</span>
+          <span className="text-[14px] text-foreground md:text-[16px]">Play</span>
         </div>
       </div>
     </div>

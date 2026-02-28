@@ -95,7 +95,9 @@ export function ProfileHeader({
               <img src={avatar} alt="" className="size-full rounded-full object-cover" />
             ) : (
               <div className="flex size-full items-center justify-center rounded-full bg-muted">
-                <span className="text-[40px] font-medium text-white md:text-[52px]">{initial}</span>
+                <span className="text-[40px] font-medium text-muted-foreground md:text-[52px]">
+                  {initial}
+                </span>
               </div>
             )}
             {uploadingAvatar && (
@@ -106,7 +108,7 @@ export function ProfileHeader({
             <button
               onClick={() => avatarRef.current?.click()}
               disabled={uploadingAvatar}
-              className="absolute bottom-[2px] right-[2px] flex size-[30px] items-center justify-center rounded-full bg-primary/30 text-white hover:opacity-80 md:size-[36px]"
+              className="absolute bottom-[2px] right-[2px] flex size-[30px] items-center justify-center rounded-full bg-primary text-white hover:opacity-80 md:size-[36px]"
             >
               <svg
                 width="14"

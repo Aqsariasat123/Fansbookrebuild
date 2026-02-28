@@ -70,7 +70,7 @@ const earnItems = [
 function EarnSection() {
   return (
     <section className="bg-muted px-[20px] pt-[40px] pb-[40px] md:px-[60px] md:pt-[70px] md:pb-[70px]">
-      <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-white">
+      <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-foreground">
         Earn in Multiple Ways
       </p>
 
@@ -107,7 +107,7 @@ function WhySection() {
       {/* Divider */}
       <div className="mb-[40px] h-[1px] w-full max-w-[1160px] bg-muted-foreground/30 md:mb-[70px]" />
 
-      <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-white">
+      <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-foreground">
         Why FansBook?
       </p>
 
@@ -143,7 +143,7 @@ function HowToStartSection() {
       {/* Divider */}
       <div className="mb-[40px] h-[1px] w-full max-w-[1160px] bg-muted-foreground/30 md:mb-[70px]" />
 
-      <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-white">
+      <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-foreground">
         How to start
       </p>
 
