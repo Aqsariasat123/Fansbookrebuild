@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const WHITE = 'brightness(0) invert(1)';
 
@@ -81,6 +81,7 @@ export function ReviewsSection() {
 
 export function TrendingSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   function scroll(dir: 'left' | 'right') {
     if (!scrollRef.current) return;
@@ -139,7 +140,10 @@ export function TrendingSection() {
                     </p>
                   </div>
                 </div>
-                <button className="flex-none rounded-[16px] border border-[#f8f8f8] px-[16px] py-[10px] text-[13px] font-normal text-[#f8f8f8] md:rounded-[22px] md:px-[30px] md:py-[15px] md:text-[16px]">
+                <button
+                  onClick={() => navigate('/register')}
+                  className="flex-none rounded-[16px] border border-[#f8f8f8] px-[16px] py-[10px] text-[13px] font-normal text-[#f8f8f8] md:rounded-[22px] md:px-[30px] md:py-[15px] md:text-[16px]"
+                >
                   Follow
                 </button>
               </div>
@@ -171,7 +175,7 @@ export function TrendingSection() {
               </div>
 
               <Link
-                to={`/profile/${c.name.toLowerCase()}`}
+                to="/register"
                 className="mt-[10px] flex w-full items-center justify-center gap-[8px] rounded-[16px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-[14px] font-normal text-[#f8f8f8] transition-opacity hover:opacity-90 md:mt-[12px] md:rounded-[22px] md:py-[17px] md:text-[16px]"
               >
                 View Profile

@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CoverIcon, Stat, BioSocialSection } from './ProfileHeaderParts';
 import { ProfileSharePopup } from './ProfileSharePopup';
 
 interface ProfileHeaderProps {
@@ -22,6 +21,34 @@ interface ProfileHeaderProps {
   onScheduleLive?: () => void;
 }
 
+function formatCount(n: number): string {
+  if (n >= 1000000) return `${(n / 1000000).toFixed(2)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(2)}K`;
+  return String(n);
+}
+
+function CoverIcon({ d, onClick }: { d: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex size-[32px] items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d={d} />
+      </svg>
+    </button>
+  );
+}
+
 export function ProfileHeader({
   displayName,
   username,
@@ -33,7 +60,6 @@ export function ProfileHeader({
   followersCount,
   followingCount,
   likesCount,
-  socialLinks,
   uploadingAvatar,
   uploadingCover,
   onAvatarUpload,
@@ -53,20 +79,21 @@ export function ProfileHeader({
   };
 
   return (
-    <div className="overflow-hidden rounded-[11px] bg-[#0e1012] md:rounded-[22px]">
-      {/* Cover */}
-      <div className="relative h-[140px] w-full md:h-[260px]">
+    <div>
+      {/* Cover banner - full width */}
+      <div className="relative h-[180px] w-full overflow-hidden md:h-[240px]">
         {cover ? (
-          <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={cover} alt="" className="absolute inset-0 size-full object-cover" />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-r from-[#2e4882] to-[#a61651]" />
+          <div className="absolute inset-0 bg-[#1a1d20]" />
         )}
         {uploadingCover && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40">
             <div className="size-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
           </div>
         )}
-        <div className="absolute bottom-[12px] right-[12px] flex gap-[8px] md:bottom-[16px] md:right-[16px]">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#15191c]/80 to-transparent" />
+        <div className="absolute bottom-[12px] right-[12px] flex gap-[8px]">
           <CoverIcon
             d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
             onClick={() => coverRef.current?.click()}
@@ -88,23 +115,16 @@ export function ProfileHeader({
           onChange={handleFile(onCoverUpload)}
         />
       </div>
-
-      {/* Profile Info */}
-      <div className="px-[16px] pb-[20px] md:px-[30px] md:pb-[30px]">
-        <div className="flex flex-col gap-[16px] md:flex-row md:gap-[24px]">
-          {/* Avatar */}
-          <div className="-mt-[40px] relative shrink-0 md:-mt-[60px]">
-            <div className="size-[90px] overflow-hidden rounded-full border-[4px] border-[#0e1012] bg-[#0e1012] md:size-[120px]">
-              {avatar ? (
-                <img src={avatar} alt={displayName} className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-[#2e4882]">
-                  <span className="text-[32px] font-medium text-white md:text-[42px]">
-                    {initial}
-                  </span>
-                </div>
-              )}
-            </div>
+      <div>
+        <div className="relative z-10 -mt-[60px] flex justify-center md:-mt-[88px] md:justify-start">
+          <div className="relative size-[130px] rounded-full border-4 border-[#15191c] bg-[#15191c] md:size-[176px]">
+            {avatar ? (
+              <img src={avatar} alt="" className="size-full rounded-full object-cover" />
+            ) : (
+              <div className="flex size-full items-center justify-center rounded-full bg-[#1a1d20]">
+                <span className="text-[40px] font-medium text-white md:text-[52px]">{initial}</span>
+              </div>
+            )}
             {uploadingAvatar && (
               <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
                 <div className="size-6 animate-spin rounded-full border-4 border-white border-t-transparent" />
@@ -113,7 +133,7 @@ export function ProfileHeader({
             <button
               onClick={() => avatarRef.current?.click()}
               disabled={uploadingAvatar}
-              className="absolute bottom-[2px] right-[2px] flex size-[28px] items-center justify-center rounded-full bg-[#2e4882] text-white hover:opacity-80 md:size-[34px]"
+              className="absolute bottom-[2px] right-[2px] flex size-[30px] items-center justify-center rounded-full bg-[#2e4882] text-white hover:opacity-80 md:size-[36px]"
             >
               <svg
                 width="14"
@@ -137,71 +157,92 @@ export function ProfileHeader({
               onChange={handleFile(onAvatarUpload)}
             />
           </div>
+        </div>
 
-          {/* Left: Name + Stats */}
-          <div className="flex flex-1 flex-col md:flex-row md:justify-between">
-            <div>
-              <div className="flex items-center gap-[6px]">
-                <h2 className="text-[20px] font-semibold text-[#f8f8f8] md:text-[26px]">
-                  {displayName}
-                </h2>
-                {isVerified && (
-                  <img
-                    src="/icons/dashboard/verified.svg"
-                    alt="Verified"
-                    className="size-[18px] md:size-[22px]"
-                  />
-                )}
-              </div>
-              <p className="text-[13px] text-[#5d5d5d] md:text-[15px]">@{username}</p>
-              <div className="mt-[12px] flex items-center gap-[24px] md:mt-[16px] md:gap-[32px]">
-                <Stat value={followingCount} label="Following" />
-                <Stat value={followersCount} label="Followers" />
-                <Stat value={likesCount} label="Likes" />
-              </div>
-              <div className="mt-[14px] flex items-center gap-[10px]">
-                <button
-                  onClick={() => navigate('/creator/profile/edit')}
-                  className="rounded-[8px] border border-[#5d5d5d] px-[18px] py-[7px] text-[13px] text-[#f8f8f8] hover:border-[#f8f8f8] transition-colors md:px-[22px] md:py-[8px] md:text-[14px]"
-                >
-                  Edit Profile
-                </button>
-                <button className="flex size-[34px] items-center justify-center rounded-[8px] border border-[#5d5d5d] text-[#5d5d5d] hover:border-[#f8f8f8] hover:text-[#f8f8f8] transition-colors">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="5" r="2" />
-                    <circle cx="12" cy="12" r="2" />
-                    <circle cx="12" cy="19" r="2" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <BioSocialSection bio={bio} socialLinks={socialLinks} />
+        {/* Name */}
+        <div className="mt-[16px] text-center md:text-left">
+          <div className="flex items-center justify-center gap-[6px] md:justify-start">
+            <h2 className="text-[20px] font-semibold text-[#f8f8f8]">{displayName}</h2>
+            {isVerified && (
+              <img src="/icons/dashboard/verified.svg" alt="Verified" className="size-[18px]" />
+            )}
+          </div>
+          <p className="text-[16px] text-[#5d5d5d]">@{username}</p>
+        </div>
+
+        {/* Stats */}
+        <div className="mt-[24px] flex items-center justify-center gap-[40px] md:justify-start">
+          <div className="text-center md:text-left">
+            <p className="text-[16px] font-medium text-[#f8f8f8]">{formatCount(followingCount)}</p>
+            <p className="text-[12px] text-[#5d5d5d]">Following</p>
+          </div>
+          <div className="text-center md:text-left">
+            <p className="text-[16px] font-medium text-[#f8f8f8]">{formatCount(followersCount)}</p>
+            <p className="text-[12px] text-[#5d5d5d]">Followers</p>
+          </div>
+          <div className="text-center md:text-left">
+            <p className="text-[16px] font-medium text-[#f8f8f8]">{formatCount(likesCount)}</p>
+            <p className="text-[12px] text-[#5d5d5d]">Likes</p>
           </div>
         </div>
 
-        {hashtags.length > 0 && (
-          <div className="mt-[14px] flex flex-wrap gap-x-[10px] gap-y-[6px]">
-            {hashtags.map((tag) => (
-              <span key={tag} className="text-[12px] text-[#5d5d5d] md:text-[13px]">
-                #{tag}
-              </span>
-            ))}
-          </div>
-        )}
-        <div className="mt-[20px] flex items-center gap-[16px]">
+        {/* Edit Profile + actions */}
+        <div className="mt-[20px] flex items-center gap-[10px]">
+          <button
+            onClick={() => navigate('/creator/profile/edit')}
+            className="rounded-[11px] border border-[#5d5d5d] px-[36px] py-[12px] text-[16px] font-medium text-[#f8f8f8] shadow-[0px_6px_10px_rgba(34,34,34,0.25)] transition-colors hover:border-white"
+          >
+            Edit Profile
+          </button>
+          <button className="flex size-[46px] items-center justify-center rounded-[11px] border border-[#5d5d5d] text-[#5d5d5d] hover:border-white hover:text-white transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="2" />
+              <circle cx="12" cy="12" r="2" />
+              <circle cx="12" cy="19" r="2" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Go Live + Schedule */}
+        <div className="mt-[16px] flex items-center gap-[10px]">
           <button
             onClick={() => navigate('/creator/go-live')}
-            className="flex-1 rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-center text-[14px] font-medium text-white transition-opacity hover:opacity-90 md:py-[14px] md:text-[16px]"
+            className="flex-1 rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-center text-[14px] font-medium text-white transition-opacity hover:opacity-90"
           >
             Go Live
           </button>
           <button
             onClick={onScheduleLive}
-            className="flex-1 rounded-[50px] border border-[#5d5d5d] py-[12px] text-center text-[14px] text-white transition-colors hover:border-white md:py-[14px] md:text-[16px]"
+            className="flex-1 rounded-[50px] border border-[#5d5d5d] py-[12px] text-center text-[14px] text-white transition-colors hover:border-white"
           >
             Schedule Live
           </button>
         </div>
+
+        {/* About */}
+        {bio && (
+          <div className="mt-[24px]">
+            <p className="text-[16px] font-medium text-[#f8f8f8]">About</p>
+            <p className="mt-[8px] text-[14px] leading-[1.6] text-[#5d5d5d]">{bio}</p>
+          </div>
+        )}
+
+        {/* Hashtags */}
+        {hashtags.length > 0 && (
+          <div className="mt-[24px]">
+            <p className="text-[16px] font-medium text-[#f8f8f8]">Hashtags</p>
+            <div className="mt-[10px] flex flex-wrap gap-[8px]">
+              {hashtags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-[8px] border border-[#5d5d5d] px-[18px] py-[8px] text-[14px] text-[#5d5d5d]"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {showShare && <ProfileSharePopup username={username} onClose={() => setShowShare(false)} />}

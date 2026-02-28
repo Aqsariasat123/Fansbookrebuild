@@ -1,4 +1,7 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import type { CreatorCard as CreatorCardType } from '@fansbook/shared';
+import { api } from '../../lib/api';
 import { Badge, type BadgeType } from './Badge';
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -31,13 +34,45 @@ function formatPrice(price: number | null): string {
 }
 
 export function CreatorCard({ creator }: { creator: CreatorCardType }) {
+  const navigate = useNavigate();
+  const [followLoading, setFollowLoading] = useState(false);
+  const [isFollowed, setIsFollowed] = useState(false);
   const badges = getCreatorBadges(creator);
   const leftBadges = badges.filter((b) => b === 'live');
   const rightBadges = badges.filter((b) => b !== 'live');
   const categoryIcon = getCategoryIcon(creator.category);
 
+  async function handleFollow(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (followLoading) return;
+    setFollowLoading(true);
+    try {
+      if (isFollowed) {
+        await api.delete(`/followers/${creator.id}`);
+        setIsFollowed(false);
+      } else {
+        await api.post(`/followers/${creator.id}`);
+        setIsFollowed(true);
+      }
+    } catch {
+      /* silent */
+    } finally {
+      setFollowLoading(false);
+    }
+  }
+
+  function handleMessage(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate('/messages');
+  }
+
   return (
-    <div className="w-full overflow-hidden rounded-[12px] bg-white sm:w-[244px] sm:rounded-[22px]">
+    <Link
+      to={`/u/${creator.username}`}
+      className="block w-full overflow-hidden rounded-[12px] bg-white transition-transform hover:scale-[1.02] sm:w-[244px] sm:rounded-[22px]"
+    >
       {/* Image with badges */}
       <div className="relative h-[160px] w-full overflow-hidden bg-[#2a2a2a] sm:h-[243px]">
         {creator.avatar ? (
@@ -102,14 +137,21 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
         </div>
 
         <div className="mt-[12px] flex w-full sm:mt-[22px] sm:w-[174px]">
-          <button className="flex-1 rounded-l-[4px] bg-[#15191c] px-[7px] py-[6px] font-outfit text-[12px] font-normal text-[#f8f8f8] sm:py-[8px] sm:text-[16px]">
-            Follow
+          <button
+            onClick={handleFollow}
+            disabled={followLoading}
+            className="flex-1 rounded-l-[4px] bg-[#15191c] px-[7px] py-[6px] font-outfit text-[12px] font-normal text-[#f8f8f8] transition-opacity hover:opacity-80 disabled:opacity-50 sm:py-[8px] sm:text-[16px]"
+          >
+            {isFollowed ? 'Following' : 'Follow'}
           </button>
-          <button className="rounded-r-[4px] bg-[#01adf1] px-[8px] py-[6px] font-outfit text-[12px] font-normal text-[#f8f8f8] sm:px-[12px] sm:py-[8px] sm:text-[16px]">
+          <button
+            onClick={handleMessage}
+            className="rounded-r-[4px] bg-[#01adf1] px-[8px] py-[6px] font-outfit text-[12px] font-normal text-[#f8f8f8] transition-opacity hover:opacity-80 sm:px-[12px] sm:py-[8px] sm:text-[16px]"
+          >
             Message
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -13,10 +13,11 @@ const AUTHOR_SELECT = {
   isVerified: true,
 };
 
-// ─── GET /api/posts/:id/comments ── get comments with threading
+// ─── GET /api/posts/:id/comments ── get comments with threading + isLiked
 router.get('/:id/comments', authenticate, async (req, res, next) => {
   try {
     const postId = req.params.id as string;
+    const userId = req.user!.userId;
 
     const post = await prisma.post.findUnique({ where: { id: postId } });
     if (!post) throw new AppError(404, 'Post not found');
@@ -26,16 +27,29 @@ router.get('/:id/comments', authenticate, async (req, res, next) => {
       orderBy: { createdAt: 'asc' },
       include: {
         author: { select: AUTHOR_SELECT },
+        commentLikes: { where: { userId }, select: { id: true } },
         children: {
           orderBy: { createdAt: 'asc' },
           include: {
             author: { select: AUTHOR_SELECT },
+            commentLikes: { where: { userId }, select: { id: true } },
           },
         },
       },
     });
 
-    res.json({ success: true, data: comments });
+    const mapped = comments.map((c) => ({
+      ...c,
+      isLiked: c.commentLikes.length > 0,
+      commentLikes: undefined,
+      children: c.children.map((ch) => ({
+        ...ch,
+        isLiked: ch.commentLikes.length > 0,
+        commentLikes: undefined,
+      })),
+    }));
+
+    res.json({ success: true, data: mapped });
   } catch (err) {
     next(err);
   }
@@ -80,7 +94,58 @@ router.post('/:id/comment', authenticate, async (req, res, next) => {
       }),
     ]);
 
-    res.status(201).json({ success: true, data: comment });
+    res.status(201).json({ success: true, data: { ...comment, isLiked: false } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── POST /api/posts/:id/comments/:commentId/like ── like a comment
+router.post('/:id/comments/:commentId/like', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const commentId = req.params.commentId as string;
+
+    const comment = await prisma.comment.findUnique({ where: { id: commentId } });
+    if (!comment) throw new AppError(404, 'Comment not found');
+
+    const existing = await prisma.commentLike.findUnique({
+      where: { commentId_userId: { commentId, userId } },
+    });
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'Already liked' });
+    }
+
+    await prisma.$transaction([
+      prisma.commentLike.create({ data: { commentId, userId } }),
+      prisma.comment.update({ where: { id: commentId }, data: { likeCount: { increment: 1 } } }),
+    ]);
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── DELETE /api/posts/:id/comments/:commentId/like ── unlike a comment
+router.delete('/:id/comments/:commentId/like', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const commentId = req.params.commentId as string;
+
+    const existing = await prisma.commentLike.findUnique({
+      where: { commentId_userId: { commentId, userId } },
+    });
+    if (!existing) {
+      return res.status(404).json({ success: false, message: 'Not liked' });
+    }
+
+    await prisma.$transaction([
+      prisma.commentLike.delete({ where: { id: existing.id } }),
+      prisma.comment.update({ where: { id: commentId }, data: { likeCount: { decrement: 1 } } }),
+    ]);
+
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

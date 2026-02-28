@@ -33,6 +33,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Cookies = lazy(() => import('./pages/Cookies'));
 const Complaints = lazy(() => import('./pages/Complaints'));
+const FAQ = lazy(() => import('./pages/FAQ'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Creator pages
@@ -106,6 +107,7 @@ export default function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/cookies" element={<Cookies />} />
               <Route path="/complaints" element={<Complaints />} />
+              <Route path="/faq" element={<FAQ />} />
 
               {/* Auth pages (no layout) */}
               <Route path="/login" element={<Login />} />
@@ -124,7 +126,7 @@ export default function App() {
                   <Route path="/help-support" element={<HelpSupport />} />
                   <Route path="/language" element={<Language />} />
 
-                  {/* Public creator profile (any logged-in user) */}
+                  {/* Public creator profile (requires login) */}
                   <Route path="/u/:username" element={<CreatorPublicProfile />} />
 
                   {/* Fan-only routes */}

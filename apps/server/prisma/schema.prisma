@@ -264,6 +264,7 @@ model User {
   referralsReceived    Referral[]            @relation("Referred")
   bookingsAsCreator    Booking[]             @relation("BookingCreator")
   bookingsAsFan        Booking[]             @relation("BookingFan")
+  commentLikes         CommentLike[]
 
   @@index([email])
   @@index([username])
@@ -377,17 +378,33 @@ model Comment {
   authorId  String
   parentId  String?
   text      String
+  likeCount Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  post     Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
-  children Comment[] @relation("CommentReplies")
+  post         Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author       User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent       Comment?      @relation("CommentReplies", fields: [parentId], references: [id])
+  children     Comment[]     @relation("CommentReplies")
+  commentLikes CommentLike[]
 
   @@index([postId])
   @@index([authorId])
   @@index([parentId])
+}
+
+model CommentLike {
+  id        String   @id @default(cuid())
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@index([commentId])
+  @@index([userId])
 }
 
 model Like {

@@ -1,20 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../../lib/api';
-
-interface CommentAuthor {
-  id: string;
-  username: string;
-  displayName: string;
-  avatar: string | null;
-}
-
-interface Comment {
-  id: string;
-  text: string;
-  createdAt: string;
-  author: CommentAuthor;
-  children?: Comment[];
-}
+import { Comment, CommentThread } from './CommentItem';
 
 interface CommentsSectionProps {
   postId: string;
@@ -26,6 +12,9 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const fetchComments = useCallback(async () => {
     try {
@@ -46,10 +35,28 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
     if (!text.trim() || submitting) return;
     setSubmitting(true);
     try {
-      const res = await api.post(`/posts/${postId}/comment`, { text: text.trim() });
-      setComments((prev) => [...prev, res.data.data]);
+      const body: { text: string; parentId?: string } = { text: text.trim() };
+      if (replyTo) body.parentId = replyTo.id;
+
+      const res = await api.post(`/posts/${postId}/comment`, body);
+      const newComment: Comment = { ...res.data.data, children: [] };
+
+      if (replyTo) {
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === replyTo.id ? { ...c, children: [...(c.children || []), newComment] } : c,
+          ),
+        );
+      } else {
+        setComments((prev) => [...prev, newComment]);
+      }
       setText('');
+      setReplyTo(null);
       onCountChange(1);
+      setTimeout(
+        () => listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' }),
+        100,
+      );
     } catch {
       /* ignore */
     } finally {
@@ -57,67 +64,114 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
     }
   };
 
+  const handleReply = (commentId: string, authorName: string) => {
+    setReplyTo({ id: commentId, name: authorName });
+    setText(`@${authorName} `);
+    inputRef.current?.focus();
+  };
+
+  const toggleCommentLike = async (commentId: string, isChild: boolean, parentId?: string) => {
+    const updateLike = (c: Comment): Comment =>
+      c.id === commentId
+        ? { ...c, isLiked: !c.isLiked, likeCount: c.likeCount + (c.isLiked ? -1 : 1) }
+        : c;
+
+    setComments((prev) =>
+      prev.map((c) => {
+        if (!isChild) return updateLike(c);
+        if (c.id === parentId) {
+          return { ...c, children: (c.children || []).map(updateLike) };
+        }
+        return c;
+      }),
+    );
+
+    const target = isChild
+      ? comments.find((c) => c.id === parentId)?.children?.find((ch) => ch.id === commentId)
+      : comments.find((c) => c.id === commentId);
+
+    try {
+      if (target?.isLiked) {
+        await api.delete(`/posts/${postId}/comments/${commentId}/like`);
+      } else {
+        await api.post(`/posts/${postId}/comments/${commentId}/like`);
+      }
+    } catch {
+      setComments((prev) =>
+        prev.map((c) => {
+          if (!isChild) return updateLike(c);
+          if (c.id === parentId) {
+            return { ...c, children: (c.children || []).map(updateLike) };
+          }
+          return c;
+        }),
+      );
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-3 border-t border-[#1a1d20] pt-3">
+    <div className="flex flex-col gap-[12px] border-t border-[#1a1d20] pt-[12px]">
       {loading ? (
-        <div className="flex justify-center py-2">
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+        <div className="flex justify-center py-3">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#f8f8f8] border-t-transparent" />
         </div>
       ) : (
-        <div className="flex max-h-[200px] flex-col gap-2 overflow-y-auto">
+        <div
+          ref={listRef}
+          className="flex max-h-[320px] flex-col gap-[14px] overflow-y-auto scroll-smooth pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-[#2a2d30]"
+        >
           {comments.length === 0 && (
-            <p className="text-center text-xs text-[#5d5d5d]">No comments yet</p>
+            <p className="py-3 text-center text-[12px] text-[#5d5d5d]">Be the first to comment</p>
           )}
           {comments.map((c) => (
-            <CommentItem key={c.id} comment={c} />
+            <CommentThread
+              key={c.id}
+              comment={c}
+              onReply={handleReply}
+              onToggleLike={toggleCommentLike}
+            />
           ))}
         </div>
       )}
-      <div className="flex items-center gap-2">
+
+      {/* Reply indicator */}
+      {replyTo && (
+        <div className="flex items-center gap-[8px] px-[4px]">
+          <span className="text-[11px] text-[#5d5d5d]">
+            Replying to <span className="font-medium text-[#01adf1]">@{replyTo.name}</span>
+          </span>
+          <button
+            onClick={() => {
+              setReplyTo(null);
+              setText('');
+            }}
+            className="text-[11px] text-[#5d5d5d] hover:text-[#f8f8f8]"
+          >
+            &times;
+          </button>
+        </div>
+      )}
+
+      {/* Comment input */}
+      <div className="flex items-center gap-[8px]">
         <input
+          ref={inputRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-          placeholder="Write a comment..."
-          className="flex-1 rounded-full bg-[#15191c] px-3 py-2 text-xs text-[#f8f8f8] outline-none placeholder:text-[#5d5d5d] md:text-sm"
+          placeholder={replyTo ? `Reply to @${replyTo.name}...` : 'Write a comment...'}
+          className="flex-1 rounded-[20px] bg-[#15191c] px-[14px] py-[10px] text-[12px] text-[#f8f8f8] outline-none ring-1 ring-transparent transition-all placeholder:text-[#5d5d5d] focus:ring-[#2a2d30] md:text-[13px]"
         />
         <button
           onClick={handleSubmit}
           disabled={!text.trim() || submitting}
-          className="shrink-0 rounded-full bg-gradient-to-r from-[#a61651] to-[#01adf1] px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50 md:text-sm"
+          className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#a61651] to-[#01adf1] transition-opacity disabled:opacity-40"
         >
-          Post
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="#f8f8f8" />
+          </svg>
         </button>
       </div>
     </div>
   );
-}
-
-function CommentItem({ comment }: { comment: Comment }) {
-  const timeAgo = getTimeAgo(comment.createdAt);
-  return (
-    <div className="flex gap-2">
-      <img
-        src={comment.author.avatar || ''}
-        alt=""
-        className="mt-0.5 size-6 shrink-0 rounded-full object-cover"
-      />
-      <div className="flex flex-col">
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-medium text-[#f8f8f8]">{comment.author.displayName}</span>
-          <span className="text-[10px] text-[#5d5d5d]">{timeAgo}</span>
-        </div>
-        <p className="text-xs text-[#c0c0c0]">{comment.text}</p>
-      </div>
-    </div>
-  );
-}
-
-function getTimeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  return `${Math.floor(hrs / 24)}d`;
 }

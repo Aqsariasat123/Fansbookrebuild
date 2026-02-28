@@ -56,15 +56,15 @@ function AuthorAvatar({ author }: { author: PostAuthor }) {
 function VideoCard({ media, onClick }: { media: PostMedia; onClick: () => void }) {
   return (
     <div
-      className="relative cursor-pointer overflow-hidden rounded-[12px] md:rounded-[16px]"
+      className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[16px]"
       onClick={onClick}
     >
       <VideoThumbnail
         src={media.url}
         fallback={media.thumbnail || undefined}
-        className="h-[220px] w-full object-cover md:h-[360px]"
+        className="h-full w-full object-cover"
       />
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center bg-[rgba(21,25,28,0.55)]">
         <div className="flex items-center gap-[8px] rounded-[50px] bg-[#15191c]/90 py-[6px] pl-[6px] pr-[16px]">
           <img src={`${IMG}/play-button.webp`} alt="" className="size-[28px] md:size-[36px]" />
           <span className="text-[14px] text-white md:text-[16px]">Play</span>

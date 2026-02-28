@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { upsertCreator, seedComments, seedSubscriptionTiers } from './seed-feed-helpers';
 
 const IMG = '/icons/dashboard';
 
@@ -19,70 +20,6 @@ const popularModelNames = [
   { email: 'evilia6@fansbook.com', username: 'evilia_6', displayName: 'Evilia' },
   { email: 'evilia7@fansbook.com', username: 'evilia_7', displayName: 'Evilia' },
 ];
-
-const COMMENT_TEXTS = [
-  'Absolutely stunning! 🔥',
-  'You look amazing as always!',
-  'Best content on Fansbook 💯',
-  "Can't wait for more!",
-  'This is incredible work',
-  'Love this photo set so much 😍',
-  'You never disappoint!',
-  'Goals!! 🙌',
-];
-
-async function upsertCreator(
-  prisma: PrismaClient,
-  opts: {
-    email: string;
-    username: string;
-    displayName: string;
-    avatar: string;
-    passwordHash: string;
-    isVerified?: boolean;
-    category?: string;
-  },
-) {
-  const c = await prisma.user.upsert({
-    where: { email: opts.email },
-    update: { avatar: opts.avatar, isVerified: opts.isVerified ?? true },
-    create: {
-      email: opts.email,
-      username: opts.username,
-      displayName: opts.displayName,
-      passwordHash: opts.passwordHash,
-      role: 'CREATOR',
-      avatar: opts.avatar,
-      isVerified: opts.isVerified ?? true,
-      emailVerified: true,
-      category: opts.category,
-    },
-  });
-  await prisma.wallet.upsert({
-    where: { userId: c.id },
-    update: {},
-    create: { userId: c.id, balance: 0 },
-  });
-  return c;
-}
-
-async function seedComments(prisma: PrismaClient, postIds: string[], authorIds: string[]) {
-  let offset = 0;
-  for (const postId of postIds) {
-    for (let i = 0; i < 8; i++) {
-      await prisma.comment.create({
-        data: {
-          postId,
-          authorId: authorIds[i % authorIds.length],
-          text: COMMENT_TEXTS[(offset + i) % COMMENT_TEXTS.length],
-          createdAt: new Date(Date.now() - (8 - i) * 600000),
-        },
-      });
-    }
-    await prisma.post.update({ where: { id: postId }, data: { commentCount: 8 } });
-    offset += 3;
-  }
-}
 
 export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
   const storyIds: string[] = [];
@@ -112,6 +49,8 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
     username: 'olivia_hart',
     displayName: 'Olivia Hart',
     avatar: '/images/creators/creator8.webp',
+    cover: '/icons/dashboard/story-bg-2.webp',
+    bio: 'Dance queen & choreographer',
     passwordHash,
   });
   const chloe = await upsertCreator(prisma, {
@@ -119,9 +58,17 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
     username: 'chloe_reign',
     displayName: 'Chloe Reign',
     avatar: '/images/creators/creator9.webp',
+    cover: '/icons/dashboard/story-bg-3.webp',
+    bio: 'Dance queen & choreographer',
     passwordHash,
     isVerified: false,
   });
+
+  await seedSubscriptionTiers(prisma, [
+    { id: sarah.id, name: 'Olivia Hart', price: 19.99 },
+    { id: chloe.id, name: 'Chloe Reign', price: 14.99 },
+  ]);
+
   for (let i = 1; i <= 7; i++) {
     await upsertCreator(prisma, {
       ...popularModelNames[i - 1],

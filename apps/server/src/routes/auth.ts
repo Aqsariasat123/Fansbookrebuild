@@ -51,7 +51,7 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res,
         displayName: username,
         passwordHash: await bcrypt.hash(password, 12),
         role,
-        avatar: '/images/creators/default-avatar.webp',
+        avatar: null,
       },
       select: ME_SELECT,
     });

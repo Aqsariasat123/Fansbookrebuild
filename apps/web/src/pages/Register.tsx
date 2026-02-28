@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerApi } from '../lib/auth';
 import { useAuthStore } from '../stores/authStore';
+import { TextField, PasswordField, AccountTypeSelector } from './RegisterFormFields';
 
 type AccountType = 'creator' | 'fan';
 
@@ -40,9 +41,15 @@ export default function Register() {
       setUser(res.data.user as never);
       navigate('/feed');
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { error?: string } } })?.response?.data
-          ?.error || 'Registration failed. Please try again.';
+      const resData = (
+        err as {
+          response?: { data?: { error?: string; details?: { field: string; message: string }[] } };
+        }
+      )?.response?.data;
+      let msg = resData?.error || 'Registration failed. Please try again.';
+      if (resData?.details?.length) {
+        msg = resData.details.map((d) => `${d.field}: ${d.message}`).join(', ');
+      }
       setError(msg);
     } finally {
       setLoading(false);
@@ -87,136 +94,40 @@ export default function Register() {
             className="mt-[16px] w-full max-w-full flex flex-col lg:mt-[35px] lg:w-[380px]"
             onSubmit={handleSubmit}
           >
-            {/* Username */}
-            <div>
-              <label className="block text-[12px] font-normal text-[#15191c] lg:text-[16px]">
-                Username
-              </label>
-              <div className="mt-[6px] lg:mt-[8px]">
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter your username..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-[#15191c] bg-transparent px-[12px] text-[10px] font-normal text-[#15191c] placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className="mt-[12px] lg:mt-[20px]">
-              <label className="block text-[12px] font-normal text-[#15191c] lg:text-[16px]">
-                Email
-              </label>
-              <div className="mt-[6px] lg:mt-[8px]">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your Email..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-[#15191c] bg-transparent px-[12px] text-[10px] font-normal text-[#15191c] placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="mt-[12px] lg:mt-[20px]">
-              <label className="block text-[12px] font-normal text-[#15191c] lg:text-[16px]">
-                Password
-              </label>
-              <div className="mt-[6px] relative lg:mt-[8px]">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-[#15191c] bg-transparent px-[12px] pr-[40px] text-[10px] font-normal text-[#15191c] placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-[12px] top-1/2 -translate-y-1/2 lg:right-[15px]"
-                >
-                  <img
-                    src="/icons/visibility-off.svg"
-                    alt="Toggle password"
-                    className="h-[14px] w-[14px] lg:h-[17px] lg:w-[17px]"
-                  />
-                </button>
-              </div>
-            </div>
-
-            {/* Confirm Password */}
-            <div className="mt-[12px] lg:mt-[20px]">
-              <label className="block text-[12px] font-normal text-[#15191c] lg:text-[16px]">
-                Confirm Password
-              </label>
-              <div className="mt-[6px] relative lg:mt-[8px]">
-                <input
-                  type={showConfirm ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Enter your password..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-[#15191c] bg-transparent px-[12px] pr-[40px] text-[10px] font-normal text-[#15191c] placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-[12px] top-1/2 -translate-y-1/2 lg:right-[15px]"
-                >
-                  <img
-                    src="/icons/visibility-off.svg"
-                    alt="Toggle password"
-                    className="h-[14px] w-[14px] lg:h-[17px] lg:w-[17px]"
-                  />
-                </button>
-              </div>
-            </div>
-
-            {/* Select Account Type */}
-            <div className="mt-[20px] lg:mt-[34px]">
-              <p className="text-[12px] font-normal text-[#15191c] pl-[10px] lg:text-[16px]">
-                Select Account Type:
-              </p>
-
-              <label className="mt-[8px] flex items-center gap-[12px] pl-[10px] cursor-pointer lg:mt-[11px] lg:gap-[16px]">
-                <button
-                  type="button"
-                  onClick={() => setAccountType('creator')}
-                  className="flex-none"
-                >
-                  <img
-                    src={accountType === 'creator' ? '/icons/radio-checked.svg' : '/icons/radio-unchecked.svg'}
-                    alt=""
-                    className="h-[14px] w-[14px] lg:h-[16px] lg:w-[16px]"
-                  />
-                </button>
-                <span className="text-[10px] font-normal text-[#15191c] lg:text-[12px]">
-                  I am a <span className="font-medium">Creator</span>
-                </span>
-              </label>
-
-              <label className="mt-[8px] flex items-center gap-[12px] pl-[10px] cursor-pointer lg:mt-[11px] lg:gap-[16px]">
-                <button
-                  type="button"
-                  onClick={() => setAccountType('fan')}
-                  className="flex-none"
-                >
-                  <img
-                    src={accountType === 'fan' ? '/icons/radio-checked.svg' : '/icons/radio-unchecked.svg'}
-                    alt=""
-                    className="h-[14px] w-[14px] lg:h-[16px] lg:w-[16px]"
-                  />
-                </button>
-                <span className="text-[10px] font-normal text-[#15191c] lg:text-[12px]">
-                  I am a <span className="font-medium">Fan</span>
-                </span>
-              </label>
-            </div>
+            <TextField
+              label="Username"
+              type="text"
+              value={username}
+              onChange={setUsername}
+              placeholder="Enter your username..."
+            />
+            <TextField
+              label="Email"
+              type="email"
+              value={email}
+              onChange={setEmail}
+              placeholder="Enter your Email..."
+              className="mt-[12px] lg:mt-[20px]"
+            />
+            <PasswordField
+              label="Password"
+              value={password}
+              onChange={setPassword}
+              placeholder="Enter your password..."
+              show={showPassword}
+              onToggle={() => setShowPassword(!showPassword)}
+              className="mt-[12px] lg:mt-[20px]"
+            />
+            <PasswordField
+              label="Confirm Password"
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+              placeholder="Enter your password..."
+              show={showConfirm}
+              onToggle={() => setShowConfirm(!showConfirm)}
+              className="mt-[12px] lg:mt-[20px]"
+            />
+            <AccountTypeSelector accountType={accountType} onSelect={setAccountType} />
 
             {/* Signup Button */}
             <button
@@ -231,10 +142,7 @@ export default function Register() {
           {/* Login Link */}
           <p className="mt-[16px] text-[12px] font-normal text-[#15191c] lg:mt-[40px] lg:text-[16px]">
             Already have an account?{' '}
-            <Link
-              to="/login"
-              className="text-[#01adf1] hover:underline"
-            >
+            <Link to="/login" className="text-[#01adf1] hover:underline">
               Login
             </Link>
           </p>

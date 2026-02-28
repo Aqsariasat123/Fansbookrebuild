@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PostActions } from './PostActions';
 import { MediaViewer } from './MediaViewer';
+import { MultiImageGrid } from './MultiImageGrid';
 import { VideoThumbnail } from './VideoThumbnail';
 
 const IMG = '/icons/dashboard';
@@ -45,9 +47,18 @@ function PostHeader({ post }: { post: FeedPost }) {
   return (
     <div className="flex w-full items-start justify-between gap-[10px] md:gap-[25px]">
       <div className="flex flex-1 flex-col gap-[6px] md:gap-[14px]">
-        <div className="flex items-center gap-[6px]">
+        <Link
+          to={`/u/${post.author.username}`}
+          className="flex items-center gap-[6px] hover:opacity-80"
+        >
           <div className="size-[24px] shrink-0 overflow-hidden rounded-full md:size-[44px]">
-            <img src={post.author.avatar || ''} alt="" className="size-full object-cover" />
+            {post.author.avatar ? (
+              <img src={post.author.avatar} alt="" className="size-full object-cover" />
+            ) : (
+              <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[10px] font-medium text-white md:text-[16px]">
+                {post.author.displayName.charAt(0).toUpperCase()}
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-[2px]">
             <div className="whitespace-pre-wrap text-[0px] font-normal text-[#f8f8f8]">
@@ -62,7 +73,7 @@ function PostHeader({ post }: { post: FeedPost }) {
               />
             )}
           </div>
-        </div>
+        </Link>
         <p className="whitespace-pre-wrap text-[10px] font-normal leading-normal text-[#f8f8f8] md:text-[16px]">
           {post.text}
         </p>
@@ -82,60 +93,25 @@ function PostHeader({ post }: { post: FeedPost }) {
 export function ImagePost({ post }: { post: FeedPost }) {
   const images = post.media.filter((m) => m.type === 'IMAGE');
   const [viewerIdx, setViewerIdx] = useState<number | null>(null);
-  const extraCount = images.length > 2 ? images.length - 2 : 0;
 
   return (
     <div className="rounded-[11px] bg-[#0e1012] px-[9px] py-[6px] md:rounded-[22px] md:px-[20px] md:py-[13px]">
       <div className="flex w-full flex-col gap-[11px] md:gap-[25px]">
         <PostHeader post={post} />
         <div className="flex w-full flex-col gap-[11px] md:gap-[20px]">
-          {images.length > 0 && (
-            <div className="flex w-full gap-[11px] md:gap-[20px]">
-              <div
-                className="relative h-[160px] w-[60%] shrink-0 cursor-pointer overflow-hidden rounded-[22px] md:h-[356px] md:w-[518px]"
-                onClick={() => setViewerIdx(0)}
-              >
-                <img
-                  src={images[0]?.url}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              </div>
-              {images.length > 1 && (
-                <div className="flex flex-1 flex-col gap-[10px] md:gap-[20px]">
-                  <div
-                    className="relative h-[75px] cursor-pointer overflow-hidden rounded-[22px] md:h-[168px]"
-                    onClick={() => setViewerIdx(1)}
-                  >
-                    <img
-                      src={images[1]?.url}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  </div>
-                  {extraCount > 0 && (
-                    <div
-                      className="relative h-[75px] cursor-pointer overflow-hidden rounded-[22px] md:h-[168px]"
-                      onClick={() => setViewerIdx(2)}
-                    >
-                      <img
-                        src={images[2]?.url}
-                        alt=""
-                        className="absolute inset-0 h-full w-full object-cover blur-sm"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <p className="text-center text-[12px] font-normal text-[#f8f8f8] md:text-[20px]">
-                          +{String(extraCount).padStart(2, '0')}
-                          <br />
-                          More
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+          {images.length === 1 && (
+            <div
+              className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[22px]"
+              onClick={() => setViewerIdx(0)}
+            >
+              <img
+                src={images[0]?.url}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
             </div>
           )}
+          {images.length > 1 && <MultiImageGrid images={images} onClickImage={setViewerIdx} />}
           <PostActions
             postId={post.id}
             likeCount={post.likeCount}
@@ -162,25 +138,27 @@ export function VideoPost({ post }: { post: FeedPost }) {
         <PostHeader post={post} />
       </div>
       {video && (
-        <div
-          className="relative mx-[9px] mt-[11px] h-[161px] cursor-pointer overflow-hidden rounded-[10px] md:mx-[20px] md:mt-[25px] md:h-[356px] md:rounded-[22px]"
-          onClick={() => setShowViewer(true)}
-        >
-          <VideoThumbnail
-            src={video.url}
-            fallback={video.thumbnail || undefined}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 rounded-[10px] bg-[rgba(21,25,28,0.55)] md:rounded-[22px]" />
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <button className="flex items-center justify-center gap-[5px] rounded-[56px] bg-[#15191c] py-px pl-px pr-[15px] md:gap-[10px] md:rounded-[124px] md:pr-[34px]">
-              <img
-                src={`${IMG}/play-button.webp`}
-                alt=""
-                className="size-[22px] object-contain md:size-[48px]"
-              />
-              <span className="text-[9px] font-normal text-[#f8f8f8] md:text-[20px]">Play</span>
-            </button>
+        <div className="mx-[9px] mt-[11px] md:mx-[20px] md:mt-[25px]">
+          <div
+            className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[10px] md:w-[45%] md:max-w-[380px] md:rounded-[22px]"
+            onClick={() => setShowViewer(true)}
+          >
+            <VideoThumbnail
+              src={video.url}
+              fallback={video.thumbnail || undefined}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 rounded-[10px] bg-[rgba(21,25,28,0.55)] md:rounded-[22px]" />
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              <button className="flex items-center justify-center gap-[5px] rounded-[56px] bg-[#15191c] py-px pl-px pr-[15px] md:gap-[10px] md:rounded-[124px] md:pr-[34px]">
+                <img
+                  src={`${IMG}/play-button.webp`}
+                  alt=""
+                  className="size-[22px] object-contain md:size-[48px]"
+                />
+                <span className="text-[9px] font-normal text-[#f8f8f8] md:text-[20px]">Play</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

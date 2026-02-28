@@ -8,8 +8,18 @@ const router = Router();
 router.get('/', authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.userId;
+
+    // Get IDs of creators this user follows
+    const follows = await prisma.follow.findMany({
+      where: { followerId: userId },
+      select: { followingId: true },
+    });
+    const followedIds = follows.map((f) => f.followingId);
+    // Include own posts too
+    followedIds.push(userId);
+
     const posts = await prisma.post.findMany({
-      where: { visibility: 'PUBLIC' },
+      where: { visibility: 'PUBLIC', authorId: { in: followedIds } },
       orderBy: { createdAt: 'desc' },
       take: 20,
       include: {
@@ -59,10 +69,18 @@ router.get('/', authenticate, async (req, res, next) => {
 });
 
 // ─── GET /api/feed/stories ──────────────────────────────
-router.get('/stories', authenticate, async (_req, res, next) => {
+router.get('/stories', authenticate, async (req, res, next) => {
   try {
+    const userId = req.user!.userId;
+    const follows = await prisma.follow.findMany({
+      where: { followerId: userId },
+      select: { followingId: true },
+    });
+    const followedIds = follows.map((f) => f.followingId);
+    followedIds.push(userId);
+
     const stories = await prisma.story.findMany({
-      where: { expiresAt: { gt: new Date() } },
+      where: { expiresAt: { gt: new Date() }, authorId: { in: followedIds } },
       orderBy: { createdAt: 'desc' },
       include: {
         author: {

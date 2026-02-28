@@ -14,10 +14,10 @@ export function ImageGrid({ media, onImageClick }: ImageGridProps) {
   if (shown.length === 1) {
     return (
       <div
-        className="cursor-pointer overflow-hidden rounded-[12px] md:rounded-[16px]"
+        className="aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[16px]"
         onClick={() => onImageClick(0)}
       >
-        <img src={shown[0].url} alt="" className="h-[240px] w-full object-cover md:h-[380px]" />
+        <img src={shown[0].url} alt="" className="h-full w-full object-cover" />
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStoryNav } from './useStoryNav';
 import { StoryFooter } from './StoryFooter';
 
@@ -25,20 +26,30 @@ interface StoryViewerProps {
   onRefetch?: () => void;
 }
 
+interface StoryHeaderProps {
+  avatar: string | null;
+  displayName: string;
+  timeAgo: string;
+  onClose: () => void;
+  onNavigateProfile: () => void;
+}
+
 function StoryHeader({
   avatar,
   displayName,
   timeAgo,
   onClose,
-}: {
-  avatar: string | null;
-  displayName: string;
-  timeAgo: string;
-  onClose: () => void;
-}) {
+  onNavigateProfile,
+}: StoryHeaderProps) {
   return (
     <div className="absolute left-0 right-0 top-6 z-20 flex items-center justify-between px-3">
-      <div className="flex items-center gap-2">
+      <div
+        className="flex cursor-pointer items-center gap-2 hover:opacity-80"
+        onClick={(e) => {
+          e.stopPropagation();
+          onNavigateProfile();
+        }}
+      >
         {avatar ? (
           <img src={avatar} alt="" className="size-8 rounded-full object-cover" />
         ) : (
@@ -61,9 +72,10 @@ function StoryHeader({
   );
 }
 
+const HEART_PATH =
+  'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z';
+
 function HeartOverlay() {
-  const HEART =
-    'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z';
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
       <svg
@@ -72,7 +84,7 @@ function HeartOverlay() {
         viewBox="0 0 24 24"
         className="animate-ping fill-red-500 opacity-80"
       >
-        <path d={HEART} />
+        <path d={HEART_PATH} />
       </svg>
     </div>
   );
@@ -80,6 +92,7 @@ function HeartOverlay() {
 
 export function StoryViewer({ groups, initialGroupIndex, onClose, onRefetch }: StoryViewerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const navigate = useNavigate();
   const nav = useStoryNav(groups, initialGroupIndex, onClose);
   const { group, story, isVideo, groupIdx, storyIdx, progress, setProgress, goNext, goPrev } = nav;
   const [heartAnim, setHeartAnim] = useState(false);
@@ -98,7 +111,6 @@ export function StoryViewer({ groups, initialGroupIndex, onClose, onRefetch }: S
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95">
       {canGoPrev && <NavArrow direction="left" onClick={goPrev} />}
-
       <div className="relative flex h-full w-full max-w-[420px] flex-col md:h-[90vh] md:overflow-hidden md:rounded-xl">
         <ProgressBars total={totalStories} current={storyIdx} progress={progress} />
         <StoryHeader
@@ -106,8 +118,11 @@ export function StoryViewer({ groups, initialGroupIndex, onClose, onRefetch }: S
           displayName={group.displayName}
           timeAgo={getTimeAgo(story.createdAt)}
           onClose={onClose}
+          onNavigateProfile={() => {
+            onClose();
+            navigate(`/u/${group.username}`);
+          }}
         />
-
         <div
           className="flex flex-1 items-center justify-center bg-black"
           onDoubleClick={() => {
@@ -136,12 +151,10 @@ export function StoryViewer({ groups, initialGroupIndex, onClose, onRefetch }: S
           )}
           {heartAnim && <HeartOverlay />}
         </div>
-
         <div className="absolute inset-0 z-10 flex">
           <div className="w-[30%]" onClick={goPrev} />
           <div className="w-[70%]" onClick={goNext} />
         </div>
-
         <StoryFooter
           storyId={story.id}
           authorId={group.authorId}
@@ -150,7 +163,6 @@ export function StoryViewer({ groups, initialGroupIndex, onClose, onRefetch }: S
           onRefetch={onRefetch}
         />
       </div>
-
       {canGoNext && <NavArrow direction="right" onClick={goNext} />}
     </div>
   );

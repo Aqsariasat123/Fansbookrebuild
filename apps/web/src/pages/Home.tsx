@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { ImagePost, VideoPost } from '../components/feed/FeedPosts';
@@ -82,9 +83,10 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-[21px] overflow-x-auto scrollbar-hide md:gap-[42px]">
             {models.map((model) => (
-              <div
+              <Link
                 key={model.id}
-                className="flex w-[35px] shrink-0 flex-col items-center gap-[4px] md:w-[89px] md:gap-[10px]"
+                to={`/u/${model.username}`}
+                className="flex w-[35px] shrink-0 flex-col items-center gap-[4px] hover:opacity-80 md:w-[89px] md:gap-[10px]"
               >
                 <div className="relative h-[35px] w-full md:h-[89px]">
                   <img
@@ -96,7 +98,7 @@ export default function Home() {
                 <p className="w-full whitespace-pre-wrap text-center text-[10px] font-medium text-[#f8f8f8] md:text-[16px]">
                   {model.displayName}
                 </p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

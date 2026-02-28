@@ -8,6 +8,7 @@ import type { ContentTab } from '../components/creator-profile/ContentTabs';
 import { PostCard } from '../components/creator-profile/PostCard';
 import type { CreatorPost } from '../components/creator-profile/PostCard';
 import { ScheduleLiveModal } from '../components/creator-profile/ScheduleLiveModal';
+import { MediaGrid } from '../components/public-profile/MediaGrid';
 
 interface CreatorProfile {
   username: string;
@@ -44,7 +45,7 @@ function filterPosts(posts: CreatorPost[], tab: ContentTab) {
 }
 
 function resolveBasic(p: CreatorProfile | null, user: Record<string, unknown> | null) {
-  if (p) {
+  if (p)
     return {
       displayName: p.displayName,
       username: p.username,
@@ -53,8 +54,7 @@ function resolveBasic(p: CreatorProfile | null, user: Record<string, unknown> | 
       bio: p.bio || '',
       isVerified: p.isVerified,
     };
-  }
-  if (user) {
+  if (user)
     return {
       displayName: (user.displayName as string) || 'Creator',
       username: (user.username as string) || '',
@@ -63,7 +63,6 @@ function resolveBasic(p: CreatorProfile | null, user: Record<string, unknown> | 
       bio: '',
       isVerified: false,
     };
-  }
   return {
     displayName: 'Creator',
     username: '',
@@ -102,7 +101,7 @@ function ComposeBar({
   onNewPost: () => void;
 }) {
   return (
-    <div className="flex items-center gap-[10px] rounded-[11px] bg-[#0e1012] px-[14px] py-[10px] md:gap-[14px] md:rounded-[22px] md:px-[20px] md:py-[14px]">
+    <div className="flex items-center gap-[10px] rounded-[22px] bg-[#0e1012] px-[14px] py-[10px] md:gap-[14px] md:px-[20px] md:py-[14px]">
       <input
         value={text}
         onChange={(e) => onChange(e.target.value)}
@@ -125,39 +124,6 @@ function ComposeBar({
       >
         Add Post
       </button>
-    </div>
-  );
-}
-
-function PostSection({
-  posts,
-  activeTab,
-  onTabChange,
-  mediaCount,
-}: {
-  posts: CreatorPost[];
-  activeTab: ContentTab;
-  onTabChange: (t: ContentTab) => void;
-  mediaCount: number;
-}) {
-  const filtered = filterPosts(posts, activeTab);
-  const emptyMsg =
-    activeTab === 'feed' ? 'No posts yet. Create your first post!' : `No ${activeTab} yet.`;
-  return (
-    <div className="rounded-[11px] bg-[#0e1012] md:rounded-[22px]">
-      <ContentTabs
-        activeTab={activeTab}
-        onTabChange={onTabChange}
-        postCount={posts.length}
-        mediaCount={mediaCount}
-      />
-      <div className="flex flex-col gap-[12px] p-[12px] md:gap-[20px] md:p-[20px]">
-        {filtered.length === 0 ? (
-          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">{emptyMsg}</p>
-        ) : (
-          filtered.map((post) => <PostCard key={post.id} post={post} onMenuAction={() => {}} />)
-        )}
-      </div>
     </div>
   );
 }
@@ -228,10 +194,18 @@ export default function CreatorProfileOwner() {
 
   const basic = resolveBasic(profile, user as unknown as Record<string, unknown>);
   const stats = resolveStats(profile);
-  const mediaCount = posts.filter((po) => po.media.length > 0).length;
+  const allMedia = posts.flatMap((p) =>
+    p.media.map((m) => ({ ...m, type: m.type as string, postId: p.id, isLocked: false })),
+  );
+  const mediaCount = allMedia.length;
+  const isMediaTab = activeTab === 'photos' || activeTab === 'videos';
+  const filtered = filterPosts(posts, activeTab);
+  const emptyMsg =
+    activeTab === 'feed' ? 'No posts yet. Create your first post!' : `No ${activeTab} yet.`;
 
   return (
-    <div className="flex flex-col gap-[12px] md:gap-[20px]">
+    <div>
+      {/* ProfileHeader renders cover + left sidebar content */}
       <ProfileHeader
         {...basic}
         {...stats}
@@ -241,17 +215,54 @@ export default function CreatorProfileOwner() {
         onCoverUpload={(f) => handleUpload('cover', f)}
         onScheduleLive={() => setShowSchedule(true)}
       />
-      <ComposeBar
-        text={composeText}
-        onChange={setComposeText}
-        onNewPost={() => navigate('/creator/post/new')}
-      />
-      <PostSection
-        posts={posts}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        mediaCount={mediaCount}
-      />
+
+      {/* 2-column layout: left sidebar (already rendered by ProfileHeader) + right content */}
+      <div className="mt-[20px] flex flex-col gap-[20px] md:flex-row md:gap-[30px]">
+        {/* LEFT spacer to align with sidebar width */}
+        <div className="hidden w-[300px] shrink-0 md:block lg:w-[380px]" />
+
+        {/* RIGHT - compose + tabs + posts */}
+        <div className="min-w-0 flex-1">
+          <ComposeBar
+            text={composeText}
+            onChange={setComposeText}
+            onNewPost={() => navigate('/creator/post/new')}
+          />
+
+          <div className="mt-[20px]">
+            <div className="rounded-[22px] bg-[#0e1012]">
+              <ContentTabs
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                postCount={posts.length}
+                mediaCount={mediaCount}
+              />
+              {isMediaTab ? (
+                <div className="p-[12px] md:p-[20px]">
+                  {allMedia.length === 0 ? (
+                    <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+                      No media yet.
+                    </p>
+                  ) : (
+                    <MediaGrid media={allMedia} />
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-[12px] p-[12px] md:gap-[20px] md:p-[20px]">
+                  {filtered.length === 0 ? (
+                    <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">{emptyMsg}</p>
+                  ) : (
+                    filtered.map((post) => (
+                      <PostCard key={post.id} post={post} onMenuAction={() => {}} />
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {showSchedule && <ScheduleLiveModal onClose={() => setShowSchedule(false)} />}
     </div>
   );

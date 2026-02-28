@@ -2,6 +2,19 @@ import { PrismaClient } from '@prisma/client';
 
 const IMG = '/icons/dashboard';
 
+const COMMENT_TEXTS = [
+  'Absolutely stunning! 🔥',
+  'You look amazing as always!',
+  'Best content on Fansbook 💯',
+  "Can't wait for more!",
+  'This is incredible work',
+  'Love this so much 😍',
+  'You never disappoint!',
+  'Goals!! 🙌',
+  'Keep it up queen! 👑',
+  'This made my day ❤️',
+];
+
 // ─── Seed subscription tiers ──────────────────────────────
 export async function seedCreatorTiers(prisma: PrismaClient, creatorId: string) {
   const tiers = [
@@ -52,7 +65,7 @@ export async function seedCreatorPosts(prisma: PrismaClient, creatorId: string) 
       text: "Just finished an amazing photoshoot today! Can't wait to share all the behind-the-scenes shots with my subscribers \u{1F4F8}",
       visibility: 'PUBLIC' as const,
       likeCount: 42,
-      commentCount: 8,
+      commentCount: 7,
       offset: -5,
       media: [{ url: `${IMG}/post-image-main.webp`, type: 'IMAGE' as const, order: 0 }],
     },
@@ -60,7 +73,7 @@ export async function seedCreatorPosts(prisma: PrismaClient, creatorId: string) 
       text: 'Finally we did a romantic video \u{1F303}\u{1F90D}',
       visibility: 'PUBLIC' as const,
       likeCount: 128,
-      commentCount: 23,
+      commentCount: 9,
       offset: -10,
       media: [
         {
@@ -75,7 +88,7 @@ export async function seedCreatorPosts(prisma: PrismaClient, creatorId: string) 
       text: 'Exclusive subscriber content dropping tonight! Get ready for something special \u2728',
       visibility: 'SUBSCRIBERS' as const,
       likeCount: 89,
-      commentCount: 15,
+      commentCount: 6,
       offset: -20,
       media: [],
     },
@@ -83,7 +96,7 @@ export async function seedCreatorPosts(prisma: PrismaClient, creatorId: string) 
       text: "Behind the scenes from yesterday's shoot. These are just for my amazing subscribers \u{1F495}",
       visibility: 'SUBSCRIBERS' as const,
       likeCount: 56,
-      commentCount: 12,
+      commentCount: 8,
       offset: -30,
       media: [{ url: `${IMG}/post-image-right-top.webp`, type: 'IMAGE' as const, order: 0 }],
     },
@@ -91,14 +104,23 @@ export async function seedCreatorPosts(prisma: PrismaClient, creatorId: string) 
       text: "Thank you for 1000 followers! Here's a special thank you post for everyone \u{1F389}",
       visibility: 'PUBLIC' as const,
       likeCount: 234,
-      commentCount: 45,
+      commentCount: 7,
       offset: -48,
       media: [{ url: `${IMG}/story-bg-2.webp`, type: 'IMAGE' as const, order: 0 }],
     },
   ];
 
+  await prisma.comment.deleteMany({ where: { post: { authorId: creatorId } } });
   await prisma.postMedia.deleteMany({ where: { post: { authorId: creatorId } } });
   await prisma.post.deleteMany({ where: { authorId: creatorId } });
+
+  // Get some commenter IDs (story creators)
+  const commenters = await prisma.user.findMany({
+    where: { role: 'CREATOR', id: { not: creatorId } },
+    select: { id: true },
+    take: 5,
+  });
+  const commenterIds = commenters.map((c) => c.id);
 
   for (const p of posts) {
     const post = await prisma.post.create({
@@ -121,6 +143,20 @@ export async function seedCreatorPosts(prisma: PrismaClient, creatorId: string) 
           thumbnail: 'thumbnail' in m ? m.thumbnail : undefined,
         },
       });
+    }
+
+    // Seed real comments matching commentCount
+    if (commenterIds.length > 0) {
+      for (let i = 0; i < p.commentCount; i++) {
+        await prisma.comment.create({
+          data: {
+            postId: post.id,
+            authorId: commenterIds[i % commenterIds.length],
+            text: COMMENT_TEXTS[i % COMMENT_TEXTS.length],
+            createdAt: new Date(now + p.offset * hour + (i + 1) * 300000),
+          },
+        });
+      }
     }
   }
 }

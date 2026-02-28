@@ -12,7 +12,8 @@ export function CTASection() {
             <span className="text-[#a61651]">Let&apos;s Talk.</span>
           </h2>
           <p className="mt-[8px] text-[12px] font-normal leading-[1.3] text-[#f8f8f8] md:mt-[12px] md:max-w-[400px] md:text-[16px]">
-            Whether you&apos;re a creator ready to monetize your passion or a fan looking for exclusive content — we&apos;d love to hear from you.
+            Whether you&apos;re a creator ready to monetize your passion or a fan looking for
+            exclusive content — we&apos;d love to hear from you.
           </p>
         </div>
         <Link
@@ -20,7 +21,12 @@ export function CTASection() {
           className="flex items-center gap-[4px] rounded-[32px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[28px] py-[8px] text-[8px] font-medium text-[#f8f8f8] shadow-[0px_2.5px_4px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90 md:gap-[10px] md:rounded-[80px] md:px-[40px] md:py-[17px] md:text-[20px] md:shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)]"
         >
           Join Now
-          <img src="/icons/landing/arrow_forward.svg" alt="" className="h-[10px] w-[10px] md:h-[24px] md:w-[24px]" style={{ filter: WHITE }} />
+          <img
+            src="/icons/landing/arrow_forward.svg"
+            alt=""
+            className="h-[10px] w-[10px] md:h-[24px] md:w-[24px]"
+            style={{ filter: WHITE }}
+          />
         </Link>
       </div>
     </section>
@@ -34,7 +40,11 @@ export function MarketingFooter() {
       <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-[32px] sm:grid-cols-2 lg:flex lg:items-start lg:justify-between lg:gap-0">
         {/* Logo */}
         <div className="flex justify-center sm:justify-start">
-          <img src="/images/landing/footer-logo.webp" alt="Fansbook" className="h-[80px] w-[86px] object-contain lg:h-[109px] lg:w-[118px]" />
+          <img
+            src="/images/landing/footer-logo.webp"
+            alt="Fansbook"
+            className="h-[80px] w-[86px] object-contain lg:h-[109px] lg:w-[118px]"
+          />
         </div>
 
         {/* Quick Links */}
@@ -45,22 +55,33 @@ export function MarketingFooter() {
               { label: 'How It Works', to: '/how-it-works' },
               { label: 'About Us', to: '/about' },
               { label: 'Contact Us', to: '/contact' },
-              { label: 'Help', to: '/help' },
+              { label: 'Help', to: '/faq' },
               { label: 'Make Money', to: '/make-money' },
               { label: 'Privacy Policy', to: '/privacy' },
               { label: 'Terms of Service', to: '/terms' },
               { label: 'Cookie Policy', to: '/cookies' },
               { label: 'Complaints Policy', to: '/complaints' },
             ].map((link) => (
-              <Link key={link.label} to={link.to} className="text-[14px] font-normal text-[#f8f8f8] hover:text-[#01adf1] lg:text-[16px]">{link.label}</Link>
+              <Link
+                key={link.label}
+                to={link.to}
+                className="text-[14px] font-normal text-[#f8f8f8] hover:text-[#01adf1] lg:text-[16px]"
+              >
+                {link.label}
+              </Link>
             ))}
           </div>
         </div>
 
         {/* Quick Services */}
         <div>
-          <h4 className="text-[18px] font-semibold text-[#f8f8f8] lg:text-[20px]">Quick Services</h4>
-          <a href="mailto:info@fansbook.vip" className="mt-[12px] flex items-center gap-[10px] text-[14px] font-normal text-[#f8f8f8] hover:text-[#01adf1] lg:mt-[16px] lg:text-[16px]">
+          <h4 className="text-[18px] font-semibold text-[#f8f8f8] lg:text-[20px]">
+            Quick Services
+          </h4>
+          <a
+            href="mailto:info@fansbook.vip"
+            className="mt-[12px] flex items-center gap-[10px] text-[14px] font-normal text-[#f8f8f8] hover:text-[#01adf1] lg:mt-[16px] lg:text-[16px]"
+          >
             <img src="/icons/landing/mail.svg" alt="" className="h-[20px] w-[20px]" />
             info@fansbook.vip
           </a>
@@ -70,9 +91,19 @@ export function MarketingFooter() {
         <div>
           <h4 className="text-[18px] font-semibold text-[#f8f8f8] lg:text-[20px]">Follow us</h4>
           <div className="mt-[12px] flex gap-[16px] lg:mt-[16px]">
-            <a href="#"><img src="/icons/landing/facebook.svg" alt="Facebook" className="h-[25px] w-[25px]" /></a>
-            <a href="#"><img src="/icons/landing/instagram.svg" alt="Instagram" className="h-[25px] w-[25px]" /></a>
-            <a href="#"><img src="/icons/landing/twitter.svg" alt="Twitter" className="h-[25px] w-[25px]" /></a>
+            <a href="#">
+              <img src="/icons/landing/facebook.svg" alt="Facebook" className="h-[25px] w-[25px]" />
+            </a>
+            <a href="#">
+              <img
+                src="/icons/landing/instagram.svg"
+                alt="Instagram"
+                className="h-[25px] w-[25px]"
+              />
+            </a>
+            <a href="#">
+              <img src="/icons/landing/twitter.svg" alt="Twitter" className="h-[25px] w-[25px]" />
+            </a>
           </div>
         </div>
       </div>

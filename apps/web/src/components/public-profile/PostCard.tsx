@@ -1,3 +1,7 @@
+import { useState, useRef, useEffect } from 'react';
+import { PostActions } from '../feed/PostActions';
+import { PostMediaDisplay } from './PostMediaDisplay';
+
 export interface PublicPost {
   id: string;
   text: string | null;
@@ -5,6 +9,7 @@ export interface PublicPost {
   likeCount: number;
   commentCount: number;
   shareCount?: number;
+  isLiked?: boolean;
   createdAt: string;
   media: { id: string; url: string; type: string }[];
   author?: { displayName: string; username: string; avatar: string | null; isVerified: boolean };
@@ -18,28 +23,91 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+function DotsMenu({ postId }: { postId: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const copyLink = () => {
+    const url = `${window.location.origin}/post/${postId}`;
+    navigator.clipboard.writeText(url).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    });
+    setOpen(false);
+  };
+
+  return (
+    <div ref={ref} className="relative">
+      <button onClick={() => setOpen(!open)} className="rounded-full p-1 hover:bg-white/5">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="3" r="1.5" fill="#5d5d5d" />
+          <circle cx="10" cy="10" r="1.5" fill="#5d5d5d" />
+          <circle cx="10" cy="17" r="1.5" fill="#5d5d5d" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute right-0 top-[28px] z-30 min-w-[160px] rounded-[12px] bg-[#1a1d20] py-[6px] shadow-lg">
+          <button
+            onClick={copyLink}
+            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-[#f8f8f8] hover:bg-white/5"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f8f8f8">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+            </svg>
+            Copy link
+          </button>
+          <button
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-[#f8f8f8] hover:bg-white/5"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f8f8f8">
+              <path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zM2 16h8v-2H2v2zm19.5-4.5L23 13l-6.99 7-4.51-4.5L13 14l3.01 3 5.49-5.5z" />
+            </svg>
+            Report
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AuthorHeader({
   author,
   createdAt,
+  postId,
 }: {
   author: NonNullable<PublicPost['author']>;
   createdAt: string;
+  postId: string;
 }) {
   return (
     <div className="mb-[12px] flex items-center justify-between">
       <div className="flex items-center gap-[10px]">
-        <img
-          src={author.avatar || '/icons/dashboard/person.svg'}
-          alt=""
-          className="size-[40px] rounded-full object-cover"
-        />
+        {author.avatar ? (
+          <img src={author.avatar} alt="" className="size-[40px] rounded-full object-cover" />
+        ) : (
+          <div className="flex size-[40px] items-center justify-center rounded-full bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[16px] font-medium text-white">
+            {author.displayName.charAt(0).toUpperCase()}
+          </div>
+        )}
         <div>
           <div className="flex items-center gap-[4px]">
             <p className="text-[14px] font-medium text-[#f8f8f8]">{author.displayName}</p>
             {author.isVerified && (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="#01adf1">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
+              <img src="/icons/dashboard/verified.svg" alt="Verified" className="size-[14px]" />
             )}
           </div>
           <p className="text-[12px] text-[#5d5d5d]">@{author.username}</p>
@@ -47,79 +115,8 @@ function AuthorHeader({
       </div>
       <div className="flex items-center gap-[10px]">
         <span className="text-[12px] text-[#5d5d5d]">{timeAgo(createdAt)}</span>
-        <button>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="3" r="1.5" fill="#5d5d5d" />
-            <circle cx="10" cy="10" r="1.5" fill="#5d5d5d" />
-            <circle cx="10" cy="17" r="1.5" fill="#5d5d5d" />
-          </svg>
-        </button>
+        <DotsMenu postId={postId} />
       </div>
-    </div>
-  );
-}
-
-function ActionBar({ post }: { post: PublicPost }) {
-  return (
-    <div className="flex items-center gap-[24px]">
-      <button className="flex items-center gap-[6px] text-[#f8f8f8]">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#f8f8f8"
-          strokeWidth="2"
-        >
-          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-        </svg>
-        <span className="text-[13px]">{post.likeCount} Likes</span>
-      </button>
-      <button className="flex items-center gap-[6px] text-[#f8f8f8]">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#f8f8f8"
-          strokeWidth="2"
-        >
-          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-        </svg>
-        <span className="text-[13px]">{post.commentCount} Comments</span>
-      </button>
-      <button className="flex items-center gap-[6px] text-[#f8f8f8]">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#f8f8f8"
-          strokeWidth="2"
-        >
-          <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" />
-        </svg>
-        <span className="text-[13px]">{post.shareCount ?? 0} Share</span>
-      </button>
-      <button className="flex items-center gap-[6px] text-[#f8f8f8]">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="#f8f8f8">
-          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-        </svg>
-        <span className="text-[13px]">Tip</span>
-      </button>
-    </div>
-  );
-}
-
-function LockedOverlay() {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="white" className="opacity-80">
-        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z" />
-      </svg>
-      <p className="mt-[8px] rounded-[4px] bg-black/60 px-[12px] py-[4px] text-[13px] text-white">
-        Subscribe to see user&apos;s photo
-      </p>
     </div>
   );
 }
@@ -131,26 +128,26 @@ interface PostCardProps {
 
 export function PostCard({ post, isSubscribed }: PostCardProps) {
   const isLocked = !isSubscribed && post.visibility !== 'PUBLIC' && post.visibility !== 'FREE';
-  const thumb = post.media[0]?.url;
+  const images = post.media.filter((m) => m.type === 'IMAGE');
 
   return (
-    <div className="rounded-[22px] bg-[#0e1012] px-[20px] py-[16px]">
-      {post.author && <AuthorHeader author={post.author} createdAt={post.createdAt} />}
+    <div className="rounded-[22px] bg-[#0e1012] px-[9px] py-[6px] md:px-[20px] md:py-[16px]">
+      {post.author && (
+        <AuthorHeader author={post.author} createdAt={post.createdAt} postId={post.id} />
+      )}
       {post.text && (
-        <p className="mb-[12px] text-[14px] leading-[1.6] text-[#f8f8f8]">{post.text}</p>
+        <p className="mb-[12px] whitespace-pre-wrap text-[10px] font-normal leading-normal text-[#f8f8f8] md:text-[14px] md:leading-[1.6]">
+          {post.text}
+        </p>
       )}
-      {thumb && (
-        <div className="relative mb-[14px] overflow-hidden rounded-[16px]">
-          <img
-            src={thumb}
-            alt=""
-            className={`w-full object-cover ${isLocked ? 'blur-xl' : ''}`}
-            style={{ maxHeight: 400 }}
-          />
-          {isLocked && <LockedOverlay />}
-        </div>
-      )}
-      <ActionBar post={post} />
+      <PostMediaDisplay images={images} isLocked={isLocked} />
+      <PostActions
+        postId={post.id}
+        likeCount={post.likeCount}
+        commentCount={post.commentCount}
+        shareCount={post.shareCount ?? 0}
+        isLiked={post.isLiked ?? false}
+      />
     </div>
   );
 }
