@@ -41,5 +41,7 @@ export const ME_SELECT = {
   emailVerified: true,
   twoFactorEnabled: true,
   onboardingStep: true,
+  notifSettings: true,
+  privacySettings: true,
   createdAt: true,
 } as const;
