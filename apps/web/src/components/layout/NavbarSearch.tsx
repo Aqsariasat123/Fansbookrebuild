@@ -65,7 +65,7 @@ export function NavbarSearch() {
             searchResults.map((r) => (
               <Link
                 key={r.id}
-                to={`/creator/${r.username}`}
+                to={`/u/${r.username}`}
                 onClick={() => {
                   setSearchOpen(false);
                   setSearchQuery('');
