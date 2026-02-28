@@ -23,11 +23,11 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#15191c] px-4 font-outfit">
-      <div className="w-full max-w-[420px] rounded-[22px] bg-[#0e1012] px-8 py-10 flex flex-col items-center">
+    <div className="flex min-h-screen items-center justify-center bg-muted px-4 font-outfit">
+      <div className="w-full max-w-[420px] rounded-[22px] bg-card px-8 py-10 flex flex-col items-center">
         <img src="/icons/dashboard/fansbook-logo.webp" alt="Fansbook" className="h-10 mb-8" />
-        <h1 className="text-[28px] font-medium text-[#f8f8f8]">Forgot Password</h1>
-        <p className="mt-2 text-center text-[14px] text-[#5d5d5d]">
+        <h1 className="text-[28px] font-medium text-foreground">Forgot Password</h1>
+        <p className="mt-2 text-center text-[14px] text-muted-foreground">
           Enter your email to receive a password reset link
         </p>
 
@@ -49,19 +49,19 @@ export default function ForgotPassword() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email..."
               required
-              className="w-full rounded-[52px] border border-[#5d5d5d] bg-[#15191c] px-[20px] py-[12px] text-[14px] text-[#f8f8f8] placeholder:text-[#5d5d5d] focus:border-[#01adf1] focus:outline-none"
+              className="w-full rounded-[52px] border border-border bg-muted px-[20px] py-[12px] text-[14px] text-foreground placeholder:text-muted-foreground focus:border-[#01adf1] focus:outline-none"
             />
             <button
               type="submit"
               disabled={loading}
-              className="mt-5 h-[49px] w-full rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] text-[16px] font-medium text-[#f8f8f8] transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="mt-5 h-[49px] w-full rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] text-[16px] font-medium text-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
             >
               {loading ? 'Sending...' : 'Send Reset Link'}
             </button>
           </form>
         )}
 
-        <Link to="/login" className="mt-6 text-[14px] text-[#01adf1] hover:underline">
+        <Link to="/login" className="mt-6 text-[14px] text-primary hover:underline">
           Back to Login
         </Link>
       </div>

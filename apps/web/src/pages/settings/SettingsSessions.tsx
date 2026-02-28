@@ -40,18 +40,18 @@ export function SettingsSessions() {
 
   return (
     <div className="flex flex-col gap-[16px]">
-      <p className="text-[16px] text-[#f8f8f8]">Active Sessions</p>
+      <p className="text-[16px] text-foreground">Active Sessions</p>
       {sessions.length === 0 ? (
-        <p className="text-[14px] text-[#5d5d5d]">No active sessions</p>
+        <p className="text-[14px] text-muted-foreground">No active sessions</p>
       ) : (
         sessions.map((s) => (
           <div
             key={s.id}
-            className="flex items-center justify-between rounded-[12px] bg-[#15191c] p-[14px]"
+            className="flex items-center justify-between rounded-[12px] bg-muted p-[14px]"
           >
             <div>
-              <p className="text-[14px] text-[#f8f8f8]">{s.deviceInfo || 'Unknown Device'}</p>
-              <p className="text-[12px] text-[#5d5d5d]">
+              <p className="text-[14px] text-foreground">{s.deviceInfo || 'Unknown Device'}</p>
+              <p className="text-[12px] text-muted-foreground">
                 {s.ipAddress || 'Unknown IP'} &middot; Last active{' '}
                 {new Date(s.lastActive).toLocaleDateString()}
               </p>

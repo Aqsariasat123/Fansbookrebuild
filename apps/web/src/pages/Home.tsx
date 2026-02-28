@@ -110,7 +110,7 @@ export default function Home() {
 
       {models.length > 0 && (
         <div className="flex flex-col gap-[8px] md:gap-[17px]">
-          <div className="flex items-center justify-between text-[12px] font-medium text-[#f8f8f8] md:text-[16px]">
+          <div className="flex items-center justify-between text-[12px] font-medium text-foreground md:text-[16px]">
             <p>Most Popular Models</p>
             <Link to="/explore" className="cursor-pointer underline decoration-solid">
               View all
@@ -130,7 +130,7 @@ export default function Home() {
                     className="absolute block size-full max-w-none rounded-full object-cover"
                   />
                 </div>
-                <p className="w-full whitespace-pre-wrap text-center text-[10px] font-medium text-[#f8f8f8] md:text-[16px]">
+                <p className="w-full whitespace-pre-wrap text-center text-[10px] font-medium text-foreground md:text-[16px]">
                   {model.displayName}
                 </p>
               </Link>

@@ -44,8 +44,10 @@ export function NavbarUserMenu() {
         className="flex items-center gap-[6px]"
       >
         <div className="hidden text-right lg:block">
-          <p className="text-[16px] text-[#f8f8f8] leading-tight">{getDisplayName(user)}</p>
-          <p className="text-[12px] text-[#5d5d5d] leading-tight">@{user?.username || 'user'}</p>
+          <p className="text-[16px] text-foreground leading-tight">{getDisplayName(user)}</p>
+          <p className="text-[12px] text-muted-foreground leading-tight">
+            @{user?.username || 'user'}
+          </p>
         </div>
         <div className="h-[34px] w-[34px] lg:h-[44px] lg:w-[44px] shrink-0 overflow-hidden rounded-full">
           {user?.avatar ? (
@@ -65,17 +67,17 @@ export function NavbarUserMenu() {
 
       {/* Dropdown */}
       {dropdownOpen && (
-        <div className="absolute right-0 top-full mt-[4px] w-[101px] rounded-[10px] bg-[#f8f8f8] py-[10px] shadow-[0px_-5px_20px_0px_rgba(0,0,0,0.1)]">
+        <div className="absolute right-0 top-full mt-[4px] w-[101px] rounded-[10px] bg-foreground py-[10px] shadow-[0px_-5px_20px_0px_rgba(0,0,0,0.1)]">
           <Link
             to="/profile"
             onClick={() => setDropdownOpen(false)}
-            className="block px-[15px] py-[4px] text-[16px] text-[#15191c] hover:bg-black/5"
+            className="block px-[15px] py-[4px] text-[16px] text-foreground hover:bg-black/5"
           >
             My Profile
           </Link>
           <button
             onClick={handleLogout}
-            className="block w-full px-[15px] py-[4px] text-left text-[16px] text-[#15191c] hover:bg-black/5"
+            className="block w-full px-[15px] py-[4px] text-left text-[16px] text-foreground hover:bg-black/5"
           >
             Logout
           </button>

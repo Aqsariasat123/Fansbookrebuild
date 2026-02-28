@@ -13,7 +13,7 @@ export function ImagePreview({ file, onSend, onClose, sending }: ImagePreviewPro
 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center">
-      <div className="relative w-full max-w-[600px] bg-[#0e1012] rounded-[16px] overflow-hidden mx-[20px]">
+      <div className="relative w-full max-w-[600px] bg-card rounded-[16px] overflow-hidden mx-[20px]">
         <button
           onClick={onClose}
           className="absolute top-[12px] right-[12px] z-10 size-[36px] rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
@@ -23,7 +23,7 @@ export function ImagePreview({ file, onSend, onClose, sending }: ImagePreviewPro
             height="20"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#f8f8f8"
+            stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
           >
@@ -31,7 +31,7 @@ export function ImagePreview({ file, onSend, onClose, sending }: ImagePreviewPro
           </svg>
         </button>
 
-        <div className="p-[16px] flex items-center justify-center bg-[#15191c] min-h-[300px] max-h-[60vh]">
+        <div className="p-[16px] flex items-center justify-center bg-muted min-h-[300px] max-h-[60vh]">
           <img
             src={previewUrl}
             alt="Preview"
@@ -46,7 +46,7 @@ export function ImagePreview({ file, onSend, onClose, sending }: ImagePreviewPro
             onChange={(e) => setCaption(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !sending && onSend(file, caption)}
             placeholder="Add a caption..."
-            className="flex-1 bg-[#15191c] rounded-[52px] px-[16px] py-[10px] text-[16px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+            className="flex-1 bg-muted rounded-[52px] px-[16px] py-[10px] text-[16px] text-foreground placeholder-muted-foreground outline-none"
           />
           <button
             onClick={() => onSend(file, caption)}
@@ -83,7 +83,7 @@ export function ImageViewer({ url, onClose }: ImageViewerProps) {
           height="22"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#f8f8f8"
+          stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
         >

@@ -21,12 +21,12 @@ export function AvatarSection({ avatar, avatarMsg, onUpload, onDelete }: AvatarS
             className="size-[58px] rounded-full object-cover"
           />
           <div className="flex flex-col">
-            <p className="text-[16px] text-[#f8f8f8]">Profile picture</p>
-            <p className="text-[12px] text-[#5d5d5d]">PNG, JPEG Under 15mb</p>
+            <p className="text-[16px] text-foreground">Profile picture</p>
+            <p className="text-[12px] text-muted-foreground">PNG, JPEG Under 15mb</p>
           </div>
         </div>
         <div className="flex items-center gap-[10px]">
-          {avatarMsg && <span className="text-[12px] text-[#01adf1]">{avatarMsg}</span>}
+          {avatarMsg && <span className="text-[12px] text-primary">{avatarMsg}</span>}
           <SmallBtn label="Upload new picture" onClick={() => avatarRef.current?.click()} />
           <SmallBtn label="Delete" onClick={onDelete} />
         </div>

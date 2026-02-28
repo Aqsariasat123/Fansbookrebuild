@@ -45,7 +45,7 @@ export function MultiImageGrid({
               className="absolute inset-0 h-full w-full object-cover blur-sm"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <p className="text-center text-[12px] font-normal text-[#f8f8f8] md:text-[20px]">
+              <p className="text-center text-[12px] font-normal text-foreground md:text-[20px]">
                 +{String(extraCount).padStart(2, '0')}
                 <br />
                 More

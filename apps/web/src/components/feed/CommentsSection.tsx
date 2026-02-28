@@ -113,7 +113,7 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
     <div className="flex flex-col gap-[12px] border-t border-[#1a1d20] pt-[12px]">
       {loading ? (
         <div className="flex justify-center py-3">
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#f8f8f8] border-t-transparent" />
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
         </div>
       ) : (
         <div
@@ -121,7 +121,9 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
           className="flex max-h-[320px] flex-col gap-[14px] overflow-y-auto scroll-smooth pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-[#2a2d30]"
         >
           {comments.length === 0 && (
-            <p className="py-3 text-center text-[12px] text-[#5d5d5d]">Be the first to comment</p>
+            <p className="py-3 text-center text-[12px] text-muted-foreground">
+              Be the first to comment
+            </p>
           )}
           {comments.map((c) => (
             <CommentThread
@@ -137,15 +139,15 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
       {/* Reply indicator */}
       {replyTo && (
         <div className="flex items-center gap-[8px] px-[4px]">
-          <span className="text-[11px] text-[#5d5d5d]">
-            Replying to <span className="font-medium text-[#01adf1]">@{replyTo.name}</span>
+          <span className="text-[11px] text-muted-foreground">
+            Replying to <span className="font-medium text-primary">@{replyTo.name}</span>
           </span>
           <button
             onClick={() => {
               setReplyTo(null);
               setText('');
             }}
-            className="text-[11px] text-[#5d5d5d] hover:text-[#f8f8f8]"
+            className="text-[11px] text-muted-foreground hover:text-foreground"
           >
             &times;
           </button>
@@ -160,7 +162,7 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           placeholder={replyTo ? `Reply to @${replyTo.name}...` : 'Write a comment...'}
-          className="flex-1 rounded-[20px] bg-[#15191c] px-[14px] py-[10px] text-[12px] text-[#f8f8f8] outline-none ring-1 ring-transparent transition-all placeholder:text-[#5d5d5d] focus:ring-[#2a2d30] md:text-[13px]"
+          className="flex-1 rounded-[20px] bg-muted px-[14px] py-[10px] text-[12px] text-foreground outline-none ring-1 ring-transparent transition-all placeholder:text-muted-foreground focus:ring-[#2a2d30] md:text-[13px]"
         />
         <button
           onClick={handleSubmit}
@@ -168,7 +170,7 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
           className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#a61651] to-[#01adf1] transition-opacity disabled:opacity-40"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="#f8f8f8" />
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor" />
           </svg>
         </button>
       </div>

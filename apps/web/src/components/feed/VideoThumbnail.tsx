@@ -48,7 +48,7 @@ export function VideoThumbnail({ src, className = '', fallback }: VideoThumbnail
   }, [src, fallback]);
 
   if (!thumb) {
-    return <div className={`bg-[#15191c] ${className}`} />;
+    return <div className={`bg-muted ${className}`} />;
   }
 
   return <img src={thumb} alt="" className={className} />;

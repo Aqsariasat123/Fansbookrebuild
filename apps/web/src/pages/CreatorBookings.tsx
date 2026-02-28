@@ -40,28 +40,28 @@ export default function CreatorBookings() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <p className="text-[24px] font-semibold text-[#f8f8f8]">My Bookings</p>
+      <p className="text-[24px] font-semibold text-foreground">My Bookings</p>
 
       {/* Search + Filter */}
       <div className="flex flex-col gap-[12px] md:flex-row md:items-center md:gap-[16px]">
-        <div className="flex flex-1 items-center gap-[10px] rounded-[8px] bg-[#0e1012] px-[16px] py-[10px]">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#5d5d5d">
+        <div className="flex flex-1 items-center gap-[10px] rounded-[8px] bg-card px-[16px] py-[10px]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
           </svg>
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search"
-            className="flex-1 bg-transparent text-[14px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+            className="flex-1 bg-transparent text-[14px] text-foreground placeholder-muted-foreground outline-none"
           />
         </div>
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex w-full items-center justify-between gap-[8px] rounded-[8px] bg-[#0e1012] px-[16px] py-[10px] text-[14px] text-[#f8f8f8] md:min-w-[160px]"
+            className="flex w-full items-center justify-between gap-[8px] rounded-[8px] bg-card px-[16px] py-[10px] text-[14px] text-foreground md:min-w-[160px]"
           >
             {statusFilter}{' '}
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#5d5d5d">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
               <path d="M7 10l5 5 5-5z" />
             </svg>
           </button>
@@ -94,10 +94,10 @@ export default function CreatorBookings() {
             <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
           </div>
         ) : bookings.length === 0 ? (
-          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">No bookings yet</p>
+          <p className="py-[40px] text-center text-[14px] text-muted-foreground">No bookings yet</p>
         ) : (
           bookings.map((b) => (
-            <div key={b.id} className="rounded-[16px] bg-[#0e1012] p-[16px]">
+            <div key={b.id} className="rounded-[16px] bg-card p-[16px]">
               {[
                 { label: 'Username', value: b.fanUsername || 'John Doe' },
                 {
@@ -111,8 +111,8 @@ export default function CreatorBookings() {
                   key={r.label}
                   className="flex items-center justify-between border-b border-[#1a1d20] py-[8px]"
                 >
-                  <span className="text-[12px] text-[#5d5d5d]">{r.label}</span>
-                  <span className="text-[13px] text-[#f8f8f8]">{r.value}</span>
+                  <span className="text-[12px] text-muted-foreground">{r.label}</span>
+                  <span className="text-[13px] text-foreground">{r.value}</span>
                 </div>
               ))}
               {b.status === 'PENDING' ? (
@@ -126,8 +126,8 @@ export default function CreatorBookings() {
                 </div>
               ) : (
                 <div className="flex items-center justify-between py-[8px]">
-                  <span className="text-[12px] text-[#5d5d5d]">Actions</span>
-                  <span className="text-[13px] text-[#f8f8f8]">Lorem Ipsum</span>
+                  <span className="text-[12px] text-muted-foreground">Actions</span>
+                  <span className="text-[13px] text-foreground">Lorem Ipsum</span>
                 </div>
               )}
             </div>
@@ -152,7 +152,7 @@ export default function CreatorBookings() {
               )}
             </tr>
           </thead>
-          <tbody className="bg-[#0e1012]">
+          <tbody className="bg-card">
             {loading ? (
               <tr>
                 <td colSpan={5} className="py-[40px] text-center">
@@ -161,26 +161,26 @@ export default function CreatorBookings() {
               </tr>
             ) : bookings.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+                <td colSpan={5} className="py-[40px] text-center text-[14px] text-muted-foreground">
                   No bookings yet
                 </td>
               </tr>
             ) : (
               bookings.map((b) => (
-                <tr key={b.id} className="border-b border-[#15191c] last:border-0">
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                <tr key={b.id} className="border-b border-muted last:border-0">
+                  <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                     {b.fanUsername || 'John Doe'}
                   </td>
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                  <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                     {b.date ? new Date(b.date).toLocaleDateString('en-GB') : '21-08-2025'}
                   </td>
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                  <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                     {b.timeSlot || 'Lorem Ipsum'}
                   </td>
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                  <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                     {b.status || 'Accepted'}
                   </td>
-                  <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+                  <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                     {b.status === 'PENDING' ? 'Accept/Reject' : 'Lorem Ipsum'}
                   </td>
                 </tr>
@@ -194,13 +194,13 @@ export default function CreatorBookings() {
         {[1, 2, 3, 4, 5, 6].map((n) => (
           <button
             key={n}
-            className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${n === 1 ? 'bg-[#01adf1] text-white' : 'bg-[#0e1012] text-[#5d5d5d] hover:text-white'}`}
+            className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${n === 1 ? 'bg-[#01adf1] text-white' : 'bg-card text-muted-foreground hover:text-white'}`}
           >
             {n}
           </button>
         ))}
-        <span className="text-[13px] text-[#5d5d5d]">...</span>
-        <button className="rounded-[4px] bg-[#0e1012] px-[12px] py-[6px] text-[13px] text-[#5d5d5d] hover:text-white">
+        <span className="text-[13px] text-muted-foreground">...</span>
+        <button className="rounded-[4px] bg-card px-[12px] py-[6px] text-[13px] text-muted-foreground hover:text-white">
           Next
         </button>
       </div>

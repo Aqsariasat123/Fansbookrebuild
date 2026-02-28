@@ -53,12 +53,12 @@ export default function Following() {
 
   return (
     <div className="flex flex-col gap-[16px]">
-      <p className="text-[20px] text-[#f8f8f8]">Following</p>
+      <p className="text-[20px] text-foreground">Following</p>
 
       {users.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-[22px] bg-[#0e1012] py-16">
-          <p className="text-[16px] text-[#5d5d5d]">Not following anyone yet</p>
-          <Link to="/explore" className="text-[14px] text-[#01adf1] hover:underline">
+        <div className="flex flex-col items-center gap-3 rounded-[22px] bg-card py-16">
+          <p className="text-[16px] text-muted-foreground">Not following anyone yet</p>
+          <Link to="/explore" className="text-[14px] text-primary hover:underline">
             Discover Creators
           </Link>
         </div>
@@ -67,7 +67,7 @@ export default function Following() {
           {users.map((u) => (
             <div
               key={u.id}
-              className="flex items-center gap-[12px] rounded-[16px] bg-[#0e1012] p-[14px]"
+              className="flex items-center gap-[12px] rounded-[16px] bg-card p-[14px]"
             >
               <Link to={`/u/${u.username}`} className="shrink-0">
                 <div className="size-[48px] overflow-hidden rounded-full">
@@ -84,7 +84,7 @@ export default function Following() {
                 <div className="flex items-center gap-1">
                   <Link
                     to={`/u/${u.username}`}
-                    className="text-[14px] text-[#f8f8f8] hover:underline"
+                    className="text-[14px] text-foreground hover:underline"
                   >
                     {u.displayName}
                   </Link>
@@ -92,11 +92,11 @@ export default function Following() {
                     <img src="/icons/dashboard/verified.svg" alt="" className="size-[14px]" />
                   )}
                 </div>
-                <p className="text-[12px] text-[#5d5d5d]">@{u.username}</p>
+                <p className="text-[12px] text-muted-foreground">@{u.username}</p>
               </div>
               <button
                 onClick={() => handleUnfollow(u.id)}
-                className="rounded-[50px] bg-[#15191c] px-4 py-[6px] text-[12px] text-[#5d5d5d] hover:text-[#f8f8f8]"
+                className="rounded-[50px] bg-muted px-4 py-[6px] text-[12px] text-muted-foreground hover:text-foreground"
               >
                 Unfollow
               </button>
@@ -108,7 +108,7 @@ export default function Following() {
                 setPage((p) => p + 1);
                 load(page + 1);
               }}
-              className="mx-auto rounded-[50px] bg-[#15191c] px-6 py-2 text-[14px] text-[#5d5d5d] hover:text-[#f8f8f8]"
+              className="mx-auto rounded-[50px] bg-muted px-6 py-2 text-[14px] text-muted-foreground hover:text-foreground"
             >
               Load More
             </button>

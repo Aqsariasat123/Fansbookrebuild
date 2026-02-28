@@ -53,27 +53,27 @@ function DotsMenu({ postId }: { postId: string }) {
     <div ref={ref} className="relative">
       <button onClick={() => setOpen(!open)} className="rounded-full p-1 hover:bg-white/5">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="3" r="1.5" fill="#5d5d5d" />
-          <circle cx="10" cy="10" r="1.5" fill="#5d5d5d" />
-          <circle cx="10" cy="17" r="1.5" fill="#5d5d5d" />
+          <circle cx="10" cy="3" r="1.5" fill="currentColor" />
+          <circle cx="10" cy="10" r="1.5" fill="currentColor" />
+          <circle cx="10" cy="17" r="1.5" fill="currentColor" />
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 top-[28px] z-30 min-w-[160px] rounded-[12px] bg-[#1a1d20] py-[6px] shadow-lg">
+        <div className="absolute right-0 top-[28px] z-30 min-w-[160px] rounded-[12px] bg-muted py-[6px] shadow-lg">
           <button
             onClick={copyLink}
-            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-[#f8f8f8] hover:bg-white/5"
+            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-foreground hover:bg-white/5"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f8f8f8">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
             </svg>
             Copy link
           </button>
           <button
             onClick={() => setOpen(false)}
-            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-[#f8f8f8] hover:bg-white/5"
+            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-foreground hover:bg-white/5"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f8f8f8">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zM2 16h8v-2H2v2zm19.5-4.5L23 13l-6.99 7-4.51-4.5L13 14l3.01 3 5.49-5.5z" />
             </svg>
             Report
@@ -105,16 +105,16 @@ function AuthorHeader({
         )}
         <div>
           <div className="flex items-center gap-[4px]">
-            <p className="text-[14px] font-medium text-[#f8f8f8]">{author.displayName}</p>
+            <p className="text-[14px] font-medium text-foreground">{author.displayName}</p>
             {author.isVerified && (
               <img src="/icons/dashboard/verified.svg" alt="Verified" className="size-[14px]" />
             )}
           </div>
-          <p className="text-[12px] text-[#5d5d5d]">@{author.username}</p>
+          <p className="text-[12px] text-muted-foreground">@{author.username}</p>
         </div>
       </div>
       <div className="flex items-center gap-[10px]">
-        <span className="text-[12px] text-[#5d5d5d]">{timeAgo(createdAt)}</span>
+        <span className="text-[12px] text-muted-foreground">{timeAgo(createdAt)}</span>
         <DotsMenu postId={postId} />
       </div>
     </div>
@@ -131,12 +131,12 @@ export function PostCard({ post, isSubscribed }: PostCardProps) {
   const images = post.media.filter((m) => m.type === 'IMAGE');
 
   return (
-    <div className="rounded-[22px] bg-[#0e1012] px-[9px] py-[6px] md:px-[20px] md:py-[16px]">
+    <div className="rounded-[22px] bg-card px-[9px] py-[6px] md:px-[20px] md:py-[16px]">
       {post.author && (
         <AuthorHeader author={post.author} createdAt={post.createdAt} postId={post.id} />
       )}
       {post.text && (
-        <p className="mb-[12px] whitespace-pre-wrap text-[10px] font-normal leading-normal text-[#f8f8f8] md:text-[14px] md:leading-[1.6]">
+        <p className="mb-[12px] whitespace-pre-wrap text-[10px] font-normal leading-normal text-foreground md:text-[14px] md:leading-[1.6]">
           {post.text}
         </p>
       )}

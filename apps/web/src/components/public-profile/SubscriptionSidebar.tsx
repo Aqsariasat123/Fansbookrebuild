@@ -45,8 +45,8 @@ export function SubscriptionSidebar({
   return (
     <div className="hidden w-[260px] shrink-0 flex-col gap-[20px] lg:flex">
       {/* Subscription Card */}
-      <div className="rounded-[22px] bg-[#0e1012] p-[20px]">
-        <p className="mb-[16px] text-[16px] font-semibold text-[#f8f8f8]">Subscription</p>
+      <div className="rounded-[22px] bg-card p-[20px]">
+        <p className="mb-[16px] text-[16px] font-semibold text-foreground">Subscription</p>
         <button
           onClick={() => onSubscribe(firstTierId)}
           className="flex w-full items-center justify-center gap-[10px] rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#0096c7] py-[12px] text-[14px] font-medium text-white transition-opacity hover:opacity-90"
@@ -61,10 +61,10 @@ export function SubscriptionSidebar({
 
       {/* Suggestions */}
       {suggestions.length > 0 && (
-        <div className="rounded-[22px] bg-[#0e1012] p-[20px]">
+        <div className="rounded-[22px] bg-card p-[20px]">
           <div className="mb-[16px] flex items-center justify-between">
-            <p className="text-[16px] font-semibold text-[#f8f8f8]">Suggestions</p>
-            <Link to="/creators" className="text-[12px] text-[#01adf1] hover:underline">
+            <p className="text-[16px] font-semibold text-foreground">Suggestions</p>
+            <Link to="/creators" className="text-[12px] text-primary hover:underline">
               View All
             </Link>
           </div>

@@ -68,17 +68,17 @@ export default function CreatorSubscriptionTiers() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <p className="text-[24px] font-semibold text-[#f8f8f8]">My Subscriptions</p>
+      <p className="text-[24px] font-semibold text-foreground">My Subscriptions</p>
 
       {/* Mobile Cards */}
       <div className="flex flex-col gap-[12px] md:hidden">
         {tiers.length === 0 ? (
-          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+          <p className="py-[40px] text-center text-[14px] text-muted-foreground">
             No subscription tiers yet
           </p>
         ) : (
           tiers.map((t) => (
-            <div key={t.id} className="rounded-[16px] bg-[#0e1012] p-[16px]">
+            <div key={t.id} className="rounded-[16px] bg-card p-[16px]">
               {[
                 { label: 'Name', value: t.name },
                 { label: 'Duration', value: t.duration },
@@ -88,17 +88,17 @@ export default function CreatorSubscriptionTiers() {
                   key={r.label}
                   className="flex items-center justify-between border-b border-[#1a1d20] py-[8px]"
                 >
-                  <span className="text-[12px] text-[#5d5d5d]">{r.label}</span>
-                  <span className="text-[13px] text-[#f8f8f8]">{r.value}</span>
+                  <span className="text-[12px] text-muted-foreground">{r.label}</span>
+                  <span className="text-[13px] text-foreground">{r.value}</span>
                 </div>
               ))}
               <div className="flex items-center justify-between border-b border-[#1a1d20] py-[8px]">
-                <span className="text-[12px] text-[#5d5d5d]">My Price</span>
+                <span className="text-[12px] text-muted-foreground">My Price</span>
                 <input
                   type="number"
                   value={t.price}
                   onChange={(e) => updateTier(t.id, 'price', Number(e.target.value))}
-                  className="w-[80px] rounded-[4px] border border-[#5d5d5d] bg-transparent px-[8px] py-[4px] text-right text-[13px] text-[#f8f8f8] outline-none"
+                  className="w-[80px] rounded-[4px] border border-border bg-transparent px-[8px] py-[4px] text-right text-[13px] text-foreground outline-none"
                 />
               </div>
               {[
@@ -109,8 +109,8 @@ export default function CreatorSubscriptionTiers() {
                   key={r.label}
                   className={`flex items-center justify-between py-[8px] ${i === 0 ? 'border-b border-[#1a1d20]' : ''}`}
                 >
-                  <span className="text-[12px] text-[#5d5d5d]">{r.label}</span>
-                  <span className="text-[13px] text-[#5d5d5d]">{r.value}</span>
+                  <span className="text-[12px] text-muted-foreground">{r.label}</span>
+                  <span className="text-[13px] text-muted-foreground">{r.value}</span>
                 </div>
               ))}
             </div>
@@ -140,19 +140,19 @@ export default function CreatorSubscriptionTiers() {
               ))}
             </tr>
           </thead>
-          <tbody className="bg-[#0e1012]">
+          <tbody className="bg-card">
             {tiers.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+                <td colSpan={6} className="py-[40px] text-center text-[14px] text-muted-foreground">
                   No subscription tiers yet
                 </td>
               </tr>
             ) : (
               tiers.map((t) => (
-                <tr key={t.id} className="border-b border-[#15191c] last:border-0">
-                  <td className="px-[14px] py-[12px] text-[14px] text-[#f8f8f8]">{t.name}</td>
-                  <td className="px-[14px] py-[12px] text-[14px] text-[#f8f8f8]">{t.duration}</td>
-                  <td className="px-[14px] py-[12px] text-[14px] text-[#f8f8f8]">
+                <tr key={t.id} className="border-b border-muted last:border-0">
+                  <td className="px-[14px] py-[12px] text-[14px] text-foreground">{t.name}</td>
+                  <td className="px-[14px] py-[12px] text-[14px] text-foreground">{t.duration}</td>
+                  <td className="px-[14px] py-[12px] text-[14px] text-foreground">
                     {t.defaultPrice.toFixed(2)}
                   </td>
                   <td className="px-[14px] py-[12px]">
@@ -160,13 +160,13 @@ export default function CreatorSubscriptionTiers() {
                       type="number"
                       value={t.price}
                       onChange={(e) => updateTier(t.id, 'price', Number(e.target.value))}
-                      className="w-[80px] rounded-[4px] border border-[#5d5d5d] bg-transparent px-[8px] py-[4px] text-[14px] text-[#f8f8f8] outline-none"
+                      className="w-[80px] rounded-[4px] border border-border bg-transparent px-[8px] py-[4px] text-[14px] text-foreground outline-none"
                     />
                   </td>
-                  <td className="px-[14px] py-[12px] text-[14px] text-[#5d5d5d]">
+                  <td className="px-[14px] py-[12px] text-[14px] text-muted-foreground">
                     {t.discount || '-'}
                   </td>
-                  <td className="px-[14px] py-[12px] text-[14px] text-[#5d5d5d]">
+                  <td className="px-[14px] py-[12px] text-[14px] text-muted-foreground">
                     {t.remainingUsers || '-'}
                   </td>
                 </tr>
@@ -184,7 +184,7 @@ export default function CreatorSubscriptionTiers() {
         >
           {saving ? 'Saving...' : 'Save'}
         </button>
-        <button className="w-full max-w-[306px] rounded-[80px] border border-[#2e4882] bg-[#f8f8f8] py-[12px] text-[18px] text-black shadow-md hover:opacity-90 transition-opacity">
+        <button className="w-full max-w-[306px] rounded-[80px] border border-[#2e4882] bg-foreground py-[12px] text-[18px] text-black shadow-md hover:opacity-90 transition-opacity">
           Cancel
         </button>
       </div>

@@ -43,7 +43,7 @@ export function NavbarSearch() {
 
   return (
     <div className="relative" ref={searchRef}>
-      <div className="flex items-center gap-[10px] rounded-[52px] bg-[#15191c] py-[10px] pl-[10px] pr-[20px]">
+      <div className="flex items-center gap-[10px] rounded-[52px] bg-muted py-[10px] pl-[10px] pr-[20px]">
         <img src="/icons/dashboard/search.svg" alt="" className="h-[24px] w-[24px]" />
         <input
           type="text"
@@ -54,13 +54,15 @@ export function NavbarSearch() {
             setSearchOpen(true);
           }}
           onFocus={() => setSearchOpen(true)}
-          className="w-[240px] bg-transparent text-[16px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+          className="w-[240px] bg-transparent text-[16px] text-foreground placeholder-muted-foreground outline-none"
         />
       </div>
       {searchOpen && searchQuery.trim() && (
-        <div className="absolute left-0 top-full mt-[4px] w-[300px] rounded-[12px] bg-[#0e1012] border border-[#2a2a2a] py-[8px] shadow-lg z-50 max-h-[320px] overflow-y-auto">
+        <div className="absolute left-0 top-full mt-[4px] w-[300px] rounded-[12px] bg-card border border-border py-[8px] shadow-lg z-50 max-h-[320px] overflow-y-auto">
           {searchResults.length === 0 ? (
-            <p className="px-[16px] py-[12px] text-[14px] text-[#5d5d5d]">No creators found</p>
+            <p className="px-[16px] py-[12px] text-[14px] text-muted-foreground">
+              No creators found
+            </p>
           ) : (
             searchResults.map((r) => (
               <Link
@@ -70,7 +72,7 @@ export function NavbarSearch() {
                   setSearchOpen(false);
                   setSearchQuery('');
                 }}
-                className="flex items-center gap-[10px] px-[16px] py-[8px] hover:bg-[#15191c] transition-colors"
+                className="flex items-center gap-[10px] px-[16px] py-[8px] hover:bg-muted transition-colors"
               >
                 <div className="h-[36px] w-[36px] shrink-0 overflow-hidden rounded-full">
                   {r.avatar ? (
@@ -82,8 +84,8 @@ export function NavbarSearch() {
                   )}
                 </div>
                 <div>
-                  <p className="text-[14px] text-[#f8f8f8] leading-tight">{r.displayName}</p>
-                  <p className="text-[12px] text-[#5d5d5d] leading-tight">@{r.username}</p>
+                  <p className="text-[14px] text-foreground leading-tight">{r.displayName}</p>
+                  <p className="text-[12px] text-muted-foreground leading-tight">@{r.username}</p>
                 </div>
               </Link>
             ))

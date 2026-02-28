@@ -105,7 +105,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
         <p className="font-outfit text-[12px] font-normal leading-normal text-black sm:text-[16px]">
           {creator.displayName}
         </p>
-        <p className="mt-[2px] font-outfit text-[10px] font-normal leading-normal text-[#5d5d5d] sm:text-[12px]">
+        <p className="mt-[2px] font-outfit text-[10px] font-normal leading-normal text-muted-foreground sm:text-[12px]">
           {creator.statusText || 'Available'}
         </p>
 
@@ -116,7 +116,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
               alt=""
               className="h-[16px] w-[16px] sm:h-[20px] sm:w-[20px]"
             />
-            <span className="font-outfit text-[12px] font-normal leading-normal text-[#15191c] sm:text-[16px]">
+            <span className="font-outfit text-[12px] font-normal leading-normal text-foreground sm:text-[16px]">
               {creator.category}
             </span>
           </div>
@@ -129,10 +129,10 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
             className="h-[16px] w-[16px] sm:h-[20px] sm:w-[20px]"
           />
           <span className="font-outfit leading-normal">
-            <span className="text-[12px] text-[#15191c] sm:text-[16px]">
+            <span className="text-[12px] text-foreground sm:text-[16px]">
               {formatPrice(creator.price)}
             </span>
-            <span className="text-[10px] text-[#5d5d5d] sm:text-[12px]"> / month</span>
+            <span className="text-[10px] text-muted-foreground sm:text-[12px]"> / month</span>
           </span>
         </div>
 
@@ -140,13 +140,13 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
           <button
             onClick={handleFollow}
             disabled={followLoading}
-            className="flex-1 rounded-l-[4px] bg-[#15191c] px-[7px] py-[6px] font-outfit text-[12px] font-normal text-[#f8f8f8] transition-opacity hover:opacity-80 disabled:opacity-50 sm:py-[8px] sm:text-[16px]"
+            className="flex-1 rounded-l-[4px] bg-muted px-[7px] py-[6px] font-outfit text-[12px] font-normal text-foreground transition-opacity hover:opacity-80 disabled:opacity-50 sm:py-[8px] sm:text-[16px]"
           >
             {isFollowed ? 'Following' : 'Follow'}
           </button>
           <button
             onClick={handleMessage}
-            className="rounded-r-[4px] bg-[#01adf1] px-[8px] py-[6px] font-outfit text-[12px] font-normal text-[#f8f8f8] transition-opacity hover:opacity-80 sm:px-[12px] sm:py-[8px] sm:text-[16px]"
+            className="rounded-r-[4px] bg-[#01adf1] px-[8px] py-[6px] font-outfit text-[12px] font-normal text-foreground transition-opacity hover:opacity-80 sm:px-[12px] sm:py-[8px] sm:text-[16px]"
           >
             Message
           </button>

@@ -116,13 +116,13 @@ export default function Explore() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search creators..."
-            className="w-full rounded-[52px] border border-[#5d5d5d] bg-[#0e1012] py-[12px] pl-[44px] pr-[16px] font-outfit text-[14px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none focus:border-[#01adf1]"
+            className="w-full rounded-[52px] border border-border bg-card py-[12px] pl-[44px] pr-[16px] font-outfit text-[14px] text-foreground placeholder-muted-foreground outline-none focus:border-[#01adf1]"
           />
         </div>
         <div className="relative">
           <button
             onClick={() => setSortOpen(!sortOpen)}
-            className="flex items-center gap-[8px] rounded-[52px] border border-[#5d5d5d] bg-[#0e1012] px-[20px] py-[12px] font-outfit text-[14px] text-[#f8f8f8]"
+            className="flex items-center gap-[8px] rounded-[52px] border border-border bg-card px-[20px] py-[12px] font-outfit text-[14px] text-foreground"
           >
             {SORT_LABELS[sortBy]}
             <img
@@ -132,7 +132,7 @@ export default function Explore() {
             />
           </button>
           {sortOpen && (
-            <div className="absolute right-0 z-10 mt-[4px] rounded-[12px] border border-[#5d5d5d] bg-[#0e1012] py-[4px] shadow-lg">
+            <div className="absolute right-0 z-10 mt-[4px] rounded-[12px] border border-border bg-card py-[4px] shadow-lg">
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt}
@@ -141,7 +141,7 @@ export default function Explore() {
                     setSortOpen(false);
                   }}
                   className={`block w-full whitespace-nowrap px-[20px] py-[10px] text-left font-outfit text-[14px] transition-colors ${
-                    sortBy === opt ? 'text-[#01adf1]' : 'text-[#f8f8f8] hover:text-[#01adf1]'
+                    sortBy === opt ? 'text-primary' : 'text-foreground hover:text-primary'
                   }`}
                 >
                   {SORT_LABELS[opt]}
@@ -159,7 +159,7 @@ export default function Explore() {
       {loading ? (
         <div className="grid grid-cols-2 gap-[16px] md:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-[260px] animate-pulse rounded-[16px] bg-[#0e1012]" />
+            <div key={i} className="h-[260px] animate-pulse rounded-[16px] bg-card" />
           ))}
         </div>
       ) : creators.length === 0 ? (
@@ -169,8 +169,8 @@ export default function Explore() {
             alt=""
             className="mb-[16px] h-[48px] w-[48px] opacity-30"
           />
-          <p className="font-outfit text-[16px] text-[#5d5d5d]">No creators found</p>
-          <p className="mt-[4px] font-outfit text-[13px] text-[#5d5d5d]">
+          <p className="font-outfit text-[16px] text-muted-foreground">No creators found</p>
+          <p className="mt-[4px] font-outfit text-[13px] text-muted-foreground">
             Try a different search or category
           </p>
         </div>
@@ -183,7 +183,7 @@ export default function Explore() {
           </div>
           {loadingMore && (
             <div className="flex justify-center py-[20px]">
-              <div className="h-[24px] w-[24px] animate-spin rounded-full border-[2px] border-[#5d5d5d] border-t-[#01adf1]" />
+              <div className="h-[24px] w-[24px] animate-spin rounded-full border-[2px] border-border border-t-[#01adf1]" />
             </div>
           )}
           <div ref={observerRef} className="h-[1px]" />

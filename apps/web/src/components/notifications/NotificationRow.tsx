@@ -44,7 +44,7 @@ export function NotificationRow({
 }) {
   const { avatar } = parseEntity(n.entityType);
   const isUnread = !n.read;
-  const rowBg = isUnread ? 'bg-[#15191c]' : 'border border-[#15191c]';
+  const rowBg = isUnread ? 'bg-muted' : 'border border-muted';
 
   return (
     <div className={`flex items-center justify-between ${rowBg} rounded-[8px] px-[10px] py-[8px]`}>
@@ -63,7 +63,15 @@ export function NotificationRow({
                 />
               </>
             ) : (
-              <rect x="3" y="3" width="18" height="18" rx="2" stroke="#5d5d5d" strokeWidth="2" />
+              <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="2"
+                stroke="currentColor"
+                strokeWidth="2"
+              />
             )}
           </svg>
         </button>
@@ -77,18 +85,18 @@ export function NotificationRow({
         >
           <path
             d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            stroke="#5d5d5d"
+            stroke="currentColor"
             strokeWidth="1.5"
             strokeLinejoin="round"
           />
         </svg>
         <div>
           <p
-            className={`text-[14px] text-[#f8f8f8] md:text-[16px] ${isUnread ? 'font-medium' : ''}`}
+            className={`text-[14px] text-foreground md:text-[16px] ${isUnread ? 'font-medium' : ''}`}
           >
             {n.message}
           </p>
-          <p className="text-[12px] text-[#5d5d5d]">{timeAgo(n.createdAt)}</p>
+          <p className="text-[12px] text-muted-foreground">{timeAgo(n.createdAt)}</p>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-[12px]">
@@ -99,7 +107,7 @@ export function NotificationRow({
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
               d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"
-              fill="#5d5d5d"
+              fill="currentColor"
             />
           </svg>
         </button>
@@ -107,7 +115,7 @@ export function NotificationRow({
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
               d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
-              fill="#5d5d5d"
+              fill="currentColor"
             />
           </svg>
         </button>
@@ -118,7 +126,7 @@ export function NotificationRow({
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
               d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-              fill="#5d5d5d"
+              fill="currentColor"
             />
           </svg>
         </button>

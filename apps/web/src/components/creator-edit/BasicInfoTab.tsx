@@ -78,7 +78,7 @@ export function BasicInfoTab({ onToast }: BasicInfoTabProps) {
             className={inputClass}
           />
           <svg
-            className="absolute right-[12px] top-1/2 -translate-y-1/2 text-[#5d5d5d]"
+            className="absolute right-[12px] top-1/2 -translate-y-1/2 text-muted-foreground"
             width="20"
             height="20"
             viewBox="0 0 24 24"
@@ -149,7 +149,7 @@ export function BasicInfoTab({ onToast }: BasicInfoTabProps) {
         <input
           type="text"
           placeholder="Your Intro Videos"
-          className={`${inputClass} border-0 border-b border-[#5d5d5d] rounded-none`}
+          className={`${inputClass} border-0 border-b border-border rounded-none`}
         />
       </Field>
 
@@ -177,7 +177,7 @@ function DocRow({ label, btnText }: { label: string; btnText: string }) {
   return (
     <div className="flex items-center justify-between">
       <p className="text-[20px] font-medium text-white">{label}</p>
-      <button className="rounded-[6px] bg-[#f8f8f8] px-[19px] py-[8px] text-[20px] font-medium text-[#0e1012] hover:opacity-90 transition-opacity">
+      <button className="rounded-[6px] bg-foreground px-[19px] py-[8px] text-[20px] font-medium text-foreground hover:opacity-90 transition-opacity">
         {btnText}
       </button>
     </div>

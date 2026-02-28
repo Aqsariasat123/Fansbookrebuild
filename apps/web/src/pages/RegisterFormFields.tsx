@@ -1,10 +1,10 @@
 type AccountType = 'creator' | 'fan';
 
 const INPUT_CLASS =
-  'h-[38px] w-full rounded-[46px] border-[0.77px] border-[#15191c] bg-transparent px-[12px] text-[10px] font-normal text-[#15191c] placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]';
+  'h-[38px] w-full rounded-[46px] border-[0.77px] border-muted bg-transparent px-[12px] text-[10px] font-normal text-foreground placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]';
 
 const PASSWORD_INPUT_CLASS =
-  'h-[38px] w-full rounded-[46px] border-[0.77px] border-[#15191c] bg-transparent px-[12px] pr-[40px] text-[10px] font-normal text-[#15191c] placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]';
+  'h-[38px] w-full rounded-[46px] border-[0.77px] border-muted bg-transparent px-[12px] pr-[40px] text-[10px] font-normal text-foreground placeholder:text-[#b4b4b4] focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]';
 
 interface TextFieldProps {
   label: string;
@@ -25,7 +25,9 @@ export function TextField({
 }: TextFieldProps) {
   return (
     <div className={className}>
-      <label className="block text-[12px] font-normal text-[#15191c] lg:text-[16px]">{label}</label>
+      <label className="block text-[12px] font-normal text-foreground lg:text-[16px]">
+        {label}
+      </label>
       <div className="mt-[6px] lg:mt-[8px]">
         <input
           type={type}
@@ -61,7 +63,9 @@ export function PasswordField({
 }: PasswordFieldProps) {
   return (
     <div className={className}>
-      <label className="block text-[12px] font-normal text-[#15191c] lg:text-[16px]">{label}</label>
+      <label className="block text-[12px] font-normal text-foreground lg:text-[16px]">
+        {label}
+      </label>
       <div className="mt-[6px] relative lg:mt-[8px]">
         <input
           type={show ? 'text' : 'password'}
@@ -95,7 +99,7 @@ interface AccountTypeSelectorProps {
 export function AccountTypeSelector({ accountType, onSelect }: AccountTypeSelectorProps) {
   return (
     <div className="mt-[20px] lg:mt-[34px]">
-      <p className="text-[12px] font-normal text-[#15191c] pl-[10px] lg:text-[16px]">
+      <p className="text-[12px] font-normal text-foreground pl-[10px] lg:text-[16px]">
         Select Account Type:
       </p>
 
@@ -109,7 +113,7 @@ export function AccountTypeSelector({ accountType, onSelect }: AccountTypeSelect
             className="h-[14px] w-[14px] lg:h-[16px] lg:w-[16px]"
           />
         </button>
-        <span className="text-[10px] font-normal text-[#15191c] lg:text-[12px]">
+        <span className="text-[10px] font-normal text-foreground lg:text-[12px]">
           I am a <span className="font-medium">Creator</span>
         </span>
       </label>
@@ -122,7 +126,7 @@ export function AccountTypeSelector({ accountType, onSelect }: AccountTypeSelect
             className="h-[14px] w-[14px] lg:h-[16px] lg:w-[16px]"
           />
         </button>
-        <span className="text-[10px] font-normal text-[#15191c] lg:text-[12px]">
+        <span className="text-[10px] font-normal text-foreground lg:text-[12px]">
           I am a <span className="font-medium">Fan</span>
         </span>
       </label>

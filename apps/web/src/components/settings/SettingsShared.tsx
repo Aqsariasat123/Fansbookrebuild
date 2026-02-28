@@ -4,7 +4,7 @@ export function SmallBtn({ label, onClick }: { label: string; onClick: () => voi
   return (
     <button
       onClick={onClick}
-      className="bg-[#15191c] p-[10px] rounded-[9px] text-[12px] text-[#f8f8f8] hover:opacity-80 transition-opacity"
+      className="bg-muted p-[10px] rounded-[9px] text-[12px] text-foreground hover:opacity-80 transition-opacity"
     >
       {label}
     </button>
@@ -22,11 +22,11 @@ export function FieldInput({
 }) {
   return (
     <div className="flex flex-col gap-[8px] flex-1 max-w-[332px]">
-      <p className="text-[12px] text-[#5d5d5d]">{label}</p>
+      <p className="text-[12px] text-muted-foreground">{label}</p>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="border border-[#15191c] rounded-[8px] px-[10px] py-[10px] bg-transparent text-[12px] text-[#f8f8f8] outline-none focus:border-[#5d5d5d]"
+        className="border border-muted rounded-[8px] px-[10px] py-[10px] bg-transparent text-[12px] text-foreground outline-none focus:border-border"
       />
     </div>
   );
@@ -47,8 +47,8 @@ export function PasswordField({
 }) {
   return (
     <div className="flex flex-col gap-[9px] flex-1 max-w-[332px]">
-      <p className="text-[12px] text-[#5d5d5d]">{label}</p>
-      <div className="border border-[#15191c] rounded-[8px] p-[10px] flex items-center justify-between">
+      <p className="text-[12px] text-muted-foreground">{label}</p>
+      <div className="border border-muted rounded-[8px] p-[10px] flex items-center justify-between">
         <div className="flex items-center gap-[10px] flex-1">
           <LockIcon />
           <input
@@ -56,7 +56,7 @@ export function PasswordField({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="••••••••"
-            className="bg-transparent text-[12px] text-[#f8f8f8] outline-none w-full placeholder:text-[#5d5d5d]"
+            className="bg-transparent text-[12px] text-foreground outline-none w-full placeholder:text-muted-foreground"
           />
         </div>
         <button onClick={onToggle} className="opacity-60 hover:opacity-100">
@@ -68,5 +68,5 @@ export function PasswordField({
 }
 
 export function Divider() {
-  return <div className="bg-[#15191c] h-px w-full my-[16px]" />;
+  return <div className="bg-muted h-px w-full my-[16px]" />;
 }

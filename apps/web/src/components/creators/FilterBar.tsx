@@ -46,7 +46,7 @@ function PriceDropdown({
   return (
     <div className="relative" ref={ref}>
       <button onClick={() => setOpen(!open)} className="flex items-center gap-[5px]">
-        <span className="font-outfit text-[16px] font-normal text-[#f8f8f8]">
+        <span className="font-outfit text-[16px] font-normal text-foreground">
           {getPriceLabel(priceMin, priceMax)}
         </span>
         <img src="/icons/creators/arrow_drop_down.svg" alt="" className="h-[24px] w-[24px]" />
@@ -63,7 +63,7 @@ function PriceDropdown({
             <button
               key={range.label}
               onClick={() => selectRange(range.min, range.max)}
-              className="block w-full px-[16px] py-[8px] text-left font-outfit text-[14px] text-[#f8f8f8] hover:bg-[#333]"
+              className="block w-full px-[16px] py-[8px] text-left font-outfit text-[14px] text-foreground hover:bg-[#333]"
             >
               {range.label}
             </button>
@@ -117,7 +117,7 @@ export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
               placeholder="Search creators..."
               value={searchValue}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full bg-transparent font-outfit text-[16px] font-normal text-[#f8f8f8] placeholder-[#888] outline-none md:w-[120px]"
+              className="w-full bg-transparent font-outfit text-[16px] font-normal text-foreground placeholder-[#888] outline-none md:w-[120px]"
             />
           </div>
 
@@ -144,10 +144,10 @@ export function FilterBar({ filters, onFilterChange }: FilterBarProps) {
 
         <button
           onClick={clearAll}
-          className="flex items-center justify-center gap-[10px] rounded-b-[8px] bg-[#f8f8f8] px-[20px] py-[14px] md:rounded-b-none md:rounded-r-[8px] md:py-[22px]"
+          className="flex items-center justify-center gap-[10px] rounded-b-[8px] bg-foreground px-[20px] py-[14px] md:rounded-b-none md:rounded-r-[8px] md:py-[22px]"
         >
           <img src="/icons/creators/filter_list.svg" alt="" className="h-[24px] w-[24px]" />
-          <span className="font-outfit text-[16px] font-normal text-[#15191c]">Clear</span>
+          <span className="font-outfit text-[16px] font-normal text-foreground">Clear</span>
         </button>
       </div>
     </div>

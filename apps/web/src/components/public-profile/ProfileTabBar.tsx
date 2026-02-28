@@ -14,15 +14,13 @@ export function ProfileTabBar({
   onTabChange: (t: ContentTab) => void;
 }) {
   return (
-    <div className="relative flex items-center rounded-[70px] bg-[#0e1012] p-[10px]">
+    <div className="relative flex items-center rounded-[70px] bg-card p-[10px]">
       {TABS.map((tab) => (
         <button
           key={tab.key}
           onClick={() => onTabChange(tab.key)}
           className={`relative z-10 flex-1 rounded-[70px] py-[12px] text-center text-[16px] font-medium transition-colors ${
-            activeTab === tab.key
-              ? 'bg-[#01adf1] text-white'
-              : 'text-[#f8f8f8] hover:text-[#01adf1]'
+            activeTab === tab.key ? 'bg-[#01adf1] text-white' : 'text-foreground hover:text-primary'
           }`}
         >
           {tab.label}

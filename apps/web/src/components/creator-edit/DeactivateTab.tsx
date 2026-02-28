@@ -26,7 +26,7 @@ export function DeactivateTab({ onToast }: DeactivateTabProps) {
 
   return (
     <div className="flex flex-col items-center gap-[24px] py-[40px]">
-      <p className="text-[18px] text-[#5d5d5d]">
+      <p className="text-[18px] text-muted-foreground">
         You Can Deactive Account By Clicking Below Button
       </p>
       <button onClick={handleDeactivate} disabled={saving} className={saveButtonClass}>

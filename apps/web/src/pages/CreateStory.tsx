@@ -42,23 +42,23 @@ export default function CreateStory() {
     <div className="mx-auto max-w-[500px]">
       <div className="flex flex-col gap-[20px]">
         <div className="flex items-center justify-between">
-          <p className="text-[20px] text-[#f8f8f8]">Create Story</p>
+          <p className="text-[20px] text-foreground">Create Story</p>
           <button
             onClick={() => navigate('/feed')}
-            className="text-[14px] text-[#5d5d5d] hover:text-[#f8f8f8]"
+            className="text-[14px] text-muted-foreground hover:text-foreground"
           >
             Cancel
           </button>
         </div>
 
-        <div className="rounded-[22px] bg-[#0e1012] p-[20px]">
+        <div className="rounded-[22px] bg-card p-[20px]">
           {!preview ? (
             <button
               onClick={() => fileRef.current?.click()}
-              className="flex w-full flex-col items-center gap-3 rounded-[16px] border-2 border-dashed border-[#5d5d5d]/40 py-16 hover:border-[#01adf1]/50"
+              className="flex w-full flex-col items-center gap-3 rounded-[16px] border-2 border-dashed border-border/40 py-16 hover:border-[#01adf1]/50"
             >
               <svg
-                className="size-12 text-[#5d5d5d]"
+                className="size-12 text-muted-foreground"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -70,8 +70,8 @@ export default function CreateStory() {
                   d="M12 4v16m8-8H4"
                 />
               </svg>
-              <span className="text-[14px] text-[#5d5d5d]">Upload Image or Video</span>
-              <span className="text-[12px] text-[#5d5d5d]/60">Max 50MB</span>
+              <span className="text-[14px] text-muted-foreground">Upload Image or Video</span>
+              <span className="text-[12px] text-muted-foreground/60">Max 50MB</span>
             </button>
           ) : (
             <div className="relative">

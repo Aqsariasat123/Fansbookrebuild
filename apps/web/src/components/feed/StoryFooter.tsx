@@ -76,7 +76,7 @@ function ReplyBar({ storyId }: { storyId: string }) {
               handleReply();
             }}
             disabled={sending}
-            className="ml-2 text-sm font-medium text-[#01adf1]"
+            className="ml-2 text-sm font-medium text-primary"
           >
             Send
           </button>

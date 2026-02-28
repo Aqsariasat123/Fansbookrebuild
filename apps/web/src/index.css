@@ -4,51 +4,49 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --background: 220 20% 97%; /* #f3f4f6 light page bg */
+    --foreground: 216 16% 12%; /* #1a1d21 dark text */
+    --card: 0 0% 100%; /* #ffffff white cards */
+    --card-foreground: 216 16% 12%; /* #1a1d21 */
+    --primary: 197 99% 47%; /* #01adf1 fansbook cyan */
+    --primary-foreground: 0 0% 100%; /* white */
+    --secondary: 220 14% 96%; /* #f0f2f5 */
+    --secondary-foreground: 216 16% 12%;
+    --muted: 220 14% 93%; /* #ebedf0 inner surfaces */
+    --muted-foreground: 220 5% 46%; /* #6b7280 medium gray */
+    --accent: 197 99% 47%; /* #01adf1 */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 83%; /* #cdd2d9 */
+    --input: 220 14% 93%; /* #ebedf0 */
+    --ring: 197 99% 47%;
     --radius: 0.5rem;
-    --gradient-from: #00bcd4;
-    --gradient-to: #e91e8c;
+    --gradient-from: #01adf1;
+    --gradient-to: #a61651;
   }
 
   .dark {
-    --background: 216 27.8% 7.1%; /* #0D1117 */
-    --foreground: 207.7 35.1% 92.7%; /* #E6EDF3 */
-    --card: 215 21.4% 11%; /* #161B22 */
-    --card-foreground: 207.7 35.1% 92.7%; /* #E6EDF3 */
-    --primary: 186.8 100% 41.6%; /* #00BCD4 cyan */
-    --primary-foreground: 0 0% 100%; /* white text on primary */
-    --secondary: 215 21.4% 11%; /* #161B22 */
-    --secondary-foreground: 207.7 35.1% 92.7%; /* #E6EDF3 */
-    --muted: 215 21.4% 11%; /* #161B22 */
-    --muted-foreground: 214.7 7.9% 52.7%; /* #7D8590 */
-    --accent: 186.8 100% 41.6%; /* #00BCD4 cyan */
-    --accent-foreground: 0 0% 100%; /* white text on accent */
+    --background: 216 16% 11%; /* #15191c page bg */
+    --foreground: 0 0% 97%; /* #f8f8f8 text */
+    --card: 210 18% 6%; /* #0e1012 card bg */
+    --card-foreground: 0 0% 97%; /* #f8f8f8 */
+    --primary: 197 99% 47%; /* #01adf1 cyan */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 216 16% 11%; /* #15191c */
+    --secondary-foreground: 0 0% 97%;
+    --muted: 216 16% 11%; /* #15191c inner surfaces */
+    --muted-foreground: 0 0% 36%; /* #5d5d5d */
+    --accent: 197 99% 47%; /* #01adf1 */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 207.7 35.1% 92.7%;
-    --border: 215 15.4% 15.3%; /* #21262D */
-    --input: 212.3 11.9% 21.4%; /* #30363D */
-    --ring: 186.8 100% 41.6%; /* #00BCD4 cyan */
+    --destructive-foreground: 0 0% 97%;
+    --border: 216 10% 22%; /* #2e3338 */
+    --input: 216 16% 11%; /* #15191c */
+    --ring: 197 99% 47%;
     --radius: 0.5rem;
-
-    /* Fansbook gradient accent: cyan #00BCD4 -> pink #E91E8C */
-    --gradient-from: #00bcd4;
-    --gradient-to: #e91e8c;
+    --gradient-from: #01adf1;
+    --gradient-to: #a61651;
   }
 }
 

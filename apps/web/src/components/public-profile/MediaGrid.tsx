@@ -25,7 +25,7 @@ export function MediaGrid({ media }: MediaGridProps) {
         {media.map((item) => (
           <div
             key={item.id}
-            className="relative aspect-square cursor-pointer overflow-hidden rounded-[8px] bg-[#0e1012] md:rounded-[12px]"
+            className="relative aspect-square cursor-pointer overflow-hidden rounded-[8px] bg-card md:rounded-[12px]"
             onClick={() => {
               if (item.isLocked) return;
               const unlockedIdx = unlocked.findIndex((m) => m.id === item.id);

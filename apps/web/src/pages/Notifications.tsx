@@ -53,9 +53,9 @@ export default function Notifications() {
   return (
     <div className="flex flex-col gap-[20px]">
       {/* Search + title + list in dark card so capsule is visible */}
-      <div className="rounded-[22px] bg-[#0e1012] p-[16px] md:p-[22px]">
-        {/* Search capsule - bg-[#15191c] on bg-[#0e1012] = visible */}
-        <div className="flex items-center gap-[10px] rounded-[52px] bg-[#15191c] py-[8px] pl-[10px] pr-[10px] md:py-[10px] md:pl-[15px]">
+      <div className="rounded-[22px] bg-card p-[16px] md:p-[22px]">
+        {/* Search capsule - bg-muted on bg-card = visible */}
+        <div className="flex items-center gap-[10px] rounded-[52px] bg-muted py-[8px] pl-[10px] pr-[10px] md:py-[10px] md:pl-[15px]">
           <img
             src="/icons/dashboard/search.svg"
             alt=""
@@ -65,11 +65,11 @@ export default function Notifications() {
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-transparent text-[12px] text-[#f8f8f8] outline-none placeholder:text-[#5d5d5d] md:text-[16px]"
+            className="flex-1 bg-transparent text-[12px] text-foreground outline-none placeholder:text-muted-foreground md:text-[16px]"
           />
         </div>
 
-        <p className="mt-[16px] text-[20px] text-[#f8f8f8]">Notifications</p>
+        <p className="mt-[16px] text-[20px] text-foreground">Notifications</p>
 
         <div className="mt-[16px]">
           {loading ? (
@@ -77,7 +77,7 @@ export default function Notifications() {
               <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
             </div>
           ) : filtered.length === 0 ? (
-            <p className="py-[40px] text-center text-[16px] text-[#5d5d5d]">
+            <p className="py-[40px] text-center text-[16px] text-muted-foreground">
               {search.trim() ? 'No matching notifications' : 'No notifications'}
             </p>
           ) : (

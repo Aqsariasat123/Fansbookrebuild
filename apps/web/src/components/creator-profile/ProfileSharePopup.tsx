@@ -59,10 +59,10 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 md:items-center">
       <div
         ref={popupRef}
-        className="w-full max-w-[226px] rounded-[22px] bg-[#f8f8f8] px-[25px] pb-[25px] pt-[16px] md:max-w-[280px]"
+        className="w-full max-w-[226px] rounded-[22px] bg-foreground px-[25px] pb-[25px] pt-[16px] md:max-w-[280px]"
       >
         {/* Drag handle */}
-        <div className="mx-auto mb-[20px] h-[2px] w-[60px] rounded-full bg-[#15191c]" />
+        <div className="mx-auto mb-[20px] h-[2px] w-[60px] rounded-full bg-muted" />
 
         <div className="flex flex-col gap-[28px]">
           <button onClick={handleShareMessage} className="flex items-center gap-[12px] text-left">
@@ -71,7 +71,7 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
               height="18"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#5d5d5d"
+              stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -79,7 +79,7 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
               <line x1="22" y1="2" x2="11" y2="13" />
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>
-            <span className="text-[12px] text-[#5d5d5d]">Share profile via message</span>
+            <span className="text-[12px] text-muted-foreground">Share profile via message</span>
           </button>
 
           <button onClick={handleShareVia} className="flex items-center gap-[12px] text-left">
@@ -88,7 +88,7 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
               height="18"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#5d5d5d"
+              stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -99,7 +99,7 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
             </svg>
-            <span className="text-[12px] text-[#5d5d5d]">Share profile via...</span>
+            <span className="text-[12px] text-muted-foreground">Share profile via...</span>
           </button>
 
           <button onClick={handleReferEarn} className="flex items-center gap-[12px] text-left">
@@ -108,14 +108,14 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
               height="18"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#5d5d5d"
+              stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
               <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
             </svg>
-            <span className="text-[12px] text-[#5d5d5d]">Refer & Earn</span>
+            <span className="text-[12px] text-muted-foreground">Refer & Earn</span>
           </button>
         </div>
       </div>

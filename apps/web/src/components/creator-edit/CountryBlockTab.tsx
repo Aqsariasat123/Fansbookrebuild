@@ -31,9 +31,9 @@ export function CountryBlockTab({ onToast }: CountryBlockTabProps) {
   return (
     <div className="flex flex-col gap-[20px]">
       <div className="flex items-center justify-between">
-        <p className="text-[16px] text-[#5d5d5d]">Select Block Country</p>
-        <div className="flex min-w-[200px] items-center justify-center rounded-[6px] border border-[#5d5d5d] px-[20px] py-[10px]">
-          <span className="text-[16px] text-[#f8f8f8]">
+        <p className="text-[16px] text-muted-foreground">Select Block Country</p>
+        <div className="flex min-w-[200px] items-center justify-center rounded-[6px] border border-border px-[20px] py-[10px]">
+          <span className="text-[16px] text-foreground">
             {blockedCountries.length > 0 ? blockedCountries.join(', ') : 'None Selected'}
           </span>
         </div>

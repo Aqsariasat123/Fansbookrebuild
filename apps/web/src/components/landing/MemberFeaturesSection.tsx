@@ -72,8 +72,8 @@ export function MemberFeaturesSection() {
   }
 
   return (
-    <section className="bg-[#15191c] px-[20px] py-[40px] md:px-[76px] md:py-[60px]">
-      <h2 className="text-center text-[32px] font-medium text-[#f8f8f8] md:text-[48px]">
+    <section className="bg-muted px-[20px] py-[40px] md:px-[76px] md:py-[60px]">
+      <h2 className="text-center text-[32px] font-medium text-foreground md:text-[48px]">
         Member Features
       </h2>
 
@@ -81,13 +81,13 @@ export function MemberFeaturesSection() {
       <div className="mx-auto mt-[24px] flex w-fit rounded-[57px] bg-[#a61651] p-[6px] md:mt-[30px] md:p-[8px]">
         <button
           onClick={() => switchTab('creators')}
-          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'creators' ? 'bg-[#f8f8f8] text-[#15191c]' : 'text-[#f8f8f8]'}`}
+          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'creators' ? 'bg-foreground text-[#15191c]' : 'text-foreground'}`}
         >
           Creators
         </button>
         <button
           onClick={() => switchTab('subscribers')}
-          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'subscribers' ? 'bg-[#f8f8f8] text-[#15191c]' : 'text-[#f8f8f8]'}`}
+          className={`rounded-[59px] px-[28px] py-[8px] text-[14px] font-medium transition-colors sm:px-[40px] sm:text-[16px] md:px-[52px] md:py-[10px] md:text-[18px] ${tab === 'subscribers' ? 'bg-foreground text-[#15191c]' : 'text-foreground'}`}
         >
           Subscribers
         </button>
@@ -101,7 +101,7 @@ export function MemberFeaturesSection() {
             <button
               key={t}
               onClick={() => setSubTab(t)}
-              className={`px-[12px] pb-[10px] text-[14px] font-medium sm:px-[16px] md:px-[22px] md:pb-[12px] md:text-[20px] ${active ? 'border-b-[2px] border-[#a61651] text-[#f8f8f8]' : 'text-[#b4b4b4]'}`}
+              className={`px-[12px] pb-[10px] text-[14px] font-medium sm:px-[16px] md:px-[22px] md:pb-[12px] md:text-[20px] ${active ? 'border-b-[2px] border-[#a61651] text-foreground' : 'text-[#b4b4b4]'}`}
               style={active ? { borderRadius: '4px 4px 0 0', background: '#252d32' } : {}}
             >
               {t}
@@ -111,7 +111,7 @@ export function MemberFeaturesSection() {
       </div>
 
       {/* Content box */}
-      <div className="mx-auto mt-[20px] flex max-w-[781px] flex-col items-center gap-[24px] rounded-[12px] bg-[#f8f8f8] px-[24px] py-[24px] md:mt-[24px] md:flex-row md:gap-[40px] md:px-[35px] md:py-[30px]">
+      <div className="mx-auto mt-[20px] flex max-w-[781px] flex-col items-center gap-[24px] rounded-[12px] bg-foreground px-[24px] py-[24px] md:mt-[24px] md:flex-row md:gap-[40px] md:px-[35px] md:py-[30px]">
         <ul className="flex-1 space-y-[18px] md:space-y-[26px]">
           {items.map((item) => (
             <li
@@ -136,21 +136,21 @@ export function MemberFeaturesSection() {
 export function FAQSection() {
   const [open, setOpen] = useState(0);
   return (
-    <section className="bg-[#15191c] px-[20px] py-[40px] md:px-[76px] md:py-[60px]">
-      <h2 className="text-center text-[28px] font-medium text-[#f8f8f8] sm:text-[36px] md:text-[48px]">
+    <section className="bg-muted px-[20px] py-[40px] md:px-[76px] md:py-[60px]">
+      <h2 className="text-center text-[28px] font-medium text-foreground sm:text-[36px] md:text-[48px]">
         Frequently asked questions
       </h2>
       <div className="mx-auto mt-[24px] max-w-[900px] space-y-[16px] md:mt-[40px] md:space-y-[26px]">
         {faqData.map((item, i) => (
           <div
             key={i}
-            className="rounded-[8px] bg-[#0e1012] px-[16px] py-[16px] md:px-[23px] md:py-[20px]"
+            className="rounded-[8px] bg-card px-[16px] py-[16px] md:px-[23px] md:py-[20px]"
           >
             <button
               onClick={() => setOpen(open === i ? -1 : i)}
               className="flex w-full items-center gap-[12px] text-left md:gap-[16px]"
             >
-              <span className="flex h-[32px] w-[32px] flex-none items-center justify-center rounded-full border border-[#5d5d5d] md:h-[36px] md:w-[36px]">
+              <span className="flex h-[32px] w-[32px] flex-none items-center justify-center rounded-full border border-border md:h-[36px] md:w-[36px]">
                 <img
                   src="/icons/landing/expand_more.svg"
                   alt=""
@@ -158,7 +158,7 @@ export function FAQSection() {
                   style={{ filter: WHITE, transform: open === i ? 'rotate(180deg)' : undefined }}
                 />
               </span>
-              <span className="text-[15px] font-semibold text-[#f8f8f8] md:text-[18px]">
+              <span className="text-[15px] font-semibold text-foreground md:text-[18px]">
                 {item.q}
               </span>
             </button>

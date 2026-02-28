@@ -17,8 +17,8 @@ export function CategoryChips({ categories, selected, onSelect }: CategoryChipsP
             onClick={() => onSelect(cat)}
             className={`shrink-0 rounded-[20px] px-[16px] py-[8px] font-outfit text-[14px] font-medium transition-colors ${
               isActive
-                ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-[#f8f8f8]'
-                : 'bg-[#15191c] text-[#5d5d5d] hover:text-[#f8f8f8]'
+                ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-foreground'
+                : 'bg-muted text-muted-foreground hover:text-foreground'
             }`}
           >
             {cat || 'All'}

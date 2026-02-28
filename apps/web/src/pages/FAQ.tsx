@@ -52,32 +52,32 @@ export default function FAQ() {
   return (
     <div className="min-h-screen font-outfit">
       {/* Hero */}
-      <div className="relative h-[280px] bg-[#0e1012] md:h-[355px]">
+      <div className="relative h-[280px] bg-card md:h-[355px]">
         <div className="absolute inset-0 bg-[rgba(21,25,28,0.94)]" />
         <MarketingNav />
         <div className="absolute inset-x-0 top-[100px] flex flex-col items-center gap-[14px] px-[20px] md:top-[135px] md:px-[76px]">
-          <h1 className="text-center text-[30px] font-medium text-[#f8f8f8] md:text-[48px]">
+          <h1 className="text-center text-[30px] font-medium text-foreground md:text-[48px]">
             Frequently Asked Questions
           </h1>
-          <p className="text-center text-[10px] font-normal text-[#f8f8f8] md:text-[20px]">
+          <p className="text-center text-[10px] font-normal text-foreground md:text-[20px]">
             Find answers to common questions about FansBook.
           </p>
         </div>
       </div>
 
       {/* FAQ Accordion */}
-      <section className="bg-[#15191c] px-[20px] py-[40px] md:px-[76px] md:py-[60px]">
+      <section className="bg-muted px-[20px] py-[40px] md:px-[76px] md:py-[60px]">
         <div className="mx-auto max-w-[900px] space-y-[16px] md:space-y-[26px]">
           {faqs.map((item, i) => (
             <div
               key={i}
-              className="rounded-[8px] bg-[#0e1012] px-[16px] py-[16px] md:px-[23px] md:py-[20px]"
+              className="rounded-[8px] bg-card px-[16px] py-[16px] md:px-[23px] md:py-[20px]"
             >
               <button
                 onClick={() => setOpen(open === i ? -1 : i)}
                 className="flex w-full items-center gap-[12px] text-left md:gap-[16px]"
               >
-                <span className="flex h-[32px] w-[32px] flex-none items-center justify-center rounded-full border border-[#5d5d5d] md:h-[36px] md:w-[36px]">
+                <span className="flex h-[32px] w-[32px] flex-none items-center justify-center rounded-full border border-border md:h-[36px] md:w-[36px]">
                   <img
                     src="/icons/landing/expand_more.svg"
                     alt=""
@@ -85,7 +85,7 @@ export default function FAQ() {
                     style={{ filter: WHITE, transform: open === i ? 'rotate(180deg)' : undefined }}
                   />
                 </span>
-                <span className="text-[15px] font-semibold text-[#f8f8f8] md:text-[18px]">
+                <span className="text-[15px] font-semibold text-foreground md:text-[18px]">
                   {item.q}
                 </span>
               </button>

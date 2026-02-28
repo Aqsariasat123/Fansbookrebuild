@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProfileSharePopup } from './ProfileSharePopup';
+import { CoverIcon, StatsRow, AboutSection, HashtagsSection } from './ProfileHeaderParts';
 
 interface ProfileHeaderProps {
   displayName: string;
@@ -19,34 +20,6 @@ interface ProfileHeaderProps {
   onAvatarUpload: (file: File) => void;
   onCoverUpload: (file: File) => void;
   onScheduleLive?: () => void;
-}
-
-function formatCount(n: number): string {
-  if (n >= 1000000) return `${(n / 1000000).toFixed(2)}M`;
-  if (n >= 1000) return `${(n / 1000).toFixed(2)}K`;
-  return String(n);
-}
-
-function CoverIcon({ d, onClick }: { d: string; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex size-[32px] items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors"
-    >
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d={d} />
-      </svg>
-    </button>
-  );
 }
 
 export function ProfileHeader({
@@ -85,14 +58,14 @@ export function ProfileHeader({
         {cover ? (
           <img src={cover} alt="" className="absolute inset-0 size-full object-cover" />
         ) : (
-          <div className="absolute inset-0 bg-[#1a1d20]" />
+          <div className="absolute inset-0 bg-muted" />
         )}
         {uploadingCover && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40">
             <div className="size-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#15191c]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
         <div className="absolute bottom-[12px] right-[12px] flex gap-[8px]">
           <CoverIcon
             d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
@@ -117,11 +90,11 @@ export function ProfileHeader({
       </div>
       <div>
         <div className="relative z-10 -mt-[60px] flex justify-center md:-mt-[88px] md:justify-start">
-          <div className="relative size-[130px] rounded-full border-4 border-[#15191c] bg-[#15191c] md:size-[176px]">
+          <div className="relative size-[130px] rounded-full border-4 border-muted bg-muted md:size-[176px]">
             {avatar ? (
               <img src={avatar} alt="" className="size-full rounded-full object-cover" />
             ) : (
-              <div className="flex size-full items-center justify-center rounded-full bg-[#1a1d20]">
+              <div className="flex size-full items-center justify-center rounded-full bg-muted">
                 <span className="text-[40px] font-medium text-white md:text-[52px]">{initial}</span>
               </div>
             )}
@@ -162,39 +135,29 @@ export function ProfileHeader({
         {/* Name */}
         <div className="mt-[16px] text-center md:text-left">
           <div className="flex items-center justify-center gap-[6px] md:justify-start">
-            <h2 className="text-[20px] font-semibold text-[#f8f8f8]">{displayName}</h2>
+            <h2 className="text-[20px] font-semibold text-foreground">{displayName}</h2>
             {isVerified && (
               <img src="/icons/dashboard/verified.svg" alt="Verified" className="size-[18px]" />
             )}
           </div>
-          <p className="text-[16px] text-[#5d5d5d]">@{username}</p>
+          <p className="text-[16px] text-muted-foreground">@{username}</p>
         </div>
 
-        {/* Stats */}
-        <div className="mt-[24px] flex items-center justify-center gap-[40px] md:justify-start">
-          <div className="text-center md:text-left">
-            <p className="text-[16px] font-medium text-[#f8f8f8]">{formatCount(followingCount)}</p>
-            <p className="text-[12px] text-[#5d5d5d]">Following</p>
-          </div>
-          <div className="text-center md:text-left">
-            <p className="text-[16px] font-medium text-[#f8f8f8]">{formatCount(followersCount)}</p>
-            <p className="text-[12px] text-[#5d5d5d]">Followers</p>
-          </div>
-          <div className="text-center md:text-left">
-            <p className="text-[16px] font-medium text-[#f8f8f8]">{formatCount(likesCount)}</p>
-            <p className="text-[12px] text-[#5d5d5d]">Likes</p>
-          </div>
-        </div>
+        <StatsRow
+          followingCount={followingCount}
+          followersCount={followersCount}
+          likesCount={likesCount}
+        />
 
         {/* Edit Profile + actions */}
         <div className="mt-[20px] flex items-center gap-[10px]">
           <button
             onClick={() => navigate('/creator/profile/edit')}
-            className="rounded-[11px] border border-[#5d5d5d] px-[36px] py-[12px] text-[16px] font-medium text-[#f8f8f8] shadow-[0px_6px_10px_rgba(34,34,34,0.25)] transition-colors hover:border-white"
+            className="rounded-[11px] border border-border px-[36px] py-[12px] text-[16px] font-medium text-foreground shadow-[0px_6px_10px_rgba(34,34,34,0.25)] transition-colors hover:border-white"
           >
             Edit Profile
           </button>
-          <button className="flex size-[46px] items-center justify-center rounded-[11px] border border-[#5d5d5d] text-[#5d5d5d] hover:border-white hover:text-white transition-colors">
+          <button className="flex size-[46px] items-center justify-center rounded-[11px] border border-border text-muted-foreground hover:border-white hover:text-white transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="12" cy="5" r="2" />
               <circle cx="12" cy="12" r="2" />
@@ -213,36 +176,14 @@ export function ProfileHeader({
           </button>
           <button
             onClick={onScheduleLive}
-            className="flex-1 rounded-[50px] border border-[#5d5d5d] py-[12px] text-center text-[14px] text-white transition-colors hover:border-white"
+            className="flex-1 rounded-[50px] border border-border py-[12px] text-center text-[14px] text-white transition-colors hover:border-white"
           >
             Schedule Live
           </button>
         </div>
 
-        {/* About */}
-        {bio && (
-          <div className="mt-[24px]">
-            <p className="text-[16px] font-medium text-[#f8f8f8]">About</p>
-            <p className="mt-[8px] text-[14px] leading-[1.6] text-[#5d5d5d]">{bio}</p>
-          </div>
-        )}
-
-        {/* Hashtags */}
-        {hashtags.length > 0 && (
-          <div className="mt-[24px]">
-            <p className="text-[16px] font-medium text-[#f8f8f8]">Hashtags</p>
-            <div className="mt-[10px] flex flex-wrap gap-[8px]">
-              {hashtags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-[8px] border border-[#5d5d5d] px-[18px] py-[8px] text-[14px] text-[#5d5d5d]"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+        <AboutSection bio={bio} />
+        <HashtagsSection hashtags={hashtags} />
       </div>
 
       {showShare && <ProfileSharePopup username={username} onClose={() => setShowShare(false)} />}

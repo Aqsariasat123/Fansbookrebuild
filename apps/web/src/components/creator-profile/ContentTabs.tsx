@@ -39,7 +39,7 @@ export function ContentTabs({
             className={`flex flex-1 items-center justify-center gap-[8px] py-[12px] text-[13px] font-medium transition-colors md:py-[16px] md:text-[15px] ${
               active
                 ? 'border-b-[3px] border-[#e91e8c] text-[#e91e8c]'
-                : 'text-[#5d5d5d] hover:text-[#a0a0a0]'
+                : 'text-muted-foreground hover:text-[#a0a0a0]'
             }`}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">

@@ -68,15 +68,15 @@ function DeleteMenu({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="opacity-0 group-hover:opacity-100 text-[#5d5d5d] hover:text-[#f8f8f8] transition-all text-[14px] px-[4px]"
+        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground transition-all text-[14px] px-[4px]"
       >
         &#8942;
       </button>
       {open && (
-        <div className="absolute top-full right-0 bg-[#15191c] rounded-[8px] py-[4px] w-[180px] z-20 shadow-lg">
+        <div className="absolute top-full right-0 bg-muted rounded-[8px] py-[4px] w-[180px] z-20 shadow-lg">
           <button
             onClick={() => handleDelete('forMe')}
-            className="w-full text-left px-[14px] py-[8px] text-[13px] text-[#f8f8f8] hover:bg-[#2a2d30]"
+            className="w-full text-left px-[14px] py-[8px] text-[13px] text-foreground hover:bg-[#2a2d30]"
           >
             Delete for me
           </button>
@@ -128,16 +128,16 @@ export function OtherBubble({ msg, onDelete, onViewImage }: BubbleProps) {
         />
       ) : (
         <div className="size-[32px] rounded-full bg-[#2e4882] flex items-center justify-center shrink-0">
-          <span className="text-[11px] font-medium text-[#f8f8f8]">{initial}</span>
+          <span className="text-[11px] font-medium text-foreground">{initial}</span>
         </div>
       )}
       <div className="flex flex-col gap-[6px] max-w-[375px]">
-        <p className="text-[16px] leading-[1.7] text-[#f8f8f8]">{msg.sender.displayName}</p>
+        <p className="text-[16px] leading-[1.7] text-foreground">{msg.sender.displayName}</p>
         {isImage ? (
           <ImageBubble msg={msg} onView={onViewImage} />
         ) : (
-          <div className="bg-[#15191c] rounded-[8px] px-[14px] py-[10px]">
-            <p className="text-[16px] leading-[1.7] text-[#f8f8f8]">{msg.text}</p>
+          <div className="bg-muted rounded-[8px] px-[14px] py-[10px]">
+            <p className="text-[16px] leading-[1.7] text-foreground">{msg.text}</p>
           </div>
         )}
       </div>
@@ -156,13 +156,15 @@ export function SelfBubble({ msg, onDelete, onViewImage }: BubbleProps) {
       </div>
       <div className="flex flex-col gap-[6px] items-end">
         {!isImage && (
-          <p className="text-[12px] leading-[1.7] text-[#5d5d5d]">{formatTime(msg.createdAt)}</p>
+          <p className="text-[12px] leading-[1.7] text-muted-foreground">
+            {formatTime(msg.createdAt)}
+          </p>
         )}
         {isImage ? (
           <ImageBubble msg={msg} onView={onViewImage} />
         ) : (
-          <div className="bg-[#15191c] rounded-[8px] px-[14px] py-[10px]">
-            <p className="text-[16px] leading-[1.7] text-[#f8f8f8]">{msg.text}</p>
+          <div className="bg-muted rounded-[8px] px-[14px] py-[10px]">
+            <p className="text-[16px] leading-[1.7] text-foreground">{msg.text}</p>
           </div>
         )}
       </div>

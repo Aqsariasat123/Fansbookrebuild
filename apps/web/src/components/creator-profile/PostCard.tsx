@@ -65,7 +65,7 @@ function VideoCard({ media, onClick }: { media: PostMedia; onClick: () => void }
         className="h-full w-full object-cover"
       />
       <div className="absolute inset-0 flex items-center justify-center bg-[rgba(21,25,28,0.55)]">
-        <div className="flex items-center gap-[8px] rounded-[50px] bg-[#15191c]/90 py-[6px] pl-[6px] pr-[16px]">
+        <div className="flex items-center gap-[8px] rounded-[50px] bg-muted/90 py-[6px] pl-[6px] pr-[16px]">
           <img src={`${IMG}/play-button.webp`} alt="" className="size-[28px] md:size-[36px]" />
           <span className="text-[14px] text-white md:text-[16px]">Play</span>
         </div>
@@ -96,7 +96,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
   };
 
   return (
-    <div className="rounded-[11px] bg-[#0e1012] p-[12px] md:rounded-[22px] md:p-[20px]">
+    <div className="rounded-[11px] bg-card p-[12px] md:rounded-[22px] md:p-[20px]">
       {author && (
         <div className="mb-[10px] flex items-start justify-between md:mb-[14px]">
           <div className="flex items-center gap-[10px]">
@@ -105,25 +105,27 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
             </div>
             <div>
               <div className="flex items-center gap-[4px]">
-                <span className="text-[14px] font-medium text-[#f8f8f8] md:text-[16px]">
+                <span className="text-[14px] font-medium text-foreground md:text-[16px]">
                   {author.displayName}
                 </span>
                 {author.isVerified && (
                   <img src={`${IMG}/verified.svg`} alt="" className="size-[14px] md:size-[16px]" />
                 )}
               </div>
-              <span className="text-[11px] text-[#5d5d5d] md:text-[13px]">@{author.username}</span>
+              <span className="text-[11px] text-muted-foreground md:text-[13px]">
+                @{author.username}
+              </span>
             </div>
           </div>
           <div className="relative flex items-center gap-[8px]">
-            <span className="text-[11px] text-[#5d5d5d] md:text-[13px]">
+            <span className="text-[11px] text-muted-foreground md:text-[13px]">
               {timeAgo(post.createdAt)}
             </span>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="flex size-[26px] items-center justify-center rounded-full hover:bg-[#15191c]"
+              className="flex size-[26px] items-center justify-center rounded-full hover:bg-muted"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="#5d5d5d">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <circle cx="12" cy="5" r="2" />
                 <circle cx="12" cy="12" r="2" />
                 <circle cx="12" cy="19" r="2" />
@@ -139,7 +141,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
       )}
 
       {post.text && (
-        <p className="mb-[12px] whitespace-pre-wrap text-[13px] leading-[1.6] text-[#f8f8f8] md:mb-[16px] md:text-[15px]">
+        <p className="mb-[12px] whitespace-pre-wrap text-[13px] leading-[1.6] text-foreground md:mb-[16px] md:text-[15px]">
           {post.text}
         </p>
       )}

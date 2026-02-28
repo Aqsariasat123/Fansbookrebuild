@@ -39,20 +39,20 @@ function Pagination({
         <button
           key={p}
           onClick={() => onPage(p)}
-          className={`h-[28px] w-[28px] rounded-[2px] border border-[#5d5d5d] flex items-center justify-center text-[10px] text-[#f8f8f8] ${p === page ? 'bg-[#5d5d5d]' : ''}`}
+          className={`h-[28px] w-[28px] rounded-[2px] border border-border flex items-center justify-center text-[10px] text-foreground ${p === page ? 'bg-muted-foreground' : ''}`}
         >
           {p}
         </button>
       ))}
       {totalPages > 6 && (
-        <span className="h-[28px] w-[28px] rounded-[2px] border border-[#5d5d5d] flex items-center justify-center text-[10px] text-[#f8f8f8]">
+        <span className="h-[28px] w-[28px] rounded-[2px] border border-border flex items-center justify-center text-[10px] text-foreground">
           ...
         </span>
       )}
       {page < totalPages && (
         <button
           onClick={() => onPage(page + 1)}
-          className="h-[38px] px-[10px] rounded-[4px] border border-[#5d5d5d] flex items-center justify-center text-[10px] text-[#f8f8f8]"
+          className="h-[38px] px-[10px] rounded-[4px] border border-border flex items-center justify-center text-[10px] text-foreground"
         >
           Next
         </button>
@@ -99,7 +99,7 @@ export default function Subscriptions() {
 
   return (
     <div className="flex flex-col gap-[12px] md:gap-[20px]">
-      <p className="text-[20px] text-[#f8f8f8]">My Subscriptions</p>
+      <p className="text-[20px] text-foreground">My Subscriptions</p>
 
       {/* Filters */}
       <div className="flex flex-col gap-[10px] md:flex-row md:gap-[20px]">
@@ -136,38 +136,40 @@ export default function Subscriptions() {
 
       {/* Table */}
       <div className="overflow-x-auto rounded-[22px]">
-        <div className="min-w-[700px] overflow-hidden rounded-[22px] bg-[#0e1012]">
+        <div className="min-w-[700px] overflow-hidden rounded-[22px] bg-card">
           <div className="grid grid-cols-5 bg-[#01adf1] px-[16px] py-[14px] md:px-[30px] md:py-[22px]">
             {TABLE_HEADERS.map((h) => (
               <p
                 key={h}
-                className="whitespace-pre-line text-center text-[11px] font-bold text-[#f8f8f8] md:text-[16px]"
+                className="whitespace-pre-line text-center text-[11px] font-bold text-foreground md:text-[16px]"
               >
                 {h}
               </p>
             ))}
           </div>
           {displayed.length === 0 ? (
-            <p className="py-[40px] text-center text-[#5d5d5d]">No data available in table</p>
+            <p className="py-[40px] text-center text-muted-foreground">
+              No data available in table
+            </p>
           ) : (
             displayed.map((s, i) => (
               <div
                 key={s.id}
-                className={`grid grid-cols-5 px-[16px] py-[14px] md:px-[30px] md:py-[20px] ${i < displayed.length - 1 ? 'border-b border-[#15191c]' : ''}`}
+                className={`grid grid-cols-5 px-[16px] py-[14px] md:px-[30px] md:py-[20px] ${i < displayed.length - 1 ? 'border-b border-muted' : ''}`}
               >
                 <p className="text-center text-[12px] text-white md:text-[16px]">
                   #{s.id.slice(-7)}
                 </p>
-                <p className="text-center text-[12px] text-[#f8f8f8] md:text-[16px]">
+                <p className="text-center text-[12px] text-foreground md:text-[16px]">
                   {s.creatorName}
                 </p>
-                <p className="text-center text-[12px] text-[#f8f8f8] md:text-[16px]">
+                <p className="text-center text-[12px] text-foreground md:text-[16px]">
                   ${s.amount.toFixed(2)}
                 </p>
-                <p className="text-center text-[12px] text-[#f8f8f8] md:text-[16px]">
+                <p className="text-center text-[12px] text-foreground md:text-[16px]">
                   {formatDate(s.startDate)}
                 </p>
-                <p className="text-center text-[12px] text-[#f8f8f8] md:text-[16px]">
+                <p className="text-center text-[12px] text-foreground md:text-[16px]">
                   {formatDate(s.renewalDate)}
                 </p>
               </div>

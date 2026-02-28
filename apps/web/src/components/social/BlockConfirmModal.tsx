@@ -34,18 +34,18 @@ export function BlockConfirmModal({
       onClick={onClose}
     >
       <div
-        className="mx-4 w-full max-w-[380px] rounded-[22px] bg-[#0e1012] p-[24px]"
+        className="mx-4 w-full max-w-[380px] rounded-[22px] bg-card p-[24px]"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="mb-2 text-[16px] text-[#f8f8f8]">Block {displayName}?</p>
-        <p className="text-[14px] text-[#5d5d5d]">
+        <p className="mb-2 text-[16px] text-foreground">Block {displayName}?</p>
+        <p className="text-[14px] text-muted-foreground">
           They won&apos;t be able to see your profile, posts, or message you. You will also unfollow
           each other.
         </p>
         <div className="mt-5 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-[50px] bg-[#15191c] py-[10px] text-[14px] text-[#5d5d5d]"
+            className="flex-1 rounded-[50px] bg-muted py-[10px] text-[14px] text-muted-foreground"
           >
             Cancel
           </button>

@@ -31,10 +31,10 @@ export function SuggestionsSidebar({ creatorUsername }: SuggestionsSidebarProps)
 
   return (
     <div className="hidden w-[260px] shrink-0 flex-col gap-[20px] lg:flex">
-      <div className="rounded-[22px] bg-[#0e1012] p-[20px]">
+      <div className="rounded-[22px] bg-card p-[20px]">
         <div className="mb-[16px] flex items-center justify-between">
-          <p className="text-[16px] font-semibold text-[#f8f8f8]">Suggestions</p>
-          <Link to="/creators" className="text-[12px] text-[#01adf1] hover:underline">
+          <p className="text-[16px] font-semibold text-foreground">Suggestions</p>
+          <Link to="/creators" className="text-[12px] text-primary hover:underline">
             View All
           </Link>
         </div>

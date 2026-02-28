@@ -1,8 +1,37 @@
+export function formatCount(n: number): string {
+  if (n >= 1000000) return `${(n / 1000000).toFixed(2)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(2)}K`;
+  return String(n);
+}
+
 export function CoverIcon({ d, onClick }: { d: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex size-[38px] items-center justify-center rounded-full bg-[#15191c]/80 text-white hover:bg-[#15191c] transition-colors"
+      className="flex size-[32px] items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d={d} />
+      </svg>
+    </button>
+  );
+}
+
+/** Variant used by public profile */
+export function CoverIconAlt({ d, onClick }: { d: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex size-[38px] items-center justify-center rounded-full bg-muted/80 text-white hover:bg-muted transition-colors"
     >
       <svg
         width="18"
@@ -20,13 +49,69 @@ export function CoverIcon({ d, onClick }: { d: string; onClick: () => void }) {
   );
 }
 
+export function StatsRow({
+  followingCount,
+  followersCount,
+  likesCount,
+}: {
+  followingCount: number;
+  followersCount: number;
+  likesCount: number;
+}) {
+  return (
+    <div className="mt-[24px] flex items-center justify-center gap-[40px] md:justify-start">
+      <div className="text-center md:text-left">
+        <p className="text-[16px] font-medium text-foreground">{formatCount(followingCount)}</p>
+        <p className="text-[12px] text-muted-foreground">Following</p>
+      </div>
+      <div className="text-center md:text-left">
+        <p className="text-[16px] font-medium text-foreground">{formatCount(followersCount)}</p>
+        <p className="text-[12px] text-muted-foreground">Followers</p>
+      </div>
+      <div className="text-center md:text-left">
+        <p className="text-[16px] font-medium text-foreground">{formatCount(likesCount)}</p>
+        <p className="text-[12px] text-muted-foreground">Likes</p>
+      </div>
+    </div>
+  );
+}
+
+export function AboutSection({ bio }: { bio: string }) {
+  if (!bio) return null;
+  return (
+    <div className="mt-[24px]">
+      <p className="text-[16px] font-medium text-foreground">About</p>
+      <p className="mt-[8px] text-[14px] leading-[1.6] text-muted-foreground">{bio}</p>
+    </div>
+  );
+}
+
+export function HashtagsSection({ hashtags }: { hashtags: string[] }) {
+  if (hashtags.length === 0) return null;
+  return (
+    <div className="mt-[24px]">
+      <p className="text-[16px] font-medium text-foreground">Hashtags</p>
+      <div className="mt-[10px] flex flex-wrap gap-[8px]">
+        {hashtags.map((tag) => (
+          <span
+            key={tag}
+            className="rounded-[8px] border border-border px-[18px] py-[8px] text-[14px] text-muted-foreground"
+          >
+            #{tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Stat({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center">
-      <span className="text-[20px] font-bold text-[#f8f8f8]">
+      <span className="text-[20px] font-bold text-foreground">
         {value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value}
       </span>
-      <span className="text-[13px] text-[#5d5d5d]">{label}</span>
+      <span className="text-[13px] text-muted-foreground">{label}</span>
     </div>
   );
 }
@@ -60,7 +145,7 @@ export function BioSocialSection({
       {bio && (
         <p className="text-[13px] leading-[1.6] text-[#a0a0a0] md:text-[14px]">
           {displayBio}
-          {truncated && <span className="cursor-pointer font-medium text-[#01adf1]">More</span>}
+          {truncated && <span className="cursor-pointer font-medium text-primary">More</span>}
         </p>
       )}
       {socialLinks && (

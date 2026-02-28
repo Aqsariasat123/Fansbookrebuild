@@ -56,7 +56,7 @@ export default function CreatorWallet() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <p className="text-[24px] font-semibold text-[#f8f8f8]">My Wallet</p>
+      <p className="text-[24px] font-semibold text-foreground">My Wallet</p>
 
       <BalanceCards balance={balance} />
 
@@ -68,22 +68,22 @@ export default function CreatorWallet() {
         >
           Withdraw
         </button>
-        <button className="rounded-[50px] border border-[#5d5d5d] py-[14px] text-[16px] text-white hover:border-white transition-colors">
+        <button className="rounded-[50px] border border-border py-[14px] text-[16px] text-white hover:border-white transition-colors">
           Withdraw Tax Form
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-[24px] border-b border-[#5d5d5d]/30">
+      <div className="flex gap-[24px] border-b border-border/30">
         <button
           onClick={() => setActiveTab('history')}
-          className={`pb-[10px] text-[16px] font-medium transition-colors ${activeTab === 'history' ? 'border-b-2 border-[#01adf1] text-[#01adf1]' : 'text-[#5d5d5d] hover:text-white'}`}
+          className={`pb-[10px] text-[16px] font-medium transition-colors ${activeTab === 'history' ? 'border-b-2 border-[#01adf1] text-primary' : 'text-muted-foreground hover:text-white'}`}
         >
           Withdrawal History
         </button>
         <button
           onClick={() => setActiveTab('form')}
-          className={`pb-[10px] text-[16px] font-medium transition-colors ${activeTab === 'form' ? 'border-b-2 border-[#01adf1] text-[#01adf1]' : 'text-[#5d5d5d] hover:text-white'}`}
+          className={`pb-[10px] text-[16px] font-medium transition-colors ${activeTab === 'form' ? 'border-b-2 border-[#01adf1] text-primary' : 'text-muted-foreground hover:text-white'}`}
         >
           Withdrawal Form History
         </button>
@@ -92,7 +92,7 @@ export default function CreatorWallet() {
       {/* Mobile Cards */}
       <div className="flex flex-col gap-[12px] md:hidden">
         {withdrawals.length === 0 ? (
-          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">No records yet</p>
+          <p className="py-[40px] text-center text-[14px] text-muted-foreground">No records yet</p>
         ) : (
           withdrawals.map((w, i) =>
             activeTab === 'history' ? (
@@ -119,10 +119,10 @@ export default function CreatorWallet() {
               ))}
             </tr>
           </thead>
-          <tbody className="bg-[#0e1012]">
+          <tbody className="bg-card">
             {withdrawals.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+                <td colSpan={6} className="py-[40px] text-center text-[14px] text-muted-foreground">
                   No records yet
                 </td>
               </tr>

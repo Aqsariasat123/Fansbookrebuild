@@ -42,13 +42,13 @@ export function ReportModal({ userId, onClose }: ReportModalProps) {
       onClick={onClose}
     >
       <div
-        className="mx-4 w-full max-w-[400px] rounded-[22px] bg-[#0e1012] p-[24px]"
+        className="mx-4 w-full max-w-[400px] rounded-[22px] bg-card p-[24px]"
         onClick={(e) => e.stopPropagation()}
       >
         {done ? (
           <div className="flex flex-col items-center gap-3 py-4">
-            <p className="text-[16px] text-[#f8f8f8]">Report Submitted</p>
-            <p className="text-[14px] text-[#5d5d5d]">
+            <p className="text-[16px] text-foreground">Report Submitted</p>
+            <p className="text-[14px] text-muted-foreground">
               Thank you for your report. We will review it shortly.
             </p>
             <button
@@ -60,16 +60,14 @@ export function ReportModal({ userId, onClose }: ReportModalProps) {
           </div>
         ) : (
           <>
-            <p className="mb-[16px] text-[16px] text-[#f8f8f8]">Report User</p>
+            <p className="mb-[16px] text-[16px] text-foreground">Report User</p>
             <div className="flex flex-col gap-[10px]">
               {REASONS.map((r) => (
                 <button
                   key={r.value}
                   onClick={() => setReason(r.value)}
                   className={`rounded-[12px] p-[12px] text-left text-[14px] transition-colors ${
-                    reason === r.value
-                      ? 'bg-[#01adf1]/20 text-[#01adf1]'
-                      : 'bg-[#15191c] text-[#f8f8f8]'
+                    reason === r.value ? 'bg-[#01adf1]/20 text-primary' : 'bg-muted text-foreground'
                   }`}
                 >
                   {r.label}
@@ -80,13 +78,13 @@ export function ReportModal({ userId, onClose }: ReportModalProps) {
               placeholder="Additional details (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-3 w-full rounded-[12px] bg-[#15191c] p-3 text-[14px] text-[#f8f8f8] outline-none"
+              className="mt-3 w-full rounded-[12px] bg-muted p-3 text-[14px] text-foreground outline-none"
               rows={3}
             />
             <div className="mt-4 flex gap-3">
               <button
                 onClick={onClose}
-                className="flex-1 rounded-[50px] bg-[#15191c] py-[10px] text-[14px] text-[#5d5d5d]"
+                className="flex-1 rounded-[50px] bg-muted py-[10px] text-[14px] text-muted-foreground"
               >
                 Cancel
               </button>

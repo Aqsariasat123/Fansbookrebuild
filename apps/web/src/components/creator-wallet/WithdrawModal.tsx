@@ -30,15 +30,15 @@ export function WithdrawModal({ onClose, onWithdraw }: WithdrawModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="mx-[16px] w-full max-w-[420px] rounded-[22px] bg-[#0e1012] p-[24px]">
+      <div className="mx-[16px] w-full max-w-[420px] rounded-[22px] bg-card p-[24px]">
         <div className="mb-[20px] flex items-center justify-between">
-          <h2 className="text-[18px] font-semibold text-[#f8f8f8]">Request Withdrawal</h2>
+          <h2 className="text-[18px] font-semibold text-foreground">Request Withdrawal</h2>
           <button
             onClick={() => {
               onClose();
               setError('');
             }}
-            className="text-[24px] leading-none text-[#5d5d5d] hover:text-[#f8f8f8]"
+            className="text-[24px] leading-none text-muted-foreground hover:text-foreground"
           >
             &times;
           </button>
@@ -46,7 +46,7 @@ export function WithdrawModal({ onClose, onWithdraw }: WithdrawModalProps) {
 
         <div className="flex flex-col gap-[16px]">
           <div>
-            <label className="mb-[6px] block text-[13px] text-[#5d5d5d]">Amount</label>
+            <label className="mb-[6px] block text-[13px] text-muted-foreground">Amount</label>
             <input
               type="number"
               min="0"
@@ -54,16 +54,18 @@ export function WithdrawModal({ onClose, onWithdraw }: WithdrawModalProps) {
               value={withdrawAmount}
               onChange={(e) => setWithdrawAmount(e.target.value)}
               placeholder="0.00"
-              className="w-full rounded-[12px] bg-[#15191c] px-[14px] py-[10px] text-[14px] text-[#f8f8f8] outline-none placeholder:text-[#5d5d5d] focus:ring-1 focus:ring-purple-500"
+              className="w-full rounded-[12px] bg-muted px-[14px] py-[10px] text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-purple-500"
             />
           </div>
 
           <div>
-            <label className="mb-[6px] block text-[13px] text-[#5d5d5d]">Payment Method</label>
+            <label className="mb-[6px] block text-[13px] text-muted-foreground">
+              Payment Method
+            </label>
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full appearance-none rounded-[12px] bg-[#15191c] px-[14px] py-[10px] text-[14px] text-[#f8f8f8] outline-none focus:ring-1 focus:ring-purple-500"
+              className="w-full appearance-none rounded-[12px] bg-muted px-[14px] py-[10px] text-[14px] text-foreground outline-none focus:ring-1 focus:ring-purple-500"
             >
               <option value="bank_transfer">Bank Transfer</option>
               <option value="paypal">PayPal</option>

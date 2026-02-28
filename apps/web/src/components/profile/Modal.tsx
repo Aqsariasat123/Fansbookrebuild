@@ -17,10 +17,10 @@ export function Modal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[460px] rounded-[22px] bg-[#0e1012] p-[32px] mx-4"
+        className="w-full max-w-[460px] rounded-[22px] bg-card p-[32px] mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-[20px] font-medium text-[#f8f8f8] mb-[24px]">{title}</h2>
+        <h2 className="text-[20px] font-medium text-foreground mb-[24px]">{title}</h2>
         {children}
       </div>
     </div>
@@ -43,10 +43,10 @@ export function Field({
 }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div className="flex flex-col gap-[8px]">
-      <label className="text-[14px] text-[#5d5d5d]">{label}</label>
+      <label className="text-[14px] text-muted-foreground">{label}</label>
       <input
         {...props}
-        className="h-[44px] rounded-[12px] bg-[#15191c] px-[16px] text-[16px] text-[#f8f8f8] outline-none border border-[#2a2d30] focus:border-[#2e80c8] transition-colors"
+        className="h-[44px] rounded-[12px] bg-muted px-[16px] text-[16px] text-foreground outline-none border border-[#2a2d30] focus:border-[#2e80c8] transition-colors"
       />
     </div>
   );

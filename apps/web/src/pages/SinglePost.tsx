@@ -58,8 +58,8 @@ export default function SinglePost() {
   if (error || !post) {
     return (
       <div className="flex flex-col items-center gap-4 py-20">
-        <p className="text-[16px] text-[#f8f8f8]">{error || 'Post not found'}</p>
-        <Link to="/feed" className="text-[#01adf1] hover:underline">
+        <p className="text-[16px] text-foreground">{error || 'Post not found'}</p>
+        <Link to="/feed" className="text-primary hover:underline">
           Back to Feed
         </Link>
       </div>
@@ -70,14 +70,14 @@ export default function SinglePost() {
     <div className="mx-auto max-w-[700px]">
       <Link
         to="/feed"
-        className="mb-4 inline-block text-[14px] text-[#5d5d5d] hover:text-[#f8f8f8]"
+        className="mb-4 inline-block text-[14px] text-muted-foreground hover:text-foreground"
       >
         &larr; Back to Feed
       </Link>
-      <div className="rounded-[22px] bg-[#0e1012] px-[20px] py-[13px]">
+      <div className="rounded-[22px] bg-card px-[20px] py-[13px]">
         <SinglePostHeader author={post.author} createdAt={post.createdAt} />
         {post.text && (
-          <p className="mt-[14px] whitespace-pre-wrap text-[14px] text-[#f8f8f8] md:text-[16px]">
+          <p className="mt-[14px] whitespace-pre-wrap text-[14px] text-foreground md:text-[16px]">
             {post.text}
           </p>
         )}
@@ -117,15 +117,15 @@ function SinglePostHeader({ author, createdAt }: { author: Author; createdAt: st
         </div>
         <div>
           <div className="flex items-center gap-[4px]">
-            <span className="text-[16px] text-[#f8f8f8]">{author.displayName}</span>
+            <span className="text-[16px] text-foreground">{author.displayName}</span>
             {author.isVerified && (
               <img src="/icons/dashboard/verified.svg" alt="" className="size-[16px]" />
             )}
           </div>
-          <p className="text-[12px] text-[#5d5d5d]">@{author.username}</p>
+          <p className="text-[12px] text-muted-foreground">@{author.username}</p>
         </div>
       </Link>
-      <span className="text-[14px] text-[#5d5d5d]">{timeAgo}</span>
+      <span className="text-[14px] text-muted-foreground">{timeAgo}</span>
     </div>
   );
 }

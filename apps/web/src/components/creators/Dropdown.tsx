@@ -24,7 +24,9 @@ export function Dropdown({ label, value, options, onChange }: DropdownProps) {
   return (
     <div className="relative" ref={ref}>
       <button onClick={() => setOpen(!open)} className="flex items-center gap-[5px]">
-        <span className="font-outfit text-[16px] font-normal text-[#f8f8f8]">{value || label}</span>
+        <span className="font-outfit text-[16px] font-normal text-foreground">
+          {value || label}
+        </span>
         <img src="/icons/creators/arrow_drop_down.svg" alt="" className="h-[24px] w-[24px]" />
       </button>
       {open && (
@@ -46,7 +48,7 @@ export function Dropdown({ label, value, options, onChange }: DropdownProps) {
                 setOpen(false);
               }}
               className={`block w-full px-[16px] py-[8px] text-left font-outfit text-[14px] hover:bg-[#333] ${
-                value === opt ? 'text-[#01adf1]' : 'text-[#f8f8f8]'
+                value === opt ? 'text-primary' : 'text-foreground'
               }`}
             >
               {opt}

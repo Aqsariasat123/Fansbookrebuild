@@ -28,7 +28,7 @@ export default function Contact() {
           <div className="absolute inset-0 bg-[rgba(21,25,28,0.9)]" />
         </div>
         <MarketingNav />
-        <div className="absolute inset-x-0 top-[100px] px-[20px] md:top-[135px] md:px-0 flex flex-col items-center gap-[14px] text-[#f8f8f8]">
+        <div className="absolute inset-x-0 top-[100px] px-[20px] md:top-[135px] md:px-0 flex flex-col items-center gap-[14px] text-foreground">
           <h1 className="text-center text-[30px] md:text-[48px] font-medium">Contact FansBook</h1>
           <p className="text-center text-[10px] md:text-[20px] font-normal">
             Got a question or just wanna talk? We're here for it.
@@ -37,7 +37,7 @@ export default function Contact() {
       </div>
 
       {/* Contact Form — 711px tall, dark bg */}
-      <div className="min-h-0 w-full overflow-hidden bg-[#15191c] px-[20px] md:px-0">
+      <div className="min-h-0 w-full overflow-hidden bg-muted px-[20px] md:px-0">
         <form
           onSubmit={handleSubmit}
           className="mx-auto flex w-full max-w-[986px] flex-col items-center gap-[40px] pt-[40px] pb-[40px] md:pt-[70px] md:pb-[70px]"
@@ -46,41 +46,47 @@ export default function Contact() {
             {/* Name */}
             <div className="flex w-full flex-col items-start">
               <div className="px-[15px] py-[10px]">
-                <label className="text-[12px] md:text-[20px] font-normal text-[#f8f8f8]">Name</label>
+                <label className="text-[12px] md:text-[20px] font-normal text-foreground">
+                  Name
+                </label>
               </div>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter name..."
-                className="w-full rounded-[7px] md:rounded-[12px] bg-[#252d32] py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+                className="w-full rounded-[7px] md:rounded-[12px] bg-[#252d32] py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-foreground placeholder-muted-foreground outline-none"
               />
             </div>
 
             {/* Email */}
             <div className="flex w-full flex-col items-start">
               <div className="px-[15px] py-[10px]">
-                <label className="text-[12px] md:text-[20px] font-normal text-[#f8f8f8]">Email</label>
+                <label className="text-[12px] md:text-[20px] font-normal text-foreground">
+                  Email
+                </label>
               </div>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter email..."
-                className="w-full rounded-[7px] md:rounded-[12px] bg-[#252d32] py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+                className="w-full rounded-[7px] md:rounded-[12px] bg-[#252d32] py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-foreground placeholder-muted-foreground outline-none"
               />
             </div>
 
             {/* Message */}
             <div className="flex w-full flex-col items-start">
               <div className="px-[15px] py-[10px]">
-                <label className="text-[12px] md:text-[20px] font-normal text-[#f8f8f8]">Message</label>
+                <label className="text-[12px] md:text-[20px] font-normal text-foreground">
+                  Message
+                </label>
               </div>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Write message..."
-                className="h-[100px] md:h-[152px] w-full resize-none rounded-[7px] md:rounded-[12px] bg-[#252d32] py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+                className="h-[100px] md:h-[152px] w-full resize-none rounded-[7px] md:rounded-[12px] bg-[#252d32] py-[12px] md:py-[25px] pl-[15px] text-[12px] md:text-[20px] font-normal text-foreground placeholder-muted-foreground outline-none"
               />
             </div>
           </div>
@@ -88,7 +94,7 @@ export default function Contact() {
           {/* Send button — gradient pill */}
           <button
             type="submit"
-            className="flex items-center gap-[10px] rounded-[49px] md:rounded-[80px] px-[18px] py-[9px] md:px-[30px] md:py-[15px] text-[12px] md:text-[20px] font-medium text-[#f8f8f8] shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)]"
+            className="flex items-center gap-[10px] rounded-[49px] md:rounded-[80px] px-[18px] py-[9px] md:px-[30px] md:py-[15px] text-[12px] md:text-[20px] font-medium text-foreground shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)]"
             style={{
               backgroundImage:
                 'linear-gradient(-90deg, rgb(166, 22, 81) 0%, rgb(1, 173, 241) 100%)',

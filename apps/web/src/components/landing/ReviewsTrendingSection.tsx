@@ -35,16 +35,16 @@ const trendingCreators = [
 
 export function ReviewsSection() {
   return (
-    <section className="bg-[#0e1012] px-[20px] py-[40px] md:px-[76px] md:py-[60px]">
+    <section className="bg-card px-[20px] py-[40px] md:px-[76px] md:py-[60px]">
       <div className="flex flex-col items-center">
-        <div className="mb-[12px] h-[1px] w-[80px] bg-[#f8f8f8] md:w-[117px]" />
-        <h2 className="text-[32px] font-semibold text-[#f8f8f8] md:text-[48px]">Reviews</h2>
+        <div className="mb-[12px] h-[1px] w-[80px] bg-foreground md:w-[117px]" />
+        <h2 className="text-[32px] font-semibold text-foreground md:text-[48px]">Reviews</h2>
       </div>
       <div className="mx-auto mt-[24px] grid max-w-[1128px] grid-cols-1 gap-[20px] sm:grid-cols-2 md:mt-[40px] md:gap-[30px] lg:grid-cols-3">
         {reviews.map((r) => (
           <div
             key={r.name}
-            className="rounded-[22px] border border-[#725757] bg-[#f8f8f8] p-[20px] shadow-[0px_0px_17.8px_1px_rgba(0,0,0,0.25)] md:p-[24px]"
+            className="rounded-[22px] border border-[#725757] bg-foreground p-[20px] shadow-[0px_0px_17.8px_1px_rgba(0,0,0,0.25)] md:p-[24px]"
           >
             <div className="flex gap-[8px] md:gap-[10px]">
               {[1, 2, 3, 4, 5].map((s) => (
@@ -69,7 +69,9 @@ export function ReviewsSection() {
               </div>
               <div>
                 <p className="text-[14px] font-semibold text-[#15191c] md:text-[16px]">{r.name}</p>
-                <p className="text-[11px] font-normal text-[#5d5d5d] md:text-[12px]">{r.role}</p>
+                <p className="text-[11px] font-normal text-muted-foreground md:text-[12px]">
+                  {r.role}
+                </p>
               </div>
             </div>
           </div>
@@ -89,13 +91,13 @@ export function TrendingSection() {
   }
 
   return (
-    <section className="bg-[#15191c] py-[40px] md:py-[66px]">
+    <section className="bg-muted py-[40px] md:py-[66px]">
       <div className="flex flex-col items-center px-[20px]">
-        <div className="mb-[12px] h-[1px] w-[80px] bg-[#f8f8f8] md:w-[117px]" />
-        <h2 className="text-center text-[28px] font-semibold text-[#f8f8f8] sm:text-[36px] md:text-[48px]">
+        <div className="mb-[12px] h-[1px] w-[80px] bg-foreground md:w-[117px]" />
+        <h2 className="text-center text-[28px] font-semibold text-foreground sm:text-[36px] md:text-[48px]">
           Top Trending Creators
         </h2>
-        <p className="mt-[8px] text-[14px] font-normal text-[#f8f8f8] md:text-[16px]">
+        <p className="mt-[8px] text-[14px] font-normal text-foreground md:text-[16px]">
           Discover the Rising Stars of this week
         </p>
       </div>
@@ -103,7 +105,7 @@ export function TrendingSection() {
       <div className="relative mx-auto mt-[30px] max-w-[1280px] px-[12px] md:mt-[50px] md:px-[20px]">
         <button
           onClick={() => scroll('left')}
-          className="absolute left-[4px] top-1/2 z-10 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-full border border-[#f8f8f8]/30 bg-[#15191c]/80 hover:bg-[#15191c] md:left-[20px] md:h-[40px] md:w-[40px]"
+          className="absolute left-[4px] top-1/2 z-10 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-full border border-foreground/30 bg-muted/80 hover:bg-muted md:left-[20px] md:h-[40px] md:w-[40px]"
         >
           <img
             src="/icons/landing/arrow_back_ios.svg"
@@ -120,7 +122,7 @@ export function TrendingSection() {
           {trendingCreators.map((c, i) => (
             <div
               key={i}
-              className="w-[280px] min-w-[280px] rounded-[22px] bg-[#0e1012] p-[12px] md:w-[370px] md:min-w-[370px] md:p-[15px]"
+              className="w-[280px] min-w-[280px] rounded-[22px] bg-card p-[12px] md:w-[370px] md:min-w-[370px] md:p-[15px]"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-[10px] md:gap-[12px]">
@@ -132,17 +134,17 @@ export function TrendingSection() {
                     />
                   </div>
                   <div>
-                    <p className="text-[16px] font-medium text-[#f8f8f8] md:text-[20px]">
+                    <p className="text-[16px] font-medium text-foreground md:text-[20px]">
                       {c.name}
                     </p>
-                    <p className="text-[13px] font-normal text-[#5d5d5d] md:text-[16px]">
+                    <p className="text-[13px] font-normal text-muted-foreground md:text-[16px]">
                       {c.followers} followers
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => navigate('/register')}
-                  className="flex-none rounded-[16px] border border-[#f8f8f8] px-[16px] py-[10px] text-[13px] font-normal text-[#f8f8f8] md:rounded-[22px] md:px-[30px] md:py-[15px] md:text-[16px]"
+                  className="flex-none rounded-[16px] border border-foreground px-[16px] py-[10px] text-[13px] font-normal text-foreground md:rounded-[22px] md:px-[30px] md:py-[15px] md:text-[16px]"
                 >
                   Follow
                 </button>
@@ -176,7 +178,7 @@ export function TrendingSection() {
 
               <Link
                 to="/register"
-                className="mt-[10px] flex w-full items-center justify-center gap-[8px] rounded-[16px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-[14px] font-normal text-[#f8f8f8] transition-opacity hover:opacity-90 md:mt-[12px] md:rounded-[22px] md:py-[17px] md:text-[16px]"
+                className="mt-[10px] flex w-full items-center justify-center gap-[8px] rounded-[16px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-[14px] font-normal text-foreground transition-opacity hover:opacity-90 md:mt-[12px] md:rounded-[22px] md:py-[17px] md:text-[16px]"
               >
                 View Profile
                 <img
@@ -192,7 +194,7 @@ export function TrendingSection() {
 
         <button
           onClick={() => scroll('right')}
-          className="absolute right-[4px] top-1/2 z-10 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-full border border-[#f8f8f8]/30 bg-[#15191c]/80 hover:bg-[#15191c] md:right-[20px] md:h-[40px] md:w-[40px]"
+          className="absolute right-[4px] top-1/2 z-10 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-full border border-foreground/30 bg-muted/80 hover:bg-muted md:right-[20px] md:h-[40px] md:w-[40px]"
         >
           <img
             src="/icons/landing/arrow_forward_ios.svg"

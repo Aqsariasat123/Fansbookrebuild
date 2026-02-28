@@ -90,7 +90,7 @@ export function ChangePasswordTab({ onToast }: ChangePasswordTabProps) {
             <button
               type="button"
               onClick={() => toggle(f.idx)}
-              className="absolute right-[12px] top-1/2 -translate-y-1/2 text-[#5d5d5d] hover:text-[#f8f8f8] transition-colors"
+              className="absolute right-[12px] top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <EyeIcon show={showPw[f.idx]} />
             </button>

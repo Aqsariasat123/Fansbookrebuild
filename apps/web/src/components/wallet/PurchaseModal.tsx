@@ -55,20 +55,20 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
         onClick={onClose}
       >
         <div
-          className="bg-[#0e1012] rounded-[22px] p-[40px] max-w-[440px] w-full mx-[20px] text-center"
+          className="bg-card rounded-[22px] p-[40px] max-w-[440px] w-full mx-[20px] text-center"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="text-[48px] mb-[16px]">🎉</div>
-          <p className="text-[24px] font-semibold text-[#f8f8f8] mb-[8px]">Purchase Successful!</p>
-          <p className="text-[16px] text-[#5d5d5d] mb-[4px]">
+          <p className="text-[24px] font-semibold text-foreground mb-[8px]">Purchase Successful!</p>
+          <p className="text-[16px] text-muted-foreground mb-[4px]">
             {success.coins} coins added to your wallet
           </p>
-          <p className="text-[20px] font-medium text-[#01adf1] mb-[24px]">
+          <p className="text-[20px] font-medium text-primary mb-[24px]">
             New Balance: {success.balance} coins
           </p>
           <button
             onClick={onClose}
-            className="bg-gradient-to-r from-[#01adf1] to-[#a61651] rounded-[12px] px-[40px] py-[14px] text-[16px] font-semibold text-[#f8f8f8]"
+            className="bg-gradient-to-r from-[#01adf1] to-[#a61651] rounded-[12px] px-[40px] py-[14px] text-[16px] font-semibold text-foreground"
           >
             Done
           </button>
@@ -83,19 +83,19 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-[#0e1012] rounded-[22px] p-[32px] max-w-[640px] w-full mx-[20px] relative"
+        className="bg-card rounded-[22px] p-[32px] max-w-[640px] w-full mx-[20px] relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-[16px] right-[16px] size-[36px] rounded-full bg-[#15191c] flex items-center justify-center hover:bg-[#2a2d30]"
+          className="absolute top-[16px] right-[16px] size-[36px] rounded-full bg-muted flex items-center justify-center hover:bg-[#2a2d30]"
         >
           <svg
             width="18"
             height="18"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#f8f8f8"
+            stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
           >
@@ -103,8 +103,8 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
           </svg>
         </button>
 
-        <p className="text-[24px] font-semibold text-[#f8f8f8] mb-[8px]">Purchase Coins</p>
-        <p className="text-[14px] text-[#5d5d5d] mb-[24px]">Select a coin package below</p>
+        <p className="text-[24px] font-semibold text-foreground mb-[8px]">Purchase Coins</p>
+        <p className="text-[14px] text-muted-foreground mb-[24px]">Select a coin package below</p>
 
         <div className="grid grid-cols-3 gap-[12px] mb-[24px]">
           {packages.map((pkg) => (
@@ -114,7 +114,7 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
               className={`relative flex flex-col items-center gap-[8px] rounded-[16px] border-2 p-[20px] transition-all ${
                 selected === pkg.id
                   ? 'border-[#01adf1] bg-[#01adf1]/10'
-                  : 'border-[#15191c] bg-[#15191c] hover:border-[#2a2d30]'
+                  : 'border-muted bg-muted hover:border-[#2a2d30]'
               }`}
             >
               {pkg.tag && (
@@ -122,9 +122,9 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
                   {pkg.tag}
                 </span>
               )}
-              <p className="text-[28px] font-bold text-[#f8f8f8]">{pkg.coins.toLocaleString()}</p>
-              <p className="text-[12px] text-[#5d5d5d]">coins</p>
-              <p className="text-[18px] font-semibold text-[#01adf1]">€{pkg.price.toFixed(2)}</p>
+              <p className="text-[28px] font-bold text-foreground">{pkg.coins.toLocaleString()}</p>
+              <p className="text-[12px] text-muted-foreground">coins</p>
+              <p className="text-[18px] font-semibold text-primary">€{pkg.price.toFixed(2)}</p>
             </button>
           ))}
         </div>
@@ -134,12 +134,12 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
         <button
           onClick={handlePurchase}
           disabled={!selected || loading}
-          className="w-full bg-gradient-to-r from-[#01adf1] to-[#a61651] rounded-[12px] py-[16px] text-[18px] font-semibold text-[#f8f8f8] hover:opacity-90 transition-opacity disabled:opacity-40"
+          className="w-full bg-gradient-to-r from-[#01adf1] to-[#a61651] rounded-[12px] py-[16px] text-[18px] font-semibold text-foreground hover:opacity-90 transition-opacity disabled:opacity-40"
         >
           {loading ? 'Processing...' : 'Complete Purchase'}
         </button>
 
-        <p className="text-[12px] text-[#5d5d5d] text-center mt-[12px]">
+        <p className="text-[12px] text-muted-foreground text-center mt-[12px]">
           Payment gateway integration coming soon. Coins are added instantly for demo.
         </p>
       </div>

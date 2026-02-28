@@ -51,10 +51,10 @@ function CoverAvatar({
         ) : (
           <div className="h-full w-full bg-gradient-to-r from-[#2e4882] to-[#a61651]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0e1012]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-card" />
       </div>
       <div className="-mt-[40px] relative ml-[20px] inline-block md:-mt-[50px] md:ml-[40px]">
-        <div className="size-[80px] overflow-hidden rounded-full border-[4px] border-[#0e1012] bg-[#0e1012] md:size-[96px]">
+        <div className="size-[80px] overflow-hidden rounded-full border-[4px] border-card bg-card md:size-[96px]">
           {avatar ? (
             <img src={avatar} alt="" className="h-full w-full object-cover" />
           ) : (
@@ -110,13 +110,13 @@ export default function CreatorProfileEdit() {
 
       {/* Tab Bar */}
       <div className="mt-[16px] overflow-x-auto md:mt-[20px]">
-        <div className="flex min-w-max items-center gap-[0px] rounded-[70px] bg-[#0e1012] px-[16px] py-[12px] md:px-[24px] md:py-[14px]">
+        <div className="flex min-w-max items-center gap-[0px] rounded-[70px] bg-card px-[16px] py-[12px] md:px-[24px] md:py-[14px]">
           {TABS.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`whitespace-nowrap rounded-[70px] px-[14px] py-[8px] text-[13px] font-normal transition-all md:px-[18px] md:py-[10px] md:text-[16px] ${
-                activeTab === tab.key ? 'text-[#01adf1]' : 'text-[#f8f8f8] hover:text-[#01adf1]'
+                activeTab === tab.key ? 'text-primary' : 'text-foreground hover:text-primary'
               }`}
             >
               {tab.label}
@@ -126,7 +126,7 @@ export default function CreatorProfileEdit() {
       </div>
 
       {/* Tab Content */}
-      <div className="mt-[0px] rounded-[22px] bg-[#0e1012] px-[20px] py-[28px] md:px-[50px] md:py-[35px]">
+      <div className="mt-[0px] rounded-[22px] bg-card px-[20px] py-[28px] md:px-[50px] md:py-[35px]">
         <ActiveTabComponent onToast={showToast} />
       </div>
     </div>

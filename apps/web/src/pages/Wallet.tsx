@@ -68,10 +68,10 @@ export default function Wallet() {
 
   return (
     <div className="flex flex-col gap-[12px] md:gap-[20px]">
-      <p className="text-[20px] text-[#f8f8f8]">My Wallet</p>
+      <p className="text-[20px] text-foreground">My Wallet</p>
 
       {/* Balance card */}
-      <div className="flex flex-col gap-[10px] rounded-[22px] bg-[#0e1012]/55 px-[20px] py-[20px] md:flex-row md:items-center md:gap-[40px] md:px-[48px] md:py-[36px]">
+      <div className="flex flex-col gap-[10px] rounded-[22px] bg-card/55 px-[20px] py-[20px] md:flex-row md:items-center md:gap-[40px] md:px-[48px] md:py-[36px]">
         <img
           src={`${IMG}/wallet-card.svg`}
           alt=""
@@ -79,10 +79,10 @@ export default function Wallet() {
         />
         <div className="flex flex-col gap-[10px]">
           <div className="flex items-baseline gap-[10px]">
-            <p className="text-[18px] font-medium text-[#f8f8f8] md:text-[24px]">Total Coins |</p>
-            <p className="text-[32px] font-semibold text-[#f8f8f8] md:text-[48px]">{balance}</p>
+            <p className="text-[18px] font-medium text-foreground md:text-[24px]">Total Coins |</p>
+            <p className="text-[32px] font-semibold text-foreground md:text-[48px]">{balance}</p>
           </div>
-          <p className="max-w-[700px] text-[12px] text-[#f8f8f8] md:text-[16px]">
+          <p className="max-w-[700px] text-[12px] text-foreground md:text-[16px]">
             Coins can be used for tipping models, joining live broadcasts, one-on-one video calls,
             and accessing upcoming features as they&apos;re released
           </p>
@@ -93,7 +93,7 @@ export default function Wallet() {
       <div className="flex justify-center">
         <button
           onClick={() => setShowPurchase(true)}
-          className="w-full rounded-[12px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[40px] py-[14px] text-[16px] font-semibold text-[#f8f8f8] transition-opacity hover:opacity-90 md:w-auto md:px-[127px] md:py-[16px] md:text-[20px]"
+          className="w-full rounded-[12px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[40px] py-[14px] text-[16px] font-semibold text-foreground transition-opacity hover:opacity-90 md:w-auto md:px-[127px] md:py-[16px] md:text-[20px]"
         >
           Purchase Coins
         </button>
@@ -104,18 +104,18 @@ export default function Wallet() {
         <div className="flex gap-[20px] md:gap-[40px]">
           <button
             onClick={() => setTab('purchases')}
-            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[20px] ${tab === 'purchases' ? 'border-b border-[#01adf1] text-[#01adf1]' : 'text-[#5d5d5d]/84'}`}
+            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[20px] ${tab === 'purchases' ? 'border-b border-[#01adf1] text-primary' : 'text-muted-foreground/84'}`}
           >
             Coins Purchase History
           </button>
           <button
             onClick={() => setTab('spending')}
-            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[20px] ${tab === 'spending' ? 'border-b border-[#01adf1] text-[#01adf1]' : 'text-[#5d5d5d]/84'}`}
+            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[20px] ${tab === 'spending' ? 'border-b border-[#01adf1] text-primary' : 'text-muted-foreground/84'}`}
           >
             Coin Spending History
           </button>
         </div>
-        <div className="h-px w-full bg-[#5d5d5d]" />
+        <div className="h-px w-full bg-muted-foreground" />
       </div>
 
       {/* Table */}

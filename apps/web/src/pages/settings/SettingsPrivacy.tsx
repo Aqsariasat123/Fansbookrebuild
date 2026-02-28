@@ -43,10 +43,10 @@ export function SettingsPrivacy() {
 
   return (
     <div className="flex flex-col gap-[16px]">
-      <p className="text-[16px] text-[#f8f8f8]">Privacy Settings</p>
+      <p className="text-[16px] text-foreground">Privacy Settings</p>
 
-      <div className="rounded-[12px] bg-[#15191c] p-[14px]">
-        <p className="mb-2 text-[14px] text-[#f8f8f8]">Profile Visibility</p>
+      <div className="rounded-[12px] bg-muted p-[14px]">
+        <p className="mb-2 text-[14px] text-foreground">Profile Visibility</p>
         <select
           value={settings.profileVisibility}
           onChange={(e) =>
@@ -55,7 +55,7 @@ export function SettingsPrivacy() {
               profileVisibility: e.target.value as PrivacySettings['profileVisibility'],
             }))
           }
-          className="w-full rounded-[12px] bg-[#0e1012] px-3 py-2 text-[14px] text-[#f8f8f8] outline-none"
+          className="w-full rounded-[12px] bg-card px-3 py-2 text-[14px] text-foreground outline-none"
         >
           <option value="PUBLIC">Public</option>
           <option value="SUBSCRIBERS">Subscribers Only</option>
@@ -63,14 +63,14 @@ export function SettingsPrivacy() {
         </select>
       </div>
 
-      <div className="rounded-[12px] bg-[#15191c] p-[14px]">
-        <p className="mb-2 text-[14px] text-[#f8f8f8]">Who Can DM You</p>
+      <div className="rounded-[12px] bg-muted p-[14px]">
+        <p className="mb-2 text-[14px] text-foreground">Who Can DM You</p>
         <select
           value={settings.allowDMs}
           onChange={(e) =>
             setSettings((p) => ({ ...p, allowDMs: e.target.value as PrivacySettings['allowDMs'] }))
           }
-          className="w-full rounded-[12px] bg-[#0e1012] px-3 py-2 text-[14px] text-[#f8f8f8] outline-none"
+          className="w-full rounded-[12px] bg-card px-3 py-2 text-[14px] text-foreground outline-none"
         >
           <option value="EVERYONE">Everyone</option>
           <option value="SUBSCRIBERS">Subscribers Only</option>
@@ -78,14 +78,16 @@ export function SettingsPrivacy() {
         </select>
       </div>
 
-      <div className="flex items-center justify-between rounded-[12px] bg-[#15191c] p-[14px]">
+      <div className="flex items-center justify-between rounded-[12px] bg-muted p-[14px]">
         <div>
-          <p className="text-[14px] text-[#f8f8f8]">Show Online Status</p>
-          <p className="text-[12px] text-[#5d5d5d]">Let others see when you&apos;re online</p>
+          <p className="text-[14px] text-foreground">Show Online Status</p>
+          <p className="text-[12px] text-muted-foreground">
+            Let others see when you&apos;re online
+          </p>
         </div>
         <button
           onClick={() => setSettings((p) => ({ ...p, showOnlineStatus: !p.showOnlineStatus }))}
-          className={`h-[26px] w-[46px] rounded-full transition-colors ${settings.showOnlineStatus ? 'bg-[#01adf1]' : 'bg-[#5d5d5d]'}`}
+          className={`h-[26px] w-[46px] rounded-full transition-colors ${settings.showOnlineStatus ? 'bg-[#01adf1]' : 'bg-muted-foreground'}`}
         >
           <div
             className={`h-[22px] w-[22px] rounded-full bg-white transition-transform ${settings.showOnlineStatus ? 'translate-x-[22px]' : 'translate-x-[2px]'}`}
@@ -101,7 +103,7 @@ export function SettingsPrivacy() {
         >
           {saving ? 'Saving...' : 'Save'}
         </button>
-        {msg && <span className="text-[12px] text-[#01adf1]">{msg}</span>}
+        {msg && <span className="text-[12px] text-primary">{msg}</span>}
       </div>
     </div>
   );

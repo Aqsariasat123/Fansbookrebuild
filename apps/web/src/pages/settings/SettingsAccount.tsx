@@ -42,14 +42,14 @@ export function SettingsAccount() {
   };
 
   const inputCls =
-    'w-full rounded-[12px] bg-[#15191c] px-3 py-[10px] text-[14px] text-[#f8f8f8] outline-none border border-[#5d5d5d]/30';
+    'w-full rounded-[12px] bg-muted px-3 py-[10px] text-[14px] text-foreground outline-none border border-border/30';
 
   return (
     <div className="flex flex-col gap-[16px]">
-      <p className="text-[16px] text-[#f8f8f8]">Account Settings</p>
+      <p className="text-[16px] text-foreground">Account Settings</p>
 
-      <div className="rounded-[12px] bg-[#15191c] p-[14px]">
-        <p className="mb-2 text-[14px] text-[#f8f8f8]">Timezone</p>
+      <div className="rounded-[12px] bg-muted p-[14px]">
+        <p className="mb-2 text-[14px] text-foreground">Timezone</p>
         <select value={timezone} onChange={(e) => setTimezone(e.target.value)} className={inputCls}>
           <option value="">Auto-detect</option>
           {[
@@ -79,12 +79,12 @@ export function SettingsAccount() {
         >
           {saving ? 'Saving...' : 'Save'}
         </button>
-        {msg && <span className="text-[12px] text-[#01adf1]">{msg}</span>}
+        {msg && <span className="text-[12px] text-primary">{msg}</span>}
       </div>
 
-      <div className="mt-4 rounded-[12px] border border-red-500/30 bg-[#15191c] p-[14px]">
+      <div className="mt-4 rounded-[12px] border border-red-500/30 bg-muted p-[14px]">
         <p className="text-[14px] text-red-400">Danger Zone</p>
-        <p className="mt-1 text-[12px] text-[#5d5d5d]">
+        <p className="mt-1 text-[12px] text-muted-foreground">
           Deactivating your account is irreversible.
         </p>
         {!showDeactivate ? (
@@ -115,7 +115,7 @@ export function SettingsAccount() {
                   setShowDeactivate(false);
                   setDeactivatePwd('');
                 }}
-                className="rounded-[8px] bg-[#0e1012] px-4 py-2 text-[12px] text-[#5d5d5d]"
+                className="rounded-[8px] bg-card px-4 py-2 text-[12px] text-muted-foreground"
               >
                 Cancel
               </button>

@@ -62,9 +62,11 @@ function PostHeader({ post }: { post: FeedPost }) {
             )}
           </div>
           <div className="flex items-center gap-[2px]">
-            <div className="whitespace-pre-wrap text-[0px] font-normal text-[#f8f8f8]">
+            <div className="whitespace-pre-wrap text-[0px] font-normal text-foreground">
               <p className="mb-0 text-[12px] md:text-[16px]">{post.author.displayName}</p>
-              <p className="text-[8px] text-[#5d5d5d] md:text-[12px]">@{post.author.username}</p>
+              <p className="text-[8px] text-muted-foreground md:text-[12px]">
+                @{post.author.username}
+              </p>
             </div>
             {post.author.isVerified && (
               <img
@@ -75,12 +77,12 @@ function PostHeader({ post }: { post: FeedPost }) {
             )}
           </div>
         </Link>
-        <p className="whitespace-pre-wrap text-[10px] font-normal leading-normal text-[#f8f8f8] md:text-[16px]">
+        <p className="whitespace-pre-wrap text-[10px] font-normal leading-normal text-foreground md:text-[16px]">
           {post.text}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-[8px] md:gap-[18px]">
-        <span className="text-[8px] font-normal text-[#5d5d5d] md:text-[16px]">
+        <span className="text-[8px] font-normal text-muted-foreground md:text-[16px]">
           {timeAgo(post.createdAt)}
         </span>
         <div className="flex size-[11px] items-center justify-center md:size-[24px]">
@@ -96,7 +98,7 @@ export function ImagePost({ post }: { post: FeedPost }) {
   const [viewerIdx, setViewerIdx] = useState<number | null>(null);
 
   return (
-    <div className="rounded-[11px] bg-[#0e1012] px-[9px] py-[6px] md:rounded-[22px] md:px-[20px] md:py-[13px]">
+    <div className="rounded-[11px] bg-card px-[9px] py-[6px] md:rounded-[22px] md:px-[20px] md:py-[13px]">
       <div className="flex w-full flex-col gap-[11px] md:gap-[25px]">
         <PostHeader post={post} />
         <div className="flex w-full flex-col gap-[11px] md:gap-[20px]">
@@ -136,7 +138,7 @@ export function VideoPost({ post }: { post: FeedPost }) {
   const [showViewer, setShowViewer] = useState(false);
 
   return (
-    <div className="relative rounded-[11px] bg-[#0e1012] md:rounded-[22px]">
+    <div className="relative rounded-[11px] bg-card md:rounded-[22px]">
       <div className="flex items-start justify-between gap-[10px] px-[9px] pt-[6px] md:gap-[25px] md:px-[20px] md:pt-[13px]">
         <PostHeader post={post} />
       </div>
@@ -153,13 +155,13 @@ export function VideoPost({ post }: { post: FeedPost }) {
             />
             <div className="absolute inset-0 rounded-[10px] bg-[rgba(21,25,28,0.55)] md:rounded-[22px]" />
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-              <button className="flex items-center justify-center gap-[5px] rounded-[56px] bg-[#15191c] py-px pl-px pr-[15px] md:gap-[10px] md:rounded-[124px] md:pr-[34px]">
+              <button className="flex items-center justify-center gap-[5px] rounded-[56px] bg-muted py-px pl-px pr-[15px] md:gap-[10px] md:rounded-[124px] md:pr-[34px]">
                 <img
                   src={`${IMG}/play-button.webp`}
                   alt=""
                   className="size-[22px] object-contain md:size-[48px]"
                 />
-                <span className="text-[9px] font-normal text-[#f8f8f8] md:text-[20px]">Play</span>
+                <span className="text-[9px] font-normal text-foreground md:text-[20px]">Play</span>
               </button>
             </div>
           </div>

@@ -35,8 +35,8 @@ interface WithdrawalHistoryProps {
 export function WithdrawalHistory({ withdrawals }: WithdrawalHistoryProps) {
   if (withdrawals.length === 0) {
     return (
-      <div className="overflow-x-auto rounded-[22px] bg-[#0e1012] p-[24px]">
-        <p className="py-[20px] text-center text-[14px] text-[#5d5d5d]">
+      <div className="overflow-x-auto rounded-[22px] bg-card p-[24px]">
+        <p className="py-[20px] text-center text-[14px] text-muted-foreground">
           No withdrawal history yet.
         </p>
       </div>
@@ -44,10 +44,10 @@ export function WithdrawalHistory({ withdrawals }: WithdrawalHistoryProps) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-[22px] bg-[#0e1012] p-[24px]">
+    <div className="overflow-x-auto rounded-[22px] bg-card p-[24px]">
       <table className="w-full text-left text-[14px]">
         <thead>
-          <tr className="border-b border-[#5d5d5d]/30 text-[#5d5d5d]">
+          <tr className="border-b border-border/30 text-muted-foreground">
             <th className="pb-[12px] pr-[16px] font-medium">Date</th>
             <th className="pb-[12px] pr-[16px] font-medium">Amount</th>
             <th className="pb-[12px] pr-[16px] font-medium">Method</th>
@@ -57,7 +57,7 @@ export function WithdrawalHistory({ withdrawals }: WithdrawalHistoryProps) {
         </thead>
         <tbody>
           {withdrawals.map((w) => (
-            <tr key={w.id} className="border-b border-[#5d5d5d]/10 text-[#f8f8f8]">
+            <tr key={w.id} className="border-b border-border/10 text-foreground">
               <td className="py-[12px] pr-[16px]">{formatDate(w.date)}</td>
               <td className="py-[12px] pr-[16px]">{formatAmount(w.amount)}</td>
               <td className="py-[12px] pr-[16px]">{w.method}</td>

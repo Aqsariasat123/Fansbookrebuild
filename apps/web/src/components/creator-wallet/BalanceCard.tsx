@@ -11,12 +11,12 @@ interface BalanceCardProps {
 
 export function BalanceCard({ balance, pending, eurEquivalent, onWithdraw }: BalanceCardProps) {
   return (
-    <div className="rounded-[22px] bg-[#0e1012] p-[24px]">
-      <p className="mb-[8px] text-[14px] font-medium text-[#5d5d5d]">My Wallet</p>
-      <p className="text-[36px] font-bold leading-tight text-[#f8f8f8]">
+    <div className="rounded-[22px] bg-card p-[24px]">
+      <p className="mb-[8px] text-[14px] font-medium text-muted-foreground">My Wallet</p>
+      <p className="text-[36px] font-bold leading-tight text-foreground">
         {fmtNum(balance)} <span className="text-[20px] font-medium">Coins</span>
       </p>
-      <p className="mt-[4px] text-[14px] text-[#5d5d5d]">~{fmtNum(eurEquivalent)} EUR</p>
+      <p className="mt-[4px] text-[14px] text-muted-foreground">~{fmtNum(eurEquivalent)} EUR</p>
       {pending > 0 && (
         <p className="mt-[8px] text-[14px] font-medium text-yellow-400">
           ${pending.toFixed(2)} pending

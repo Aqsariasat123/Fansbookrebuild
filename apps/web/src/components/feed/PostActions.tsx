@@ -95,21 +95,21 @@ export function PostActions({
               }
             />
             <span
-              className={`text-[10px] font-normal md:text-[16px] ${liked ? 'text-red-500' : 'text-[#f8f8f8]'}`}
+              className={`text-[10px] font-normal md:text-[16px] ${liked ? 'text-red-500' : 'text-foreground'}`}
             >
               {likes} Likes
             </span>
           </button>
           <button
             onClick={() => setShowComments(!showComments)}
-            className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]"
+            className="flex items-center gap-[5px] text-foreground hover:opacity-80 md:gap-[10px]"
           >
             <img src={`${IMG}/mode-comment.svg`} alt="" className="size-[12px] md:size-[20px]" />
             <span className="text-[10px] font-normal md:text-[16px]">{comments} Comments</span>
           </button>
           <button
             onClick={handleShare}
-            className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]"
+            className="flex items-center gap-[5px] text-foreground hover:opacity-80 md:gap-[10px]"
           >
             <img src={`${IMG}/share.svg`} alt="" className="size-[12px] md:size-[20px]" />
             <span className="text-[10px] font-normal md:text-[16px]">
@@ -132,7 +132,7 @@ export function PostActions({
             className="flex items-center gap-[5px] hover:opacity-80 md:gap-[10px]"
           >
             <svg
-              className={`size-[12px] md:size-[20px] ${bookmarked ? 'text-[#01adf1]' : 'text-[#f8f8f8]'}`}
+              className={`size-[12px] md:size-[20px] ${bookmarked ? 'text-primary' : 'text-foreground'}`}
               fill={bookmarked ? 'currentColor' : 'none'}
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -147,7 +147,7 @@ export function PostActions({
           </button>
           <button
             onClick={() => setShowTip(true)}
-            className="flex items-center gap-[5px] text-[#f8f8f8] hover:opacity-80 md:gap-[10px]"
+            className="flex items-center gap-[5px] text-foreground hover:opacity-80 md:gap-[10px]"
           >
             <img
               src={`${IMG}/volunteer-activism.svg`}

@@ -20,7 +20,7 @@ export function PasswordSection({ pwdMsg, onChangePassword }: PasswordSectionPro
 
   return (
     <>
-      <p className="text-[16px] text-[#f8f8f8] mb-[8px]">Password</p>
+      <p className="text-[16px] text-foreground mb-[8px]">Password</p>
       <div className="flex gap-[20px]">
         <PasswordField
           label="Current Password"
@@ -40,13 +40,13 @@ export function PasswordSection({ pwdMsg, onChangePassword }: PasswordSectionPro
       <div className="flex items-center gap-[12px] mt-[12px]">
         <button
           onClick={handleSubmit}
-          className="bg-[#01adf1] hover:bg-[#0195cc] text-[#f8f8f8] text-[12px] font-medium px-[20px] py-[10px] rounded-[9px] transition-colors"
+          className="bg-[#01adf1] hover:bg-[#0195cc] text-foreground text-[12px] font-medium px-[20px] py-[10px] rounded-[9px] transition-colors"
         >
           Change Password
         </button>
         {pwdMsg && (
           <span
-            className={`text-[12px] ${pwdMsg.includes('success') ? 'text-[#01adf1]' : 'text-red-400'}`}
+            className={`text-[12px] ${pwdMsg.includes('success') ? 'text-primary' : 'text-red-400'}`}
           >
             {pwdMsg}
           </span>

@@ -44,11 +44,11 @@ export function SettingsSecurity() {
   };
 
   const inputCls =
-    'w-full rounded-[12px] bg-[#15191c] px-3 py-[10px] text-[14px] text-[#f8f8f8] outline-none border border-[#5d5d5d]/30';
+    'w-full rounded-[12px] bg-muted px-3 py-[10px] text-[14px] text-foreground outline-none border border-border/30';
 
   return (
     <div className="flex flex-col gap-[16px]">
-      <p className="text-[16px] text-[#f8f8f8]">Change Password</p>
+      <p className="text-[16px] text-foreground">Change Password</p>
       <div className="relative">
         <input
           type={showCurrent ? 'text' : 'password'}
@@ -60,7 +60,7 @@ export function SettingsSecurity() {
         <button
           type="button"
           onClick={() => setShowCurrent(!showCurrent)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-[#5d5d5d]"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-muted-foreground"
         >
           {showCurrent ? 'Hide' : 'Show'}
         </button>
@@ -76,7 +76,7 @@ export function SettingsSecurity() {
         <button
           type="button"
           onClick={() => setShowNew(!showNew)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-[#5d5d5d]"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-muted-foreground"
         >
           {showNew ? 'Hide' : 'Show'}
         </button>
@@ -96,7 +96,7 @@ export function SettingsSecurity() {
         >
           {saving ? 'Saving...' : 'Update Password'}
         </button>
-        {msg && <span className="text-[12px] text-[#01adf1]">{msg}</span>}
+        {msg && <span className="text-[12px] text-primary">{msg}</span>}
       </div>
     </div>
   );

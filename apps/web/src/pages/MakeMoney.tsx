@@ -6,7 +6,11 @@ function HeroSection() {
   return (
     <section className="relative w-full overflow-hidden">
       {/* BG image */}
-      <img src="/images/landing/hero-bg.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <img
+        src="/images/landing/hero-bg.webp"
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-[rgba(21,25,28,0.94)]" />
 
@@ -14,11 +18,15 @@ function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center px-[20px] pt-[120px] pb-[40px] md:px-[76px] md:pt-[140px] md:pb-[60px] lg:px-[210px]">
-        <h1 className="w-full max-w-[864px] text-center font-outfit text-[24px] md:text-[40px] font-medium leading-normal text-[#f8f8f8]">
+        <h1 className="w-full max-w-[864px] text-center font-outfit text-[24px] md:text-[40px] font-medium leading-normal text-foreground">
           Make Money on FansBook
         </h1>
-        <p className="mt-[12px] w-full max-w-[864px] text-center font-outfit text-[10px] md:text-[16px] font-medium leading-[1.6] text-[#f8f8f8] md:mt-[16px]">
-          On FansBook, you can monetize your content creation skills through subscriptions, tips, and paid shoutouts. Creators also benefit from the referral program, where bringing in new users earns them commissions. The more you engage with your audience and share exclusive content, the greater your earning potential. FansBook simple and transparent system gives you the opportunity to turn your passion into income.
+        <p className="mt-[12px] w-full max-w-[864px] text-center font-outfit text-[10px] md:text-[16px] font-medium leading-[1.6] text-foreground md:mt-[16px]">
+          On FansBook, you can monetize your content creation skills through subscriptions, tips,
+          and paid shoutouts. Creators also benefit from the referral program, where bringing in new
+          users earns them commissions. The more you engage with your audience and share exclusive
+          content, the greater your earning potential. FansBook simple and transparent system gives
+          you the opportunity to turn your passion into income.
         </p>
       </div>
     </section>
@@ -61,7 +69,7 @@ const earnItems = [
 
 function EarnSection() {
   return (
-    <section className="bg-[#15191c] px-[20px] pt-[40px] pb-[40px] md:px-[60px] md:pt-[70px] md:pb-[70px]">
+    <section className="bg-muted px-[20px] pt-[40px] pb-[40px] md:px-[60px] md:pt-[70px] md:pb-[70px]">
       <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-white">
         Earn in Multiple Ways
       </p>
@@ -74,7 +82,7 @@ function EarnSection() {
               alt=""
               className="h-[50px] w-[50px] md:h-[104px] md:w-[104px]"
             />
-            <p className="mt-[12px] w-full max-w-[215px] text-center font-outfit text-[10px] md:text-[16px] leading-normal text-[#f8f8f8] md:mt-[18px]">
+            <p className="mt-[12px] w-full max-w-[215px] text-center font-outfit text-[10px] md:text-[16px] leading-normal text-foreground md:mt-[18px]">
               <span className="font-medium">{item.title} –</span>{' '}
               <span className="font-light">{item.desc}</span>
             </p>
@@ -95,9 +103,9 @@ const whyItems = [
 
 function WhySection() {
   return (
-    <section className="bg-[#15191c] px-[20px] pb-[40px] md:px-[60px] md:pb-[70px]">
+    <section className="bg-muted px-[20px] pb-[40px] md:px-[60px] md:pb-[70px]">
       {/* Divider */}
-      <div className="mb-[40px] h-[1px] w-full max-w-[1160px] bg-[#5d5d5d]/30 md:mb-[70px]" />
+      <div className="mb-[40px] h-[1px] w-full max-w-[1160px] bg-muted-foreground/30 md:mb-[70px]" />
 
       <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-white">
         Why FansBook?
@@ -111,7 +119,7 @@ function WhySection() {
               alt=""
               className="h-[50px] w-[50px] md:h-[104px] md:w-[104px]"
             />
-            <p className="mt-[12px] text-center font-outfit text-[10px] md:text-[16px] font-normal leading-normal text-[#f8f8f8] md:mt-[18px]">
+            <p className="mt-[12px] text-center font-outfit text-[10px] md:text-[16px] font-normal leading-normal text-foreground md:mt-[18px]">
               {item.title}
             </p>
           </div>
@@ -131,9 +139,9 @@ const howItems = [
 
 function HowToStartSection() {
   return (
-    <section className="bg-[#15191c] px-[20px] pb-[40px] md:px-[60px] md:pb-[70px]">
+    <section className="bg-muted px-[20px] pb-[40px] md:px-[60px] md:pb-[70px]">
       {/* Divider */}
-      <div className="mb-[40px] h-[1px] w-full max-w-[1160px] bg-[#5d5d5d]/30 md:mb-[70px]" />
+      <div className="mb-[40px] h-[1px] w-full max-w-[1160px] bg-muted-foreground/30 md:mb-[70px]" />
 
       <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-white">
         How to start
@@ -147,7 +155,7 @@ function HowToStartSection() {
               alt=""
               className="h-[50px] w-[50px] md:h-[104px] md:w-[104px]"
             />
-            <p className="mt-[12px] text-center font-outfit text-[10px] md:text-[16px] font-medium leading-normal text-[#f8f8f8] md:mt-[18px]">
+            <p className="mt-[12px] text-center font-outfit text-[10px] md:text-[16px] font-medium leading-normal text-foreground md:mt-[18px]">
               {item.title}
             </p>
           </div>

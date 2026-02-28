@@ -15,7 +15,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
   return (
     <Link
       to={`/u/${creator.username}`}
-      className="group block rounded-[16px] bg-[#0e1012] overflow-hidden transition-transform hover:scale-[1.02]"
+      className="group block rounded-[16px] bg-card overflow-hidden transition-transform hover:scale-[1.02]"
     >
       {/* Avatar section */}
       <div className="relative flex flex-col items-center pt-[24px] pb-[16px] px-[12px]">
@@ -51,7 +51,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
 
         {/* Name + verified */}
         <div className="mt-[12px] flex items-center gap-[4px]">
-          <span className="font-outfit text-[14px] font-medium text-[#f8f8f8] truncate max-w-[130px]">
+          <span className="font-outfit text-[14px] font-medium text-foreground truncate max-w-[130px]">
             {creator.displayName}
           </span>
           {creator.isVerified && (
@@ -61,20 +61,20 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
 
         {/* Category */}
         {creator.category && (
-          <span className="mt-[6px] rounded-[10px] bg-[#15191c] px-[10px] py-[2px] font-outfit text-[11px] text-[#5d5d5d]">
+          <span className="mt-[6px] rounded-[10px] bg-muted px-[10px] py-[2px] font-outfit text-[11px] text-muted-foreground">
             {creator.category}
           </span>
         )}
 
         {/* Followers */}
-        <span className="mt-[8px] font-outfit text-[12px] text-[#5d5d5d]">
+        <span className="mt-[8px] font-outfit text-[12px] text-muted-foreground">
           {formatFollowers(creator.followersCount)} followers
         </span>
 
         {/* Price */}
         <span
           className={`mt-[4px] font-outfit text-[13px] font-medium ${
-            creator.price === null || creator.price === 0 ? 'text-[#01adf1]' : 'text-[#f8f8f8]'
+            creator.price === null || creator.price === 0 ? 'text-primary' : 'text-foreground'
           }`}
         >
           {formatPrice(creator.price)}

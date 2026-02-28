@@ -11,8 +11,8 @@ export default function GoLive() {
   return (
     <div className="flex flex-col gap-[20px]">
       {/* Broadcasting Info */}
-      <div className="flex flex-col items-center gap-[16px] rounded-[22px] bg-[#0e1012] px-[20px] py-[32px]">
-        <p className="text-[20px] font-semibold text-[#f8f8f8]">Start Your broadcasting now</p>
+      <div className="flex flex-col items-center gap-[16px] rounded-[22px] bg-card px-[20px] py-[32px]">
+        <p className="text-[20px] font-semibold text-foreground">Start Your broadcasting now</p>
         <p className="max-w-[800px] text-center text-[14px] leading-[1.8] text-[#a0a0a0]">
           Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
           been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer
@@ -35,11 +35,19 @@ export default function GoLive() {
                   />
                 </>
               ) : (
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#5d5d5d" strokeWidth="2" />
+                <rect
+                  x="3"
+                  y="3"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
               )}
             </svg>
           </button>
-          <span className="text-[14px] text-[#f8f8f8]">
+          <span className="text-[14px] text-foreground">
             I have accepted the &quot;
             <span className="font-bold underline">Live Broadcast Policy</span>&quot;.
           </span>
@@ -48,11 +56,11 @@ export default function GoLive() {
 
       {/* Comments Section */}
       <div className="flex flex-col gap-[12px]">
-        <p className="text-[16px] font-medium text-[#f8f8f8]">Please add your comments</p>
+        <p className="text-[16px] font-medium text-foreground">Please add your comments</p>
         <textarea
           value={comments}
           onChange={(e) => setComments(e.target.value)}
-          className="min-h-[140px] w-full resize-none rounded-[8px] border border-[#f8f8f8] bg-transparent px-[16px] py-[14px] text-[14px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+          className="min-h-[140px] w-full resize-none rounded-[8px] border border-foreground bg-transparent px-[16px] py-[14px] text-[14px] text-foreground placeholder-muted-foreground outline-none"
         />
       </div>
 
@@ -73,11 +81,19 @@ export default function GoLive() {
                   />
                 </>
               ) : (
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#5d5d5d" strokeWidth="2" />
+                <rect
+                  x="3"
+                  y="3"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
               )}
             </svg>
           </button>
-          <span className="text-[14px] text-[#f8f8f8]">Available for the private show</span>
+          <span className="text-[14px] text-foreground">Available for the private show</span>
         </label>
 
         <label className="flex cursor-pointer items-center gap-[10px]">
@@ -95,11 +111,19 @@ export default function GoLive() {
                   />
                 </>
               ) : (
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#5d5d5d" strokeWidth="2" />
+                <rect
+                  x="3"
+                  y="3"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
               )}
             </svg>
           </button>
-          <span className="text-[14px] text-[#f8f8f8]">Stream Extension</span>
+          <span className="text-[14px] text-foreground">Stream Extension</span>
         </label>
       </div>
 
@@ -113,7 +137,7 @@ export default function GoLive() {
         </button>
         <button
           onClick={() => navigate(-1)}
-          className="w-[240px] rounded-[8px] border border-[#5d5d5d] py-[14px] text-[16px] text-[#f8f8f8] transition-colors hover:border-white"
+          className="w-[240px] rounded-[8px] border border-border py-[14px] text-[16px] text-foreground transition-colors hover:border-white"
         >
           Cancel
         </button>

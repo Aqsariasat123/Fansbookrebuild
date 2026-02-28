@@ -52,7 +52,7 @@ export function SocialLinksTab({ onToast }: SocialLinksTabProps) {
         <div className="flex justify-center py-[30px]">
           <button
             onClick={addLink}
-            className="w-full max-w-[500px] rounded-[8px] border border-[#5d5d5d] py-[14px] text-[16px] text-[#f8f8f8] hover:border-[#01adf1] transition-colors"
+            className="w-full max-w-[500px] rounded-[8px] border border-border py-[14px] text-[16px] text-foreground hover:border-[#01adf1] transition-colors"
           >
             Add Social Profile Links
           </button>
@@ -63,7 +63,7 @@ export function SocialLinksTab({ onToast }: SocialLinksTabProps) {
             <div key={index} className="flex items-end gap-[12px]">
               <div className="flex w-[180px] shrink-0 flex-col gap-[10px]">
                 {index === 0 && (
-                  <label className="text-[20px] font-medium text-[#f8f8f8]">Platform</label>
+                  <label className="text-[20px] font-medium text-foreground">Platform</label>
                 )}
                 <select
                   value={link.platform}
@@ -79,7 +79,7 @@ export function SocialLinksTab({ onToast }: SocialLinksTabProps) {
               </div>
               <div className="flex flex-1 flex-col gap-[10px]">
                 {index === 0 && (
-                  <label className="text-[20px] font-medium text-[#f8f8f8]">URL</label>
+                  <label className="text-[20px] font-medium text-foreground">URL</label>
                 )}
                 <input
                   type="url"
@@ -99,7 +99,7 @@ export function SocialLinksTab({ onToast }: SocialLinksTabProps) {
           ))}
           <button
             onClick={addLink}
-            className="self-start rounded-[8px] border border-[#5d5d5d] px-[16px] py-[10px] text-[14px] text-[#f8f8f8] hover:border-[#01adf1] transition-colors"
+            className="self-start rounded-[8px] border border-border px-[16px] py-[10px] text-[14px] text-foreground hover:border-[#01adf1] transition-colors"
           >
             + Add Link
           </button>

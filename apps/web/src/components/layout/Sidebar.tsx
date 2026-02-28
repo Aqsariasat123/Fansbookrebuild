@@ -29,7 +29,7 @@ export function Sidebar() {
 
   return (
     <aside className="hidden shrink-0 lg:block">
-      <nav className="sticky top-[122px] rounded-[22px] bg-[#0e1012] p-[32px]">
+      <nav className="sticky top-[122px] rounded-[22px] bg-card p-[32px]">
         <div className="flex flex-col gap-[55px]">
           <div className="flex flex-col gap-[32px]">
             {navItems.map(({ to, icon, labelKey }) => (
@@ -38,7 +38,7 @@ export function Sidebar() {
                 to={to}
                 className={({ isActive }) =>
                   `flex items-center gap-[15px] text-[16px] transition-colors ${
-                    isActive ? 'text-[#f8f8f8]' : 'text-[#5d5d5d] hover:text-[#f8f8f8]'
+                    isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                   }`
                 }
               >
@@ -49,7 +49,7 @@ export function Sidebar() {
 
             <button
               onClick={() => navigate('/language')}
-              className="flex items-center gap-[15px] text-[16px] text-[#5d5d5d] transition-colors hover:text-[#f8f8f8]"
+              className="flex items-center gap-[15px] text-[16px] text-muted-foreground transition-colors hover:text-foreground"
             >
               <img src="/icons/dashboard/language.svg" alt="" className="h-[20px] w-[20px]" />
               {currentLangName}
@@ -63,7 +63,7 @@ export function Sidebar() {
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-[15px] text-[16px] text-[#5d5d5d] transition-colors hover:text-[#f8f8f8]"
+            className="flex items-center gap-[15px] text-[16px] text-muted-foreground transition-colors hover:text-foreground"
           >
             <img src="/icons/dashboard/logout.svg" alt="" className="h-[20px] w-[20px]" />
             {label('nav.logout')}

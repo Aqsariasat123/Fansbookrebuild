@@ -49,7 +49,7 @@ export function SettingsNotifications() {
 
   return (
     <div className="flex flex-col gap-[16px]">
-      <p className="text-[16px] text-[#f8f8f8]">Notification Preferences</p>
+      <p className="text-[16px] text-foreground">Notification Preferences</p>
       {(
         [
           ['emailNotifs', 'Email Notifications', 'Receive updates via email'],
@@ -60,15 +60,15 @@ export function SettingsNotifications() {
       ).map(([key, label, desc]) => (
         <div
           key={key}
-          className="flex items-center justify-between rounded-[12px] bg-[#15191c] p-[14px]"
+          className="flex items-center justify-between rounded-[12px] bg-muted p-[14px]"
         >
           <div>
-            <p className="text-[14px] text-[#f8f8f8]">{label}</p>
-            <p className="text-[12px] text-[#5d5d5d]">{desc}</p>
+            <p className="text-[14px] text-foreground">{label}</p>
+            <p className="text-[12px] text-muted-foreground">{desc}</p>
           </div>
           <button
             onClick={() => toggle(key)}
-            className={`h-[26px] w-[46px] rounded-full transition-colors ${settings[key] ? 'bg-[#01adf1]' : 'bg-[#5d5d5d]'}`}
+            className={`h-[26px] w-[46px] rounded-full transition-colors ${settings[key] ? 'bg-[#01adf1]' : 'bg-muted-foreground'}`}
           >
             <div
               className={`h-[22px] w-[22px] rounded-full bg-white transition-transform ${settings[key] ? 'translate-x-[22px]' : 'translate-x-[2px]'}`}
@@ -84,7 +84,7 @@ export function SettingsNotifications() {
         >
           {saving ? 'Saving...' : 'Save'}
         </button>
-        {msg && <span className="text-[12px] text-[#01adf1]">{msg}</span>}
+        {msg && <span className="text-[12px] text-primary">{msg}</span>}
       </div>
     </div>
   );

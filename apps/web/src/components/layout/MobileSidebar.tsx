@@ -39,7 +39,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
     >
       <div className="absolute inset-0 bg-black/12 backdrop-blur-[3.4px]" onClick={onClose} />
       <div
-        className={`absolute left-0 top-[50px] h-[calc(100%-50px)] w-[242px] rounded-br-[22px] rounded-tr-[22px] bg-[#15191c] shadow-[4px_8px_27.2px_0px_rgba(0,0,0,0.42)] transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`absolute left-0 top-[50px] h-[calc(100%-50px)] w-[242px] rounded-br-[22px] rounded-tr-[22px] bg-muted shadow-[4px_8px_27.2px_0px_rgba(0,0,0,0.42)] transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="px-[32px] pt-[20px]">
           <img
@@ -58,7 +58,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
                 onClick={onClose}
                 className={({ isActive }) =>
                   `flex items-center gap-[15px] text-[12px] transition-colors ${
-                    isActive ? 'text-[#f8f8f8]' : 'text-[#5d5d5d] hover:text-[#f8f8f8]'
+                    isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                   }`
                 }
               >
@@ -72,7 +72,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
                 navigate('/language');
                 onClose();
               }}
-              className="flex items-center gap-[15px] text-[12px] text-[#5d5d5d] transition-colors hover:text-[#f8f8f8]"
+              className="flex items-center gap-[15px] text-[12px] text-muted-foreground transition-colors hover:text-foreground"
             >
               <img src="/icons/dashboard/language.svg" alt="" className="h-[20px] w-[20px]" />
               {currentLangName}
@@ -86,7 +86,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-[15px] text-[16px] text-[#5d5d5d] transition-colors hover:text-[#f8f8f8]"
+            className="flex items-center gap-[15px] text-[16px] text-muted-foreground transition-colors hover:text-foreground"
           >
             <img src="/icons/dashboard/logout.svg" alt="" className="h-[20px] w-[20px]" />
             {label('nav.logout')}

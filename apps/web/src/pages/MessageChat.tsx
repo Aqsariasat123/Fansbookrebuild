@@ -95,9 +95,9 @@ export default function MessageChat() {
   }
 
   return (
-    <div className="bg-[#0e1012] rounded-[11px] md:rounded-[22px] flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-130px)]">
+    <div className="bg-card rounded-[11px] md:rounded-[22px] flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-130px)]">
       <MessagePageHeader />
-      <div className="flex flex-col flex-1 border border-[#15191c] rounded-[8px] mx-[10px] mb-[10px] md:mx-[22px] md:mb-[22px] overflow-hidden">
+      <div className="flex flex-col flex-1 border border-muted rounded-[8px] mx-[10px] mb-[10px] md:mx-[22px] md:mb-[22px] overflow-hidden">
         <ChatUserHeader
           otherName={other?.displayName}
           otherAvatar={other?.avatar}

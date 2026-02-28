@@ -8,7 +8,7 @@ export function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#15191c] font-outfit">
+    <div className="min-h-screen bg-muted font-outfit">
       <Navbar onMenuToggle={() => setSidebarOpen(true)} />
       <div className="flex gap-0 px-[16px] pt-[16px] lg:gap-[22px] lg:px-[26px] lg:pt-[22px]">
         <Sidebar />

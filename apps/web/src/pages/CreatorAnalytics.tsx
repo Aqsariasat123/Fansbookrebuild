@@ -42,7 +42,7 @@ export default function CreatorAnalytics() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <p className="text-[20px] text-[#f8f8f8]">Analytics</p>
+      <p className="text-[20px] text-foreground">Analytics</p>
       <BarChart
         title="Earnings (Last 6 Months)"
         data={(data?.earningsHistory || []).map((d) => ({

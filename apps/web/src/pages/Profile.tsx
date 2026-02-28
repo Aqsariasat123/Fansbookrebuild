@@ -38,7 +38,9 @@ function AvatarSection({
           />
         ) : (
           <div className="size-[94px] md:size-[150px] rounded-full bg-[#2e4882] flex items-center justify-center">
-            <span className="text-[32px] md:text-[48px] font-medium text-[#f8f8f8]">{initial}</span>
+            <span className="text-[32px] md:text-[48px] font-medium text-foreground">
+              {initial}
+            </span>
           </div>
         )}
         {uploading && (
@@ -79,7 +81,7 @@ function ActionRow({ icon, label, onClick }: { icon: string; label: string; onCl
         <div className="size-[24px] md:size-[30px] rounded-[20px] bg-[#2e4882] flex items-center justify-center shrink-0">
           <img src={icon} alt="" className="size-[12px] md:size-[15px]" />
         </div>
-        <span className="text-[14px] md:text-[20px] font-normal text-[#f8f8f8]">{label}</span>
+        <span className="text-[14px] md:text-[20px] font-normal text-foreground">{label}</span>
       </div>
       <img src={`${IMG}/arrow-forward-ios.svg`} alt="" className="size-[16px] md:size-[20px]" />
     </button>
@@ -115,8 +117,8 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col gap-[12px] md:gap-[22px]">
-      <p className="text-[20px] font-normal text-[#f8f8f8] capitalize">my profile</p>
-      <div className="rounded-[11px] md:rounded-[22px] bg-[#0e1012] px-[16px] py-[24px] md:px-[27px] md:py-[44px] flex flex-col items-center">
+      <p className="text-[20px] font-normal text-foreground capitalize">my profile</p>
+      <div className="rounded-[11px] md:rounded-[22px] bg-card px-[16px] py-[24px] md:px-[27px] md:py-[44px] flex flex-col items-center">
         <AvatarSection
           avatar={avatar}
           displayName={displayName}
@@ -124,8 +126,10 @@ export default function Profile() {
           uploading={uploading}
         />
         <div className="flex flex-col items-center mt-[10px] md:mt-[13px]">
-          <p className="text-[18px] md:text-[24px] font-normal text-[#f8f8f8]">{displayName}</p>
-          <p className="text-[14px] md:text-[20px] font-normal text-[#5d5d5d]">@{username}</p>
+          <p className="text-[18px] md:text-[24px] font-normal text-foreground">{displayName}</p>
+          <p className="text-[14px] md:text-[20px] font-normal text-muted-foreground">
+            @{username}
+          </p>
         </div>
         <div className="w-full mt-[30px] md:mt-[50px] flex flex-col">
           <ActionRow

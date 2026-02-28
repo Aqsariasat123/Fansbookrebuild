@@ -17,10 +17,10 @@ function ArrowIcon({ open }: { open: boolean }) {
       fill="none"
       className={`shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
     >
-      <circle cx="12" cy="12" r="11" stroke="#5d5d5d" strokeWidth="1.5" />
+      <circle cx="12" cy="12" r="11" stroke="currentColor" strokeWidth="1.5" />
       <path
         d="M8 10.5L12 14.5L16 10.5"
-        stroke="#5d5d5d"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -50,33 +50,33 @@ export default function HelpSupport() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <p className="text-[20px] text-[#f8f8f8]">Help &amp; Support</p>
+      <p className="text-[20px] text-foreground">Help &amp; Support</p>
 
-      <div className="flex flex-col rounded-[22px] bg-[#0e1012] px-[20px] py-[20px]">
+      <div className="flex flex-col rounded-[22px] bg-card px-[20px] py-[20px]">
         {/* ── FAQ's Section ── */}
         <div className="flex flex-col gap-[16px]">
-          <p className="text-[16px] text-[#f8f8f8]">FAQ&apos;s</p>
+          <p className="text-[16px] text-foreground">FAQ&apos;s</p>
 
           {loadingFaqs ? (
             <div className="flex items-center justify-center py-10">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
             </div>
           ) : faqs.length === 0 ? (
-            <p className="text-[12px] text-[#5d5d5d]">No FAQs available.</p>
+            <p className="text-[12px] text-muted-foreground">No FAQs available.</p>
           ) : (
             <div className="grid grid-cols-1 gap-[12px] md:grid-cols-2">
               {faqs.map((faq) => (
                 <div
                   key={faq.id}
-                  className="border border-[#15191c] rounded-[8px] p-[10px] cursor-pointer"
+                  className="border border-muted rounded-[8px] p-[10px] cursor-pointer"
                   onClick={() => toggleFaq(faq.id)}
                 >
                   <div className="flex items-center justify-between gap-[8px]">
-                    <p className="text-[12px] text-[#5d5d5d] flex-1">{faq.question}</p>
+                    <p className="text-[12px] text-muted-foreground flex-1">{faq.question}</p>
                     <ArrowIcon open={openFaq === faq.id} />
                   </div>
                   {openFaq === faq.id && (
-                    <p className="text-[12px] text-[#f8f8f8] mt-[8px] leading-relaxed">
+                    <p className="text-[12px] text-foreground mt-[8px] leading-relaxed">
                       {faq.answer}
                     </p>
                   )}
@@ -87,7 +87,7 @@ export default function HelpSupport() {
         </div>
 
         {/* Divider */}
-        <div className="bg-[#15191c] h-px w-full my-[20px]" />
+        <div className="bg-muted h-px w-full my-[20px]" />
 
         {/* ── Report a Problem Section ── */}
         <ReportForm />

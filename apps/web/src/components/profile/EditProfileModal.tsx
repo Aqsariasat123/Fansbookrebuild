@@ -45,14 +45,14 @@ export function EditProfileModal({ open, onClose }: { open: boolean; onClose: ()
           maxLength={50}
         />
         <div className="flex flex-col gap-[8px]">
-          <label className="text-[14px] text-[#5d5d5d]">Bio</label>
+          <label className="text-[14px] text-muted-foreground">Bio</label>
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             placeholder="Tell us about yourself"
             maxLength={1000}
             rows={3}
-            className="rounded-[12px] bg-[#15191c] px-[16px] py-[12px] text-[16px] text-[#f8f8f8] outline-none border border-[#2a2d30] focus:border-[#2e80c8] transition-colors resize-none"
+            className="rounded-[12px] bg-muted px-[16px] py-[12px] text-[16px] text-foreground outline-none border border-[#2a2d30] focus:border-[#2e80c8] transition-colors resize-none"
           />
         </div>
         <Field
@@ -73,14 +73,14 @@ export function EditProfileModal({ open, onClose }: { open: boolean; onClose: ()
         <div className="flex gap-[12px] mt-[8px]">
           <button
             onClick={onClose}
-            className="flex-1 h-[44px] rounded-[12px] border border-[#2a2d30] text-[16px] text-[#5d5d5d] hover:text-[#f8f8f8] transition-colors"
+            className="flex-1 h-[44px] rounded-[12px] border border-[#2a2d30] text-[16px] text-muted-foreground hover:text-foreground transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 h-[44px] rounded-[12px] bg-[#2e4882] text-[16px] text-[#f8f8f8] hover:bg-[#3a5a9e] transition-colors disabled:opacity-50"
+            className="flex-1 h-[44px] rounded-[12px] bg-[#2e4882] text-[16px] text-foreground hover:bg-[#3a5a9e] transition-colors disabled:opacity-50"
           >
             {saving ? 'Saving...' : 'Save'}
           </button>

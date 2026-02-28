@@ -49,8 +49,8 @@ function extractMedia(posts: PublicPost[], isSubscribed: boolean, type: 'IMAGE' 
 
 function EmptyState({ label }: { label: string }) {
   return (
-    <div className="rounded-[22px] bg-[#0e1012] p-[40px] text-center">
-      <p className="text-[14px] text-[#5d5d5d]">{label}</p>
+    <div className="rounded-[22px] bg-card p-[40px] text-center">
+      <p className="text-[14px] text-muted-foreground">{label}</p>
     </div>
   );
 }
@@ -115,8 +115,8 @@ export default function CreatorPublicProfile() {
   if (notFound || !profile)
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-[18px] font-medium text-[#f8f8f8]">Creator not found</p>
-        <p className="mt-[4px] text-[14px] text-[#5d5d5d]">
+        <p className="text-[18px] font-medium text-foreground">Creator not found</p>
+        <p className="mt-[4px] text-[14px] text-muted-foreground">
           The profile you are looking for does not exist.
         </p>
       </div>
@@ -167,9 +167,9 @@ function CoverBanner({ cover }: { cover: string | null }) {
       {cover ? (
         <img src={cover} alt="" className="absolute inset-0 size-full object-cover" />
       ) : (
-        <div className="absolute inset-0 bg-[#1a1d20]" />
+        <div className="absolute inset-0 bg-muted" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#15191c]/80 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
     </div>
   );
 }

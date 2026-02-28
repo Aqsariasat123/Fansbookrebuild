@@ -22,9 +22,9 @@ export default function Settings() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <p className="text-[20px] text-[#f8f8f8]">Settings</p>
+      <p className="text-[20px] text-foreground">Settings</p>
 
-      <div className="flex flex-col rounded-[22px] bg-[#0e1012] px-[20px] py-[20px]">
+      <div className="flex flex-col rounded-[22px] bg-card px-[20px] py-[20px]">
         {/* Tab Navigation */}
         <div className="mb-[20px] flex gap-[4px] overflow-x-auto scrollbar-hide">
           {TABS.map((t) => (
@@ -34,7 +34,7 @@ export default function Settings() {
               className={`whitespace-nowrap rounded-[12px] px-[14px] py-[8px] text-[13px] transition-colors ${
                 tab === t.key
                   ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'
-                  : 'text-[#5d5d5d] hover:text-[#f8f8f8]'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               {t.label}

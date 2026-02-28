@@ -39,9 +39,9 @@ export function ChatInputBar({
   const fileRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="relative flex items-center justify-between border border-[#15191c] rounded-[8px] mx-[10px] mb-[10px] md:mx-[17px] md:mb-[17px] px-[8px] py-[6px] md:px-[10px] md:py-[8px]">
+    <div className="relative flex items-center justify-between border border-muted rounded-[8px] mx-[10px] mb-[10px] md:mx-[17px] md:mb-[17px] px-[8px] py-[6px] md:px-[10px] md:py-[8px]">
       {showEmoji && (
-        <div className="absolute bottom-full mb-[8px] left-0 bg-[#15191c] rounded-[12px] p-[8px] md:p-[10px] grid grid-cols-8 gap-[2px] z-20 shadow-lg">
+        <div className="absolute bottom-full mb-[8px] left-0 bg-muted rounded-[12px] p-[8px] md:p-[10px] grid grid-cols-8 gap-[2px] z-20 shadow-lg">
           {EMOJIS.map((e) => (
             <button
               key={e}
@@ -71,7 +71,7 @@ export function ChatInputBar({
             height="20"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#5d5d5d"
+            stroke="currentColor"
             strokeWidth="1.5"
             className="md:w-[24px] md:h-[24px]"
           >
@@ -88,7 +88,7 @@ export function ChatInputBar({
           onKeyDown={(e) => e.key === 'Enter' && onSend()}
           onFocus={() => setShowEmoji(false)}
           placeholder="Message"
-          className="bg-transparent text-[14px] md:text-[16px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none flex-1 min-w-0"
+          className="bg-transparent text-[14px] md:text-[16px] text-foreground placeholder-muted-foreground outline-none flex-1 min-w-0"
         />
       </div>
       <div className="flex items-center gap-[12px] md:gap-[34px] shrink-0">
@@ -99,7 +99,7 @@ export function ChatInputBar({
               height="20"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#5d5d5d"
+              stroke="currentColor"
               strokeWidth="1.5"
               className="md:w-[24px] md:h-[24px]"
             >
@@ -114,7 +114,7 @@ export function ChatInputBar({
               height="20"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#5d5d5d"
+              stroke="currentColor"
               strokeWidth="1.5"
               strokeLinecap="round"
               className="md:w-[24px] md:h-[24px]"

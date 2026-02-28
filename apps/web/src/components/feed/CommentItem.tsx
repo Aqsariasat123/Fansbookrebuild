@@ -53,19 +53,19 @@ export function CommentItem({
       />
       <div className="flex flex-1 flex-col gap-[2px]">
         <div className="flex items-center gap-[6px]">
-          <span className="text-[12px] font-semibold text-[#f8f8f8] md:text-[13px]">
+          <span className="text-[12px] font-semibold text-foreground md:text-[13px]">
             {comment.author.displayName}
           </span>
           {comment.author.isVerified && (
             <img src="/icons/dashboard/verified.svg" alt="" className="size-[12px]" />
           )}
-          <span className="text-[10px] text-[#5d5d5d]">{timeAgo}</span>
+          <span className="text-[10px] text-muted-foreground">{timeAgo}</span>
         </div>
         <p className="text-[12px] leading-[1.5] text-[#c0c0c0] md:text-[13px]">{comment.text}</p>
         <div className="mt-[2px] flex items-center gap-[14px]">
           <button
             onClick={onToggleLike}
-            className="flex items-center gap-[4px] text-[10px] transition-colors hover:text-[#f8f8f8] md:text-[11px]"
+            className="flex items-center gap-[4px] text-[10px] transition-colors hover:text-foreground md:text-[11px]"
           >
             <svg
               width="12"
@@ -77,13 +77,13 @@ export function CommentItem({
             >
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
-            <span className={comment.isLiked ? 'text-[#e74c3c]' : 'text-[#5d5d5d]'}>
+            <span className={comment.isLiked ? 'text-[#e74c3c]' : 'text-muted-foreground'}>
               {comment.likeCount > 0 ? comment.likeCount : ''}
             </span>
           </button>
           <button
             onClick={onReply}
-            className="text-[10px] font-medium text-[#5d5d5d] transition-colors hover:text-[#f8f8f8] md:text-[11px]"
+            className="text-[10px] font-medium text-muted-foreground transition-colors hover:text-foreground md:text-[11px]"
           >
             Reply
           </button>
@@ -116,9 +116,9 @@ export function CommentThread({
       {replies.length > 0 && (
         <button
           onClick={() => setShowReplies(!showReplies)}
-          className="ml-[36px] mt-[4px] flex items-center gap-[6px] text-[11px] font-medium text-[#01adf1] hover:text-[#01adf1]/80"
+          className="ml-[36px] mt-[4px] flex items-center gap-[6px] text-[11px] font-medium text-primary hover:text-primary/80"
         >
-          <span className="h-[1px] w-[16px] bg-[#5d5d5d]" />
+          <span className="h-[1px] w-[16px] bg-muted-foreground" />
           {showReplies
             ? 'Hide replies'
             : `View ${replies.length} ${replies.length === 1 ? 'reply' : 'replies'}`}

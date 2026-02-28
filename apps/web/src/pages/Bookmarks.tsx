@@ -27,16 +27,16 @@ export default function Bookmarks() {
   return (
     <div className="flex flex-col gap-[16px] md:gap-[22px]">
       <div className="flex items-center justify-between">
-        <p className="text-[20px] font-medium text-[#f8f8f8]">Bookmarks</p>
-        <Link to="/feed" className="text-[14px] text-[#5d5d5d] hover:text-[#f8f8f8]">
+        <p className="text-[20px] font-medium text-foreground">Bookmarks</p>
+        <Link to="/feed" className="text-[14px] text-muted-foreground hover:text-foreground">
           Back to Feed
         </Link>
       </div>
 
       {posts.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-[22px] bg-[#0e1012] py-16">
+        <div className="flex flex-col items-center gap-4 rounded-[22px] bg-card py-16">
           <svg
-            className="size-12 text-[#5d5d5d]"
+            className="size-12 text-muted-foreground"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -48,8 +48,8 @@ export default function Bookmarks() {
               d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
             />
           </svg>
-          <p className="text-[16px] text-[#5d5d5d]">No bookmarked posts yet</p>
-          <Link to="/feed" className="text-[14px] text-[#01adf1] hover:underline">
+          <p className="text-[16px] text-muted-foreground">No bookmarked posts yet</p>
+          <Link to="/feed" className="text-[14px] text-primary hover:underline">
             Explore Feed
           </Link>
         </div>

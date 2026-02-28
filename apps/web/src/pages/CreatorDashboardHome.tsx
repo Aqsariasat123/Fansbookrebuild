@@ -46,25 +46,25 @@ export default function CreatorDashboardHome() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <p className="text-[20px] text-[#f8f8f8]">Dashboard</p>
+      <p className="text-[20px] text-foreground">Dashboard</p>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 gap-[12px] md:grid-cols-4 md:gap-[16px]">
         {STAT_CARDS.map((card) => (
-          <div key={card.key} className="rounded-[16px] bg-[#0e1012] p-[16px] md:p-[20px]">
+          <div key={card.key} className="rounded-[16px] bg-card p-[16px] md:p-[20px]">
             <span className="text-[20px]">{card.icon}</span>
-            <p className="mt-2 text-[22px] font-semibold text-[#f8f8f8] md:text-[28px]">
+            <p className="mt-2 text-[22px] font-semibold text-foreground md:text-[28px]">
               {card.prefix}
               {stats ? formatNum(stats[card.key]) : '0'}
             </p>
-            <p className="text-[12px] text-[#5d5d5d] md:text-[14px]">{card.label}</p>
+            <p className="text-[12px] text-muted-foreground md:text-[14px]">{card.label}</p>
           </div>
         ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="rounded-[22px] bg-[#0e1012] p-[20px]">
-        <p className="mb-[14px] text-[16px] text-[#f8f8f8]">Quick Actions</p>
+      <div className="rounded-[22px] bg-card p-[20px]">
+        <p className="mb-[14px] text-[16px] text-foreground">Quick Actions</p>
         <div className="grid grid-cols-2 gap-[10px] md:grid-cols-4">
           {QUICK_ACTIONS.map((action) => (
             <Link
@@ -73,7 +73,7 @@ export default function CreatorDashboardHome() {
               className={`rounded-[50px] px-[16px] py-[10px] text-center text-[13px] font-medium transition-opacity hover:opacity-80 ${
                 action.gradient
                   ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'
-                  : 'bg-[#15191c] text-[#f8f8f8]'
+                  : 'bg-muted text-foreground'
               }`}
             >
               {action.label}
@@ -83,12 +83,12 @@ export default function CreatorDashboardHome() {
       </div>
 
       {/* Views stat */}
-      <div className="rounded-[22px] bg-[#0e1012] p-[20px]">
-        <p className="text-[16px] text-[#f8f8f8]">Story Views</p>
-        <p className="mt-2 text-[28px] font-semibold text-[#01adf1]">
+      <div className="rounded-[22px] bg-card p-[20px]">
+        <p className="text-[16px] text-foreground">Story Views</p>
+        <p className="mt-2 text-[28px] font-semibold text-primary">
           {formatNum(stats?.totalViews ?? 0)}
         </p>
-        <p className="text-[12px] text-[#5d5d5d]">Total views on your stories</p>
+        <p className="text-[12px] text-muted-foreground">Total views on your stories</p>
       </div>
     </div>
   );

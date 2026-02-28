@@ -82,7 +82,7 @@ function Pagination({
       <button
         disabled={currentPage <= 1}
         onClick={() => onPageChange(String(currentPage - 1))}
-        className="rounded-[8px] bg-[#252d32] px-[16px] py-[10px] font-outfit text-[14px] text-[#f8f8f8] disabled:opacity-40"
+        className="rounded-[8px] bg-[#252d32] px-[16px] py-[10px] font-outfit text-[14px] text-foreground disabled:opacity-40"
       >
         Previous
       </button>
@@ -92,7 +92,7 @@ function Pagination({
       <button
         disabled={!hasMore}
         onClick={() => onPageChange(String(currentPage + 1))}
-        className="rounded-[8px] bg-[#252d32] px-[16px] py-[10px] font-outfit text-[14px] text-[#f8f8f8] disabled:opacity-40"
+        className="rounded-[8px] bg-[#252d32] px-[16px] py-[10px] font-outfit text-[14px] text-foreground disabled:opacity-40"
       >
         Next
       </button>
@@ -127,7 +127,7 @@ export default function Creators() {
   const totalPages = data ? Math.ceil(data.total / 12) : 1;
 
   return (
-    <div className="min-h-screen bg-[#15191c] font-outfit">
+    <div className="min-h-screen bg-muted font-outfit">
       <div className="relative h-[130px]">
         <MarketingNav />
       </div>

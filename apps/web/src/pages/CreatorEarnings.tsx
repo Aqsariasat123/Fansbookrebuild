@@ -55,29 +55,29 @@ export default function CreatorEarnings() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <p className="text-[24px] font-semibold text-[#f8f8f8]">My Earning</p>
+      <p className="text-[24px] font-semibold text-foreground">My Earning</p>
 
       {/* Filters */}
-      <div className="flex flex-col gap-[12px] rounded-[16px] bg-[#0e1012] p-[20px]">
-        <div className="flex items-center gap-[10px] rounded-[52px] bg-[#15191c] px-[16px] py-[10px]">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#5d5d5d">
+      <div className="flex flex-col gap-[12px] rounded-[16px] bg-card p-[20px]">
+        <div className="flex items-center gap-[10px] rounded-[52px] bg-muted px-[16px] py-[10px]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
           </svg>
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search"
-            className="flex-1 bg-transparent text-[14px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+            className="flex-1 bg-transparent text-[14px] text-foreground placeholder-muted-foreground outline-none"
           />
         </div>
         <div className="flex flex-wrap items-center gap-[12px]">
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-[8px] rounded-[8px] border border-[#5d5d5d] px-[14px] py-[8px] text-[14px] text-[#f8f8f8]"
+              className="flex items-center gap-[8px] rounded-[8px] border border-border px-[14px] py-[8px] text-[14px] text-foreground"
             >
               {category}{' '}
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#5d5d5d">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7 10l5 5 5-5z" />
               </svg>
             </button>
@@ -102,21 +102,21 @@ export default function CreatorEarnings() {
             )}
           </div>
           <div className="flex items-center gap-[8px]">
-            <span className="text-[14px] text-[#5d5d5d]">From:</span>
+            <span className="text-[14px] text-muted-foreground">From:</span>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="rounded-[6px] border border-[#5d5d5d] bg-transparent px-[10px] py-[6px] text-[13px] text-[#f8f8f8] outline-none"
+              className="rounded-[6px] border border-border bg-transparent px-[10px] py-[6px] text-[13px] text-foreground outline-none"
             />
           </div>
           <div className="flex items-center gap-[8px]">
-            <span className="text-[14px] text-[#5d5d5d]">To:</span>
+            <span className="text-[14px] text-muted-foreground">To:</span>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="rounded-[6px] border border-[#5d5d5d] bg-transparent px-[10px] py-[6px] text-[13px] text-[#f8f8f8] outline-none"
+              className="rounded-[6px] border border-border bg-transparent px-[10px] py-[6px] text-[13px] text-foreground outline-none"
             />
           </div>
           {(startDate || endDate) && (
@@ -140,7 +140,7 @@ export default function CreatorEarnings() {
             <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
           </div>
         ) : items.length === 0 ? (
-          <p className="py-[40px] text-center text-[14px] text-[#5d5d5d]">No earnings yet</p>
+          <p className="py-[40px] text-center text-[14px] text-muted-foreground">No earnings yet</p>
         ) : (
           <EarningsMobileCards items={items} />
         )}
@@ -158,16 +158,16 @@ export default function CreatorEarnings() {
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${page === i + 1 ? 'bg-[#01adf1] text-white' : 'bg-[#0e1012] text-[#5d5d5d] hover:text-white'}`}
+              className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${page === i + 1 ? 'bg-[#01adf1] text-white' : 'bg-card text-muted-foreground hover:text-white'}`}
             >
               {i + 1}
             </button>
           ))}
-          {totalPages > 6 && <span className="text-[13px] text-[#5d5d5d]">...</span>}
+          {totalPages > 6 && <span className="text-[13px] text-muted-foreground">...</span>}
           <button
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-[4px] bg-[#0e1012] px-[12px] py-[6px] text-[13px] text-[#5d5d5d] hover:text-white disabled:opacity-40"
+            className="rounded-[4px] bg-card px-[12px] py-[6px] text-[13px] text-muted-foreground hover:text-white disabled:opacity-40"
           >
             Next
           </button>

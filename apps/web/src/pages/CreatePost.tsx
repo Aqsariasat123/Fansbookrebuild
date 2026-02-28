@@ -2,81 +2,8 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-
-type Visibility = 'PUBLIC' | 'SUBSCRIBERS' | 'TIER_SPECIFIC';
-
-const VIS_LABELS: Record<Visibility, string> = {
-  PUBLIC: 'Public',
-  SUBSCRIBERS: 'Followers',
-  TIER_SPECIFIC: 'Tier Only',
-};
-
-function AuthorRow({
-  user,
-}: {
-  user: { avatar?: string | null; displayName?: string; username?: string } | null;
-}) {
-  return (
-    <div className="flex items-center gap-[12px]">
-      <img
-        src={user?.avatar || '/icons/dashboard/person.svg'}
-        alt=""
-        className="size-[48px] rounded-full object-cover"
-      />
-      <div>
-        <div className="flex items-center gap-[6px]">
-          <p className="text-[16px] font-medium text-[#f8f8f8]">{user?.displayName || 'Creator'}</p>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#01adf1">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-          </svg>
-        </div>
-        <p className="text-[12px] text-[#5d5d5d]">@{user?.username || 'username'}</p>
-      </div>
-    </div>
-  );
-}
-
-function VisibilityDropdown({
-  value,
-  onChange,
-}: {
-  value: Visibility;
-  onChange: (v: Visibility) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-[6px] rounded-[20px] border border-[#5d5d5d] px-[12px] py-[4px] text-[12px] text-[#f8f8f8]"
-      >
-        {VIS_LABELS[value]}{' '}
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="#5d5d5d">
-          <path d="M7 10l5 5 5-5z" />
-        </svg>
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-[32px] z-20 min-w-[120px] rounded-[8px] bg-white py-[4px] shadow-lg">
-            {(['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'] as Visibility[]).map((v) => (
-              <button
-                key={v}
-                onClick={() => {
-                  onChange(v);
-                  setOpen(false);
-                }}
-                className="flex w-full px-[14px] py-[8px] text-[13px] text-[#1a1a1a] hover:bg-[#f0f0f0]"
-              >
-                {VIS_LABELS[v]}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
+import { AuthorRow, VisibilityDropdown } from '../components/create-post/CreatePostParts';
+import type { Visibility } from '../components/create-post/CreatePostParts';
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -125,7 +52,7 @@ export default function CreatePost() {
     <div className="flex flex-col gap-[20px]">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <p className="text-[20px] font-semibold text-[#f8f8f8]">Create Post</p>
+        <p className="text-[20px] font-semibold text-foreground">Create Post</p>
         <button
           onClick={handleSubmit}
           disabled={canSubmit}
@@ -136,7 +63,7 @@ export default function CreatePost() {
       </div>
 
       {/* Card */}
-      <div className="rounded-[22px] bg-[#0e1012] p-[20px]">
+      <div className="rounded-[22px] bg-card p-[20px]">
         {/* Author row */}
         <div className="flex items-start justify-between">
           <AuthorRow user={user} />
@@ -148,7 +75,7 @@ export default function CreatePost() {
                 height="24"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#5d5d5d"
+                stroke="currentColor"
                 strokeWidth="2"
               >
                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
@@ -161,7 +88,7 @@ export default function CreatePost() {
                 height="24"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#5d5d5d"
+                stroke="currentColor"
                 strokeWidth="2"
               >
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -175,7 +102,7 @@ export default function CreatePost() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Say Something about this photo..."
-          className="mt-[16px] min-h-[50px] w-full resize-none bg-transparent text-[14px] text-[#f8f8f8] placeholder-[#5d5d5d] outline-none"
+          className="mt-[16px] min-h-[50px] w-full resize-none bg-transparent text-[14px] text-foreground placeholder-muted-foreground outline-none"
         />
 
         {/* Image previews */}
@@ -208,7 +135,7 @@ export default function CreatePost() {
         {images.length === 0 && (
           <div
             onClick={() => fileRef.current?.click()}
-            className="mt-[16px] flex h-[300px] cursor-pointer items-center justify-center rounded-[16px] border-2 border-dashed border-[#2a2d30] bg-[#15191c] transition-colors hover:border-[#5d5d5d]"
+            className="mt-[16px] flex h-[300px] cursor-pointer items-center justify-center rounded-[16px] border-2 border-dashed border-[#2a2d30] bg-muted transition-colors hover:border-border"
           >
             <div className="flex flex-col items-center gap-[12px]">
               <svg
@@ -216,14 +143,14 @@ export default function CreatePost() {
                 height="40"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#5d5d5d"
+                stroke="currentColor"
                 strokeWidth="1.5"
               >
                 <rect x="3" y="3" width="18" height="18" rx="2" />
                 <circle cx="8.5" cy="8.5" r="1.5" />
                 <path d="M21 15l-5-5L5 21" />
               </svg>
-              <p className="text-[14px] text-[#5d5d5d]">Click to add photos or videos</p>
+              <p className="text-[14px] text-muted-foreground">Click to add photos or videos</p>
             </div>
           </div>
         )}

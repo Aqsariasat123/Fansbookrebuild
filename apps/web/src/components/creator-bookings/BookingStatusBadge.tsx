@@ -5,7 +5,7 @@ const STATUS_BADGE: Record<Exclude<BookingStatus, 'ALL'>, { bg: string; text: st
   PENDING: { bg: 'bg-yellow-500/15', text: 'text-yellow-400' },
   REJECTED: { bg: 'bg-red-500/15', text: 'text-red-400' },
   COMPLETED: { bg: 'bg-blue-500/15', text: 'text-blue-400' },
-  NO_SHOW: { bg: 'bg-[#5d5d5d]/20', text: 'text-[#5d5d5d]' },
+  NO_SHOW: { bg: 'bg-muted-foreground/20', text: 'text-muted-foreground' },
 };
 
 interface StatusBadgeProps {

@@ -11,7 +11,7 @@ export function EarningsMobileCards({ items }: { items: EarningItem[] }) {
   return (
     <>
       {items.map((item) => (
-        <div key={item.id} className="rounded-[16px] bg-[#0e1012] p-[16px]">
+        <div key={item.id} className="rounded-[16px] bg-card p-[16px]">
           {[
             { label: 'Date', value: new Date(item.date).toLocaleDateString('en-GB') },
             { label: 'Username', value: item.username || 'John Doe' },
@@ -23,8 +23,8 @@ export function EarningsMobileCards({ items }: { items: EarningItem[] }) {
               key={r.label}
               className={`flex items-center justify-between py-[8px] ${i < arr.length - 1 ? 'border-b border-[#1a1d20]' : ''}`}
             >
-              <span className="text-[12px] text-[#5d5d5d]">{r.label}</span>
-              <span className="text-[13px] text-[#f8f8f8]">{r.value}</span>
+              <span className="text-[12px] text-muted-foreground">{r.label}</span>
+              <span className="text-[13px] text-foreground">{r.value}</span>
             </div>
           ))}
         </div>
@@ -50,7 +50,7 @@ export function EarningsTable({ items, loading }: { items: EarningItem[]; loadin
           ))}
         </tr>
       </thead>
-      <tbody className="bg-[#0e1012]">
+      <tbody className="bg-card">
         {loading ? (
           <tr>
             <td colSpan={5} className="py-[40px] text-center">
@@ -59,33 +59,33 @@ export function EarningsTable({ items, loading }: { items: EarningItem[]; loadin
           </tr>
         ) : items.length === 0 ? (
           <tr>
-            <td colSpan={5} className="py-[40px] text-center text-[14px] text-[#5d5d5d]">
+            <td colSpan={5} className="py-[40px] text-center text-[14px] text-muted-foreground">
               No earnings yet
             </td>
           </tr>
         ) : (
           items.map((item) => (
-            <tr key={item.id} className="border-b border-[#15191c] last:border-0">
-              <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+            <tr key={item.id} className="border-b border-muted last:border-0">
+              <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                 {new Date(item.date).toLocaleDateString('en-GB')}
                 <br />
-                <span className="text-[12px] text-[#5d5d5d]">
+                <span className="text-[12px] text-muted-foreground">
                   {new Date(item.date).toLocaleTimeString('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
                 </span>
               </td>
-              <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+              <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                 {item.username || 'John Doe'}
               </td>
-              <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+              <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                 {item.totalCoins || 100}
               </td>
-              <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+              <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                 {item.receivedVia || 'PayPal'}
               </td>
-              <td className="px-[16px] py-[14px] text-[14px] text-[#f8f8f8]">
+              <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                 {item.status || 'Paid'}
               </td>
             </tr>

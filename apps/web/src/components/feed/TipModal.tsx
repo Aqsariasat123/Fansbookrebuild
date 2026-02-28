@@ -39,10 +39,10 @@ export function TipModal({ postId, creatorName, onClose }: TipModalProps) {
       onClick={onClose}
     >
       <div
-        className="mx-4 w-full max-w-[340px] rounded-[16px] bg-[#0e1012] p-[20px]"
+        className="mx-4 w-full max-w-[340px] rounded-[16px] bg-card p-[20px]"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-[16px] text-[#f8f8f8]">Send Tip to {creatorName}</p>
+        <p className="text-[16px] text-foreground">Send Tip to {creatorName}</p>
         <div className="mt-4 flex flex-wrap gap-[8px]">
           {AMOUNTS.map((a) => (
             <button
@@ -51,7 +51,7 @@ export function TipModal({ postId, creatorName, onClose }: TipModalProps) {
               className={`rounded-[50px] px-4 py-[6px] text-[14px] ${
                 amount === a
                   ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'
-                  : 'bg-[#15191c] text-[#5d5d5d] hover:text-[#f8f8f8]'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
               }`}
             >
               ${a}
@@ -64,7 +64,7 @@ export function TipModal({ postId, creatorName, onClose }: TipModalProps) {
           placeholder="Custom amount"
           value={amount}
           onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : '')}
-          className="mt-3 w-full rounded-[12px] bg-[#15191c] px-3 py-[10px] text-[14px] text-[#f8f8f8] outline-none"
+          className="mt-3 w-full rounded-[12px] bg-muted px-3 py-[10px] text-[14px] text-foreground outline-none"
         />
         <div className="mt-4 flex items-center gap-3">
           <button
@@ -74,11 +74,11 @@ export function TipModal({ postId, creatorName, onClose }: TipModalProps) {
           >
             {sending ? 'Sending...' : 'Send Tip'}
           </button>
-          <button onClick={onClose} className="text-[14px] text-[#5d5d5d]">
+          <button onClick={onClose} className="text-[14px] text-muted-foreground">
             Cancel
           </button>
         </div>
-        {msg && <p className="mt-2 text-[12px] text-[#01adf1]">{msg}</p>}
+        {msg && <p className="mt-2 text-[12px] text-primary">{msg}</p>}
       </div>
     </div>
   );

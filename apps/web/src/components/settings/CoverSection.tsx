@@ -13,23 +13,23 @@ export function CoverSection({ cover, coverMsg, onUpload, onDelete }: CoverSecti
 
   return (
     <>
-      <div className="relative w-full h-[136px] rounded-[22px] overflow-hidden bg-[#15191c]">
+      <div className="relative w-full h-[136px] rounded-[22px] overflow-hidden bg-muted">
         {cover ? (
           <img src={cover} alt="" className="absolute inset-0 w-full h-full object-cover" />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-[#5d5d5d] text-[14px]">
+          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-[14px]">
             No cover photo
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#15191c]/80 rounded-[22px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80 rounded-[22px]" />
       </div>
       <div className="flex items-center justify-between mt-[8px] mb-[4px]">
         <div>
-          <p className="text-[16px] text-[#f8f8f8]">Cover Photo</p>
-          <p className="text-[12px] text-[#5d5d5d]">Recommended 920 x 216</p>
+          <p className="text-[16px] text-foreground">Cover Photo</p>
+          <p className="text-[12px] text-muted-foreground">Recommended 920 x 216</p>
         </div>
         <div className="flex items-center gap-[10px]">
-          {coverMsg && <span className="text-[12px] text-[#01adf1]">{coverMsg}</span>}
+          {coverMsg && <span className="text-[12px] text-primary">{coverMsg}</span>}
           <SmallBtn label="Upload Cover" onClick={() => coverRef.current?.click()} />
           <SmallBtn label="Delete" onClick={onDelete} />
         </div>
