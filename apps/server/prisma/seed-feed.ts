@@ -26,7 +26,7 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
   for (let i = 1; i <= 5; i++) {
     const c = await upsertCreator(prisma, {
       ...storyNames[i - 1],
-      avatar: `${IMG}/story-avatar-${i}.webp`,
+      avatar: `/images/creators/creator${((i - 1) % 10) + 1}.webp`,
       passwordHash,
     });
     storyIds.push(c.id);
@@ -72,7 +72,7 @@ export async function seedFeed(prisma: PrismaClient, passwordHash: string) {
   for (let i = 1; i <= 7; i++) {
     await upsertCreator(prisma, {
       ...popularModelNames[i - 1],
-      avatar: `${IMG}/model-${i}.webp`,
+      avatar: `/images/creators/creator${((i - 1) % 10) + 1}.webp`,
       passwordHash,
       category: 'Model',
     });
