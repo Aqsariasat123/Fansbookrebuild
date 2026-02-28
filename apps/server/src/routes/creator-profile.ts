@@ -197,6 +197,8 @@ router.get('/:username/posts', async (req, res, next) => {
         isPinned,
         likeCount,
         commentCount,
+        shareCount: 15,
+        isLiked: false,
         createdAt,
         author,
         media,
