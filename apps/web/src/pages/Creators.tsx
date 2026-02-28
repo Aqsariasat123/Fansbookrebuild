@@ -129,7 +129,7 @@ export default function Creators() {
   return (
     <div className="min-h-screen bg-muted font-outfit">
       <div className="relative h-[130px]">
-        <MarketingNav />
+        <MarketingNav onDark={false} />
       </div>
       <FilterBar filters={filters} onFilterChange={handleFilterChange} />
       <div className="flex justify-center px-[16px] pb-[40px] md:px-[60px]">

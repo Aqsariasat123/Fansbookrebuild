@@ -1,7 +1,5 @@
 import { useState } from 'react';
 
-const WHITE = 'brightness(0) invert(1)';
-
 const memberContent: Record<string, Record<string, string[]>> = {
   creators: {
     Payouts: [
@@ -101,8 +99,7 @@ export function MemberFeaturesSection() {
             <button
               key={t}
               onClick={() => setSubTab(t)}
-              className={`px-[12px] pb-[10px] text-[14px] font-medium sm:px-[16px] md:px-[22px] md:pb-[12px] md:text-[20px] ${active ? 'border-b-[2px] border-[#a61651] text-foreground' : 'text-muted-foreground'}`}
-              style={active ? { borderRadius: '4px 4px 0 0', background: '#252d32' } : {}}
+              className={`px-[12px] pb-[10px] text-[14px] font-medium sm:px-[16px] md:px-[22px] md:pb-[12px] md:text-[20px] ${active ? 'rounded-t-[4px] border-b-[2px] border-[#a61651] bg-card text-foreground' : 'text-muted-foreground'}`}
             >
               {t}
             </button>
@@ -155,7 +152,7 @@ export function FAQSection() {
                   src="/icons/landing/expand_more.svg"
                   alt=""
                   className="h-[18px] w-[18px] transition-transform md:h-[20px] md:w-[20px]"
-                  style={{ filter: WHITE, transform: open === i ? 'rotate(180deg)' : undefined }}
+                  style={{ transform: open === i ? 'rotate(180deg)' : undefined }}
                 />
               </span>
               <span className="text-[15px] font-semibold text-foreground md:text-[18px]">

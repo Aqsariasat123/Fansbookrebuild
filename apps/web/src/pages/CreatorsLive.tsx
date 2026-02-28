@@ -32,7 +32,7 @@ export default function CreatorsLive() {
   return (
     <div className="min-h-screen bg-muted font-outfit">
       <div className="relative h-[130px]">
-        <MarketingNav />
+        <MarketingNav onDark={false} />
       </div>
 
       <div className="flex flex-col items-center gap-[11px] px-[20px] pt-[20px] pb-[20px] text-foreground md:px-0 md:pb-[50px]">

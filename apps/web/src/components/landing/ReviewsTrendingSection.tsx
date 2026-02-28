@@ -111,7 +111,6 @@ export function TrendingSection() {
             src="/icons/landing/arrow_back_ios.svg"
             alt=""
             className="h-[16px] w-[16px] pl-[3px] md:h-[20px] md:w-[20px] md:pl-[4px]"
-            style={{ filter: WHITE }}
           />
         </button>
 
@@ -178,7 +177,7 @@ export function TrendingSection() {
 
               <Link
                 to="/register"
-                className="mt-[10px] flex w-full items-center justify-center gap-[8px] rounded-[16px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-[14px] font-normal text-foreground transition-opacity hover:opacity-90 md:mt-[12px] md:rounded-[22px] md:py-[17px] md:text-[16px]"
+                className="mt-[10px] flex w-full items-center justify-center gap-[8px] rounded-[16px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-[14px] font-normal text-white transition-opacity hover:opacity-90 md:mt-[12px] md:rounded-[22px] md:py-[17px] md:text-[16px]"
               >
                 View Profile
                 <img
@@ -200,7 +199,6 @@ export function TrendingSection() {
             src="/icons/landing/arrow_forward_ios.svg"
             alt=""
             className="h-[16px] w-[16px] md:h-[20px] md:w-[20px]"
-            style={{ filter: WHITE }}
           />
         </button>
       </div>

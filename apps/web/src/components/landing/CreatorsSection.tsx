@@ -136,7 +136,7 @@ export function CreatorsSection() {
 
           <Link
             to="/register"
-            className="absolute left-1/2 top-[163px] z-[10] flex -translate-x-1/2 items-center gap-[4px] rounded-[36px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[10px] py-[8px] text-[12px] font-medium text-foreground shadow-[0px_3px_5px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
+            className="absolute left-1/2 top-[163px] z-[10] flex -translate-x-1/2 items-center gap-[4px] rounded-[36px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[10px] py-[8px] text-[12px] font-medium text-white shadow-[0px_3px_5px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
           >
             Start Your Journey
             <img
@@ -159,7 +159,7 @@ export function CreatorsSection() {
             </p>
             <Link
               to="/register"
-              className="mt-[55px] flex items-center gap-[10px] rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[20px] py-[15px] text-[20px] font-medium text-foreground shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
+              className="mt-[55px] flex items-center gap-[10px] rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[20px] py-[15px] text-[20px] font-medium text-white shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
             >
               Start Your Journey
               <img

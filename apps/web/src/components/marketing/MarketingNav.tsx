@@ -105,13 +105,13 @@ function MobileMenu({
   );
 }
 
-function ThemeSwitch() {
+function ThemeSwitch({ onDark = true }: { onDark?: boolean }) {
   const { theme, setTheme } = useThemeStore();
   const isDark = theme === 'dark' || theme === 'system';
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="flex size-[40px] items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:bg-white/10"
+      className={`flex size-[40px] items-center justify-center rounded-full border transition-colors ${onDark ? 'border-white/20 text-white hover:bg-white/10' : 'border-foreground/20 text-foreground hover:bg-foreground/10'}`}
       aria-label="Toggle theme"
     >
       {isDark ? (
@@ -127,11 +127,12 @@ function ThemeSwitch() {
   );
 }
 
-export function MarketingNav() {
+export function MarketingNav({ onDark = true }: { onDark?: boolean }) {
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const linkColor = (path: string) => (pathname === path ? 'text-primary' : 'text-white');
+  const linkColor = (path: string) =>
+    pathname === path ? 'text-primary' : onDark ? 'text-white' : 'text-foreground';
 
   return (
     <>
@@ -169,11 +170,11 @@ export function MarketingNav() {
               src="/icons/landing/home_filled.svg"
               alt=""
               className="h-[26px] w-[26px]"
-              style={{ filter: WHITE }}
+              style={onDark ? { filter: WHITE } : undefined}
             />
             Make Money
           </Link>
-          <ThemeSwitch />
+          <ThemeSwitch onDark={onDark} />
           <Link
             to="/login"
             className="rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[24px] py-[14px] text-[18px] font-normal text-white shadow-[0px_2px_18px_rgba(34,34,34,0.25)]"
@@ -182,7 +183,7 @@ export function MarketingNav() {
           </Link>
           <Link
             to="/register"
-            className="rounded-[80px] border border-[#01adf1] px-[24px] py-[14px] text-[18px] font-normal text-white shadow-[0px_2px_18px_rgba(34,34,34,0.25)]"
+            className={`rounded-[80px] border border-[#01adf1] px-[24px] py-[14px] text-[18px] font-normal shadow-[0px_2px_18px_rgba(34,34,34,0.25)] ${onDark ? 'text-white' : 'text-foreground'}`}
           >
             Signup
           </Link>
@@ -190,7 +191,7 @@ export function MarketingNav() {
 
         {/* Mobile: Theme + Login button + hamburger */}
         <div className="ml-auto flex items-center gap-[16px] lg:hidden">
-          <ThemeSwitch />
+          <ThemeSwitch onDark={onDark} />
           <Link
             to="/login"
             className="rounded-[53px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[16px] py-[9px] text-[12px] font-medium text-white shadow-[0px_1.3px_12px_rgba(34,34,34,0.25)]"
@@ -202,9 +203,9 @@ export function MarketingNav() {
             className="flex h-[30px] w-[30px] flex-col items-center justify-center gap-[6px]"
             aria-label="Open menu"
           >
-            <span className="h-[2px] w-[22px] bg-white" />
-            <span className="h-[2px] w-[22px] bg-white" />
-            <span className="h-[2px] w-[22px] bg-white" />
+            <span className={`h-[2px] w-[22px] ${onDark ? 'bg-white' : 'bg-foreground'}`} />
+            <span className={`h-[2px] w-[22px] ${onDark ? 'bg-white' : 'bg-foreground'}`} />
+            <span className={`h-[2px] w-[22px] ${onDark ? 'bg-white' : 'bg-foreground'}`} />
           </button>
         </div>
       </nav>

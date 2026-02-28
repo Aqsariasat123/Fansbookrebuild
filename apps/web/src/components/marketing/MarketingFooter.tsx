@@ -18,7 +18,7 @@ export function CTASection() {
         </div>
         <Link
           to="/register"
-          className="flex items-center gap-[4px] rounded-[32px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[28px] py-[8px] text-[8px] font-medium text-foreground shadow-[0px_2.5px_4px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90 md:gap-[10px] md:rounded-[80px] md:px-[40px] md:py-[17px] md:text-[20px] md:shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)]"
+          className="flex items-center gap-[4px] rounded-[32px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[28px] py-[8px] text-[8px] font-medium text-white shadow-[0px_2.5px_4px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90 md:gap-[10px] md:rounded-[80px] md:px-[40px] md:py-[17px] md:text-[20px] md:shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)]"
         >
           Join Now
           <img

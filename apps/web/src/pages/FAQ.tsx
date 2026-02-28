@@ -3,8 +3,6 @@ import { MarketingNav } from '../components/marketing/MarketingNav';
 import { CTASection, MarketingFooter } from '../components/marketing/MarketingFooter';
 import { api } from '../lib/api';
 
-const WHITE = 'brightness(0) invert(1)';
-
 interface FAQItem {
   id: string;
   question: string;
@@ -82,7 +80,7 @@ export default function FAQ() {
                     src="/icons/landing/expand_more.svg"
                     alt=""
                     className="h-[18px] w-[18px] transition-transform md:h-[20px] md:w-[20px]"
-                    style={{ filter: WHITE, transform: open === i ? 'rotate(180deg)' : undefined }}
+                    style={{ transform: open === i ? 'rotate(180deg)' : undefined }}
                   />
                 </span>
                 <span className="text-[15px] font-semibold text-foreground md:text-[18px]">
