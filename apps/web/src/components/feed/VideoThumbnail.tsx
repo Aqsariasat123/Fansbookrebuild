@@ -11,8 +11,7 @@ export function VideoThumbnail({ src, className = '', fallback }: VideoThumbnail
   const attempted = useRef(false);
 
   useEffect(() => {
-    // Skip generation if we already have a usable fallback image
-    if (attempted.current || !src || fallback) return;
+    if (attempted.current || !src) return;
     attempted.current = true;
 
     const video = document.createElement('video');
