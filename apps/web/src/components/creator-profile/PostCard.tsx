@@ -66,7 +66,9 @@ function VideoCard({ media, onClick }: { media: PostMedia; onClick: () => void }
       />
       <div className="absolute inset-0 flex items-center justify-center bg-[rgba(21,25,28,0.55)]">
         <div className="flex items-center gap-[8px] rounded-[50px] bg-muted/90 py-[6px] pl-[6px] pr-[16px]">
-          <img src={`${IMG}/play-button.webp`} alt="" className="size-[28px] md:size-[36px]" />
+          <svg viewBox="0 0 24 24" fill="currentColor" className="size-[28px] md:size-[36px]">
+            <path d="M8 5v14l11-7z" />
+          </svg>
           <span className="text-[14px] text-foreground md:text-[16px]">Play</span>
         </div>
       </div>

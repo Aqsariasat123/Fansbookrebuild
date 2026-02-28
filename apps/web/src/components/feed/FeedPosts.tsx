@@ -156,11 +156,9 @@ export function VideoPost({ post }: { post: FeedPost }) {
             <div className="absolute inset-0 rounded-[10px] bg-[rgba(21,25,28,0.55)] md:rounded-[22px]" />
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <button className="flex items-center justify-center gap-[5px] rounded-[56px] bg-muted py-px pl-px pr-[15px] md:gap-[10px] md:rounded-[124px] md:pr-[34px]">
-                <img
-                  src={`${IMG}/play-button.webp`}
-                  alt=""
-                  className="size-[22px] object-contain md:size-[48px]"
-                />
+                <svg viewBox="0 0 24 24" fill="currentColor" className="size-[22px] md:size-[48px]">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
                 <span className="text-[9px] font-normal text-foreground md:text-[20px]">Play</span>
               </button>
             </div>
