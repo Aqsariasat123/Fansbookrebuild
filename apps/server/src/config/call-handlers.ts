@@ -28,6 +28,7 @@ export function registerCallHandlers(io: Server, socket: Socket) {
 
   socket.on('call:initiate', async (data: { calleeId: string; mode?: string }) => {
     try {
+      logger.info({ userId, calleeId: data.calleeId, mode: data.mode }, 'call:initiate received');
       const caller = await prisma.user.findUnique({
         where: { id: userId },
         select: { id: true, displayName: true, avatar: true },
@@ -39,6 +40,7 @@ export function registerCallHandlers(io: Server, socket: Socket) {
         data: { callerId: userId, calleeId: data.calleeId, status: 'RINGING', mode },
       });
 
+      logger.info({ callId: call.id, calleeId: data.calleeId }, 'call:incoming emitted');
       io.to(`user:${data.calleeId}`).emit('call:incoming', {
         callId: call.id,
         callerId: caller.id,
@@ -55,10 +57,12 @@ export function registerCallHandlers(io: Server, socket: Socket) {
 
   socket.on('call:accept', async (data: { callId: string }) => {
     try {
+      logger.info({ userId, callId: data.callId }, 'call:accept received');
       const call = await prisma.videoCall.update({
         where: { id: data.callId },
         data: { status: 'ACTIVE', startedAt: new Date() },
       });
+      logger.info({ callId: call.id, callerId: call.callerId }, 'call:accepted emitted');
       io.to(`user:${call.callerId}`).emit('call:accepted', { callId: call.id });
     } catch (err) {
       logger.error({ err }, 'Error in call:accept');
@@ -87,6 +91,7 @@ export function registerCallHandlers(io: Server, socket: Socket) {
 
   socket.on('call:end', async (data: { callId: string }) => {
     try {
+      logger.info({ userId, callId: data.callId }, 'call:end received');
       const call = await prisma.videoCall.findUnique({ where: { id: data.callId } });
       if (!call) return;
       const duration = call.startedAt
@@ -97,6 +102,7 @@ export function registerCallHandlers(io: Server, socket: Socket) {
         data: { status: 'ENDED', endedAt: new Date(), duration },
       });
       const otherId = call.callerId === userId ? call.calleeId : call.callerId;
+      logger.info({ callId: call.id, otherId }, 'call:ended emitted');
       io.to(`user:${otherId}`).emit('call:ended', { callId: call.id });
       const label = call.mode === 'audio' ? 'Audio' : 'Video';
       const mins = Math.floor(duration / 60);
@@ -119,8 +125,12 @@ export function registerCallHandlers(io: Server, socket: Socket) {
   socket.on('call:offer', async (data: { callId: string; sdp: unknown }) => {
     try {
       const call = await prisma.videoCall.findUnique({ where: { id: data.callId } });
-      if (!call) return;
+      if (!call) {
+        logger.warn({ callId: data.callId }, 'call:offer — call not found');
+        return;
+      }
       const otherId = call.callerId === userId ? call.calleeId : call.callerId;
+      logger.info({ callId: data.callId, from: userId, to: otherId }, 'call:offer relayed');
       io.to(`user:${otherId}`).emit('call:offer', { callId: data.callId, sdp: data.sdp });
     } catch (err) {
       logger.error({ err }, 'Error in call:offer');
@@ -130,8 +140,12 @@ export function registerCallHandlers(io: Server, socket: Socket) {
   socket.on('call:answer', async (data: { callId: string; sdp: unknown }) => {
     try {
       const call = await prisma.videoCall.findUnique({ where: { id: data.callId } });
-      if (!call) return;
+      if (!call) {
+        logger.warn({ callId: data.callId }, 'call:answer — call not found');
+        return;
+      }
       const otherId = call.callerId === userId ? call.calleeId : call.callerId;
+      logger.info({ callId: data.callId, from: userId, to: otherId }, 'call:answer relayed');
       io.to(`user:${otherId}`).emit('call:answer', { callId: data.callId, sdp: data.sdp });
     } catch (err) {
       logger.error({ err }, 'Error in call:answer');
