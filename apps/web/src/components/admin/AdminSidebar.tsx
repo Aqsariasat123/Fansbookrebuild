@@ -8,7 +8,7 @@ const iconMap: Record<string, string> = {
   booking: '/icons/admin/booking.png',
   earnings: '/icons/admin/transaction.png',
   report: '/icons/admin/report.png',
-  audit: '/icons/admin/eye.png',
+  audit: '/icons/admin/report.png',
   finance: '/icons/admin/finance.png',
   masters: '/icons/admin/masters.png',
   settings: '/icons/admin/settings.png',
