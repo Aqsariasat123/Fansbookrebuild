@@ -1,19 +1,20 @@
 import { MasterListPage } from '../../../components/admin/MasterListPage';
+import type { FieldDef } from '../../../components/admin/MasterFormModal';
+
+const fields: FieldDef[] = [
+  { key: 'title', label: 'Title', type: 'text' },
+  { key: 'content', label: 'Content', type: 'textarea' },
+];
+
+const columns = [{ key: 'title', header: 'Title' }];
 
 export default function CmsList() {
-  const columns = [
-    { key: 'title', header: 'Title' },
-    {
-      key: 'action',
-      header: 'Action',
-      render: () => (
-        <button title="Edit">
-          <img src="/icons/admin/pencil.png" alt="Edit" className="size-[20px]" />
-        </button>
-      ),
-    },
-  ];
   return (
-    <MasterListPage title="Masters > CMS List" apiPath="/admin/masters/cms" columns={columns} />
+    <MasterListPage
+      title="Masters > CMS List"
+      apiPath="/admin/masters/cms"
+      columns={columns}
+      fields={fields}
+    />
   );
 }
