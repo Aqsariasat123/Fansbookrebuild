@@ -17,83 +17,15 @@ export function useCall() {
   navRef.current = navigate;
   locRef.current = location.pathname;
 
-  // Stable socket listeners — registered once, never torn down mid-call
+  // Watch for call ended (from socket) → navigate back + cleanup
+  const status = useCallStore((s) => s.status);
   useEffect(() => {
-    const socket = getSocket();
-    if (!socket) return;
-
-    const goBack = () => {
-      const path = gs().returnPath;
-      if (path) navRef.current(path);
-      else navRef.current(-1);
-    };
-
-    const handleIncoming = (data: {
-      callId: string;
-      callerId: string;
-      callerName: string;
-      callerAvatar: string | null;
-      mode?: CallMode;
-    }) => {
-      gs().setIncoming(data);
-      gs().setPeer(data.callerName, data.callerAvatar);
-    };
-
-    const handleAccepted = () => gs().setStatus('active');
-    const handleRejected = () => {
-      goBack();
-      gs().reset();
-    };
-    const handleEnded = () => {
-      goBack();
-      gs().reset();
-    };
-
-    const handleOffer = async (data: { callId: string; sdp: RTCSessionDescriptionInit }) => {
-      const pc = gs().peerConnection;
-      if (!pc) {
-        gs().setPendingOffer(data.sdp);
-        return;
-      }
-      await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      socket.emit('call:answer', { callId: data.callId, sdp: answer });
-    };
-
-    const handleAnswer = async (data: { sdp: RTCSessionDescriptionInit }) => {
-      const pc = gs().peerConnection;
-      if (!pc) return;
-      await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-    };
-
-    const handleIce = async (data: { candidate: RTCIceCandidateInit }) => {
-      const pc = gs().peerConnection;
-      if (!pc) {
-        gs().addPendingCandidate(data.candidate);
-        return;
-      }
-      await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-    };
-
-    socket.on('call:incoming', handleIncoming);
-    socket.on('call:accepted', handleAccepted);
-    socket.on('call:rejected', handleRejected);
-    socket.on('call:ended', handleEnded);
-    socket.on('call:offer', handleOffer);
-    socket.on('call:answer', handleAnswer);
-    socket.on('call:ice-candidate', handleIce);
-
-    return () => {
-      socket.off('call:incoming', handleIncoming);
-      socket.off('call:accepted', handleAccepted);
-      socket.off('call:rejected', handleRejected);
-      socket.off('call:ended', handleEnded);
-      socket.off('call:offer', handleOffer);
-      socket.off('call:answer', handleAnswer);
-      socket.off('call:ice-candidate', handleIce);
-    };
-  }, []);
+    if (status !== 'ended') return;
+    const path = gs().returnPath;
+    gs().reset();
+    if (path) navRef.current(path);
+    else navRef.current(-1);
+  }, [status]);
 
   const createPeerConnection = useCallback(() => {
     const pc = new RTCPeerConnection(ICE_SERVERS);
