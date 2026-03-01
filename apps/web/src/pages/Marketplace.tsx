@@ -41,7 +41,7 @@ export default function Marketplace() {
   const [sort, setSort] = useState('newest');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     clearTimeout(timerRef.current);
