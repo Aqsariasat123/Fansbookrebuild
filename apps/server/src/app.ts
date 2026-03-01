@@ -41,6 +41,7 @@ import marketplaceRouter from './routes/marketplace.js';
 import leaderboardRouter from './routes/leaderboard.js';
 import badgesRouter from './routes/badges.js';
 import adminRouter from './routes/admin/index.js';
+import uploadsRouter from './routes/uploads.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -107,6 +108,7 @@ app.use('/api/auth/2fa', twoFactorRouter);
 app.use('/api/marketplace', marketplaceRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/badges', badgesRouter);
+app.use('/api/uploads', uploadsRouter);
 app.use('/api/admin', adminRouter);
 
 // Error handling

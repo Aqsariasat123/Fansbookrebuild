@@ -8,6 +8,7 @@ const crud = buildCrud(prisma.country, {
   searchFields: ['name', 'code'],
   requiredFields: ['name', 'code'],
   orderBy: { name: 'asc' },
+  modelName: 'Country',
 });
 
 router.get('/', crud.list);

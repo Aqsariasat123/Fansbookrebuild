@@ -9,6 +9,8 @@ import financeRouter from './admin-finance.js';
 import mastersRouter from './admin-masters.js';
 import settingsRouter from './admin-settings.js';
 import profileRouter from './admin-profile.js';
+import dashboardRouter from './admin-dashboard.js';
+import auditLogRouter from './admin-audit-log.js';
 
 const router = Router();
 
@@ -23,5 +25,7 @@ router.use('/finance', financeRouter);
 router.use('/masters', mastersRouter);
 router.use('/settings', settingsRouter);
 router.use('/profile', profileRouter);
+router.use('/dashboard', dashboardRouter);
+router.use('/audit-log', auditLogRouter);
 
 export default router;

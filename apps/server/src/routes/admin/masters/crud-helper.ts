@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { AppError } from '../../../middleware/errorHandler.js';
+import { prisma } from '../../../config/database.js';
 
 /**
  * Shared pagination + search parsing for master CRUD routes.
@@ -29,6 +30,29 @@ export function paginatedResponse(items: unknown[], total: number, page: number,
  * Generic CRUD factory for simple master models.
  * Returns { list, create, update, remove } handlers.
  */
+async function logAudit(
+  req: Request,
+  action: string,
+  targetType: string,
+  targetId: string,
+  details?: unknown,
+) {
+  try {
+    await prisma.auditLog.create({
+      data: {
+        adminId: req.user!.userId,
+        action,
+        targetType,
+        targetId,
+        details: details ? JSON.parse(JSON.stringify(details)) : undefined,
+        ipAddress: (typeof req.ip === 'string' ? req.ip : req.socket.remoteAddress) || null,
+      },
+    });
+  } catch {
+    // Non-critical — don't block the operation
+  }
+}
+
 export function buildCrud(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   model: any,
@@ -36,12 +60,14 @@ export function buildCrud(
     searchFields?: string[];
     requiredFields?: string[];
     orderBy?: Record<string, string>;
+    modelName?: string;
   } = {},
 ) {
   const {
     searchFields = ['name'],
     requiredFields = ['name'],
     orderBy = { createdAt: 'desc' },
+    modelName = 'Record',
   } = opts;
 
   const list = async (req: Request, res: Response, next: NextFunction) => {
@@ -74,6 +100,7 @@ export function buildCrud(
         }
       }
       const item = await model.create({ data: req.body });
+      logAudit(req, 'CREATE', modelName, item.id, req.body);
       res.status(201).json({ success: true, data: item });
     } catch (err) {
       next(err);
@@ -89,6 +116,7 @@ export function buildCrud(
         where: { id: req.params.id },
         data: req.body,
       });
+      logAudit(req, 'UPDATE', modelName, req.params.id as string, req.body);
       res.json({ success: true, data: item });
     } catch (err) {
       next(err);
@@ -101,6 +129,7 @@ export function buildCrud(
       if (!existing) throw new AppError(404, 'Record not found');
 
       await model.delete({ where: { id: req.params.id } });
+      logAudit(req, 'DELETE', modelName, req.params.id as string);
       res.json({ success: true, data: { id: req.params.id } });
     } catch (err) {
       next(err);

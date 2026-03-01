@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { createNotification } from '../utils/notify.js';
 
 const router = Router();
 
@@ -40,6 +41,17 @@ router.post('/:creatorId', authenticate, async (req, res, next) => {
     });
     if (existing) throw new AppError(409, 'Already following');
     await prisma.follow.create({ data: { followerId: userId, followingId: creatorId } });
+    // Notify the creator
+    const actor = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { displayName: true },
+    });
+    createNotification({
+      userId: creatorId,
+      type: 'FOLLOW',
+      actorId: userId,
+      message: `${actor?.displayName || 'Someone'} started following you`,
+    });
     res.status(201).json({ success: true, message: 'Followed' });
   } catch (err) {
     next(err);

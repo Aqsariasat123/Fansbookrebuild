@@ -7,6 +7,7 @@ const router = Router();
 const crud = buildCrud(prisma.emailTemplate, {
   searchFields: ['title', 'content'],
   requiredFields: ['title', 'content'],
+  modelName: 'EmailTemplate',
 });
 
 router.get('/', crud.list);

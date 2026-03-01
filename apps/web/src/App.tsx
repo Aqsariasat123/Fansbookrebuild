@@ -7,6 +7,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { RoleRoute } from './components/RoleRoute';
 import { useAuthStore } from './stores/authStore';
 import { getMeApi } from './lib/auth';
+import { useSocket } from './hooks/useSocket';
+import { NotificationToastContainer } from './components/shared/NotificationToast';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const MakeMoney = lazy(() => import('./pages/MakeMoney'));
@@ -87,6 +89,7 @@ function Loading() {
 
 function AuthBootstrap({ children }: { children: React.ReactNode }) {
   const setUser = useAuthStore((s) => s.setUser);
+  useSocket();
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -105,6 +108,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthBootstrap>
+          <NotificationToastContainer />
           <Suspense fallback={<Loading />}>
             <Routes>
               {/* Marketing pages (no layout) */}

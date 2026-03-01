@@ -23,9 +23,10 @@ interface ChatUserHeaderProps {
   otherName?: string;
   otherAvatar?: string | null;
   onBack: () => void;
+  isOnline?: boolean;
 }
 
-export function ChatUserHeader({ otherName, otherAvatar, onBack }: ChatUserHeaderProps) {
+export function ChatUserHeader({ otherName, otherAvatar, onBack, isOnline }: ChatUserHeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
   const initial = otherName?.charAt(0)?.toUpperCase() || '?';
   return (
@@ -54,7 +55,11 @@ export function ChatUserHeader({ otherName, otherAvatar, onBack }: ChatUserHeade
         )}
         <div>
           <p className="text-[20px] leading-[1.7] text-foreground">{otherName}</p>
-          <p className="text-[12px] leading-[1.7] text-green-500">Online</p>
+          <p
+            className={`text-[12px] leading-[1.7] ${isOnline ? 'text-green-500' : 'text-muted-foreground'}`}
+          >
+            {isOnline ? 'Online' : 'Offline'}
+          </p>
         </div>
       </div>
       <div className="flex-1" />

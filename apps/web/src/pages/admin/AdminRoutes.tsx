@@ -32,6 +32,8 @@ const HomeSetting = lazy(() => import('./settings/HomeSetting'));
 const GeneralSetting = lazy(() => import('./settings/GeneralSetting'));
 const MakeMoneySetting = lazy(() => import('./settings/MakeMoneySetting'));
 const BannerSetting = lazy(() => import('./settings/BannerSetting'));
+const AdminDashboard = lazy(() => import('./AdminDashboard'));
+const AdminAuditLog = lazy(() => import('./AdminAuditLog'));
 
 export function adminRoutes() {
   return (
@@ -40,6 +42,8 @@ export function adminRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<RoleRoute allowedRoles={['ADMIN']} />}>
           <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/audit-log" element={<AdminAuditLog />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/profile" element={<AdminProfile />} />
             <Route path="/admin/profile/edit" element={<AdminProfileEdit />} />

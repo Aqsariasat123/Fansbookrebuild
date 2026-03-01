@@ -7,6 +7,7 @@ const router = Router();
 const crud = buildCrud(prisma.translation, {
   searchFields: ['textKey', 'textValue'],
   requiredFields: ['textKey', 'textValue'],
+  modelName: 'Translation',
 });
 
 router.get('/', crud.list);

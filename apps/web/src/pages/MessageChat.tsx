@@ -6,6 +6,8 @@ import { OtherBubble, SelfBubble } from '../components/chat/ChatBubbles';
 import { MessagePageHeader, ChatUserHeader } from '../components/chat/ChatHeader';
 import { ImagePreview, ImageViewer } from '../components/chat/ImagePreview';
 import { ChatInputBar } from '../components/chat/ChatInputBar';
+import { useChat } from '../hooks/useChat';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import type { ChatMessage } from '../components/chat/ChatBubbles';
 
 export default function MessageChat() {
@@ -13,13 +15,20 @@ export default function MessageChat() {
   const userId = useAuthStore((s) => s.user?.id);
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [other, setOther] = useState<{ displayName: string; avatar: string | null } | null>(null);
+  const [other, setOther] = useState<{
+    id: string;
+    displayName: string;
+    avatar: string | null;
+  } | null>(null);
   const [newMsg, setNewMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [viewImage, setViewImage] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { incomingMessages, typingUsers, emitTyping, markRead, clearIncoming } =
+    useChat(conversationId);
+  const otherOnline = useOnlineStatus(other?.id);
 
   useEffect(() => {
     if (!conversationId) return;
@@ -34,7 +43,20 @@ export default function MessageChat() {
       .catch(() => navigate('/messages'))
       .finally(() => setLoading(false));
     api.put(`/messages/${conversationId}/read`).catch(() => {});
-  }, [conversationId, navigate]);
+    markRead();
+    return () => clearIncoming();
+  }, [conversationId, navigate, markRead, clearIncoming]);
+
+  // Merge incoming real-time messages
+  useEffect(() => {
+    if (incomingMessages.length === 0) return;
+    setMessages((prev) => {
+      const ids = new Set(prev.map((m) => m.id));
+      const newOnes = incomingMessages.filter((m) => !ids.has(m.id));
+      return newOnes.length > 0 ? [...prev, ...newOnes] : prev;
+    });
+    markRead();
+  }, [incomingMessages, markRead]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -102,6 +124,7 @@ export default function MessageChat() {
           otherName={other?.displayName}
           otherAvatar={other?.avatar}
           onBack={() => navigate('/messages')}
+          isOnline={otherOnline}
         />
         <div
           ref={scrollRef}
@@ -124,10 +147,32 @@ export default function MessageChat() {
               />
             ),
           )}
+          {typingUsers.size > 0 && (
+            <div className="flex items-center gap-[8px] px-[10px] py-[4px]">
+              <div className="flex gap-[3px]">
+                <span
+                  className="size-[6px] rounded-full bg-muted-foreground/50 animate-bounce"
+                  style={{ animationDelay: '0ms' }}
+                />
+                <span
+                  className="size-[6px] rounded-full bg-muted-foreground/50 animate-bounce"
+                  style={{ animationDelay: '150ms' }}
+                />
+                <span
+                  className="size-[6px] rounded-full bg-muted-foreground/50 animate-bounce"
+                  style={{ animationDelay: '300ms' }}
+                />
+              </div>
+              <span className="text-[12px] text-muted-foreground">typing...</span>
+            </div>
+          )}
         </div>
         <ChatInputBar
           value={newMsg}
-          onChange={setNewMsg}
+          onChange={(val) => {
+            setNewMsg(val);
+            emitTyping(val.length > 0);
+          }}
           onSend={handleSend}
           onFileSelect={handleFileSelect}
           sending={sending}

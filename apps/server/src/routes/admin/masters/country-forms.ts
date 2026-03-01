@@ -7,6 +7,7 @@ const router = Router();
 const crud = buildCrud(prisma.countryForm, {
   searchFields: ['inputTitle'],
   requiredFields: ['inputTitle', 'inputType'],
+  modelName: 'CountryForm',
 });
 
 router.get('/', crud.list);

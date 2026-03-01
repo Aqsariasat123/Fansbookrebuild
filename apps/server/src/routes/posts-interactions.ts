@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { createNotification } from '../utils/notify.js';
 
 const router = Router();
 
@@ -45,6 +46,20 @@ router.post('/:id/like', authenticate, async (req, res, next) => {
       prisma.like.create({ data: { postId, userId } }),
       prisma.post.update({ where: { id: postId }, data: { likeCount: { increment: 1 } } }),
     ]);
+    // Notify post author
+    if (post.authorId !== userId) {
+      const actor = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { displayName: true },
+      });
+      createNotification({
+        userId: post.authorId,
+        type: 'LIKE',
+        actorId: userId,
+        entityId: postId,
+        message: `${actor?.displayName || 'Someone'} liked your post`,
+      });
+    }
     res.status(201).json({ success: true, message: 'Post liked' });
   } catch (err) {
     next(err);
@@ -67,6 +82,20 @@ router.delete('/:id/like', authenticate, async (req, res, next) => {
     next(err);
   }
 });
+
+async function notifyTip(authorId: string, actorId: string, postId: string, amount: number) {
+  const actor = await prisma.user.findUnique({
+    where: { id: actorId },
+    select: { displayName: true },
+  });
+  createNotification({
+    userId: authorId,
+    type: 'TIP',
+    actorId,
+    entityId: postId,
+    message: `${actor?.displayName || 'Someone'} tipped $${amount} on your post`,
+  });
+}
 
 // ─── POST /api/posts/:id/tip ── send tip to post author ──────
 router.post('/:id/tip', authenticate, async (req, res, next) => {
@@ -107,6 +136,7 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
       }),
     ]);
 
+    notifyTip(post.authorId, userId, postId, amount);
     res.json({ success: true, message: 'Tip sent!' });
   } catch (err) {
     next(err);

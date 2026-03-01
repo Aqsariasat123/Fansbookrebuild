@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { NavbarSearch } from './NavbarSearch';
 import { NavbarUserMenu } from './NavbarUserMenu';
+import { useNotificationStore } from '../../stores/notificationStore';
 
 function BellIcon({ className }: { className?: string }) {
   return (
@@ -31,6 +32,16 @@ interface NavbarProps {
   onMenuToggle: () => void;
 }
 
+function NotifBadge() {
+  const count = useNotificationStore((s) => s.unreadCount);
+  if (count <= 0) return null;
+  return (
+    <span className="absolute -top-[2px] -right-[2px] flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[10px] font-bold px-[4px]">
+      {count > 99 ? '99+' : count}
+    </span>
+  );
+}
+
 export function Navbar({ onMenuToggle }: NavbarProps) {
   return (
     <header className="sticky top-0 z-50 bg-muted">
@@ -40,8 +51,13 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
           <img src="/icons/dashboard/menu.svg" alt="" className="size-[30px]" />
         </button>
         <div className="flex items-center gap-[6px]">
-          <Link to="/notifications" className={`shrink-0 ${iconCircle}`} aria-label="Notifications">
+          <Link
+            to="/notifications"
+            className={`relative shrink-0 ${iconCircle}`}
+            aria-label="Notifications"
+          >
             <BellIcon className="size-[22px]" />
+            <NotifBadge />
           </Link>
           <Link to="/messages" className={`shrink-0 ${iconCircle}`} aria-label="Messages">
             <MessageIcon className="size-[22px]" />
@@ -65,10 +81,11 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
               <NavbarSearch />
               <Link
                 to="/notifications"
-                className={`shrink-0 ${iconCircle}`}
+                className={`relative shrink-0 ${iconCircle}`}
                 aria-label="Notifications"
               >
                 <BellIcon className="size-[22px]" />
+                <NotifBadge />
               </Link>
               <Link to="/messages" className={`shrink-0 ${iconCircle}`} aria-label="Messages">
                 <MessageIcon className="size-[22px]" />

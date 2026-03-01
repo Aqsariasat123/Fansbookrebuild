@@ -8,6 +8,7 @@ const crud = buildCrud(prisma.faq, {
   searchFields: ['question', 'answer'],
   requiredFields: ['question', 'answer'],
   orderBy: { sequence: 'asc' },
+  modelName: 'Faq',
 });
 
 router.get('/', crud.list);

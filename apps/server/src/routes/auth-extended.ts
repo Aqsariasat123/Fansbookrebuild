@@ -7,6 +7,8 @@ import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { authLimiter } from '../middleware/rateLimit.js';
 import { logger } from '../utils/logger.js';
+import { sendEmail } from '../utils/email.js';
+import { passwordResetTemplate, emailVerificationTemplate } from '../utils/email-templates.js';
 
 const router = Router();
 
@@ -32,6 +34,8 @@ router.post(
           data: { passwordResetToken: token, passwordResetExpiry: expiry },
         });
         logger.info(`[forgot-password] token for ${email}: ${token}`);
+        const tpl = passwordResetTemplate(user.username, token);
+        sendEmail(email, tpl.subject, tpl.html);
       }
       res.json({ success: true, message: 'If that email exists, a reset link has been sent' });
     } catch (err) {
@@ -96,6 +100,8 @@ router.post(
       const token = crypto.randomUUID();
       await prisma.user.update({ where: { id: user.id }, data: { emailVerifyToken: token } });
       logger.info(`[resend-verification] token for ${email}: ${token}`);
+      const tpl = emailVerificationTemplate(user.username, token);
+      sendEmail(email, tpl.subject, tpl.html);
       res.json({ success: true, message: 'Verification email has been sent' });
     } catch (err) {
       next(err);

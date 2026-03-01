@@ -7,6 +7,7 @@ const router = Router();
 const crud = buildCrud(prisma.profileStatType, {
   searchFields: ['name'],
   requiredFields: ['name'],
+  modelName: 'ProfileStatType',
 });
 
 router.get('/', crud.list);

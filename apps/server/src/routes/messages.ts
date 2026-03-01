@@ -7,6 +7,7 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { emitToUser } from '../utils/notify.js';
 
 const router = Router();
 const msgUploadsDir = path.join(process.cwd(), 'uploads', 'messages');
@@ -108,9 +109,17 @@ router.post(
         data: { conversationId, senderId: userId, text, mediaType: 'TEXT' },
         include: { sender: { select: SENDER_SELECT } },
       });
-      await prisma.conversation.update({
+      const conv = await prisma.conversation.update({
         where: { id: conversationId },
         data: { lastMessage: text, lastMessageAt: new Date() },
+      });
+      // Emit real-time message to the other participant
+      const otherId = conv.participant1Id === userId ? conv.participant2Id : conv.participant1Id;
+      emitToUser(otherId, 'message:new', message);
+      emitToUser(otherId, 'conversation:update', {
+        conversationId,
+        lastMessage: text,
+        lastMessageAt: new Date(),
       });
       res.status(201).json({ success: true, data: message });
     } catch (err) {

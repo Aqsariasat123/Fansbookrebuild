@@ -9,6 +9,9 @@ import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { authLimiter } from '../middleware/rateLimit.js';
 import { generateAndStoreTokens, ME_SELECT } from '../utils/tokens.js';
+import { sendEmail } from '../utils/email.js';
+import { welcomeTemplate, emailVerificationTemplate } from '../utils/email-templates.js';
+import crypto from 'crypto';
 
 const router = Router();
 
@@ -56,6 +59,13 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res,
       select: ME_SELECT,
     });
     await prisma.wallet.create({ data: { userId: user.id, balance: 0 } });
+    // Send welcome + verification emails
+    const verifyToken = crypto.randomUUID();
+    await prisma.user.update({ where: { id: user.id }, data: { emailVerifyToken: verifyToken } });
+    const welcome = welcomeTemplate(username);
+    sendEmail(email, welcome.subject, welcome.html);
+    const verify = emailVerificationTemplate(username, verifyToken);
+    sendEmail(email, verify.subject, verify.html);
     const tokens = await generateAndStoreTokens(user.id, user.role);
     res.status(201).json({ success: true, data: { user, ...tokens } });
   } catch (err) {

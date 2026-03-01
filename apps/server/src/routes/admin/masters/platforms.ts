@@ -7,6 +7,7 @@ const router = Router();
 const crud = buildCrud(prisma.platform, {
   searchFields: ['name'],
   requiredFields: ['name'],
+  modelName: 'Platform',
 });
 
 router.get('/', crud.list);

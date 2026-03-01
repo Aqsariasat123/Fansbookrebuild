@@ -7,6 +7,7 @@ const router = Router();
 const crud = buildCrud(prisma.cmsPage, {
   searchFields: ['title', 'content'],
   requiredFields: ['title', 'content'],
+  modelName: 'CmsPage',
 });
 
 router.get('/', crud.list);
