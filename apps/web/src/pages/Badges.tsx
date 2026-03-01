@@ -13,10 +13,10 @@ interface Badge {
 }
 
 const RARITY_COLORS: Record<string, string> = {
-  COMMON: 'text-gray-400 border-gray-400/30',
-  RARE: 'text-blue-400 border-blue-400/30',
-  EPIC: 'text-purple-400 border-purple-400/30',
-  LEGENDARY: 'text-yellow-400 border-yellow-400/30',
+  COMMON: 'text-gray-600 dark:text-gray-400 border-gray-400/30',
+  RARE: 'text-blue-600 dark:text-blue-400 border-blue-400/30',
+  EPIC: 'text-purple-600 dark:text-purple-400 border-purple-400/30',
+  LEGENDARY: 'text-yellow-600 dark:text-yellow-400 border-yellow-400/30',
 };
 
 type Filter = 'all' | 'earned';

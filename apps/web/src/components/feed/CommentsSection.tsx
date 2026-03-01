@@ -141,7 +141,7 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
       ) : (
         <div
           ref={listRef}
-          className="flex max-h-[320px] flex-col gap-[14px] overflow-y-auto scroll-smooth pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-[#2a2d30]"
+          className="flex max-h-[320px] flex-col gap-[14px] overflow-y-auto scroll-smooth pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/30"
         >
           {comments.length === 0 && (
             <p className="py-3 text-center text-[12px] text-muted-foreground">
@@ -194,7 +194,7 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           placeholder={replyTo ? `Reply to @${replyTo.name}...` : 'Write a comment...'}
-          className="flex-1 rounded-[20px] bg-muted px-[14px] py-[10px] text-[12px] text-foreground outline-none ring-1 ring-transparent transition-all placeholder:text-muted-foreground focus:ring-[#2a2d30] md:text-[13px]"
+          className="flex-1 rounded-[20px] bg-muted px-[14px] py-[10px] text-[12px] text-foreground outline-none ring-1 ring-transparent transition-all placeholder:text-muted-foreground focus:ring-border md:text-[13px]"
         />
         <button
           onClick={handleSubmit}

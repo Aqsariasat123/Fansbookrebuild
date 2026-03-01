@@ -61,18 +61,18 @@ export function CommentItem({
           )}
           <span className="text-[10px] text-muted-foreground">{timeAgo}</span>
         </div>
-        <p className="text-[12px] leading-[1.5] text-[#c0c0c0] md:text-[13px]">{comment.text}</p>
+        <p className="text-[12px] leading-[1.5] text-foreground md:text-[13px]">{comment.text}</p>
         <div className="mt-[2px] flex items-center gap-[14px]">
           <button
             onClick={onToggleLike}
-            className="flex items-center gap-[4px] text-[10px] transition-colors hover:text-foreground md:text-[11px]"
+            className="flex items-center gap-[4px] text-[10px] text-muted-foreground transition-colors hover:text-foreground md:text-[11px]"
           >
             <svg
               width="12"
               height="12"
               viewBox="0 0 24 24"
               fill={comment.isLiked ? '#e74c3c' : 'none'}
-              stroke={comment.isLiked ? '#e74c3c' : '#5d5d5d'}
+              stroke={comment.isLiked ? '#e74c3c' : 'currentColor'}
               strokeWidth="2"
             >
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />

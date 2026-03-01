@@ -37,9 +37,7 @@ export function PPVOverlay({ postId, price, thumbnailUrl, onUnlocked }: PPVOverl
           className="absolute inset-0 size-full object-cover blur-[20px] brightness-50"
         />
       )}
-      {!thumbnailUrl && (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#15191c] to-[#0e1012]" />
-      )}
+      {!thumbnailUrl && <div className="absolute inset-0 bg-gradient-to-br from-muted to-card" />}
 
       <div className="relative z-10 flex flex-col items-center gap-[12px] text-center">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" className="text-white/80">
