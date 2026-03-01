@@ -7,6 +7,7 @@ interface Props {
   username: string;
   displayName: string;
   isFollowing: boolean;
+  isSubscribed: boolean;
   followLoading: boolean;
   onFollow: () => void;
   onSubscribe: () => void;
@@ -17,6 +18,7 @@ export function ProfileActions({
   username,
   displayName,
   isFollowing,
+  isSubscribed,
   followLoading,
   onFollow,
   onSubscribe,
@@ -38,12 +40,18 @@ export function ProfileActions({
         >
           {isFollowing ? 'Following' : 'Follow'}
         </button>
-        <button
-          onClick={onSubscribe}
-          className="rounded-[11px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[36px] py-[12px] text-[16px] font-medium text-white shadow-[0px_6px_10px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
-        >
-          Subscribe
-        </button>
+        {isSubscribed ? (
+          <span className="rounded-[11px] bg-green-600/20 border border-green-500 px-[36px] py-[12px] text-[16px] font-medium text-green-400">
+            Subscribed
+          </span>
+        ) : (
+          <button
+            onClick={onSubscribe}
+            className="rounded-[11px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[36px] py-[12px] text-[16px] font-medium text-white shadow-[0px_6px_10px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
+          >
+            Subscribe
+          </button>
+        )}
         <button
           onClick={() => navigate(`/messages?user=${username}`)}
           className="flex items-center gap-[6px] rounded-[11px] border border-border px-[20px] py-[12px] text-[16px] font-medium text-foreground transition-colors hover:border-foreground"
@@ -64,16 +72,17 @@ export function ProfileActions({
         </button>
       </div>
 
-      {/* View Subscription Plans */}
-      <button
-        onClick={onSubscribe}
-        className="mt-[16px] flex w-full items-center justify-between rounded-[11px] border border-border px-[20px] py-[14px] text-[16px] text-foreground transition-colors hover:border-foreground"
-      >
-        View Subscription Plans
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-        </svg>
-      </button>
+      {!isSubscribed && (
+        <button
+          onClick={onSubscribe}
+          className="mt-[16px] flex w-full items-center justify-between rounded-[11px] border border-border px-[20px] py-[14px] text-[16px] text-foreground transition-colors hover:border-foreground"
+        >
+          View Subscription Plans
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+          </svg>
+        </button>
+      )}
 
       {showTip && (
         <TipModal

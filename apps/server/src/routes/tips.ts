@@ -4,6 +4,7 @@ import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { emitToUser } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
+import { FEES } from '@fansbook/shared';
 
 const router = Router();
 
@@ -57,14 +58,17 @@ router.post('/', authenticate, async (req: Request, res, next) => {
     validateTip(receiverId, tipAmount, userId);
     const { fanWallet, creatorWallet } = await getWallets(userId, receiverId, tipAmount);
 
+    const commission = tipAmount * (FEES.PLATFORM_FEE_PERCENT / 100);
+    const creatorAmount = tipAmount - commission;
+
     await prisma.$transaction([
       prisma.wallet.update({
         where: { id: fanWallet.id },
-        data: { balance: { decrement: tipAmount } },
+        data: { balance: { decrement: tipAmount }, totalSpent: { increment: tipAmount } },
       }),
       prisma.wallet.update({
         where: { id: creatorWallet.id },
-        data: { balance: { increment: tipAmount } },
+        data: { balance: { increment: creatorAmount }, totalEarned: { increment: creatorAmount } },
       }),
       prisma.tip.create({
         data: { senderId: userId, receiverId, amount: tipAmount },
@@ -75,14 +79,16 @@ router.post('/', authenticate, async (req: Request, res, next) => {
           type: 'TIP_SENT',
           amount: tipAmount,
           description: message || 'Direct tip',
+          status: 'COMPLETED',
         },
       }),
       prisma.transaction.create({
         data: {
           walletId: creatorWallet.id,
           type: 'TIP_RECEIVED',
-          amount: tipAmount,
-          description: message || 'Direct tip received',
+          amount: creatorAmount,
+          description: `${message || 'Direct tip received'} (${FEES.PLATFORM_FEE_PERCENT}% fee applied)`,
+          status: 'COMPLETED',
         },
       }),
     ]);

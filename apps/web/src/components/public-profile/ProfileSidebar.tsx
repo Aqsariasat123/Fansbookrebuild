@@ -27,6 +27,7 @@ export interface SidebarProfileData {
   followersCount: number;
   followingCount: number;
   isFollowing: boolean;
+  isSubscribed: boolean;
   likesCount?: number;
   hashtags?: string[];
 }
@@ -106,6 +107,7 @@ export function ProfileSidebar({
           username={profile.username}
           displayName={profile.displayName}
           isFollowing={profile.isFollowing}
+          isSubscribed={profile.isSubscribed}
           followLoading={followLoading}
           onFollow={onFollow}
           onSubscribe={onSubscribe}

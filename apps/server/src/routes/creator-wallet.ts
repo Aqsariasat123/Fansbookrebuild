@@ -3,6 +3,7 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { requireRole } from '../middleware/requireRole.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { FEES } from '@fansbook/shared';
 
 const router = Router();
 
@@ -95,6 +96,10 @@ router.post('/withdraw', async (req, res, next) => {
 
     if (!amount || typeof amount !== 'number' || amount <= 0) {
       throw new AppError(400, 'Amount must be a positive number');
+    }
+
+    if (amount < FEES.WITHDRAWAL_MIN) {
+      throw new AppError(400, `Minimum withdrawal amount is $${FEES.WITHDRAWAL_MIN}`);
     }
 
     if (!paymentMethod || typeof paymentMethod !== 'string') {

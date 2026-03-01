@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { FilterDropdown } from '../components/shared/FilterDropdown';
+import { Pagination } from '../components/shared/Pagination';
 
 interface Subscription {
   id: string;
@@ -19,48 +20,6 @@ function formatDate(dateStr: string) {
   return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
 }
 
-function Pagination({
-  page,
-  total,
-  limit,
-  onPage,
-}: {
-  page: number;
-  total: number;
-  limit: number;
-  onPage: (p: number) => void;
-}) {
-  const totalPages = Math.ceil(total / limit);
-  if (totalPages <= 1) return null;
-  const pages = Array.from({ length: Math.min(6, totalPages) }, (_, i) => i + 1);
-  return (
-    <div className="flex items-center justify-center gap-[6px] py-[24px]">
-      {pages.map((p) => (
-        <button
-          key={p}
-          onClick={() => onPage(p)}
-          className={`h-[28px] w-[28px] rounded-[2px] border border-border flex items-center justify-center text-[10px] text-foreground ${p === page ? 'bg-muted-foreground' : ''}`}
-        >
-          {p}
-        </button>
-      ))}
-      {totalPages > 6 && (
-        <span className="h-[28px] w-[28px] rounded-[2px] border border-border flex items-center justify-center text-[10px] text-foreground">
-          ...
-        </span>
-      )}
-      {page < totalPages && (
-        <button
-          onClick={() => onPage(page + 1)}
-          className="h-[38px] px-[10px] rounded-[4px] border border-border flex items-center justify-center text-[10px] text-foreground"
-        >
-          Next
-        </button>
-      )}
-    </div>
-  );
-}
-
 const STATUS_OPTIONS = ['All', 'ACTIVE', 'EXPIRED', 'CANCELLED', 'PAST_DUE'];
 const TABLE_HEADERS = [
   'Subscription\nID',
@@ -68,6 +27,7 @@ const TABLE_HEADERS = [
   'Subscription\nAmount',
   'Subscription\nStart Date',
   'Subscription End\nRenewal Date',
+  'Action',
 ];
 
 export default function Subscriptions() {
@@ -78,7 +38,21 @@ export default function Subscriptions() {
   const [statusOpen, setStatusOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [paymentFilter, setPaymentFilter] = useState('All');
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const limit = 10;
+
+  async function handleCancel(subId: string) {
+    if (!confirm('Cancel this subscription? You will keep access until the end date.')) return;
+    setCancellingId(subId);
+    try {
+      await api.delete(`/subscriptions/${subId}`);
+      setItems((prev) => prev.map((s) => (s.id === subId ? { ...s, status: 'CANCELLED' } : s)));
+    } catch {
+      alert('Failed to cancel subscription');
+    } finally {
+      setCancellingId(null);
+    }
+  }
 
   useEffect(() => {
     const params: Record<string, string | number> = { page, limit };
@@ -136,8 +110,8 @@ export default function Subscriptions() {
 
       {/* Table */}
       <div className="overflow-x-auto rounded-[22px]">
-        <div className="min-w-[700px] overflow-hidden rounded-[22px] bg-card">
-          <div className="grid grid-cols-5 bg-[#01adf1] px-[16px] py-[14px] md:px-[30px] md:py-[22px]">
+        <div className="min-w-[800px] overflow-hidden rounded-[22px] bg-card">
+          <div className="grid grid-cols-6 bg-[#01adf1] px-[16px] py-[14px] md:px-[30px] md:py-[22px]">
             {TABLE_HEADERS.map((h) => (
               <p
                 key={h}
@@ -155,7 +129,7 @@ export default function Subscriptions() {
             displayed.map((s, i) => (
               <div
                 key={s.id}
-                className={`grid grid-cols-5 px-[16px] py-[14px] md:px-[30px] md:py-[20px] ${i < displayed.length - 1 ? 'border-b border-muted' : ''}`}
+                className={`grid grid-cols-6 px-[16px] py-[14px] md:px-[30px] md:py-[20px] ${i < displayed.length - 1 ? 'border-b border-muted' : ''}`}
               >
                 <p className="text-center text-[12px] text-foreground md:text-[16px]">
                   #{s.id.slice(-7)}
@@ -172,6 +146,21 @@ export default function Subscriptions() {
                 <p className="text-center text-[12px] text-foreground md:text-[16px]">
                   {formatDate(s.renewalDate)}
                 </p>
+                <div className="flex items-center justify-center">
+                  {s.status === 'ACTIVE' ? (
+                    <button
+                      onClick={() => handleCancel(s.id)}
+                      disabled={cancellingId === s.id}
+                      className="rounded-[6px] border border-red-500/50 px-[12px] py-[4px] text-[11px] text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50 md:text-[13px]"
+                    >
+                      {cancellingId === s.id ? 'Cancelling...' : 'Cancel'}
+                    </button>
+                  ) : (
+                    <span className="text-[11px] text-muted-foreground md:text-[13px]">
+                      {s.status}
+                    </span>
+                  )}
+                </div>
               </div>
             ))
           )}

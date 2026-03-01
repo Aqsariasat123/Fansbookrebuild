@@ -99,6 +99,54 @@ router.get('/spending', authenticate, async (req, res, next) => {
   }
 });
 
+const VALID_TX_TYPES = [
+  'DEPOSIT',
+  'SUBSCRIPTION',
+  'TIP_SENT',
+  'TIP_RECEIVED',
+  'PPV_PURCHASE',
+  'PPV_EARNING',
+  'WITHDRAWAL',
+  'REFUND',
+  'MARKETPLACE_PURCHASE',
+  'MARKETPLACE_EARNING',
+] as const;
+
+router.get('/transactions', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20));
+    const typeFilter = req.query.type as string | undefined;
+
+    const wallet = await prisma.wallet.findUnique({ where: { userId } });
+    if (!wallet) return res.json({ success: true, data: { items: [], total: 0, page, limit } });
+
+    const where: Record<string, unknown> = { walletId: wallet.id };
+    if (
+      typeFilter &&
+      typeFilter !== 'ALL' &&
+      VALID_TX_TYPES.includes(typeFilter as (typeof VALID_TX_TYPES)[number])
+    ) {
+      where.type = typeFilter;
+    }
+
+    const [items, total] = await Promise.all([
+      prisma.transaction.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.transaction.count({ where }),
+    ]);
+
+    res.json({ success: true, data: { items, total, page, limit } });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get('/packages', authenticate, (_req, res) => {
   res.json({ success: true, data: COIN_PACKAGES });
 });

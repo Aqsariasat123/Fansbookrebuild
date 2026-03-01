@@ -4,6 +4,7 @@ import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { createNotification } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
+import { FEES } from '@fansbook/shared';
 
 const router = Router();
 
@@ -121,21 +122,33 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
     const creatorWallet = await prisma.wallet.findUnique({ where: { userId: post.authorId } });
     if (!creatorWallet) throw new AppError(500, 'Creator wallet not found');
 
+    const creatorAmt = amount - amount * (FEES.PLATFORM_FEE_PERCENT / 100);
+
     await prisma.$transaction([
       prisma.wallet.update({
         where: { id: fanWallet.id },
-        data: { balance: { decrement: amount } },
+        data: { balance: { decrement: amount }, totalSpent: { increment: amount } },
       }),
       prisma.wallet.update({
         where: { id: creatorWallet.id },
-        data: { balance: { increment: amount }, totalEarned: { increment: amount } },
+        data: { balance: { increment: creatorAmt }, totalEarned: { increment: creatorAmt } },
+      }),
+      prisma.transaction.create({
+        data: {
+          walletId: fanWallet.id,
+          type: 'TIP_SENT',
+          amount,
+          description: 'Tip on post',
+          status: 'COMPLETED',
+        },
       }),
       prisma.transaction.create({
         data: {
           walletId: creatorWallet.id,
           type: 'TIP_RECEIVED',
-          amount,
-          description: 'Tip on post',
+          amount: creatorAmt,
+          description: `Tip on post (${FEES.PLATFORM_FEE_PERCENT}% fee)`,
+          status: 'COMPLETED',
         },
       }),
     ]);
@@ -143,79 +156,6 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
     notifyTip(post.authorId, userId, postId, amount);
     logActivity(userId, 'TIP', 'Post', postId, { amount, creatorId: post.authorId }, req);
     res.json({ success: true, message: 'Tip sent!' });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// ─── POST /api/posts/:id/ppv-unlock ── unlock PPV content ───
-router.post('/:id/ppv-unlock', authenticate, async (req, res, next) => {
-  try {
-    const userId = req.user!.userId;
-    const postId = req.params.id as string;
-
-    const post = await prisma.post.findUnique({
-      where: { id: postId },
-      include: { author: { select: AUTHOR_SELECT }, media: { orderBy: { order: 'asc' } } },
-    });
-    if (!post) throw new AppError(404, 'Post not found');
-    if (!post.ppvPrice) throw new AppError(400, 'This post is not PPV');
-
-    const existing = await prisma.ppvPurchase.findUnique({
-      where: { userId_postId: { userId, postId } },
-    });
-    if (existing) throw new AppError(409, 'Already unlocked');
-
-    const fanWallet = await prisma.wallet.findUnique({ where: { userId } });
-    if (!fanWallet || fanWallet.balance < post.ppvPrice) {
-      throw new AppError(400, 'Insufficient balance');
-    }
-
-    const creatorWallet = await prisma.wallet.findUnique({ where: { userId: post.authorId } });
-    if (!creatorWallet) throw new AppError(500, 'Creator wallet not found');
-
-    await prisma.$transaction([
-      prisma.wallet.update({
-        where: { id: fanWallet.id },
-        data: { balance: { decrement: post.ppvPrice! } },
-      }),
-      prisma.wallet.update({
-        where: { id: creatorWallet.id },
-        data: {
-          balance: { increment: post.ppvPrice! },
-          totalEarned: { increment: post.ppvPrice! },
-        },
-      }),
-      prisma.transaction.create({
-        data: {
-          walletId: fanWallet.id,
-          type: 'PPV_PURCHASE',
-          amount: post.ppvPrice!,
-          description: `PPV unlock: post ${postId}`,
-        },
-      }),
-      prisma.transaction.create({
-        data: {
-          walletId: creatorWallet.id,
-          type: 'PPV_EARNING',
-          amount: post.ppvPrice!,
-          description: `PPV earning: post ${postId}`,
-        },
-      }),
-      prisma.ppvPurchase.create({
-        data: { userId, postId, amount: post.ppvPrice! },
-      }),
-    ]);
-
-    logActivity(
-      userId,
-      'PPV_UNLOCK',
-      'Post',
-      postId,
-      { amount: post.ppvPrice, creatorId: post.authorId },
-      req,
-    );
-    res.json({ success: true, data: post });
   } catch (err) {
     next(err);
   }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
@@ -7,9 +7,8 @@ import { ProfileTabBar } from '../components/public-profile/ProfileTabBar';
 import { ProfileSidebar } from '../components/public-profile/ProfileSidebar';
 import { ProfileTabContent } from '../components/public-profile/ProfileTabContent';
 import type { ContentTab } from '../components/public-profile/ProfileTabBar';
+import { ViewModeToggle } from '../components/public-profile/ViewModeToggle';
 import type { PublicPost } from '../components/public-profile/PostCard';
-
-type ViewMode = 'list' | 'grid';
 
 interface ProfileData {
   id: string;
@@ -46,7 +45,19 @@ export default function CreatorPublicProfile() {
   const [notFound, setNotFound] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [subscribeLoading, setSubscribeLoading] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+
+  const checkSubscription = useCallback(async (creatorId: string) => {
+    try {
+      const { data: r } = await api.get(`/subscriptions/check/${creatorId}`);
+      if (r.success) {
+        setProfile((p) => (p ? { ...p, isSubscribed: r.data.isSubscribed } : p));
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     if (!username) return;
@@ -56,7 +67,10 @@ export default function CreatorPublicProfile() {
       api.get(`/creator-profile/${username}/posts?tab=feed`),
     ])
       .then(([pRes, postsRes]) => {
-        if (pRes.data.success) setProfile(pRes.data.data);
+        if (pRes.data.success) {
+          setProfile(pRes.data.data);
+          checkSubscription(pRes.data.data.id);
+        }
         if (postsRes.data.success) setPosts(postsRes.data.data?.items ?? postsRes.data.data ?? []);
       })
       .catch((err: unknown) => {
@@ -64,7 +78,7 @@ export default function CreatorPublicProfile() {
           setNotFound(true);
       })
       .finally(() => setLoading(false));
-  }, [username]);
+  }, [username, checkSubscription]);
 
   async function handleFollow() {
     if (!profile) return;
@@ -106,7 +120,14 @@ export default function CreatorPublicProfile() {
 
   return (
     <div>
-      <CoverBanner cover={profile.cover} />
+      <div className="relative h-[180px] w-full overflow-hidden md:h-[240px]">
+        {profile.cover ? (
+          <img src={profile.cover} alt="" className="absolute inset-0 size-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 bg-muted" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+      </div>
       <div className="flex flex-col gap-[24px] md:flex-row md:gap-[30px]">
         <div className="w-full shrink-0 md:w-[300px] lg:w-[380px]">
           <ProfileSidebar
@@ -137,57 +158,25 @@ export default function CreatorPublicProfile() {
       {showSubscribeModal && (
         <SubscriptionModal
           tiers={profile.tiers}
+          loading={subscribeLoading}
           onClose={() => setShowSubscribeModal(false)}
-          onSubscribe={(tierId) => {
-            void tierId;
-            setShowSubscribeModal(false);
+          onSubscribe={async (tierId) => {
+            setSubscribeLoading(true);
+            try {
+              await api.post('/subscriptions', { tierId });
+              setProfile((p) => (p ? { ...p, isSubscribed: true } : p));
+              setShowSubscribeModal(false);
+            } catch (err) {
+              const msg =
+                (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                'Failed to subscribe';
+              alert(msg);
+            } finally {
+              setSubscribeLoading(false);
+            }
           }}
         />
       )}
-    </div>
-  );
-}
-
-function CoverBanner({ cover }: { cover: string | null }) {
-  return (
-    <div className="relative h-[180px] w-full overflow-hidden md:h-[240px]">
-      {cover ? (
-        <img src={cover} alt="" className="absolute inset-0 size-full object-cover" />
-      ) : (
-        <div className="absolute inset-0 bg-muted" />
-      )}
-      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-    </div>
-  );
-}
-
-function ViewModeToggle({
-  viewMode,
-  onChange,
-}: {
-  viewMode: ViewMode;
-  onChange: (m: ViewMode) => void;
-}) {
-  return (
-    <div className="flex gap-[4px] rounded-[8px] bg-muted p-[4px]">
-      <button
-        onClick={() => onChange('list')}
-        className={`rounded-[6px] p-[6px] transition-colors ${viewMode === 'list' ? 'bg-card text-foreground' : 'text-muted-foreground'}`}
-        title="List view"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
-        </svg>
-      </button>
-      <button
-        onClick={() => onChange('grid')}
-        className={`rounded-[6px] p-[6px] transition-colors ${viewMode === 'grid' ? 'bg-card text-foreground' : 'text-muted-foreground'}`}
-        title="Grid view"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z" />
-        </svg>
-      </button>
     </div>
   );
 }

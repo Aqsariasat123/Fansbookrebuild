@@ -107,6 +107,19 @@ export const createSubscriptionTierSchema = z.object({
   benefits: z.array(z.string().max(200)).max(10),
 });
 
+// ─── Subscribe Schema ────────────────────────────────────
+
+export const subscribeSchema = z.object({
+  tierId: z.string().uuid('Invalid tier ID'),
+});
+
+// ─── Withdrawal Schema ──────────────────────────────────
+
+export const withdrawalSchema = z.object({
+  amount: z.number().min(20, 'Minimum withdrawal is $20'),
+  paymentMethod: z.string().min(1, 'Payment method is required'),
+});
+
 // ─── Chat Schemas ────────────────────────────────────────
 
 export const sendMessageSchema = z.object({
@@ -144,6 +157,8 @@ export type UpdatePostInput = z.infer<typeof updatePostSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type CreateSubscriptionTierInput = z.infer<typeof createSubscriptionTierSchema>;
+export type SubscribeInput = z.infer<typeof subscribeSchema>;
+export type WithdrawalInput = z.infer<typeof withdrawalSchema>;
 export type SendMessageInput = z.infer<typeof sendMessageSchema>;
 export type CreateReportInput = z.infer<typeof createReportSchema>;
 export type SearchInput = z.infer<typeof searchSchema>;

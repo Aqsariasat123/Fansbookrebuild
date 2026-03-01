@@ -10,11 +10,12 @@ interface Tier {
 
 interface Props {
   tiers: Tier[];
+  loading?: boolean;
   onClose: () => void;
   onSubscribe: (tierId: string) => void;
 }
 
-export function SubscriptionModal({ tiers, onClose, onSubscribe }: Props) {
+export function SubscriptionModal({ tiers, loading, onClose, onSubscribe }: Props) {
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
@@ -108,9 +109,10 @@ export function SubscriptionModal({ tiers, onClose, onSubscribe }: Props) {
                 </div>
                 <button
                   onClick={() => onSubscribe(tier.id)}
-                  className="rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[10px] text-[14px] font-medium text-white transition-opacity hover:opacity-90"
+                  disabled={loading}
+                  className="rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[10px] text-[14px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
-                  Subscribe Now
+                  {loading ? 'Subscribing...' : 'Subscribe Now'}
                 </button>
               </div>
             </div>

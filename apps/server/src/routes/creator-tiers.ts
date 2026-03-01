@@ -3,6 +3,7 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { requireRole } from '../middleware/requireRole.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { LIMITS } from '@fansbook/shared';
 
 const router = Router();
 
@@ -108,6 +109,14 @@ router.post('/', async (req, res, next) => {
     validateTierData(req.body, true);
     const tierData = buildTierData(req.body);
 
+    // Enforce max tier limit
+    const activeCount = await prisma.subscriptionTier.count({
+      where: { creatorId: userId, isActive: true },
+    });
+    if (activeCount >= LIMITS.MAX_SUBSCRIPTION_TIERS) {
+      throw new AppError(400, `Maximum ${LIMITS.MAX_SUBSCRIPTION_TIERS} tiers allowed`);
+    }
+
     // Get next order value
     const lastTier = await prisma.subscriptionTier.findFirst({
       where: { creatorId: userId },
@@ -187,6 +196,13 @@ router.delete('/:id', async (req, res, next) => {
     const tier = await prisma.subscriptionTier.findUnique({ where: { id: tierId } });
     if (!tier) throw new AppError(404, 'Tier not found');
     if (tier.creatorId !== userId) throw new AppError(403, 'Not authorized to delete this tier');
+
+    const activeSubs = await prisma.subscription.count({
+      where: { tierId, status: 'ACTIVE' },
+    });
+    if (activeSubs > 0) {
+      throw new AppError(400, `Cannot deactivate tier with ${activeSubs} active subscriber(s)`);
+    }
 
     await prisma.subscriptionTier.update({
       where: { id: tierId },
