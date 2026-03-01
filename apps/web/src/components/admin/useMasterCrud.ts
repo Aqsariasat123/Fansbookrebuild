@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../../lib/api';
 
 type Row = Record<string, unknown>;
@@ -8,7 +8,8 @@ export function useMasterCrud(apiPath: string) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const initialLoad = useRef(true);
   const [editItem, setEditItem] = useState<Row | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [deleteItem, setDeleteItem] = useState<Row | null>(null);
@@ -26,7 +27,10 @@ export function useMasterCrud(apiPath: string) {
         setTotalPages(d.totalPages || 1);
       })
       .catch(() => setItems([]))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        initialLoad.current = false;
+      });
   }, [page, search, apiPath]);
 
   useEffect(() => {
@@ -73,6 +77,7 @@ export function useMasterCrud(apiPath: string) {
     setPage,
     totalPages,
     loading,
+    initialLoading: initialLoad.current && loading,
     editItem,
     setEditItem,
     showAdd,

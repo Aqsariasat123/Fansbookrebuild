@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../../lib/api';
 import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminSearchBar, AdminFilter, AdminDateRange } from '../../components/admin/AdminSearchBar';
@@ -26,6 +26,7 @@ export default function AdminUsers() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const didLoad = useRef(false);
   const [confirmUser, setConfirmUser] = useState<User | null>(null);
 
   const fetchUsers = useCallback(() => {
@@ -43,7 +44,10 @@ export default function AdminUsers() {
         setTotalPages(r.data.totalPages || 1);
       })
       .catch(() => setUsers([]))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        didLoad.current = true;
+      });
   }, [page, search, roleFilter, statusFilter, dateFrom, dateTo]);
 
   useEffect(() => {
@@ -119,7 +123,7 @@ export default function AdminUsers() {
     },
   ];
 
-  if (loading)
+  if (loading && !didLoad.current)
     return (
       <div className="flex justify-center py-20">
         <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
@@ -159,7 +163,13 @@ export default function AdminUsers() {
           }}
         />
       </AdminSearchBar>
-      <AdminTable columns={columns} data={users} />
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+        </div>
+      ) : (
+        <AdminTable columns={columns} data={users} />
+      )}
       <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       {confirmUser && (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../../../lib/api';
 import { AdminTable } from '../../../components/admin/AdminTable';
 import { AdminSearchBar, AdminDateRange } from '../../../components/admin/AdminSearchBar';
@@ -24,6 +24,7 @@ export default function WithdrawalList() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const didLoad = useRef(false);
 
   const fetch = useCallback(() => {
     setLoading(true);
@@ -38,7 +39,10 @@ export default function WithdrawalList() {
         setTotalPages(r.data.totalPages || 1);
       })
       .catch(() => setItems([]))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        didLoad.current = true;
+      });
   }, [page, search, dateFrom, dateTo]);
 
   useEffect(() => {
@@ -81,7 +85,7 @@ export default function WithdrawalList() {
     },
   ];
 
-  if (loading)
+  if (loading && !didLoad.current)
     return (
       <div className="flex justify-center py-20">
         <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
@@ -105,7 +109,13 @@ export default function WithdrawalList() {
           }}
         />
       </AdminSearchBar>
-      <AdminTable columns={columns} data={items} />
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+        </div>
+      ) : (
+        <AdminTable columns={columns} data={items} />
+      )}
       <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );

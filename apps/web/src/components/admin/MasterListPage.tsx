@@ -55,6 +55,12 @@ function getColumns(
   ];
 }
 
+const Spinner = () => (
+  <div className="flex justify-center py-20">
+    <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+  </div>
+);
+
 export function MasterListPage({
   title,
   apiPath,
@@ -69,13 +75,7 @@ export function MasterListPage({
   const modalTitle = title.split('>').pop()?.trim() || '';
   const finalColumns = getColumns(columns, fields, crud);
 
-  if (crud.loading) {
-    return (
-      <div className="flex justify-center py-20">
-        <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
-      </div>
-    );
-  }
+  if (crud.initialLoading) return <Spinner />;
 
   return (
     <div>
@@ -88,7 +88,7 @@ export function MasterListPage({
       >
         {extraButtons}
       </AdminSearchBar>
-      <AdminTable columns={finalColumns} data={crud.items} />
+      {crud.loading ? <Spinner /> : <AdminTable columns={finalColumns} data={crud.items} />}
       <AdminPagination page={crud.page} totalPages={crud.totalPages} onPageChange={crud.setPage} />
       {fields && (
         <MasterCrudModals

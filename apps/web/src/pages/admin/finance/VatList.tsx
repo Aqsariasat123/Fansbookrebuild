@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../../../lib/api';
 import { AdminTable } from '../../../components/admin/AdminTable';
 import {
@@ -29,6 +29,7 @@ export default function VatList() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const didLoad = useRef(false);
   const [selected, setSelected] = useState<string[]>([]);
 
   const fetch = useCallback(() => {
@@ -46,7 +47,10 @@ export default function VatList() {
         setTotalPages(r.data.totalPages || 1);
       })
       .catch(() => setItems([]))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        didLoad.current = true;
+      });
   }, [page, search, countryFilter, statusFilter, dateFrom, dateTo]);
 
   useEffect(() => {
@@ -92,7 +96,7 @@ export default function VatList() {
     },
   ];
 
-  if (loading)
+  if (loading && !didLoad.current)
     return (
       <div className="flex justify-center py-20">
         <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
@@ -147,7 +151,13 @@ export default function VatList() {
           Download CSV
         </button>
       </AdminSearchBar>
-      <AdminTable columns={columns} data={items} />
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+        </div>
+      ) : (
+        <AdminTable columns={columns} data={items} />
+      )}
       <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
