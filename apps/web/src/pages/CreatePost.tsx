@@ -138,26 +138,42 @@ export default function CreatePost() {
         {/* Image previews */}
         {images.length > 0 && (
           <div className="mt-[16px] grid grid-cols-2 gap-[8px] md:grid-cols-3">
-            {images.map((img, i) => (
-              <div key={i} className="relative aspect-square overflow-hidden rounded-[12px]">
-                <img src={img.preview} alt="" className="size-full object-cover" />
-                <button
-                  onClick={() => removeImage(i)}
-                  className="absolute right-[6px] top-[6px] flex size-[24px] items-center justify-center rounded-full bg-black/60 text-white"
-                >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
+            {images.map((img, i) => {
+              const isVideo = img.file.type.startsWith('video/');
+              return (
+                <div key={i} className="relative aspect-square overflow-hidden rounded-[12px]">
+                  {isVideo ? (
+                    <video src={img.preview} className="size-full object-cover" muted />
+                  ) : (
+                    <img src={img.preview} alt="" className="size-full object-cover" />
+                  )}
+                  <button
+                    onClick={() => removeImage(i)}
+                    className="absolute right-[6px] top-[6px] flex size-[24px] items-center justify-center rounded-full bg-black/60 text-white"
                   >
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            ))}
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                    >
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                  {isVideo && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="flex size-[40px] items-center justify-center rounded-full bg-black/50">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
 

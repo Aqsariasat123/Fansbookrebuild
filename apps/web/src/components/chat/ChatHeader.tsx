@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 
 const IMG = '/icons/dashboard';
@@ -8,6 +9,7 @@ interface MessagePageHeaderProps {
 }
 
 export function MessagePageHeader({ onInvite }: MessagePageHeaderProps) {
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
 
   const handleInvite = () => {
@@ -30,7 +32,10 @@ export function MessagePageHeader({ onInvite }: MessagePageHeaderProps) {
           <img src={`${IMG}/person-heart.svg`} alt="" className="size-[24px]" />
           <span className="text-[20px] text-muted-foreground">{copied ? 'Copied!' : 'Invite'}</span>
         </button>
-        <button className="size-[34px] flex items-center justify-center hover:opacity-80 transition-opacity">
+        <button
+          onClick={() => navigate('/notifications')}
+          className="size-[34px] flex items-center justify-center hover:opacity-80 transition-opacity"
+        >
           <img src={`${IMG}/notifications.svg`} alt="" className="size-[24px]" />
         </button>
       </div>
