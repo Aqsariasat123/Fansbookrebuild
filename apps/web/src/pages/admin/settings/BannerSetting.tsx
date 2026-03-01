@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { api } from '../../../lib/api';
 
 export default function BannerSetting() {
   const [saving, setSaving] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const handleSave = async () => {
     setSaving(true);
@@ -19,7 +20,7 @@ export default function BannerSetting() {
         Settings {'>'} Banner Image Setting
       </p>
       <div className="rounded-[22px] bg-[#f8f8f8] p-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-        <div className="flex max-w-[500px] flex-col gap-[20px]">
+        <div ref={formRef} className="flex max-w-[500px] flex-col gap-[20px]">
           <div>
             <h3 className="mb-[8px] font-outfit text-[18px] font-medium text-black">
               1. Login Banner Section
@@ -43,7 +44,14 @@ export default function BannerSetting() {
           >
             {saving ? 'Updating...' : 'Update'}
           </button>
-          <button className="rounded-[80px] border border-[#15191c] px-[48px] py-[12px] font-outfit text-[16px] text-[#15191c]">
+          <button
+            onClick={() =>
+              formRef.current?.querySelectorAll('input').forEach((i) => {
+                i.value = '';
+              })
+            }
+            className="rounded-[80px] border border-[#15191c] px-[48px] py-[12px] font-outfit text-[16px] text-[#15191c]"
+          >
             Cancel
           </button>
         </div>

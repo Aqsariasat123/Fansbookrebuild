@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../../../lib/api';
 import {
   WithdrawalTab,
@@ -22,11 +22,16 @@ export default function GeneralSetting() {
   const [tab, setTab] = useState<string>(TABS[0]);
   const [form, setForm] = useState<Record<string, string | number | boolean>>({});
   const [loading, setLoading] = useState(true);
+  const original = useRef<Record<string, string | number | boolean>>({});
 
   useEffect(() => {
     api
       .get('/admin/settings/general')
-      .then(({ data: r }) => setForm(r.data || {}))
+      .then(({ data: r }) => {
+        const d = r.data || {};
+        setForm(d);
+        original.current = d;
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -85,7 +90,10 @@ export default function GeneralSetting() {
             >
               Update
             </button>
-            <button className="rounded-[80px] border border-[#15191c] px-[48px] py-[12px] font-outfit text-[16px] text-[#15191c]">
+            <button
+              onClick={() => setForm({ ...original.current })}
+              className="rounded-[80px] border border-[#15191c] px-[48px] py-[12px] font-outfit text-[16px] text-[#15191c]"
+            >
               Cancel
             </button>
           </div>

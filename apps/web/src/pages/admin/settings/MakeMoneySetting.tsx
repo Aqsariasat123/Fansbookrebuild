@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../../../lib/api';
 import { GeneralTab, SectionTab, HowItWorkTab } from './MakeMoneySettingTabs';
 
@@ -13,11 +13,16 @@ export default function MakeMoneySetting() {
   const [tab, setTab] = useState<string>(TABS[0]);
   const [form, setForm] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const original = useRef<Record<string, string>>({});
 
   useEffect(() => {
     api
       .get('/admin/settings/home')
-      .then(({ data: r }) => setForm(r.data?.makeMoney || {}))
+      .then(({ data: r }) => {
+        const d = r.data?.makeMoney || {};
+        setForm(d);
+        original.current = d;
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -71,7 +76,10 @@ export default function MakeMoneySetting() {
             >
               Update
             </button>
-            <button className="rounded-[80px] border border-[#15191c] px-[48px] py-[12px] font-outfit text-[16px] text-[#15191c]">
+            <button
+              onClick={() => setForm({ ...original.current })}
+              className="rounded-[80px] border border-[#15191c] px-[48px] py-[12px] font-outfit text-[16px] text-[#15191c]"
+            >
               Cancel
             </button>
           </div>
