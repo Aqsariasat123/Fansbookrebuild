@@ -22,7 +22,7 @@ export const fanNavItems: NavItem[] = [
     icon: '/icons/dashboard/volunteer-activism.svg',
     labelKey: 'nav.leaderboard',
   },
-  { to: '/badges', icon: '/icons/dashboard/verified.svg', labelKey: 'nav.badges' },
+  { to: '/badges', icon: '/icons/dashboard/badge-shield.svg', labelKey: 'nav.badges' },
   { to: '/marketplace', icon: '/icons/dashboard/wallet-card.svg', labelKey: 'nav.marketplace' },
   {
     to: '/notifications',

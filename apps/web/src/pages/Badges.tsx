@@ -89,7 +89,7 @@ export default function Badges() {
             <div
               key={badge.id}
               className={`flex flex-col items-center gap-[8px] rounded-[16px] border bg-card p-[16px] text-center transition-opacity ${
-                badge.earned ? RARITY_COLORS[badge.rarity] : 'border-border opacity-40'
+                badge.earned ? RARITY_COLORS[badge.rarity] : 'border-border opacity-60'
               }`}
             >
               <div className="flex size-[56px] items-center justify-center rounded-full bg-muted text-[24px]">
