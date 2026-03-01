@@ -27,16 +27,18 @@ const fmt = (d: string) => {
   return `${dt.toLocaleDateString()}\n${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 };
 
+type Row = Record<string, unknown>;
+
 const columns = [
   {
     key: 'createdAt',
     header: 'Date & Time',
-    render: (r: AuditEntry) => <span className="whitespace-pre-wrap">{fmt(r.createdAt)}</span>,
+    render: (r: Row) => <span className="whitespace-pre-wrap">{fmt(r.createdAt as string)}</span>,
   },
   {
     key: 'admin',
     header: 'Admin',
-    render: (r: AuditEntry) => {
+    render: (r: Row) => {
       const admin = r.admin as { username: string; displayName: string };
       return <span className="font-medium">{admin?.displayName || admin?.username || '-'}</span>;
     },
@@ -44,23 +46,23 @@ const columns = [
   {
     key: 'action',
     header: 'Action',
-    render: (r: AuditEntry) => (
+    render: (r: Row) => (
       <span
-        className={`inline-flex h-[19px] items-center rounded-[26px] px-[8px] text-[10px] font-medium text-[#f8f8f8] ${actionColors[r.action] || 'bg-[#5d5d5d]'}`}
+        className={`inline-flex h-[19px] items-center rounded-[26px] px-[8px] text-[10px] font-medium text-[#f8f8f8] ${actionColors[r.action as string] || 'bg-[#5d5d5d]'}`}
       >
-        {r.action}
+        {r.action as string}
       </span>
     ),
   },
   {
     key: 'targetType',
     header: 'Target',
-    render: (r: AuditEntry) => <span className="text-[#15191c]">{r.targetType || '-'}</span>,
+    render: (r: Row) => <span className="text-[#15191c]">{(r.targetType as string) || '-'}</span>,
   },
   {
     key: 'details',
     header: 'Details',
-    render: (r: AuditEntry) => {
+    render: (r: Row) => {
       const d = r.details;
       if (!d) return <span className="text-[#5d5d5d]">-</span>;
       const str = JSON.stringify(d);
@@ -74,7 +76,7 @@ const columns = [
   {
     key: 'ipAddress',
     header: 'IP Address',
-    render: (r: AuditEntry) => <span className="text-[#5d5d5d]">{r.ipAddress || '-'}</span>,
+    render: (r: Row) => <span className="text-[#5d5d5d]">{(r.ipAddress as string) || '-'}</span>,
   },
 ];
 
