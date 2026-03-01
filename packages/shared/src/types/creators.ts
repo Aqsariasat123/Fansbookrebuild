@@ -62,6 +62,38 @@ export interface LiveFilterParams {
   sortBy?: 'viewers' | 'newest';
 }
 
+// ─── Story Types ─────────────────────────────────────────
+
+export interface StoryItem {
+  id: string;
+  mediaUrl: string;
+  mediaType: 'IMAGE' | 'VIDEO';
+  createdAt: string;
+  viewCount: number;
+}
+
+export interface StoryGroup {
+  authorId: string;
+  username: string;
+  displayName: string;
+  avatar: string | null;
+  stories: StoryItem[];
+}
+
+// ─── Live Chat ───────────────────────────────────────────
+
+export interface LiveChatMessage {
+  id: string;
+  sessionId: string;
+  senderId: string;
+  senderName: string;
+  senderAvatar: string | null;
+  text: string;
+  createdAt: string;
+}
+
+// ─── Socket Events ───────────────────────────────────────
+
 export interface SocketEvents {
   'notification:new': (data: {
     id: string;
@@ -95,4 +127,22 @@ export interface SocketEvents {
   'user:online': (data: { userId: string }) => void;
   'user:offline': (data: { userId: string }) => void;
   'user:online_list': (data: { userIds: string[] }) => void;
+  // Live streaming events
+  'live:viewer-count': (data: { sessionId: string; count: number }) => void;
+  'live:chat': (data: LiveChatMessage) => void;
+  'live:tip': (data: { sessionId: string; from: string; amount: number }) => void;
+  'live:ended': (data: { sessionId: string }) => void;
+  // Video call events
+  'call:incoming': (data: {
+    callId: string;
+    callerId: string;
+    callerName: string;
+    callerAvatar: string | null;
+  }) => void;
+  'call:accepted': (data: { callId: string }) => void;
+  'call:rejected': (data: { callId: string }) => void;
+  'call:ended': (data: { callId: string }) => void;
+  'call:offer': (data: { callId: string; sdp: unknown }) => void;
+  'call:answer': (data: { callId: string; sdp: unknown }) => void;
+  'call:ice-candidate': (data: { callId: string; candidate: unknown }) => void;
 }

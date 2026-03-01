@@ -23,6 +23,10 @@ const envSchema = z.object({
   SMTP_PASS: z.string().optional().default(''),
   SMTP_FROM: z.string().optional().default('noreply@fansbook.com'),
   EMAIL_ENABLED: z.string().optional().default('false'),
+  // mediasoup (optional — live streaming disabled without it)
+  MEDIASOUP_ANNOUNCED_IP: z.string().optional().default('127.0.0.1'),
+  MEDIASOUP_MIN_PORT: z.coerce.number().optional().default(40000),
+  MEDIASOUP_MAX_PORT: z.coerce.number().optional().default(49999),
 });
 
 function loadEnv() {

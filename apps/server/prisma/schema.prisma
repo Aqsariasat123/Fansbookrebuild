@@ -276,6 +276,7 @@ model User {
   bookingsAsCreator    Booking[]             @relation("BookingCreator")
   bookingsAsFan        Booking[]             @relation("BookingFan")
   commentLikes         CommentLike[]
+  liveChatMessages     LiveChatMessage[] @relation("LiveChatMessages")
 
   @@index([email])
   @@index([username])
@@ -717,10 +718,25 @@ model LiveSession {
   endedAt     DateTime?
   createdAt   DateTime   @default(now())
 
-  creator User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creator  User              @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  messages LiveChatMessage[]
 
   @@index([creatorId])
   @@index([status])
+}
+
+model LiveChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String
+  senderId  String
+  text      String
+  createdAt DateTime @default(now())
+
+  session LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sender  User        @relation("LiveChatMessages", fields: [senderId], references: [id])
+
+  @@index([sessionId])
+  @@index([createdAt])
 }
 
 model VideoCall {

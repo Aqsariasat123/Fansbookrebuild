@@ -6,6 +6,8 @@ import { redis, redisSub } from './redis.js';
 import { env } from './env.js';
 import { logger } from '../utils/logger.js';
 import { registerChatHandlers } from './socket-handlers.js';
+import { registerLiveHandlers } from './live-handlers.js';
+import { registerCallHandlers } from './call-handlers.js';
 import type { AuthPayload } from '../middleware/auth.js';
 
 let io: Server | null = null;
@@ -58,6 +60,8 @@ export function initSocketIO(httpServer: HttpServer) {
 
     // Register event handlers
     registerChatHandlers(io!, socket);
+    registerLiveHandlers(io!, socket);
+    registerCallHandlers(io!, socket);
 
     socket.on('disconnect', async () => {
       logger.info({ userId, socketId: socket.id }, 'Socket disconnected');

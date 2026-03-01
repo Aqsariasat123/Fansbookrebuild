@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { MobileSidebar } from './MobileSidebar';
+import { IncomingCallModal } from '../call/IncomingCallModal';
 
 export function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,6 +18,7 @@ export function MainLayout() {
         </main>
       </div>
       <MobileSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <IncomingCallModal />
     </div>
   );
 }

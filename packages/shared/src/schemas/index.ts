@@ -135,6 +135,14 @@ export const createReportSchema = z.object({
   entityType: z.enum(['USER', 'POST', 'COMMENT', 'MESSAGE']),
 });
 
+// ─── Story Schema ───────────────────────────────────────
+
+export const createStorySchema = z.object({
+  visibility: z.enum(['PUBLIC', 'SUBSCRIBERS']).default('PUBLIC'),
+});
+
+export type CreateStoryInput = z.infer<typeof createStorySchema>;
+
 // ─── Search Schema ───────────────────────────────────────
 
 export const searchSchema = z.object({

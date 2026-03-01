@@ -69,6 +69,8 @@ const GoLive = lazy(() => import('./pages/GoLive'));
 const LiveBroadcasting = lazy(() => import('./pages/LiveBroadcasting'));
 const CreatorDashboardHome = lazy(() => import('./pages/CreatorDashboardHome'));
 const CreatorAnalytics = lazy(() => import('./pages/CreatorAnalytics'));
+const LiveWatch = lazy(() => import('./pages/LiveWatch'));
+const VideoCallScreen = lazy(() => import('./pages/VideoCallScreen'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -157,6 +159,10 @@ export default function App() {
                   <Route path="/marketplace/create" element={<MarketplaceCreate />} />
                   <Route path="/leaderboard" element={<LeaderboardPage />} />
                   <Route path="/badges" element={<BadgesPage />} />
+
+                  {/* Live stream viewer + Video call */}
+                  <Route path="/live/:sessionId" element={<LiveWatch />} />
+                  <Route path="/call/:callId" element={<VideoCallScreen />} />
 
                   {/* Public creator profile (requires login) */}
                   <Route path="/u/:username" element={<CreatorPublicProfile />} />

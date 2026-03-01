@@ -214,4 +214,7 @@ export type {
   UpcomingLive,
   LiveFilterParams,
   SocketEvents,
+  StoryItem,
+  StoryGroup,
+  LiveChatMessage,
 } from './creators.js';

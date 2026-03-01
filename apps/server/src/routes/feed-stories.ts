@@ -29,6 +29,13 @@ router.get('/', authenticate, async (req, res, next) => {
     const followedIds = follows.map((f) => f.followingId);
     followedIds.push(userId);
 
+    // Get active subscriptions to filter SUBSCRIBERS-only stories
+    const activeSubs = await prisma.subscription.findMany({
+      where: { subscriberId: userId, status: 'ACTIVE' },
+      select: { creatorId: true },
+    });
+    const subscribedCreatorIds = new Set(activeSubs.map((s) => s.creatorId));
+
     const stories = await prisma.story.findMany({
       where: { expiresAt: { gt: new Date() }, authorId: { in: followedIds } },
       orderBy: { createdAt: 'desc' },
@@ -41,6 +48,14 @@ router.get('/', authenticate, async (req, res, next) => {
 
     const groupMap = new Map<string, StoryGroup>();
     for (const s of stories) {
+      // Skip SUBSCRIBERS-only stories unless viewer is subscribed or is the author
+      if (
+        s.visibility === 'SUBSCRIBERS' &&
+        s.authorId !== userId &&
+        !subscribedCreatorIds.has(s.authorId)
+      ) {
+        continue;
+      }
       const item: StoryItem = {
         id: s.id,
         mediaUrl: s.mediaUrl,

@@ -9,6 +9,7 @@ import { connectRedis, disconnectRedis } from './config/redis.js';
 import { initSocketIO } from './config/socket.js';
 import { setNotifyIO } from './utils/notify.js';
 import { startWorkers } from './jobs/workers.js';
+import { initMediasoup } from './config/mediasoup.js';
 
 initSentry();
 
@@ -27,6 +28,29 @@ async function main() {
     } catch (err) {
       logger.warn({ err }, 'Redis unavailable — running without Socket.IO');
     }
+
+    try {
+      await initMediasoup();
+    } catch (err) {
+      logger.warn({ err }, 'mediasoup unavailable — live streaming disabled');
+    }
+
+    // Story cleanup cron — every hour, delete expired stories + views
+    setInterval(
+      async () => {
+        try {
+          const deleted = await prisma.story.deleteMany({
+            where: { expiresAt: { lt: new Date() } },
+          });
+          if (deleted.count > 0) {
+            logger.info({ count: deleted.count }, 'Cleaned up expired stories');
+          }
+        } catch (err) {
+          logger.error({ err }, 'Story cleanup failed');
+        }
+      },
+      60 * 60 * 1000,
+    );
 
     server.listen(env.PORT, () => {
       logger.info(`Server running on http://localhost:${env.PORT}`);
