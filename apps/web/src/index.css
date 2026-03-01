@@ -93,9 +93,9 @@ img[src$='.svg'][src*='/icons/about/'] {
   filter: brightness(0) invert(1);
 }
 /* Preserve colored icons (cyan verified, brand colors) */
-img[src*='verified.svg'],
-img[src*='twitter.svg'],
-img[src*='instagram.svg'],
-img[src*='facebook.svg'] {
-  filter: none;
+img[src$='.svg'][src*='verified'],
+img[src$='.svg'][src*='twitter'],
+img[src$='.svg'][src*='instagram'],
+img[src$='.svg'][src*='facebook'] {
+  filter: none !important;
 }
