@@ -29,31 +29,40 @@ export function useCall() {
     };
 
     const handleAccepted = () => store.setStatus('active');
-    const handleRejected = () => store.reset();
-    const handleEnded = () => store.reset();
+    const handleRejected = () => {
+      store.reset();
+      navigate(-1);
+    };
+    const handleEnded = () => {
+      store.reset();
+      navigate(-1);
+    };
 
     const handleOffer = async (data: { callId: string; sdp: RTCSessionDescriptionInit }) => {
-      if (!pcRef.current) {
+      const pc = useCallStore.getState().peerConnection;
+      if (!pc) {
         store.setPendingOffer(data.sdp);
         return;
       }
-      await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.sdp));
-      const answer = await pcRef.current.createAnswer();
-      await pcRef.current.setLocalDescription(answer);
+      await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
       socket.emit('call:answer', { callId: data.callId, sdp: answer });
     };
 
     const handleAnswer = async (data: { sdp: RTCSessionDescriptionInit }) => {
-      if (!pcRef.current) return;
-      await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.sdp));
+      const pc = useCallStore.getState().peerConnection;
+      if (!pc) return;
+      await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
     };
 
     const handleIce = async (data: { candidate: RTCIceCandidateInit }) => {
-      if (!pcRef.current) {
+      const pc = useCallStore.getState().peerConnection;
+      if (!pc) {
         store.addPendingCandidate(data.candidate);
         return;
       }
-      await pcRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+      await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
     };
 
     socket.on('call:incoming', handleIncoming);
