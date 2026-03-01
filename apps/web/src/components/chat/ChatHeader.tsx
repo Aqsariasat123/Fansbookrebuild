@@ -24,9 +24,16 @@ interface ChatUserHeaderProps {
   otherAvatar?: string | null;
   onBack: () => void;
   isOnline?: boolean;
+  onVideoCall?: () => void;
 }
 
-export function ChatUserHeader({ otherName, otherAvatar, onBack, isOnline }: ChatUserHeaderProps) {
+export function ChatUserHeader({
+  otherName,
+  otherAvatar,
+  onBack,
+  isOnline,
+  onVideoCall,
+}: ChatUserHeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
   const initial = otherName?.charAt(0)?.toUpperCase() || '?';
   return (
@@ -63,7 +70,18 @@ export function ChatUserHeader({ otherName, otherAvatar, onBack, isOnline }: Cha
         </div>
       </div>
       <div className="flex-1" />
-      <div className="relative flex items-center gap-[8px]">
+      <div className="relative flex items-center gap-[12px]">
+        {onVideoCall && (
+          <button
+            onClick={onVideoCall}
+            className="flex size-[36px] items-center justify-center rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] hover:opacity-80 transition-opacity"
+            title="Video Call"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+              <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+            </svg>
+          </button>
+        )}
         <button className="hover:opacity-80 transition-opacity">
           <img src={`${IMG}/settings.svg`} alt="" className="size-[20px] opacity-50" />
         </button>

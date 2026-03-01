@@ -146,6 +146,23 @@ export function OtherBubble({ msg, onDelete, onViewImage }: BubbleProps) {
   );
 }
 
+export function TypingDots() {
+  return (
+    <div className="flex items-center gap-[8px] px-[10px] py-[4px]">
+      <div className="flex gap-[3px]">
+        {[0, 150, 300].map((d) => (
+          <span
+            key={d}
+            className="size-[6px] rounded-full bg-muted-foreground/50 animate-bounce"
+            style={{ animationDelay: `${d}ms` }}
+          />
+        ))}
+      </div>
+      <span className="text-[12px] text-muted-foreground">typing...</span>
+    </div>
+  );
+}
+
 export function SelfBubble({ msg, onDelete, onViewImage }: BubbleProps) {
   const isImage = msg.mediaUrl && msg.mediaType === 'IMAGE';
   return (

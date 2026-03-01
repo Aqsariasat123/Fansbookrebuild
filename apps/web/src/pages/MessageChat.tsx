@@ -2,30 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-import { OtherBubble, SelfBubble } from '../components/chat/ChatBubbles';
+import { OtherBubble, SelfBubble, TypingDots } from '../components/chat/ChatBubbles';
 import { MessagePageHeader, ChatUserHeader } from '../components/chat/ChatHeader';
-import { ImagePreview, ImageViewer } from '../components/chat/ImagePreview';
+import { ChatOverlays } from '../components/chat/ImagePreview';
 import { ChatInputBar } from '../components/chat/ChatInputBar';
 import { useChat } from '../hooks/useChat';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { useCall } from '../hooks/useCall';
 import type { ChatMessage } from '../components/chat/ChatBubbles';
-
-function TypingDots() {
-  return (
-    <div className="flex items-center gap-[8px] px-[10px] py-[4px]">
-      <div className="flex gap-[3px]">
-        {[0, 150, 300].map((d) => (
-          <span
-            key={d}
-            className="size-[6px] rounded-full bg-muted-foreground/50 animate-bounce"
-            style={{ animationDelay: `${d}ms` }}
-          />
-        ))}
-      </div>
-      <span className="text-[12px] text-muted-foreground">typing...</span>
-    </div>
-  );
-}
 
 export default function MessageChat() {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -49,6 +33,7 @@ export default function MessageChat() {
   const { incomingMessages, typingUsers, emitTyping, markRead, clearIncoming } =
     useChat(conversationId);
   const otherOnline = useOnlineStatus(other?.id);
+  const { startCall } = useCall();
 
   useEffect(() => {
     if (!conversationId) return;
@@ -153,6 +138,7 @@ export default function MessageChat() {
           otherAvatar={other?.avatar}
           onBack={() => navigate('/messages')}
           isOnline={otherOnline}
+          onVideoCall={other?.id ? () => startCall(other.id) : undefined}
         />
         <div
           ref={scrollRef}
@@ -201,15 +187,14 @@ export default function MessageChat() {
           sending={sending}
         />
       </div>
-      {previewFile && (
-        <ImagePreview
-          file={previewFile}
-          onSend={handleImageSend}
-          onClose={() => setPreviewFile(null)}
-          sending={sending}
-        />
-      )}
-      {viewImage && <ImageViewer url={viewImage} onClose={() => setViewImage(null)} />}
+      <ChatOverlays
+        previewFile={previewFile}
+        onSendImage={handleImageSend}
+        onClosePreview={() => setPreviewFile(null)}
+        sending={sending}
+        viewImage={viewImage}
+        onCloseViewer={() => setViewImage(null)}
+      />
     </div>
   );
 }

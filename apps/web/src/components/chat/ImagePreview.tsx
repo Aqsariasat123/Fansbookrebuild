@@ -68,6 +68,31 @@ interface ImageViewerProps {
   onClose: () => void;
 }
 
+interface ChatOverlaysProps {
+  previewFile: File | null;
+  onSendImage: (file: File, caption: string) => void;
+  onClosePreview: () => void;
+  sending: boolean;
+  viewImage: string | null;
+  onCloseViewer: () => void;
+}
+
+export function ChatOverlays(p: ChatOverlaysProps) {
+  return (
+    <>
+      {p.previewFile && (
+        <ImagePreview
+          file={p.previewFile}
+          onSend={p.onSendImage}
+          onClose={p.onClosePreview}
+          sending={p.sending}
+        />
+      )}
+      {p.viewImage && <ImageViewer url={p.viewImage} onClose={p.onCloseViewer} />}
+    </>
+  );
+}
+
 export function ImageViewer({ url, onClose }: ImageViewerProps) {
   return (
     <div
