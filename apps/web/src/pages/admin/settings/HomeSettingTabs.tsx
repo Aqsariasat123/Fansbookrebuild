@@ -16,22 +16,35 @@ function Field({
   onChange,
   cls,
   type,
+  placeholder,
 }: {
   label: string;
   value?: string;
   onChange?: (v: string) => void;
   cls: string;
   type?: string;
+  placeholder?: string;
 }) {
+  const ph = placeholder || `Enter ${label}`;
   return (
     <div>
       <label className="mb-[4px] block font-outfit text-[14px] text-black">{label}</label>
       {type === 'file' ? (
         <input type="file" className={cls} />
       ) : type === 'textarea' ? (
-        <textarea value={value} onChange={(e) => onChange?.(e.target.value)} className={cls} />
+        <textarea
+          value={value}
+          onChange={(e) => onChange?.(e.target.value)}
+          placeholder={ph}
+          className={cls}
+        />
       ) : (
-        <input value={value} onChange={(e) => onChange?.(e.target.value)} className={cls} />
+        <input
+          value={value}
+          onChange={(e) => onChange?.(e.target.value)}
+          placeholder={ph}
+          className={cls}
+        />
       )}
     </div>
   );
@@ -132,6 +145,7 @@ export function ContactUsTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <input
           value={val(form, 'contactEmail')}
           onChange={(e) => update('contactEmail', e.target.value)}
+          placeholder="fanbook@mailinator.com"
           className={inputCls}
         />
       </div>
@@ -142,6 +156,7 @@ export function ContactUsTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <input
           value={form.contactTitle || ''}
           onChange={(e) => update('contactTitle', e.target.value)}
+          placeholder="Contact Us"
           className={inputCls}
         />
       </div>
@@ -152,6 +167,7 @@ export function ContactUsTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <textarea
           value={form.contactDescription || ''}
           onChange={(e) => update('contactDescription', e.target.value)}
+          placeholder="If you are unsure of anything, please drop us a line and our team will be more than happy to assist you."
           className={textCls}
         />
       </div>
@@ -160,6 +176,7 @@ export function ContactUsTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <input
           value={form.contactSeoTitle || ''}
           onChange={(e) => update('contactSeoTitle', e.target.value)}
+          placeholder="Fansbook.vip"
           className={inputCls}
         />
       </div>
@@ -168,103 +185,7 @@ export function ContactUsTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <textarea
           value={form.contactSeoDesc || ''}
           onChange={(e) => update('contactSeoDesc', e.target.value)}
-          className={textCls}
-        />
-      </div>
-    </div>
-  );
-}
-
-export function FaqTab({ form, update, inputCls, textCls }: Omit<Props, 'fileCls'>) {
-  return (
-    <div className="flex max-w-[600px] flex-col gap-[16px]">
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">Faq Title</label>
-        <input
-          value={form.faqTitle || ''}
-          onChange={(e) => update('faqTitle', e.target.value)}
-          className={inputCls}
-        />
-      </div>
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">Faq Description</label>
-        <textarea
-          value={form.faqDescription || ''}
-          onChange={(e) => update('faqDescription', e.target.value)}
-          className={textCls}
-        />
-      </div>
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">Seo Title</label>
-        <input
-          value={form.faqSeoTitle || ''}
-          onChange={(e) => update('faqSeoTitle', e.target.value)}
-          className={inputCls}
-        />
-      </div>
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">Seo Description</label>
-        <textarea
-          value={form.faqSeoDesc || ''}
-          onChange={(e) => update('faqSeoDesc', e.target.value)}
-          className={textCls}
-        />
-      </div>
-    </div>
-  );
-}
-
-export function EmailTab({ form, update, inputCls, textCls }: Omit<Props, 'fileCls'>) {
-  return (
-    <div className="flex max-w-[600px] flex-col gap-[16px]">
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">
-          Footer Description
-        </label>
-        <textarea
-          value={form.emailFooterDesc || ''}
-          onChange={(e) => update('emailFooterDesc', e.target.value)}
-          className={textCls}
-        />
-      </div>
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">Copyright</label>
-        <input
-          value={form.emailCopyright || ''}
-          onChange={(e) => update('emailCopyright', e.target.value)}
-          className={inputCls}
-        />
-      </div>
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">
-          Send To Admin Mail
-        </label>
-        <input
-          value={form.adminMail || ''}
-          onChange={(e) => update('adminMail', e.target.value)}
-          className={inputCls}
-        />
-      </div>
-    </div>
-  );
-}
-
-export function SeoSettingsTab({ form, update, inputCls, textCls }: Omit<Props, 'fileCls'>) {
-  return (
-    <div className="flex max-w-[600px] flex-col gap-[16px]">
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">Seo Title</label>
-        <input
-          value={form.seoSettingsTitle || ''}
-          onChange={(e) => update('seoSettingsTitle', e.target.value)}
-          className={inputCls}
-        />
-      </div>
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">Seo Description</label>
-        <textarea
-          value={form.seoSettingsDesc || ''}
-          onChange={(e) => update('seoSettingsDesc', e.target.value)}
+          placeholder="If you are unsure of anything, please drop us a line and our team will be more than happy to assist you."
           className={textCls}
         />
       </div>

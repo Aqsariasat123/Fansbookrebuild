@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../../lib/api';
-import { HomePageTab, ContactUsTab, FaqTab, EmailTab, SeoSettingsTab } from './HomeSettingTabs';
+import { HomePageTab, ContactUsTab } from './HomeSettingTabs';
+import { FaqTab, EmailTab, SeoSettingsTab } from './HomeSettingTabs2';
 
 const TABS = ['HOME PAGE', 'CONTACT US', 'FAQ', 'EMAIL', 'SEO SETTINGS'] as const;
 

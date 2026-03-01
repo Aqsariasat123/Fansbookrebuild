@@ -16,6 +16,7 @@ export function WithdrawalTab({ form, update, inputCls }: Omit<Props, 'fileCls'>
           type="number"
           value={String(form.commissionRate || 30)}
           onChange={(e) => update('commissionRate', Number(e.target.value))}
+          placeholder="30"
           className={inputCls}
         />
       </div>
@@ -27,6 +28,7 @@ export function WithdrawalTab({ form, update, inputCls }: Omit<Props, 'fileCls'>
           type="number"
           value={String(form.minWithdrawal || 10)}
           onChange={(e) => update('minWithdrawal', Number(e.target.value))}
+          placeholder="10"
           className={inputCls}
         />
       </div>
@@ -45,6 +47,7 @@ export function ReferralBonusTab({ form, update, inputCls }: Omit<Props, 'fileCl
           type="number"
           value={String(form.referralBonus || 30)}
           onChange={(e) => update('referralBonus', Number(e.target.value))}
+          placeholder="30"
           className={inputCls}
         />
       </div>
@@ -61,6 +64,7 @@ export function UserTokenTab({ form, update, inputCls }: Omit<Props, 'fileCls'>)
           type="number"
           value={String(form.totalToken || 1)}
           onChange={(e) => update('totalToken', Number(e.target.value))}
+          placeholder="1"
           className={inputCls}
         />
       </div>
@@ -70,6 +74,7 @@ export function UserTokenTab({ form, update, inputCls }: Omit<Props, 'fileCls'>)
           type="number"
           value={String(form.tokenPrice || 1)}
           onChange={(e) => update('tokenPrice', Number(e.target.value))}
+          placeholder="1"
           className={inputCls}
         />
       </div>
@@ -88,6 +93,7 @@ export function BroadcastingTab({ form, update, inputCls }: Omit<Props, 'fileCls
           type="number"
           value={String(form.broadcastingToken || 100)}
           onChange={(e) => update('broadcastingToken', Number(e.target.value))}
+          placeholder="100"
           className={inputCls}
         />
       </div>
@@ -111,6 +117,7 @@ export function WithdrawFormTab({ form, update, inputCls, fileCls }: Props) {
         <input
           value={String(form.withdrawFormUSText || '')}
           onChange={(e) => update('withdrawFormUSText', e.target.value)}
+          placeholder="Enter US resident withdraw form text"
           className={inputCls}
         />
       </div>
@@ -127,6 +134,7 @@ export function WithdrawFormTab({ form, update, inputCls, fileCls }: Props) {
         <input
           value={String(form.withdrawFormNonUSText || '')}
           onChange={(e) => update('withdrawFormNonUSText', e.target.value)}
+          placeholder="Enter Non-US resident withdraw form text"
           className={inputCls}
         />
       </div>
@@ -143,6 +151,7 @@ export function OthersTab({ form, update, inputCls }: Omit<Props, 'fileCls'>) {
           type="number"
           value={String(form.vatPercentage || 10)}
           onChange={(e) => update('vatPercentage', Number(e.target.value))}
+          placeholder="10"
           className={inputCls}
         />
       </div>

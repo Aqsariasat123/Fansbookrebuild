@@ -16,6 +16,7 @@ export function GeneralTab({ form, update, inputCls, textCls }: Omit<Props, 'fil
         <input
           value={form.title || ''}
           onChange={(e) => update('title', e.target.value)}
+          placeholder="Make Money With Fansbook"
           className={inputCls}
         />
       </div>
@@ -24,6 +25,7 @@ export function GeneralTab({ form, update, inputCls, textCls }: Omit<Props, 'fil
         <input
           value={form.seoTitle || ''}
           onChange={(e) => update('seoTitle', e.target.value)}
+          placeholder="Fansbook.vip"
           className={inputCls}
         />
       </div>
@@ -32,6 +34,7 @@ export function GeneralTab({ form, update, inputCls, textCls }: Omit<Props, 'fil
         <textarea
           value={form.seoDesc || ''}
           onChange={(e) => update('seoDesc', e.target.value)}
+          placeholder="Start earning with Fansbook today."
           className={textCls}
         />
       </div>
@@ -51,6 +54,7 @@ export function SectionTab({ form, update, inputCls, fileCls, tab }: Props & { t
         <input
           value={form[`${tab}_title`] || ''}
           onChange={(e) => update(`${tab}_title`, e.target.value)}
+          placeholder={isIncome ? 'Enter generate income title' : 'Enter feature title'}
           className={inputCls}
         />
       </div>
@@ -61,6 +65,7 @@ export function SectionTab({ form, update, inputCls, fileCls, tab }: Props & { t
         <textarea
           value={form[`${tab}_desc`] || ''}
           onChange={(e) => update(`${tab}_desc`, e.target.value)}
+          placeholder={isIncome ? 'Enter generate income description' : 'Enter feature description'}
           className={`${inputCls} min-h-[80px] resize-y`}
         />
       </div>
@@ -72,6 +77,7 @@ export function SectionTab({ form, update, inputCls, fileCls, tab }: Props & { t
           <input
             value={form[`${tab}_s${n}_title`] || ''}
             onChange={(e) => update(`${tab}_s${n}_title`, e.target.value)}
+            placeholder={`Enter section ${n} title`}
             className={inputCls}
           />
           <label className="mb-[4px] mt-[8px] block font-outfit text-[14px] text-black">
@@ -95,6 +101,7 @@ export function HowItWorkTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <input
           value={form.howTitle || ''}
           onChange={(e) => update('howTitle', e.target.value)}
+          placeholder="How It Works"
           className={inputCls}
         />
       </div>
@@ -105,6 +112,7 @@ export function HowItWorkTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <textarea
           value={form.howDesc || ''}
           onChange={(e) => update('howDesc', e.target.value)}
+          placeholder="Learn how Fansbook works for creators."
           className={textCls}
         />
       </div>
@@ -116,6 +124,7 @@ export function HowItWorkTab({ form, update, inputCls, textCls }: Omit<Props, 'f
           <input
             value={form[`how_s${n}_title`] || ''}
             onChange={(e) => update(`how_s${n}_title`, e.target.value)}
+            placeholder={`Enter section ${n} title`}
             className={inputCls}
           />
           <label className="mb-[4px] mt-[8px] block font-outfit text-[14px] text-black">
@@ -124,6 +133,7 @@ export function HowItWorkTab({ form, update, inputCls, textCls }: Omit<Props, 'f
           <textarea
             value={form[`how_s${n}_desc`] || ''}
             onChange={(e) => update(`how_s${n}_desc`, e.target.value)}
+            placeholder={`Enter section ${n} description`}
             className={textCls}
           />
         </div>
