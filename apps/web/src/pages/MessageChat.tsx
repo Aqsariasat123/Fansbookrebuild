@@ -168,7 +168,7 @@ export default function MessageChat() {
           )}
           {messages.map((msg) =>
             msg.mediaType === 'CALL' ? (
-              <CallBubble key={msg.id} msg={msg} />
+              <CallBubble key={msg.id} msg={msg} userId={userId} />
             ) : msg.senderId === userId ? (
               <SelfBubble
                 key={msg.id}

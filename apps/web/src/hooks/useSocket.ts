@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import { useSocketStore } from '../stores/socketStore';
 import { useNotificationStore } from '../stores/notificationStore';
@@ -7,8 +7,9 @@ import { connectSocket, disconnectSocket } from '../lib/socket';
 import { showToast } from '../components/shared/NotificationToast';
 import { api } from '../lib/api';
 import type { CallMode } from '../stores/callStore';
+import type { Socket } from 'socket.io-client';
 
-function registerCallListeners(socket: ReturnType<typeof connectSocket>) {
+function registerCallListeners(socket: Socket) {
   const cgs = () => useCallStore.getState();
 
   socket.on(
@@ -59,16 +60,19 @@ function registerCallListeners(socket: ReturnType<typeof connectSocket>) {
 
 export function useSocket() {
   const user = useAuthStore((s) => s.user);
-  const setConnected = useSocketStore((s) => s.setConnected);
-  const addOnlineUser = useSocketStore((s) => s.addOnlineUser);
-  const removeOnlineUser = useSocketStore((s) => s.removeOnlineUser);
-  const setOnlineUsers = useSocketStore((s) => s.setOnlineUsers);
-  const incrementNotif = useNotificationStore((s) => s.increment);
+  const cbRef = useRef({
+    setConnected: useSocketStore.getState().setConnected,
+    addOnlineUser: useSocketStore.getState().addOnlineUser,
+    removeOnlineUser: useSocketStore.getState().removeOnlineUser,
+    setOnlineUsers: useSocketStore.getState().setOnlineUsers,
+    incrementNotif: useNotificationStore.getState().increment,
+  });
 
+  // Only reconnect when user changes (login/logout)
   useEffect(() => {
     if (!user) {
       disconnectSocket();
-      setConnected(false);
+      cbRef.current.setConnected(false);
       return;
     }
 
@@ -76,18 +80,19 @@ export function useSocket() {
     if (!token) return;
 
     const socket = connectSocket(token);
+    const cb = cbRef.current;
 
-    socket.on('connect', () => setConnected(true));
-    socket.on('disconnect', () => setConnected(false));
-    socket.on('user:online', (data: { userId: string }) => addOnlineUser(data.userId));
-    socket.on('user:offline', (data: { userId: string }) => removeOnlineUser(data.userId));
-    socket.on('user:online_list', (data: { userIds: string[] }) => setOnlineUsers(data.userIds));
+    socket.on('connect', () => cb.setConnected(true));
+    socket.on('disconnect', () => cb.setConnected(false));
+    socket.on('user:online', (data: { userId: string }) => cb.addOnlineUser(data.userId));
+    socket.on('user:offline', (data: { userId: string }) => cb.removeOnlineUser(data.userId));
+    socket.on('user:online_list', (data: { userIds: string[] }) => cb.setOnlineUsers(data.userIds));
     socket.on('notification:new', (data: { message?: string }) => {
-      incrementNotif();
+      cb.incrementNotif();
       if (data?.message) showToast(data.message);
     });
 
-    // Global call event listeners (registered once)
+    // Global call event listeners — registered once, never torn down mid-call
     registerCallListeners(socket);
 
     api
@@ -100,7 +105,7 @@ export function useSocket() {
 
     return () => {
       disconnectSocket();
-      setConnected(false);
+      cb.setConnected(false);
     };
-  }, [user, setConnected, addOnlineUser, removeOnlineUser, setOnlineUsers, incrementNotif]);
+  }, [user]);
 }
