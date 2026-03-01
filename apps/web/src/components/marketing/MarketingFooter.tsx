@@ -91,17 +91,25 @@ export function MarketingFooter() {
         <div>
           <h4 className="text-[18px] font-semibold text-foreground lg:text-[20px]">Follow us</h4>
           <div className="mt-[12px] flex gap-[16px] lg:mt-[16px]">
-            <a href="#">
+            <a
+              href="https://www.facebook.com/FansBookVip"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img src="/icons/landing/facebook.svg" alt="Facebook" className="h-[25px] w-[25px]" />
             </a>
-            <a href="#">
+            <a
+              href="https://www.instagram.com/fansbook.vip/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img
                 src="/icons/landing/instagram.svg"
                 alt="Instagram"
                 className="h-[25px] w-[25px]"
               />
             </a>
-            <a href="#">
+            <a href="https://x.com/FansBook__" target="_blank" rel="noopener noreferrer">
               <img src="/icons/landing/twitter.svg" alt="Twitter" className="h-[25px] w-[25px]" />
             </a>
           </div>
