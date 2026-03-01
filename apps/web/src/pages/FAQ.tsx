@@ -50,8 +50,11 @@ export default function FAQ() {
   return (
     <div className="min-h-screen font-outfit">
       {/* Hero */}
-      <div className="relative h-[280px] bg-card md:h-[355px]">
-        <div className="absolute inset-0 bg-[rgba(21,25,28,0.94)]" />
+      <div className="relative h-[280px] md:h-[355px]">
+        <div className="absolute inset-0 overflow-hidden">
+          <img src="/images/landing/hero-bg.webp" alt="" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-[rgba(21,25,28,0.94)]" />
+        </div>
         <MarketingNav />
         <div className="absolute inset-x-0 top-[100px] flex flex-col items-center gap-[14px] px-[20px] md:top-[135px] md:px-[76px]">
           <h1 className="text-center text-[30px] font-medium text-white md:text-[48px]">
