@@ -6,6 +6,7 @@ import { ImagePost, VideoPost } from '../components/feed/FeedPosts';
 import { PostComposerBar } from '../components/feed/PostComposerBar';
 import { StoriesRow } from '../components/feed/StoriesRow';
 import { EmptyFeedState } from '../components/feed/EmptyFeedState';
+import { AnnouncementBanner } from '../components/feed/AnnouncementBanner';
 import type { StoryGroup } from '../components/feed/StoryViewer';
 import type { FeedPost } from '../components/feed/FeedPosts';
 
@@ -15,6 +16,14 @@ interface Author {
   displayName: string;
   avatar: string | null;
   isVerified?: boolean;
+}
+
+function parseFeedResponse(res: { data: { data: { posts?: FeedPost[]; nextCursor?: string } } }) {
+  const feedData = res.data.data;
+  return {
+    posts: feedData.posts || (feedData as unknown as FeedPost[]) || [],
+    cursor: feedData.nextCursor || null,
+  };
 }
 
 export default function Home() {
@@ -40,38 +49,35 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    async function loadFeed() {
+    async function load() {
       try {
         const [feedRes, storiesRes, modelsRes] = await Promise.all([
           api.get('/feed?limit=10'),
           api.get('/feed/stories'),
           api.get('/feed/popular-models'),
         ]);
-        const feedData = feedRes.data.data;
-        const feedPosts = feedData.posts || feedData || [];
+        const { posts: feedPosts, cursor: nextCursor } = parseFeedResponse(feedRes);
         setPosts(feedPosts);
-        setCursor(feedData.nextCursor || null);
+        setCursor(nextCursor);
         setStoryGroups(storiesRes.data.data || []);
         setModels(modelsRes.data.data || []);
         if (feedPosts.length > 0) latestPostIdRef.current = feedPosts[0].id;
-        if (feedPosts.length === 0) loadSuggested();
+        if (feedPosts.length === 0) {
+          try {
+            setSuggested((await api.get('/creators/suggestions?limit=6')).data.data || []);
+          } catch {
+            /* */
+          }
+        }
       } catch {
-        /* empty */
+        /* */
       } finally {
         setLoading(false);
       }
     }
-    async function loadSuggested() {
-      try {
-        setSuggested((await api.get('/creators/suggestions?limit=6')).data.data || []);
-      } catch {
-        /* */
-      }
-    }
-    loadFeed();
+    load();
   }, []);
 
-  // Poll for new posts every 30s
   useEffect(() => {
     const interval = setInterval(async () => {
       if (!latestPostIdRef.current) return;
@@ -90,11 +96,11 @@ export default function Home() {
     setNewPostsAvailable(false);
     setLoading(true);
     try {
-      const res = await api.get('/feed?limit=10');
-      const feedData = res.data.data;
-      const feedPosts = feedData.posts || feedData || [];
+      const { posts: feedPosts, cursor: nextCursor } = parseFeedResponse(
+        await api.get('/feed?limit=10'),
+      );
       setPosts(feedPosts);
-      setCursor(feedData.nextCursor || null);
+      setCursor(nextCursor);
       if (feedPosts.length > 0) latestPostIdRef.current = feedPosts[0].id;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
@@ -138,8 +144,12 @@ export default function Home() {
       </div>
     );
 
+  const imagePosts = posts.filter((p) => !p.media.some((m) => m.type === 'VIDEO'));
+  const videoPosts = posts.filter((p) => p.media.some((m) => m.type === 'VIDEO'));
+
   return (
     <div className="flex flex-col gap-[16px] md:gap-[22px]">
+      <AnnouncementBanner />
       {newPostsAvailable && (
         <button
           onClick={refreshFeed}
@@ -153,17 +163,13 @@ export default function Home() {
         <StoriesRow groups={storyGroups} isCreator={!!isCreator} onRefetch={fetchStories} />
       )}
       {posts.length === 0 && <EmptyFeedState suggestedCreators={suggested} />}
-      {posts
-        .filter((p) => !p.media.some((m) => m.type === 'VIDEO'))
-        .map((post) => (
-          <ImagePost key={post.id} post={post} />
-        ))}
+      {imagePosts.map((post) => (
+        <ImagePost key={post.id} post={post} />
+      ))}
       {models.length > 0 && <PopularModels models={models} />}
-      {posts
-        .filter((p) => p.media.some((m) => m.type === 'VIDEO'))
-        .map((post) => (
-          <VideoPost key={post.id} post={post} />
-        ))}
+      {videoPosts.map((post) => (
+        <VideoPost key={post.id} post={post} />
+      ))}
       <div ref={sentinelRef} className="h-1" />
       {loadingMore && (
         <div className="flex justify-center py-4">

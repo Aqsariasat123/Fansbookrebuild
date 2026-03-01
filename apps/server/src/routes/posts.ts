@@ -8,6 +8,7 @@ import { requireRole } from '../middleware/requireRole.js';
 import { AppError } from '../middleware/errorHandler.js';
 import commentsRouter from './posts-comments.js';
 import { logActivity } from '../utils/audit.js';
+import { checkBadges } from '../utils/check-badges.js';
 
 const router = Router();
 const postsUploadsDir = path.join(process.cwd(), 'uploads', 'posts');
@@ -128,6 +129,7 @@ router.post(
         req,
       );
       res.status(201).json({ success: true, data: fullPost });
+      checkBadges(userId);
     } catch (err) {
       next(err);
     }

@@ -12,6 +12,9 @@ export const adminNavItems: AdminNavItem[] = [
   { to: '/admin/earnings', label: 'Earnings', icon: 'earnings' },
   { to: '/admin/reports', label: 'Report', icon: 'report' },
   { to: '/admin/audit-log', label: 'Audit Log', icon: 'audit' },
+  { to: '/admin/content', label: 'Content', icon: 'content' },
+  { to: '/admin/badges', label: 'Badges', icon: 'badges' },
+  { to: '/admin/announcements', label: 'Announcements', icon: 'announcements' },
   {
     to: '#finance',
     label: 'Finance',

@@ -34,6 +34,9 @@ const MakeMoneySetting = lazy(() => import('./settings/MakeMoneySetting'));
 const BannerSetting = lazy(() => import('./settings/BannerSetting'));
 const AdminDashboard = lazy(() => import('./AdminDashboard'));
 const AdminAuditLog = lazy(() => import('./AdminAuditLog'));
+const AdminContent = lazy(() => import('./AdminContent'));
+const AdminBadges = lazy(() => import('./AdminBadges'));
+const AdminAnnouncements = lazy(() => import('./AdminAnnouncements'));
 
 export function adminRoutes() {
   return (
@@ -71,6 +74,9 @@ export function adminRoutes() {
             <Route path="/admin/settings/general" element={<GeneralSetting />} />
             <Route path="/admin/settings/make-money" element={<MakeMoneySetting />} />
             <Route path="/admin/settings/banner" element={<BannerSetting />} />
+            <Route path="/admin/content" element={<AdminContent />} />
+            <Route path="/admin/badges" element={<AdminBadges />} />
+            <Route path="/admin/announcements" element={<AdminAnnouncements />} />
           </Route>
         </Route>
       </Route>

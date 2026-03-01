@@ -106,6 +106,8 @@ enum NotificationType {
   MENTION
   POST
   SYSTEM
+  BADGE
+  MARKETPLACE
 }
 
 enum LiveStatus {
@@ -278,6 +280,7 @@ model User {
   bookingsAsFan        Booking[]             @relation("BookingFan")
   commentLikes         CommentLike[]
   liveChatMessages     LiveChatMessage[] @relation("LiveChatMessages")
+  announcements        Announcement[]
 
   @@index([email])
   @@index([username])
@@ -776,6 +779,8 @@ model MarketplaceListing {
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 
+  images       String[]        @default([])
+
   seller User  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   bids   Bid[]
 
@@ -1015,4 +1020,21 @@ model CountryForm {
   status       String   @default("Active")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// ─── Announcements ──────────────────────────────────────
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  isActive  Boolean  @default(true)
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creator User @relation(fields: [createdBy], references: [id])
+
+  @@index([isActive])
+  @@index([createdAt])
 }

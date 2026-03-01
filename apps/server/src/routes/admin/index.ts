@@ -11,6 +11,9 @@ import settingsRouter from './admin-settings.js';
 import profileRouter from './admin-profile.js';
 import dashboardRouter from './admin-dashboard.js';
 import auditLogRouter from './admin-audit-log.js';
+import contentRouter from './admin-content.js';
+import badgesRouter from './admin-badges.js';
+import announcementsRouter from './admin-announcements.js';
 
 const router = Router();
 
@@ -27,5 +30,8 @@ router.use('/settings', settingsRouter);
 router.use('/profile', profileRouter);
 router.use('/dashboard', dashboardRouter);
 router.use('/audit-log', auditLogRouter);
+router.use('/content', contentRouter);
+router.use('/badges', badgesRouter);
+router.use('/announcements', announcementsRouter);
 
 export default router;

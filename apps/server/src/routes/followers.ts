@@ -4,6 +4,7 @@ import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { createNotification } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
+import { checkBadges } from '../utils/check-badges.js';
 
 const router = Router();
 
@@ -55,6 +56,7 @@ router.post('/:creatorId', authenticate, async (req, res, next) => {
     });
     logActivity(userId, 'FOLLOW', 'User', creatorId, null, req);
     res.status(201).json({ success: true, message: 'Followed' });
+    checkBadges(creatorId);
   } catch (err) {
     next(err);
   }

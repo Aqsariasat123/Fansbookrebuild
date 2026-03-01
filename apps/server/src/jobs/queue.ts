@@ -30,3 +30,11 @@ export const storyExpiryQueue = new Queue('story-expiry', {
     removeOnFail: 50,
   },
 });
+
+export const auctionQueue = new Queue('auction-close', {
+  connection,
+  defaultJobOptions: {
+    removeOnComplete: 10,
+    removeOnFail: 50,
+  },
+});

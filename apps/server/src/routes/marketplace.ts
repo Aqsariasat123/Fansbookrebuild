@@ -6,6 +6,7 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { requireRole } from '../middleware/requireRole.js';
 import { AppError } from '../middleware/errorHandler.js';
+import bidsRouter from './marketplace-bids.js';
 
 const router = Router();
 const marketDir = path.join(process.cwd(), 'uploads', 'marketplace');
@@ -156,51 +157,8 @@ router.post(
   },
 );
 
-function validateAuctionListing(
-  listing: { type: string; status: string; sellerId: string } | null,
-  userId: string,
-) {
-  if (!listing) throw new AppError(404, 'Listing not found');
-  if (listing.type !== 'AUCTION') throw new AppError(400, 'Not an auction');
-  if (listing.status !== 'ACTIVE') throw new AppError(400, 'Listing not active');
-  if (listing.sellerId === userId) throw new AppError(400, 'Cannot bid on your own listing');
-}
-
-async function validateBidAmount(listingId: string, amount: number) {
-  const highestBid = await prisma.bid.findFirst({
-    where: { listingId },
-    orderBy: { amount: 'desc' },
-  });
-  if (highestBid && amount <= highestBid.amount) {
-    throw new AppError(400, `Bid must be higher than $${highestBid.amount}`);
-  }
-}
-
-// POST /api/marketplace/:id/bid — Place bid
-router.post('/:id/bid', authenticate, async (req, res, next) => {
-  try {
-    const userId = req.user!.userId;
-    const listingId = req.params.id as string;
-    const amount = parseFloat(req.body.amount);
-    if (!amount || amount <= 0) throw new AppError(400, 'Invalid bid amount');
-
-    const listing = await prisma.marketplaceListing.findUnique({ where: { id: listingId } });
-    validateAuctionListing(listing, userId);
-
-    const wallet = await prisma.wallet.findUnique({ where: { userId } });
-    if (!wallet || wallet.balance < amount) throw new AppError(400, 'Insufficient balance');
-
-    await validateBidAmount(listingId, amount);
-
-    const bid = await prisma.bid.create({
-      data: { listingId, bidderId: userId, amount },
-    });
-
-    res.status(201).json({ success: true, data: bid });
-  } catch (err) {
-    next(err);
-  }
-});
+// Mount bid sub-router
+router.use('/', bidsRouter);
 
 // POST /api/marketplace/:id/buy — Buy now
 router.post('/:id/buy', authenticate, async (req, res, next) => {

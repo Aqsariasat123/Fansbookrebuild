@@ -42,6 +42,7 @@ async function main() {
       icon: '🚀',
       rarity: 'RARE' as const,
       category: 'SPECIAL' as const,
+      criteria: { type: 'manual', note: 'Admin-only manual award' },
     },
     {
       name: 'First Post',
@@ -49,6 +50,7 @@ async function main() {
       icon: '✏️',
       rarity: 'COMMON' as const,
       category: 'CONTENT' as const,
+      criteria: { type: 'auto', check: 'post.count >= 1' },
     },
     {
       name: 'Popular Creator',
@@ -56,6 +58,7 @@ async function main() {
       icon: '⭐',
       rarity: 'EPIC' as const,
       category: 'SOCIAL' as const,
+      criteria: { type: 'auto', check: 'follow.count >= 1000' },
     },
     {
       name: 'Super Tipper',
@@ -63,6 +66,7 @@ async function main() {
       icon: '💎',
       rarity: 'LEGENDARY' as const,
       category: 'REVENUE' as const,
+      criteria: { type: 'auto', check: 'tip.sum >= 500' },
     },
     {
       name: 'Engaged Fan',
@@ -70,10 +74,31 @@ async function main() {
       icon: '❤️',
       rarity: 'COMMON' as const,
       category: 'ENGAGEMENT' as const,
+      criteria: { type: 'auto', check: 'like.count >= 100' },
     },
   ];
   for (const badge of badges) {
-    await prisma.badge.upsert({ where: { name: badge.name }, update: {}, create: badge });
+    await prisma.badge.upsert({
+      where: { name: badge.name },
+      update: { criteria: badge.criteria },
+      create: badge,
+    });
+  }
+
+  // Seed announcement
+  const existingAnnouncement = await prisma.announcement.findFirst({
+    where: { title: 'Welcome to Fansbook!' },
+  });
+  if (!existingAnnouncement) {
+    await prisma.announcement.create({
+      data: {
+        title: 'Welcome to Fansbook!',
+        content:
+          'We are excited to launch our new platform. Explore creators, subscribe, and support your favorites!',
+        isActive: true,
+        createdBy: admin.id,
+      },
+    });
   }
 
   await seedCreators(prisma, defaultPasswordHash);

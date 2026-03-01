@@ -4,6 +4,7 @@ import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { createNotification } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
+import { checkBadges } from '../utils/check-badges.js';
 import { FEES } from '@fansbook/shared';
 
 const router = Router();
@@ -65,6 +66,7 @@ router.post('/:id/like', authenticate, async (req, res, next) => {
     }
     logActivity(userId, 'POST_LIKE', 'Post', postId, null, req);
     res.status(201).json({ success: true, message: 'Post liked' });
+    checkBadges(userId);
   } catch (err) {
     next(err);
   }
@@ -156,6 +158,7 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
     notifyTip(post.authorId, userId, postId, amount);
     logActivity(userId, 'TIP', 'Post', postId, { amount, creatorId: post.authorId }, req);
     res.json({ success: true, message: 'Tip sent!' });
+    checkBadges(userId);
   } catch (err) {
     next(err);
   }
