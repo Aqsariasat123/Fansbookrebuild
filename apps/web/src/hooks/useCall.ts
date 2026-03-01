@@ -7,22 +7,26 @@ const ICE_SERVERS: RTCConfiguration = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
 };
 
-function navigateBack(navigate: ReturnType<typeof useNavigate>) {
-  const path = useCallStore.getState().returnPath;
-  if (path) navigate(path);
-  else navigate(-1);
-}
+const gs = () => useCallStore.getState();
 
 export function useCall() {
   const navigate = useNavigate();
   const location = useLocation();
-  const store = useCallStore();
-  const pcRef = useRef<RTCPeerConnection | null>(null);
+  const navRef = useRef(navigate);
+  const locRef = useRef(location.pathname);
+  navRef.current = navigate;
+  locRef.current = location.pathname;
 
-  // Listen for incoming call events
+  // Stable socket listeners — registered once, never torn down mid-call
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
+
+    const goBack = () => {
+      const path = gs().returnPath;
+      if (path) navRef.current(path);
+      else navRef.current(-1);
+    };
 
     const handleIncoming = (data: {
       callId: string;
@@ -31,24 +35,24 @@ export function useCall() {
       callerAvatar: string | null;
       mode?: CallMode;
     }) => {
-      store.setIncoming(data);
-      store.setPeer(data.callerName, data.callerAvatar);
+      gs().setIncoming(data);
+      gs().setPeer(data.callerName, data.callerAvatar);
     };
 
-    const handleAccepted = () => store.setStatus('active');
+    const handleAccepted = () => gs().setStatus('active');
     const handleRejected = () => {
-      navigateBack(navigate);
-      store.reset();
+      goBack();
+      gs().reset();
     };
     const handleEnded = () => {
-      navigateBack(navigate);
-      store.reset();
+      goBack();
+      gs().reset();
     };
 
     const handleOffer = async (data: { callId: string; sdp: RTCSessionDescriptionInit }) => {
-      const pc = useCallStore.getState().peerConnection;
+      const pc = gs().peerConnection;
       if (!pc) {
-        store.setPendingOffer(data.sdp);
+        gs().setPendingOffer(data.sdp);
         return;
       }
       await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
@@ -58,15 +62,15 @@ export function useCall() {
     };
 
     const handleAnswer = async (data: { sdp: RTCSessionDescriptionInit }) => {
-      const pc = useCallStore.getState().peerConnection;
+      const pc = gs().peerConnection;
       if (!pc) return;
       await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
     };
 
     const handleIce = async (data: { candidate: RTCIceCandidateInit }) => {
-      const pc = useCallStore.getState().peerConnection;
+      const pc = gs().peerConnection;
       if (!pc) {
-        store.addPendingCandidate(data.candidate);
+        gs().addPendingCandidate(data.candidate);
         return;
       }
       await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
@@ -89,27 +93,23 @@ export function useCall() {
       socket.off('call:answer', handleAnswer);
       socket.off('call:ice-candidate', handleIce);
     };
-  }, [store]);
+  }, []);
 
   const createPeerConnection = useCallback(() => {
     const pc = new RTCPeerConnection(ICE_SERVERS);
-    pcRef.current = pc;
-    store.setPeerConnection(pc);
-
+    gs().setPeerConnection(pc);
     pc.onicecandidate = (e) => {
       if (e.candidate) {
         const socket = getSocket();
-        const callId = useCallStore.getState().callId;
-        socket?.emit('call:ice-candidate', { callId, candidate: e.candidate.toJSON() });
+        socket?.emit('call:ice-candidate', {
+          callId: gs().callId,
+          candidate: e.candidate.toJSON(),
+        });
       }
     };
-
-    pc.ontrack = (e) => {
-      store.setRemoteStream(e.streams[0]);
-    };
-
+    pc.ontrack = (e) => gs().setRemoteStream(e.streams[0]);
     return pc;
-  }, [store]);
+  }, []);
 
   const startCall = useCallback(
     async (
@@ -119,84 +119,78 @@ export function useCall() {
     ) => {
       const socket = getSocket();
       if (!socket) return;
-
       const constraints =
         mode === 'audio' ? { video: false, audio: true } : { video: true, audio: true };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      store.setLocalStream(stream);
-      store.setMode(mode);
-      store.setReturnPath(location.pathname);
-      if (peer) store.setPeer(peer.name, peer.avatar);
-      store.setStatus('ringing');
+      gs().setLocalStream(stream);
+      gs().setMode(mode);
+      gs().setReturnPath(locRef.current);
+      if (peer) gs().setPeer(peer.name, peer.avatar);
+      gs().setStatus('ringing');
 
       const pc = createPeerConnection();
       stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
       socket.once('call:initiated', async (data: { callId: string }) => {
-        store.setCallId(data.callId);
+        gs().setCallId(data.callId);
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
         socket.emit('call:offer', { callId: data.callId, sdp: offer });
-        navigate(`/call/${data.callId}`);
+        navRef.current(`/call/${data.callId}`);
       });
 
       socket.emit('call:initiate', { calleeId, mode });
     },
-    [store, createPeerConnection, navigate, location.pathname],
+    [createPeerConnection],
   );
 
   const acceptCall = useCallback(async () => {
     const socket = getSocket();
-    const { callId, mode, pendingOffer, pendingCandidates } = useCallStore.getState();
+    const { callId, mode, pendingOffer, pendingCandidates } = gs();
     if (!socket || !callId) return;
-
     const constraints =
       mode === 'audio' ? { video: false, audio: true } : { video: true, audio: true };
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    store.setLocalStream(stream);
-    store.setReturnPath(location.pathname);
+    gs().setLocalStream(stream);
+    gs().setReturnPath(locRef.current);
 
     const pc = createPeerConnection();
     stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
-    // Apply buffered offer from caller
     if (pendingOffer) {
       await pc.setRemoteDescription(new RTCSessionDescription(pendingOffer));
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       socket.emit('call:answer', { callId, sdp: answer });
     }
-    // Apply buffered ICE candidates
     for (const c of pendingCandidates) {
       await pc.addIceCandidate(new RTCIceCandidate(c));
     }
 
     socket.emit('call:accept', { callId });
-    store.setStatus('active');
-    navigate(`/call/${callId}`);
-  }, [store, createPeerConnection, navigate, location.pathname]);
+    gs().setStatus('active');
+    navRef.current(`/call/${callId}`);
+  }, [createPeerConnection]);
 
   const rejectCall = useCallback(() => {
     const socket = getSocket();
-    const { callId } = useCallStore.getState();
-    if (socket && callId) {
-      socket.emit('call:reject', { callId });
-    }
-    store.reset();
-  }, [store]);
+    const { callId } = gs();
+    if (socket && callId) socket.emit('call:reject', { callId });
+    gs().reset();
+  }, []);
 
   const endCall = useCallback(() => {
     const socket = getSocket();
-    const { callId } = useCallStore.getState();
-    if (socket && callId) {
-      socket.emit('call:end', { callId });
-    }
-    navigateBack(navigate);
-    store.reset();
-  }, [store, navigate]);
+    const { callId, returnPath } = gs();
+    if (socket && callId) socket.emit('call:end', { callId });
+    const path = returnPath;
+    gs().reset();
+    if (path) navRef.current(path);
+    else navRef.current(-1);
+  }, []);
 
   const toggleMute = useCallback((kind: 'audio' | 'video') => {
-    const stream = useCallStore.getState().localStream;
+    const stream = gs().localStream;
     if (!stream) return;
     const tracks = kind === 'audio' ? stream.getAudioTracks() : stream.getVideoTracks();
     tracks.forEach((t) => {
