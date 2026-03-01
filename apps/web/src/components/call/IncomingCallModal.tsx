@@ -11,8 +11,8 @@ export function IncomingCallModal() {
   const userId = useAuthStore((s) => s.user?.id);
   const { acceptCall, rejectCall } = useCall();
 
-  // Only show when ringing and the current user is NOT the caller
-  if (status !== 'ringing' || callerId === userId) return null;
+  // Only show when ringing AND callerId is set (callee only — caller has callerId=null)
+  if (status !== 'ringing' || !callerId || callerId === userId) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">

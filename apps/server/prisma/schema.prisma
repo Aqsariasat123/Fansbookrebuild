@@ -91,6 +91,7 @@ enum MessageType {
   IMAGE
   VIDEO
   TIP
+  CALL
 }
 
 enum NotificationType {
@@ -744,6 +745,7 @@ model VideoCall {
   callerId         String
   calleeId         String
   vonageSessionId  String?
+  mode             String     @default("video")
   status           CallStatus @default(RINGING)
   duration         Int?
   startedAt        DateTime?

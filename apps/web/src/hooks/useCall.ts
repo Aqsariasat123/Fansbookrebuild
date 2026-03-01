@@ -25,6 +25,7 @@ export function useCall() {
       mode?: CallMode;
     }) => {
       store.setIncoming(data);
+      store.setPeer(data.callerName, data.callerAvatar);
     };
 
     const handleAccepted = () => store.setStatus('active');
@@ -89,7 +90,11 @@ export function useCall() {
   }, [store]);
 
   const startCall = useCallback(
-    async (calleeId: string, mode: CallMode = 'video') => {
+    async (
+      calleeId: string,
+      mode: CallMode = 'video',
+      peer?: { name: string; avatar: string | null },
+    ) => {
       const socket = getSocket();
       if (!socket) return;
 
@@ -98,6 +103,7 @@ export function useCall() {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       store.setLocalStream(stream);
       store.setMode(mode);
+      if (peer) store.setPeer(peer.name, peer.avatar);
       store.setStatus('ringing');
 
       const pc = createPeerConnection();

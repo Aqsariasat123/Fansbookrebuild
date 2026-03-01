@@ -9,6 +9,8 @@ interface CallState {
   calleeId: string | null;
   callerName: string | null;
   callerAvatar: string | null;
+  peerName: string | null;
+  peerAvatar: string | null;
   mode: CallMode;
   status: CallStatus;
   localStream: MediaStream | null;
@@ -24,6 +26,7 @@ interface CallState {
   }) => void;
   setCallId: (id: string) => void;
   setMode: (mode: CallMode) => void;
+  setPeer: (name: string, avatar: string | null) => void;
   setStatus: (status: CallStatus) => void;
   setLocalStream: (stream: MediaStream | null) => void;
   setRemoteStream: (stream: MediaStream | null) => void;
@@ -37,6 +40,8 @@ const initialState = {
   calleeId: null,
   callerName: null,
   callerAvatar: null,
+  peerName: null,
+  peerAvatar: null,
   mode: 'video' as CallMode,
   status: 'idle' as CallStatus,
   localStream: null,
@@ -59,6 +64,7 @@ export const useCallStore = create<CallState>((set) => ({
 
   setCallId: (id) => set({ callId: id }),
   setMode: (mode) => set({ mode }),
+  setPeer: (name, avatar) => set({ peerName: name, peerAvatar: avatar }),
   setStatus: (status) => set({ status }),
   setLocalStream: (stream) => set({ localStream: stream }),
   setRemoteStream: (stream) => set({ remoteStream: stream }),

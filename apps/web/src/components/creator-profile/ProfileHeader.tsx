@@ -65,7 +65,7 @@ export function ProfileHeader({
             <div className="size-8 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
         <div className="absolute bottom-[12px] right-[12px] flex gap-[8px]">
           <CoverIcon
             d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"

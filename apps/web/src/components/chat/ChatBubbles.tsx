@@ -55,15 +55,12 @@ function DeleteMenu({
   onDelete: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-  async function handleDelete(mode: string) {
-    try {
-      await api.delete(`/messages/message/${msgId}?mode=${mode}`);
-      onDelete(msgId);
-    } catch {
-      /* */
-    }
+  const del = async (mode: string) => {
+    await api.delete(`/messages/message/${msgId}?mode=${mode}`).catch(() => {});
+    onDelete(msgId);
     setOpen(false);
-  }
+  };
+  const btn = 'w-full text-left px-[14px] py-[8px] text-[13px] hover:bg-muted';
   return (
     <div className="relative">
       <button
@@ -74,17 +71,11 @@ function DeleteMenu({
       </button>
       {open && (
         <div className="absolute top-full right-0 bg-muted rounded-[8px] py-[4px] w-[180px] z-20 shadow-lg">
-          <button
-            onClick={() => handleDelete('forMe')}
-            className="w-full text-left px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
-          >
+          <button onClick={() => del('forMe')} className={`${btn} text-foreground`}>
             Delete for me
           </button>
           {isSelf && (
-            <button
-              onClick={() => handleDelete('forEveryone')}
-              className="w-full text-left px-[14px] py-[8px] text-[13px] text-red-400 hover:bg-muted"
-            >
+            <button onClick={() => del('forEveryone')} className={`${btn} text-red-400`}>
               Delete for everyone
             </button>
           )}
@@ -159,6 +150,28 @@ export function TypingDots() {
         ))}
       </div>
       <span className="text-[12px] text-muted-foreground">typing...</span>
+    </div>
+  );
+}
+
+export function CallBubble({ msg }: { msg: ChatMessage }) {
+  const isMissed = msg.text?.startsWith('Missed');
+  const isAudio = msg.text?.includes('Audio');
+  return (
+    <div className="flex justify-center py-[8px]">
+      <div className="flex items-center gap-[8px] rounded-[20px] bg-muted px-[16px] py-[8px]">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill={isMissed ? '#ef4444' : '#22c55e'}>
+          {isAudio ? (
+            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
+          ) : (
+            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+          )}
+        </svg>
+        <span className={`text-[13px] ${isMissed ? 'text-red-400' : 'text-foreground'}`}>
+          {msg.text}
+        </span>
+        <span className="text-[11px] text-muted-foreground">{formatTime(msg.createdAt)}</span>
+      </div>
     </div>
   );
 }

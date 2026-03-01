@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-import { OtherBubble, SelfBubble, TypingDots } from '../components/chat/ChatBubbles';
+import { OtherBubble, SelfBubble, TypingDots, CallBubble } from '../components/chat/ChatBubbles';
 import { MessagePageHeader, ChatUserHeader } from '../components/chat/ChatHeader';
 import { ChatOverlays } from '../components/chat/ImagePreview';
 import { ChatInputBar } from '../components/chat/ChatInputBar';
@@ -12,9 +12,16 @@ import { useCall } from '../hooks/useCall';
 import type { ChatMessage } from '../components/chat/ChatBubbles';
 import type { CallMode } from '../stores/callStore';
 
-function buildCallProps(id: string | undefined, fn: (id: string, m: CallMode) => void) {
-  if (!id) return {};
-  return { onAudioCall: () => fn(id, 'audio'), onVideoCall: () => fn(id, 'video') };
+function buildCallProps(
+  other: { id: string; displayName: string; avatar: string | null } | null,
+  fn: (id: string, m: CallMode, peer?: { name: string; avatar: string | null }) => void,
+) {
+  if (!other) return {};
+  const peer = { name: other.displayName, avatar: other.avatar };
+  return {
+    onAudioCall: () => fn(other.id, 'audio', peer),
+    onVideoCall: () => fn(other.id, 'video', peer),
+  };
 }
 
 export default function MessageChat() {
@@ -40,7 +47,7 @@ export default function MessageChat() {
     useChat(conversationId);
   const otherOnline = useOnlineStatus(other?.id);
   const { startCall } = useCall();
-  const callProps = buildCallProps(other?.id, startCall);
+  const callProps = buildCallProps(other, startCall);
 
   useEffect(() => {
     if (!conversationId) return;
@@ -110,7 +117,6 @@ export default function MessageChat() {
       setSending(false);
     }
   }
-
   async function handleLoadOlder() {
     if (!conversationId || !nextCursor || loadingOlder) return;
     setLoadingOlder(true);
@@ -128,13 +134,12 @@ export default function MessageChat() {
     }
   }
 
-  if (loading) {
+  if (loading)
     return (
       <div className="flex justify-center py-[60px]">
         <div className="size-8 animate-spin rounded-full border-4 border-[#2e80c8] border-t-transparent" />
       </div>
     );
-  }
 
   return (
     <div className="bg-card rounded-[11px] md:rounded-[22px] flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-130px)]">
@@ -162,7 +167,9 @@ export default function MessageChat() {
             </button>
           )}
           {messages.map((msg) =>
-            msg.senderId === userId ? (
+            msg.mediaType === 'CALL' ? (
+              <CallBubble key={msg.id} msg={msg} />
+            ) : msg.senderId === userId ? (
               <SelfBubble
                 key={msg.id}
                 msg={msg}
