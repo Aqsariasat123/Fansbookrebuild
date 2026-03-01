@@ -20,144 +20,110 @@ const creatorsQuerySchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 
+// ─── Helpers ─────────────────────────────────────────────
+
+type CreatorQuery = z.infer<typeof creatorsQuerySchema>;
+
+function buildCreatorWhere(params: CreatorQuery): Record<string, unknown> {
+  const where: Record<string, unknown> = { role: 'CREATOR', status: 'ACTIVE' };
+  if (params.search) {
+    where.OR = [
+      { username: { contains: params.search, mode: 'insensitive' } },
+      { displayName: { contains: params.search, mode: 'insensitive' } },
+    ];
+  }
+  if (params.gender) where.gender = params.gender;
+  if (params.country) where.country = params.country;
+  if (params.category) where.category = params.category;
+  if (params.priceMin !== undefined || params.priceMax !== undefined) {
+    where.subscriptionTiers = {
+      some: {
+        isActive: true,
+        ...(params.priceMin !== undefined && { price: { gte: params.priceMin } }),
+        ...(params.priceMax !== undefined && { price: { lte: params.priceMax } }),
+      },
+    };
+  }
+  return where;
+}
+
+function buildCreatorOrderBy(sortBy: string, sortOrder: string): Record<string, unknown> {
+  if (sortBy === 'followers') return { followers: { _count: sortOrder } };
+  return { [sortBy]: sortOrder };
+}
+
 // ─── GET /api/creators ───────────────────────────────────
 
-router.get(
-  '/',
-  validate(creatorsQuerySchema, 'query'),
-  async (req, res, next) => {
-    try {
-      const {
-        page,
-        limit,
-        search,
-        gender,
-        country,
-        priceMin,
-        priceMax,
-        category,
-        sortBy,
-        sortOrder,
-      } = req.query as unknown as z.infer<typeof creatorsQuerySchema>;
+router.get('/', validate(creatorsQuerySchema, 'query'), async (req, res, next) => {
+  try {
+    const params = req.query as unknown as CreatorQuery;
+    const skip = (params.page - 1) * params.limit;
+    const where = buildCreatorWhere(params);
+    const orderBy = buildCreatorOrderBy(params.sortBy, params.sortOrder);
 
-      const skip = (page - 1) * limit;
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      // Build where clause
-      const where: Record<string, unknown> = {
-        role: 'CREATOR',
-        status: 'ACTIVE',
-      };
-
-      if (search) {
-        where.OR = [
-          { username: { contains: search, mode: 'insensitive' } },
-          { displayName: { contains: search, mode: 'insensitive' } },
-        ];
-      }
-
-      if (gender) {
-        where.gender = gender;
-      }
-
-      if (country) {
-        where.country = country;
-      }
-
-      if (category) {
-        where.category = category;
-      }
-
-      // Price filtering via subscription tiers
-      if (priceMin !== undefined || priceMax !== undefined) {
-        where.subscriptionTiers = {
-          some: {
-            isActive: true,
-            ...(priceMin !== undefined && { price: { gte: priceMin } }),
-            ...(priceMax !== undefined && { price: { lte: priceMax } }),
+    const [creators, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        skip,
+        take: params.limit,
+        orderBy,
+        select: {
+          id: true,
+          username: true,
+          displayName: true,
+          avatar: true,
+          category: true,
+          statusText: true,
+          country: true,
+          gender: true,
+          isVerified: true,
+          createdAt: true,
+          _count: { select: { followers: true } },
+          subscriptionTiers: {
+            where: { isActive: true },
+            orderBy: { price: 'asc' },
+            take: 1,
+            select: { price: true },
           },
-        };
-      }
-
-      // Build orderBy
-      let orderBy: Record<string, unknown>;
-      if (sortBy === 'followers') {
-        orderBy = { followers: { _count: sortOrder } };
-      } else {
-        orderBy = { [sortBy]: sortOrder };
-      }
-
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-      // Query
-      const [creators, total] = await Promise.all([
-        prisma.user.findMany({
-          where,
-          skip,
-          take: limit,
-          orderBy,
-          select: {
-            id: true,
-            username: true,
-            displayName: true,
-            avatar: true,
-            category: true,
-            statusText: true,
-            country: true,
-            gender: true,
-            isVerified: true,
-            createdAt: true,
-            _count: {
-              select: { followers: true },
-            },
-            subscriptionTiers: {
-              where: { isActive: true },
-              orderBy: { price: 'asc' },
-              take: 1,
-              select: { price: true },
-            },
-            liveSessions: {
-              where: { status: 'LIVE' },
-              take: 1,
-              select: { id: true },
-            },
-          },
-        }),
-        prisma.user.count({ where }),
-      ]);
-
-      // Map to CreatorCard shape
-      const items = creators.map((c) => ({
-        id: c.id,
-        username: c.username,
-        displayName: c.displayName,
-        avatar: c.avatar,
-        category: c.category,
-        statusText: c.statusText,
-        country: c.country,
-        gender: c.gender,
-        isVerified: c.isVerified,
-        isLive: c.liveSessions.length > 0,
-        isNew: c.createdAt >= thirtyDaysAgo,
-        price: c.subscriptionTiers[0]?.price ?? null,
-        followersCount: c._count.followers,
-      }));
-
-      res.json({
-        success: true,
-        data: {
-          items,
-          total,
-          page,
-          limit,
-          hasMore: skip + limit < total,
+          liveSessions: { where: { status: 'LIVE' }, take: 1, select: { id: true } },
         },
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
+      }),
+      prisma.user.count({ where }),
+    ]);
+
+    const items = creators.map((c) => ({
+      id: c.id,
+      username: c.username,
+      displayName: c.displayName,
+      avatar: c.avatar,
+      category: c.category,
+      statusText: c.statusText,
+      country: c.country,
+      gender: c.gender,
+      isVerified: c.isVerified,
+      isLive: c.liveSessions.length > 0,
+      isNew: c.createdAt >= thirtyDaysAgo,
+      price: c.subscriptionTiers[0]?.price ?? null,
+      followersCount: c._count.followers,
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        items,
+        total,
+        page: params.page,
+        limit: params.limit,
+        hasMore: skip + params.limit < total,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // ─── GET /api/creators/filters ───────────────────────────
 
@@ -166,35 +132,34 @@ router.get('/filters', async (_req, res, next) => {
     // Get distinct values from CREATOR users
     const creatorWhere = { role: 'CREATOR' as const, status: 'ACTIVE' as const };
 
-    const [genderResults, countryResults, categoryResults, priceResult] =
-      await Promise.all([
-        prisma.user.findMany({
-          where: { ...creatorWhere, gender: { not: null } },
-          select: { gender: true },
-          distinct: ['gender'],
-          orderBy: { gender: 'asc' },
-        }),
-        prisma.user.findMany({
-          where: { ...creatorWhere, country: { not: null } },
-          select: { country: true },
-          distinct: ['country'],
-          orderBy: { country: 'asc' },
-        }),
-        prisma.user.findMany({
-          where: { ...creatorWhere, category: { not: null } },
-          select: { category: true },
-          distinct: ['category'],
-          orderBy: { category: 'asc' },
-        }),
-        prisma.subscriptionTier.aggregate({
-          where: {
-            isActive: true,
-            creator: creatorWhere,
-          },
-          _min: { price: true },
-          _max: { price: true },
-        }),
-      ]);
+    const [genderResults, countryResults, categoryResults, priceResult] = await Promise.all([
+      prisma.user.findMany({
+        where: { ...creatorWhere, gender: { not: null } },
+        select: { gender: true },
+        distinct: ['gender'],
+        orderBy: { gender: 'asc' },
+      }),
+      prisma.user.findMany({
+        where: { ...creatorWhere, country: { not: null } },
+        select: { country: true },
+        distinct: ['country'],
+        orderBy: { country: 'asc' },
+      }),
+      prisma.user.findMany({
+        where: { ...creatorWhere, category: { not: null } },
+        select: { category: true },
+        distinct: ['category'],
+        orderBy: { category: 'asc' },
+      }),
+      prisma.subscriptionTier.aggregate({
+        where: {
+          isActive: true,
+          creator: creatorWhere,
+        },
+        _min: { price: true },
+        _max: { price: true },
+      }),
+    ]);
 
     res.json({
       success: true,
@@ -212,5 +177,9 @@ router.get('/filters', async (_req, res, next) => {
     next(err);
   }
 });
+
+// ─── GET /api/creators/suggestions ── (extracted to creators-suggestions.ts)
+import creatorsSuggestionsRouter from './creators-suggestions.js';
+router.use('/suggestions', creatorsSuggestionsRouter);
 
 export default router;

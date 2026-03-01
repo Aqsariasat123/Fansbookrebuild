@@ -144,6 +144,12 @@ router.put('/:id', authenticate, async (req, res, next) => {
     if (!post) throw new AppError(404, 'Post not found');
     if (post.authorId !== userId) throw new AppError(403, 'Not authorized to edit this post');
 
+    // 24-hour edit restriction
+    const hoursSinceCreation = (Date.now() - post.createdAt.getTime()) / (1000 * 60 * 60);
+    if (hoursSinceCreation > 24) {
+      throw new AppError(403, 'Posts can only be edited within 24 hours of creation');
+    }
+
     const updateData: Record<string, unknown> = {};
 
     if (req.body.text !== undefined) {
@@ -184,10 +190,11 @@ router.delete('/:id', authenticate, async (req, res, next) => {
     const postId = req.params.id as string;
 
     const post = await prisma.post.findUnique({ where: { id: postId } });
-    if (!post) throw new AppError(404, 'Post not found');
+    if (!post || post.deletedAt) throw new AppError(404, 'Post not found');
     if (post.authorId !== userId) throw new AppError(403, 'Not authorized to delete this post');
 
-    await prisma.post.delete({ where: { id: postId } });
+    // Soft delete
+    await prisma.post.update({ where: { id: postId }, data: { deletedAt: new Date() } });
 
     logActivity(userId, 'POST_DELETE', 'Post', postId, null, req);
     res.json({ success: true, message: 'Post deleted' });

@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginApi } from '../lib/auth';
 import { useAuthStore } from '../stores/authStore';
+import SocialLoginButtons from '../components/login/SocialLoginButtons';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -16,11 +18,14 @@ export default function Login() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
-      const res = await loginApi({ emailOrUsername, password });
-      setUser(res.data.user as never);
-      navigate('/feed');
+      const res = await loginApi({ emailOrUsername, password, rememberMe });
+      if (res.data.requires2FA) {
+        navigate('/2fa/verify', { state: { userId: res.data.userId, rememberMe } });
+      } else {
+        setUser(res.data.user as never);
+        navigate('/feed');
+      }
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
@@ -33,14 +38,11 @@ export default function Login() {
 
   return (
     <div className="relative flex h-screen w-screen overflow-hidden font-outfit">
-      {/* Mobile: full-screen background image */}
       <img
         src="/images/login-hero.webp"
         alt=""
         className="absolute inset-0 h-full w-full object-cover object-[center_20%] lg:hidden"
       />
-
-      {/* Desktop: plain bg + clipped hero on left */}
       <div className="absolute inset-0 hidden bg-card lg:block" />
       <div
         className="hidden lg:block"
@@ -57,10 +59,8 @@ export default function Login() {
         />
       </div>
 
-      {/* Form */}
       <div className="relative z-10 flex w-full items-center justify-center px-[20px] lg:w-[54.77%] lg:ml-auto lg:px-0">
         <div className="w-full max-w-[336px] flex flex-col items-center rounded-[22px] bg-card px-[22px] py-[21px] lg:max-w-[392px] lg:rounded-none lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
-          {/* Heading */}
           <div className="w-full text-center">
             <h1 className="font-medium text-[36px] leading-[1.25] text-foreground lg:text-[48px]">
               Welcome Back to FansBook
@@ -70,19 +70,16 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Error */}
           {error && (
             <div className="mt-[20px] w-[380px] max-w-full rounded-[12px] bg-red-50 border border-red-200 px-4 py-3 text-[13px] text-red-600">
               {error}
             </div>
           )}
 
-          {/* Form */}
           <form
             className="mt-[20px] w-full max-w-full flex flex-col lg:mt-[35px] lg:w-[380px]"
             onSubmit={handleSubmit}
           >
-            {/* Email / Username */}
             <div>
               <label className="block text-[12px] font-normal text-foreground lg:text-[16px]">
                 Email / Username
@@ -99,7 +96,6 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Password */}
             <div className="mt-[14px] lg:mt-[20px]">
               <label className="block text-[12px] font-normal text-foreground lg:text-[16px]">
                 Password
@@ -125,17 +121,27 @@ export default function Login() {
                   />
                 </button>
               </div>
-              <p className="mt-[6px] text-right lg:mt-[8px]">
+              <div className="mt-[6px] flex items-center justify-between lg:mt-[8px]">
+                <label className="flex items-center gap-[6px] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-[14px] w-[14px] rounded border-border accent-[#01adf1] lg:h-[16px] lg:w-[16px]"
+                  />
+                  <span className="text-[10px] font-normal text-muted-foreground lg:text-[12px]">
+                    Remember me
+                  </span>
+                </label>
                 <Link
                   to="/forgot-password"
                   className="text-[10px] font-normal text-primary hover:underline lg:text-[12px]"
                 >
                   Forgot Password?
                 </Link>
-              </p>
+              </div>
             </div>
 
-            {/* Login Button */}
             <button
               type="submit"
               disabled={loading}
@@ -143,9 +149,10 @@ export default function Login() {
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>
+
+            <SocialLoginButtons />
           </form>
 
-          {/* Sign Up Link */}
           <p className="mt-[20px] text-[12px] font-normal text-foreground lg:mt-[40px] lg:text-[16px]">
             Don&apos;t have an account?{' '}
             <Link to="/register" className="text-primary hover:underline">

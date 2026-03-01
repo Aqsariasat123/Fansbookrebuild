@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import bcrypt from 'bcryptjs';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
@@ -6,6 +7,10 @@ import speakeasy from 'speakeasy';
 import crypto from 'crypto';
 
 const router = Router();
+
+async function hashBackupCodes(codes: string[]): Promise<string[]> {
+  return Promise.all(codes.map((c) => bcrypt.hash(c, 10)));
+}
 
 // POST /api/auth/2fa/setup — Generate TOTP secret and QR URI
 router.post('/setup', authenticate, async (req, res, next) => {
@@ -20,17 +25,18 @@ router.post('/setup', authenticate, async (req, res, next) => {
       issuer: 'Fansbook',
     });
 
-    // Generate backup codes
-    const backupCodes = Array.from({ length: 8 }, () =>
+    // Generate 10 backup codes
+    const plainCodes = Array.from({ length: 10 }, () =>
       crypto.randomBytes(4).toString('hex').toUpperCase(),
     );
+    const hashedCodes = await hashBackupCodes(plainCodes);
 
-    // Store secret temporarily (not enabled until verified)
+    // Store secret + hashed codes (not enabled until verified)
     await prisma.user.update({
       where: { id: userId },
       data: {
         twoFactorSecret: secret.base32,
-        backupCodes,
+        backupCodes: hashedCodes,
       },
     });
 
@@ -39,7 +45,7 @@ router.post('/setup', authenticate, async (req, res, next) => {
       data: {
         secret: secret.base32,
         otpAuthUrl: secret.otpauth_url,
-        backupCodes,
+        backupCodes: plainCodes,
       },
     });
   } catch (err) {
@@ -77,7 +83,20 @@ router.post('/verify-setup', authenticate, async (req, res, next) => {
   }
 });
 
-// POST /api/auth/2fa/verify — Verify TOTP on login
+async function verifyBackupCode(user: { id: string; backupCodes: string[] }, code: string) {
+  const updatedCodes = [...user.backupCodes];
+  for (let i = 0; i < updatedCodes.length; i++) {
+    const isMatch = await bcrypt.compare(code.toUpperCase(), updatedCodes[i]);
+    if (isMatch) {
+      updatedCodes.splice(i, 1);
+      await prisma.user.update({ where: { id: user.id }, data: { backupCodes: updatedCodes } });
+      return true;
+    }
+  }
+  return false;
+}
+
+// POST /api/auth/2fa/verify — Verify TOTP on login (legacy - still works)
 router.post('/verify', async (req, res, next) => {
   try {
     const { userId, code, backupCode } = req.body;
@@ -86,16 +105,9 @@ router.post('/verify', async (req, res, next) => {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user || !user.twoFactorSecret) throw new AppError(400, '2FA not configured');
 
-    // Try backup code first
     if (backupCode) {
-      const idx = user.backupCodes.indexOf(backupCode.toUpperCase());
-      if (idx === -1) throw new AppError(400, 'Invalid backup code');
-      const updatedCodes = [...user.backupCodes];
-      updatedCodes.splice(idx, 1);
-      await prisma.user.update({
-        where: { id: userId },
-        data: { backupCodes: updatedCodes },
-      });
+      const matched = await verifyBackupCode(user, backupCode);
+      if (!matched) throw new AppError(400, 'Invalid backup code');
       return res.json({ success: true, message: '2FA verified via backup code' });
     }
 

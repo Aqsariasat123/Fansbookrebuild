@@ -42,7 +42,6 @@ api.interceptors.response.use(
     // Don't try to refresh if the failing request was the refresh endpoint itself
     if (originalRequest.url === '/auth/refresh') {
       localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
       window.location.href = '/login';
       return Promise.reject(error);
     }
@@ -59,23 +58,12 @@ api.interceptors.response.use(
     originalRequest._retry = true;
     isRefreshing = true;
 
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    if (!refreshToken) {
-      isRefreshing = false;
-      localStorage.removeItem('accessToken');
-      window.location.href = '/login';
-      return Promise.reject(error);
-    }
-
     try {
-      const { data } = await api.post('/auth/refresh', { refreshToken });
+      // Refresh token is sent via httpOnly cookie automatically
+      const { data } = await api.post('/auth/refresh');
       const newAccessToken = data.data.accessToken;
-      const newRefreshToken = data.data.refreshToken;
 
       localStorage.setItem('accessToken', newAccessToken);
-      localStorage.setItem('refreshToken', newRefreshToken);
-
       processQueue(null, newAccessToken);
 
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -83,7 +71,6 @@ api.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError, null);
       localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
       window.location.href = '/login';
       return Promise.reject(refreshError);
     } finally {

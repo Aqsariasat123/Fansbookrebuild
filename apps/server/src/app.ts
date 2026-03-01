@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { apiLimiter } from './middleware/rateLimit.js';
@@ -42,6 +43,7 @@ import leaderboardRouter from './routes/leaderboard.js';
 import badgesRouter from './routes/badges.js';
 import adminRouter from './routes/admin/index.js';
 import uploadsRouter from './routes/uploads.js';
+import contactRouter from './routes/contact.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -57,6 +59,9 @@ app.use(
     credentials: true,
   }),
 );
+
+// Cookie parsing (for httpOnly refresh tokens)
+app.use(cookieParser());
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
@@ -110,6 +115,7 @@ app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/badges', badgesRouter);
 app.use('/api/uploads', uploadsRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/contact', contactRouter);
 
 // Error handling
 app.use(errorHandler);

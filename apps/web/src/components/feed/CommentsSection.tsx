@@ -13,23 +13,46 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const fetchComments = useCallback(async () => {
-    try {
-      const res = await api.get(`/posts/${postId}/comments`);
-      setComments(res.data.data || []);
-    } catch {
-      /* ignore */
-    } finally {
-      setLoading(false);
-    }
-  }, [postId]);
+  const fetchComments = useCallback(
+    async (cursorVal?: string | null) => {
+      try {
+        const params = new URLSearchParams({ limit: '20' });
+        if (cursorVal) params.set('cursor', cursorVal);
+        const res = await api.get(`/posts/${postId}/comments?${params}`);
+        const data = res.data;
+        const items = data.data || [];
+        if (cursorVal) {
+          setComments((prev) => [...prev, ...items]);
+        } else {
+          setComments(items);
+        }
+        setCursor(data.nextCursor || null);
+        setHasMore(data.hasMore ?? false);
+      } catch {
+        /* ignore */
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    [postId],
+  );
 
   useEffect(() => {
     fetchComments();
   }, [fetchComments]);
+
+  const handleLoadMore = () => {
+    if (loadingMore || !hasMore || !cursor) return;
+    setLoadingMore(true);
+    fetchComments(cursor);
+  };
 
   const handleSubmit = async () => {
     if (!text.trim() || submitting) return;
@@ -133,6 +156,15 @@ export function CommentsSection({ postId, onCountChange }: CommentsSectionProps)
               onToggleLike={toggleCommentLike}
             />
           ))}
+          {hasMore && (
+            <button
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="mx-auto py-[4px] text-[12px] font-medium text-primary hover:underline disabled:opacity-50"
+            >
+              {loadingMore ? 'Loading...' : 'Load more comments'}
+            </button>
+          )}
         </div>
       )}
 

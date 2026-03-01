@@ -365,6 +365,7 @@ model Post {
   ppvPrice     Float?
   likeCount    Int            @default(0)
   commentCount Int            @default(0)
+  deletedAt    DateTime?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 

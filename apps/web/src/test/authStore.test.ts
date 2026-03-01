@@ -56,6 +56,5 @@ describe('authStore', () => {
     expect(state.user).toBeNull();
     expect(state.isAuthenticated).toBe(false);
     expect(localStorageMock.removeItem).toHaveBeenCalledWith('accessToken');
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith('refreshToken');
   });
 });

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
+import PasswordStrength from '../components/shared/PasswordStrength';
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -10,6 +11,19 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [tokenValid, setTokenValid] = useState<boolean | null>(null);
+
+  // Validate token on mount
+  useEffect(() => {
+    if (!token) {
+      setTokenValid(false);
+      return;
+    }
+    api
+      .post('/auth/validate-reset-token', { token })
+      .then(({ data }) => setTokenValid(data.data.valid))
+      .catch(() => setTokenValid(false));
+  }, [token]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,35 +52,47 @@ export default function ResetPassword() {
         <img src="/icons/dashboard/fansbook-logo.webp" alt="Fansbook" className="h-10 mb-8" />
         <h1 className="text-[28px] font-medium text-foreground">Reset Password</h1>
 
-        {error && (
+        {tokenValid === false && (
+          <>
+            <div className="mt-5 w-full rounded-[12px] border border-red-500/30 bg-red-500/10 px-4 py-3 text-[13px] text-red-400">
+              This reset link is invalid or has expired. Please request a new one.
+            </div>
+            <Link
+              to="/forgot-password"
+              className="mt-5 flex h-[49px] w-full items-center justify-center rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] text-[16px] font-medium text-foreground hover:opacity-90"
+            >
+              Request New Link
+            </Link>
+          </>
+        )}
+
+        {tokenValid === null && (
+          <div className="mt-6 flex items-center gap-2">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#01adf1] border-t-transparent" />
+            <span className="text-[14px] text-muted-foreground">Validating reset link...</span>
+          </div>
+        )}
+
+        {error && tokenValid && (
           <div className="mt-5 w-full rounded-[12px] border border-red-500/30 bg-red-500/10 px-4 py-3 text-[13px] text-red-400">
             {error}
           </div>
         )}
 
-        {success ? (
-          <>
-            <div className="mt-6 w-full rounded-[12px] border border-green-500/30 bg-green-500/10 px-4 py-3 text-center text-[14px] text-green-400">
-              Password reset successfully!
-            </div>
-            <Link
-              to="/login"
-              className="mt-5 flex h-[49px] w-full items-center justify-center rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] text-[16px] font-medium text-foreground hover:opacity-90"
-            >
-              Go to Login
-            </Link>
-          </>
-        ) : (
+        {tokenValid && !success && (
           <form className="mt-6 w-full" onSubmit={handleSubmit}>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="New password..."
-              required
-              minLength={8}
-              className={inputClass}
-            />
+            <div>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="New password..."
+                required
+                minLength={8}
+                className={inputClass}
+              />
+              <PasswordStrength password={newPassword} />
+            </div>
             <input
               type="password"
               value={confirmPassword}
@@ -84,6 +110,20 @@ export default function ResetPassword() {
               {loading ? 'Resetting...' : 'Reset Password'}
             </button>
           </form>
+        )}
+
+        {success && (
+          <>
+            <div className="mt-6 w-full rounded-[12px] border border-green-500/30 bg-green-500/10 px-4 py-3 text-center text-[14px] text-green-400">
+              Password reset successfully!
+            </div>
+            <Link
+              to="/login"
+              className="mt-5 flex h-[49px] w-full items-center justify-center rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] text-[16px] font-medium text-foreground hover:opacity-90"
+            >
+              Go to Login
+            </Link>
+          </>
         )}
 
         <Link to="/login" className="mt-6 text-[14px] text-primary hover:underline">

@@ -3,12 +3,13 @@ import { useParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { SubscriptionModal } from '../components/public-profile/SubscriptionModal';
-import { PostCard } from '../components/public-profile/PostCard';
-import { MediaGrid } from '../components/public-profile/MediaGrid';
 import { ProfileTabBar } from '../components/public-profile/ProfileTabBar';
 import { ProfileSidebar } from '../components/public-profile/ProfileSidebar';
+import { ProfileTabContent } from '../components/public-profile/ProfileTabContent';
 import type { ContentTab } from '../components/public-profile/ProfileTabBar';
 import type { PublicPost } from '../components/public-profile/PostCard';
+
+type ViewMode = 'list' | 'grid';
 
 interface ProfileData {
   id: string;
@@ -35,26 +36,6 @@ interface ProfileData {
   hashtags?: string[];
 }
 
-function extractMedia(posts: PublicPost[], isSubscribed: boolean, type: 'IMAGE' | 'VIDEO') {
-  return posts.flatMap((p) =>
-    p.media
-      .filter((m) => m.type === type)
-      .map((m) => ({
-        ...m,
-        postId: p.id,
-        isLocked: !isSubscribed && p.visibility !== 'PUBLIC' && p.visibility !== 'FREE',
-      })),
-  );
-}
-
-function EmptyState({ label }: { label: string }) {
-  return (
-    <div className="rounded-[22px] bg-card p-[40px] text-center">
-      <p className="text-[14px] text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
 export default function CreatorPublicProfile() {
   const { username } = useParams<{ username: string }>();
   const currentUser = useAuthStore((s) => s.user);
@@ -65,6 +46,7 @@ export default function CreatorPublicProfile() {
   const [notFound, setNotFound] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   useEffect(() => {
     if (!username) return;
@@ -100,7 +82,7 @@ export default function CreatorPublicProfile() {
         );
       }
     } catch {
-      /* silent */
+      /* */
     } finally {
       setFollowLoading(false);
     }
@@ -122,31 +104,36 @@ export default function CreatorPublicProfile() {
       </div>
     );
 
-  const isOwnProfile = currentUser?.username === profile.username;
-
   return (
     <div>
       <CoverBanner cover={profile.cover} />
-
       <div className="flex flex-col gap-[24px] md:flex-row md:gap-[30px]">
         <div className="w-full shrink-0 md:w-[300px] lg:w-[380px]">
           <ProfileSidebar
             profile={profile}
-            isOwnProfile={isOwnProfile}
+            isOwnProfile={currentUser?.username === profile.username}
             followLoading={followLoading}
             onFollow={handleFollow}
             onSubscribe={() => setShowSubscribeModal(true)}
           />
         </div>
-
         <div className="min-w-0 flex-1">
-          <ProfileTabBar activeTab={activeTab} onTabChange={setActiveTab} />
+          <div className="flex items-center gap-[8px]">
+            <div className="flex-1">
+              <ProfileTabBar activeTab={activeTab} onTabChange={setActiveTab} />
+            </div>
+            {activeTab === 'feed' && <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />}
+          </div>
           <div className="mt-[20px]">
-            <TabContent activeTab={activeTab} posts={posts} isSubscribed={profile.isSubscribed} />
+            <ProfileTabContent
+              activeTab={activeTab}
+              posts={posts}
+              isSubscribed={profile.isSubscribed}
+              viewMode={viewMode}
+            />
           </div>
         </div>
       </div>
-
       {showSubscribeModal && (
         <SubscriptionModal
           tiers={profile.tiers}
@@ -174,30 +161,33 @@ function CoverBanner({ cover }: { cover: string | null }) {
   );
 }
 
-function TabContent({
-  activeTab,
-  posts,
-  isSubscribed,
+function ViewModeToggle({
+  viewMode,
+  onChange,
 }: {
-  activeTab: ContentTab;
-  posts: PublicPost[];
-  isSubscribed: boolean;
+  viewMode: ViewMode;
+  onChange: (m: ViewMode) => void;
 }) {
-  if (activeTab === 'feed') {
-    if (posts.length === 0) return <EmptyState label="No posts yet." />;
-    return (
-      <div className="flex flex-col gap-[20px]">
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} isSubscribed={isSubscribed} />
-        ))}
-      </div>
-    );
-  }
-
-  const mediaType = activeTab === 'photos' ? ('IMAGE' as const) : ('VIDEO' as const);
-  const media = extractMedia(posts, isSubscribed, mediaType);
-  const emptyLabel = activeTab === 'photos' ? 'No photos yet.' : 'No videos yet.';
-
-  if (media.length === 0) return <EmptyState label={emptyLabel} />;
-  return <MediaGrid media={media} />;
+  return (
+    <div className="flex gap-[4px] rounded-[8px] bg-muted p-[4px]">
+      <button
+        onClick={() => onChange('list')}
+        className={`rounded-[6px] p-[6px] transition-colors ${viewMode === 'list' ? 'bg-card text-foreground' : 'text-muted-foreground'}`}
+        title="List view"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+        </svg>
+      </button>
+      <button
+        onClick={() => onChange('grid')}
+        className={`rounded-[6px] p-[6px] transition-colors ${viewMode === 'grid' ? 'bg-card text-foreground' : 'text-muted-foreground'}`}
+        title="Grid view"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z" />
+        </svg>
+      </button>
+    </div>
+  );
 }

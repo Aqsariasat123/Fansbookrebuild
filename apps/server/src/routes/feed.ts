@@ -4,6 +4,19 @@ import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
 
+async function getBlockedIds(userId: string): Promise<string[]> {
+  const blocks = await prisma.block.findMany({
+    where: { OR: [{ blockerId: userId }, { blockedId: userId }] },
+    select: { blockerId: true, blockedId: true },
+  });
+  const ids = new Set<string>();
+  for (const b of blocks) {
+    if (b.blockerId !== userId) ids.add(b.blockerId);
+    if (b.blockedId !== userId) ids.add(b.blockedId);
+  }
+  return Array.from(ids);
+}
+
 // ─── GET /api/feed ──────────────────────────────────────
 router.get('/', authenticate, async (req, res, next) => {
   try {
@@ -11,18 +24,23 @@ router.get('/', authenticate, async (req, res, next) => {
     const cursor = req.query.cursor as string | undefined;
     const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 10, 1), 50);
 
-    // Get IDs of creators this user follows
     const follows = await prisma.follow.findMany({
       where: { followerId: userId },
       select: { followingId: true },
     });
     const followedIds = follows.map((f) => f.followingId);
-    // Include own posts too
     followedIds.push(userId);
 
+    // Get blocked user IDs to exclude
+    const blockedIds = await getBlockedIds(userId);
+
     const posts = await prisma.post.findMany({
-      where: { visibility: 'PUBLIC', authorId: { in: followedIds } },
-      orderBy: { createdAt: 'desc' },
+      where: {
+        visibility: 'PUBLIC',
+        authorId: { in: followedIds, notIn: blockedIds.length > 0 ? blockedIds : undefined },
+        deletedAt: null,
+      },
+      orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
       take: limit,
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       include: {
@@ -37,30 +55,17 @@ router.get('/', authenticate, async (req, res, next) => {
         },
         media: {
           orderBy: { order: 'asc' },
-          select: {
-            id: true,
-            url: true,
-            type: true,
-            order: true,
-            thumbnail: true,
-          },
+          select: { id: true, url: true, type: true, order: true, thumbnail: true },
         },
-        likes: {
-          where: { userId },
-          select: { id: true },
-          take: 1,
-        },
-        bookmarks: {
-          where: { userId },
-          select: { id: true },
-          take: 1,
-        },
+        likes: { where: { userId }, select: { id: true }, take: 1 },
+        bookmarks: { where: { userId }, select: { id: true }, take: 1 },
       },
     });
 
     const formatted = posts.map((post) => ({
       id: post.id,
       text: post.text,
+      isPinned: post.isPinned,
       likeCount: post.likeCount,
       commentCount: post.commentCount,
       shareCount: 15,
@@ -80,20 +85,26 @@ router.get('/', authenticate, async (req, res, next) => {
   }
 });
 
-// ─── GET /api/feed/stories ──────────────────────────────
-router.get('/stories', authenticate, async (req, res, next) => {
+// ─── GET /api/feed/explore ── trending posts (P2-4) ─────
+router.get('/explore', authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.userId;
-    const follows = await prisma.follow.findMany({
-      where: { followerId: userId },
-      select: { followingId: true },
-    });
-    const followedIds = follows.map((f) => f.followingId);
-    followedIds.push(userId);
+    const cursor = req.query.cursor as string | undefined;
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 20, 1), 50);
+    const blockedIds = await getBlockedIds(userId);
 
-    const stories = await prisma.story.findMany({
-      where: { expiresAt: { gt: new Date() }, authorId: { in: followedIds } },
-      orderBy: { createdAt: 'desc' },
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const posts = await prisma.post.findMany({
+      where: {
+        visibility: 'PUBLIC',
+        deletedAt: null,
+        createdAt: { gte: oneDayAgo },
+        ...(blockedIds.length > 0 ? { authorId: { notIn: blockedIds } } : {}),
+      },
+      orderBy: [{ likeCount: 'desc' }, { commentCount: 'desc' }, { createdAt: 'desc' }],
+      take: limit,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       include: {
         author: {
           select: {
@@ -101,69 +112,51 @@ router.get('/stories', authenticate, async (req, res, next) => {
             username: true,
             displayName: true,
             avatar: true,
+            isVerified: true,
           },
         },
+        media: {
+          orderBy: { order: 'asc' },
+          select: { id: true, url: true, type: true, order: true, thumbnail: true },
+        },
+        likes: { where: { userId }, select: { id: true }, take: 1 },
+        bookmarks: { where: { userId }, select: { id: true }, take: 1 },
       },
     });
 
-    // Group stories by author
-    const groupMap = new Map<
-      string,
-      {
-        authorId: string;
-        username: string;
-        displayName: string;
-        avatar: string | null;
-        stories: { id: string; mediaUrl: string; mediaType: string; createdAt: Date }[];
-      }
-    >();
+    const formatted = posts.map((post) => ({
+      id: post.id,
+      text: post.text,
+      likeCount: post.likeCount,
+      commentCount: post.commentCount,
+      createdAt: post.createdAt,
+      author: post.author,
+      media: post.media,
+      isLiked: post.likes.length > 0,
+      isBookmarked: post.bookmarks.length > 0,
+    }));
 
-    for (const s of stories) {
-      const existing = groupMap.get(s.authorId);
-      const storyItem = {
-        id: s.id,
-        mediaUrl: s.mediaUrl,
-        mediaType: s.mediaType,
-        createdAt: s.createdAt,
-        viewCount: s.viewCount,
-      };
-      if (existing) {
-        existing.stories.push(storyItem);
-      } else {
-        groupMap.set(s.authorId, {
-          authorId: s.author.id,
-          username: s.author.username,
-          displayName: s.author.displayName,
-          avatar: s.author.avatar,
-          stories: [storyItem],
-        });
-      }
-    }
+    const nextCursor =
+      formatted.length === limit ? (formatted[formatted.length - 1]?.id ?? null) : null;
 
-    res.json({ success: true, data: Array.from(groupMap.values()) });
+    res.json({ success: true, data: { posts: formatted, nextCursor } });
   } catch (err) {
     next(err);
   }
 });
 
+// ─── GET /api/feed/stories ── (extracted to feed-stories.ts)
+import feedStoriesRouter from './feed-stories.js';
+router.use('/stories', feedStoriesRouter);
+
 // ─── GET /api/feed/popular-models ───────────────────────
 router.get('/popular-models', authenticate, async (_req, res, next) => {
   try {
     const models = await prisma.user.findMany({
-      where: {
-        role: 'CREATOR',
-        category: 'Model',
-        avatar: { not: null },
-      },
+      where: { role: 'CREATOR', category: 'Model', avatar: { not: null } },
       orderBy: { createdAt: 'desc' },
       take: 7,
-      select: {
-        id: true,
-        username: true,
-        displayName: true,
-        avatar: true,
-        isVerified: true,
-      },
+      select: { id: true, username: true, displayName: true, avatar: true, isVerified: true },
     });
 
     res.json({ success: true, data: models });

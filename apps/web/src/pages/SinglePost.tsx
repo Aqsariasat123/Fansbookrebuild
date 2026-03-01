@@ -4,14 +4,9 @@ import { api } from '../lib/api';
 import { PostActions } from '../components/feed/PostActions';
 import { SinglePostMedia } from '../components/feed/SinglePostMedia';
 import { PPVOverlay } from '../components/feed/PPVOverlay';
-
-interface Author {
-  id: string;
-  username: string;
-  displayName: string;
-  avatar: string | null;
-  isVerified?: boolean;
-}
+import { CommentsSection } from '../components/feed/CommentsSection';
+import { SinglePostHeader } from '../components/feed/SinglePostHeader';
+import { RelatedPosts } from '../components/feed/RelatedPosts';
 
 interface Media {
   id: string;
@@ -27,7 +22,13 @@ interface PostData {
   likeCount: number;
   commentCount: number;
   createdAt: string;
-  author: Author;
+  author: {
+    id: string;
+    username: string;
+    displayName: string;
+    avatar: string | null;
+    isVerified?: boolean;
+  };
   media: Media[];
   isLiked: boolean;
   isBookmarked: boolean;
@@ -40,12 +41,29 @@ export default function SinglePost() {
   const [post, setPost] = useState<PostData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [commentCount, setCommentCount] = useState(0);
+  const [relatedPosts, setRelatedPosts] = useState<
+    { id: string; text: string | null; media: Media[] }[]
+  >([]);
 
   const fetchPost = useCallback(() => {
     if (!id) return;
     api
       .get(`/posts/${id}`)
-      .then((res) => setPost(res.data.data))
+      .then((res) => {
+        const data = res.data.data;
+        setPost(data);
+        setCommentCount(data.commentCount);
+        if (data.author?.username) {
+          api
+            .get(`/creator-profile/${data.author.username}/posts?limit=4`)
+            .then((r) => {
+              const items = (r.data.data || []).filter((p: { id: string }) => p.id !== id);
+              setRelatedPosts(items.slice(0, 3));
+            })
+            .catch(() => {});
+        }
+      })
       .catch(() => setError('Post not found'))
       .finally(() => setLoading(false));
   }, [id]);
@@ -54,15 +72,13 @@ export default function SinglePost() {
     fetchPost();
   }, [fetchPost]);
 
-  if (loading) {
+  if (loading)
     return (
       <div className="flex items-center justify-center py-20">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
       </div>
     );
-  }
-
-  if (error || !post) {
+  if (error || !post)
     return (
       <div className="flex flex-col items-center gap-4 py-20">
         <p className="text-[16px] text-foreground">{error || 'Post not found'}</p>
@@ -71,7 +87,8 @@ export default function SinglePost() {
         </Link>
       </div>
     );
-  }
+
+  const isPpvLocked = !!post.ppvPrice && !post.isPpvUnlocked;
 
   return (
     <div className="mx-auto max-w-[700px]">
@@ -88,11 +105,11 @@ export default function SinglePost() {
             {post.text}
           </p>
         )}
-        {post.ppvPrice && !post.isPpvUnlocked ? (
+        {isPpvLocked ? (
           <div className="mt-[14px]">
             <PPVOverlay
               postId={post.id}
-              price={post.ppvPrice}
+              price={post.ppvPrice!}
               thumbnailUrl={post.media[0]?.url}
               onUnlocked={fetchPost}
             />
@@ -104,46 +121,17 @@ export default function SinglePost() {
           <PostActions
             postId={post.id}
             likeCount={post.likeCount}
-            commentCount={post.commentCount}
+            commentCount={commentCount}
             shareCount={0}
             isLiked={post.isLiked}
             isBookmarked={post.isBookmarked}
           />
         </div>
+        <div className="mt-[16px]">
+          <CommentsSection postId={post.id} onCountChange={(d) => setCommentCount((p) => p + d)} />
+        </div>
       </div>
-    </div>
-  );
-}
-
-function SinglePostHeader({ author, createdAt }: { author: Author; createdAt: string }) {
-  const diff = Date.now() - new Date(createdAt).getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const timeAgo =
-    hours < 1 ? 'Just now' : hours < 24 ? `${hours}h ago` : `${Math.floor(hours / 24)}d ago`;
-
-  return (
-    <div className="flex items-center justify-between">
-      <Link to={`/u/${author.username}`} className="flex items-center gap-[8px] hover:opacity-80">
-        <div className="size-[44px] shrink-0 overflow-hidden rounded-full">
-          {author.avatar ? (
-            <img src={author.avatar} alt="" className="size-full object-cover" />
-          ) : (
-            <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[16px] font-medium text-white">
-              {author.displayName.charAt(0).toUpperCase()}
-            </div>
-          )}
-        </div>
-        <div>
-          <div className="flex items-center gap-[4px]">
-            <span className="text-[16px] text-foreground">{author.displayName}</span>
-            {author.isVerified && (
-              <img src="/icons/dashboard/verified.svg" alt="" className="size-[16px]" />
-            )}
-          </div>
-          <p className="text-[12px] text-muted-foreground">@{author.username}</p>
-        </div>
-      </Link>
-      <span className="text-[14px] text-muted-foreground">{timeAgo}</span>
+      <RelatedPosts posts={relatedPosts} authorName={post.author.displayName} />
     </div>
   );
 }

@@ -2,23 +2,35 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../config/database.js';
 import { env } from '../config/env.js';
 
-const REFRESH_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
+export const REFRESH_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
 
-export function generateTokens(userId: string, role: string) {
+export function generateTokens(userId: string, role: string, refreshExpiryMs?: number) {
+  const expiryMs = refreshExpiryMs || REFRESH_EXPIRY_MS;
+  const expirySeconds = Math.floor(expiryMs / 1000);
   const accessToken = jwt.sign({ userId, role }, env.JWT_SECRET, { expiresIn: '15m' });
-  const refreshToken = jwt.sign({ userId, role }, env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+  const refreshToken = jwt.sign({ userId, role }, env.JWT_REFRESH_SECRET, {
+    expiresIn: expirySeconds,
+  });
   return { accessToken, refreshToken };
 }
 
-export async function storeRefreshToken(userId: string, token: string) {
+export async function storeRefreshToken(userId: string, token: string, expiryMs?: number) {
   await prisma.refreshToken.create({
-    data: { token, userId, expiresAt: new Date(Date.now() + REFRESH_EXPIRY_MS) },
+    data: {
+      token,
+      userId,
+      expiresAt: new Date(Date.now() + (expiryMs || REFRESH_EXPIRY_MS)),
+    },
   });
 }
 
-export async function generateAndStoreTokens(userId: string, role: string) {
-  const tokens = generateTokens(userId, role);
-  await storeRefreshToken(userId, tokens.refreshToken);
+export async function generateAndStoreTokens(
+  userId: string,
+  role: string,
+  refreshExpiryMs?: number,
+) {
+  const tokens = generateTokens(userId, role, refreshExpiryMs);
+  await storeRefreshToken(userId, tokens.refreshToken, refreshExpiryMs);
   return tokens;
 }
 

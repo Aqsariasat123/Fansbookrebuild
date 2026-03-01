@@ -1,1 +1,4 @@
 npx lint-staged
+npx tsc --noEmit -p apps/web/tsconfig.app.json
+npx tsc --noEmit -p apps/server/tsconfig.json
+npx vitest run --reporter=verbose --exclude='**/e2e/**' --exclude='**/node_modules/**'

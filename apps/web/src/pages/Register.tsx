@@ -3,54 +3,56 @@ import { Link, useNavigate } from 'react-router-dom';
 import { registerApi } from '../lib/auth';
 import { useAuthStore } from '../stores/authStore';
 import { TextField, PasswordField, AccountTypeSelector } from './RegisterFormFields';
+import PasswordStrength from '../components/shared/PasswordStrength';
 
 type AccountType = 'creator' | 'fan';
+
+function extractError(err: unknown): string {
+  const resData = (
+    err as {
+      response?: { data?: { error?: string; details?: { field: string; message: string }[] } };
+    }
+  )?.response?.data;
+  if (resData?.details?.length)
+    return resData.details.map((d) => `${d.field}: ${d.message}`).join(', ');
+  return resData?.error || 'Registration failed. Please try again.';
+}
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [accountType, setAccountType] = useState<AccountType>('fan');
-  const [username, setUsername] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const setUser = useAuthStore((s) => s.setUser);
 
+  function validateForm(): string | null {
+    if (password !== confirmPassword) return 'Passwords do not match';
+    if (!acceptTerms) return 'You must accept the Terms & Conditions';
+    return null;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       return;
     }
-
     setLoading(true);
-
     try {
-      const res = await registerApi({
-        username,
-        email,
-        password,
-        confirmPassword,
-        accountType,
-      });
+      const res = await registerApi({ displayName, email, password, confirmPassword, accountType });
       setUser(res.data.user as never);
-      navigate('/feed');
+      navigate('/verify-email', { state: { userId: res.data.user.id, email } });
     } catch (err: unknown) {
-      const resData = (
-        err as {
-          response?: { data?: { error?: string; details?: { field: string; message: string }[] } };
-        }
-      )?.response?.data;
-      let msg = resData?.error || 'Registration failed. Please try again.';
-      if (resData?.details?.length) {
-        msg = resData.details.map((d) => `${d.field}: ${d.message}`).join(', ');
-      }
-      setError(msg);
+      setError(extractError(err));
     } finally {
       setLoading(false);
     }
@@ -95,11 +97,11 @@ export default function Register() {
             onSubmit={handleSubmit}
           >
             <TextField
-              label="Username"
+              label="Display Name"
               type="text"
-              value={username}
-              onChange={setUsername}
-              placeholder="Enter your username..."
+              value={displayName}
+              onChange={setDisplayName}
+              placeholder="Enter your display name..."
             />
             <TextField
               label="Email"
@@ -109,15 +111,18 @@ export default function Register() {
               placeholder="Enter your Email..."
               className="mt-[12px] lg:mt-[20px]"
             />
-            <PasswordField
-              label="Password"
-              value={password}
-              onChange={setPassword}
-              placeholder="Enter your password..."
-              show={showPassword}
-              onToggle={() => setShowPassword(!showPassword)}
-              className="mt-[12px] lg:mt-[20px]"
-            />
+            <div>
+              <PasswordField
+                label="Password"
+                value={password}
+                onChange={setPassword}
+                placeholder="Enter your password..."
+                show={showPassword}
+                onToggle={() => setShowPassword(!showPassword)}
+                className="mt-[12px] lg:mt-[20px]"
+              />
+              <PasswordStrength password={password} />
+            </div>
             <PasswordField
               label="Confirm Password"
               value={confirmPassword}
@@ -129,10 +134,30 @@ export default function Register() {
             />
             <AccountTypeSelector accountType={accountType} onSelect={setAccountType} />
 
+            {/* Terms & Conditions */}
+            <label className="mt-[16px] flex items-start gap-[8px] cursor-pointer lg:mt-[20px]">
+              <input
+                type="checkbox"
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+                className="mt-[2px] h-[14px] w-[14px] rounded border-border accent-[#01adf1] lg:h-[16px] lg:w-[16px]"
+              />
+              <span className="text-[10px] font-normal text-muted-foreground lg:text-[12px]">
+                I agree to the{' '}
+                <Link to="/terms" className="text-primary hover:underline">
+                  Terms & Conditions
+                </Link>{' '}
+                and{' '}
+                <Link to="/privacy" className="text-primary hover:underline">
+                  Privacy Policy
+                </Link>
+              </span>
+            </label>
+
             {/* Signup Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !acceptTerms}
               className="mt-[20px] h-[38px] w-full rounded-[46px] bg-gradient-to-r from-[#01adf1] to-[#a61651] text-[16px] font-normal text-foreground text-center transition-opacity hover:opacity-90 disabled:opacity-60 lg:mt-[34px] lg:h-[49px] lg:rounded-[59px] lg:text-[20px]"
             >
               {loading ? 'Creating account...' : 'Signup'}

@@ -14,11 +14,13 @@ const AUTHOR_SELECT = {
   isVerified: true,
 };
 
-// ─── GET /api/posts/:id/comments ── get comments with threading + isLiked
+// ─── GET /api/posts/:id/comments ── cursor-based paginated comments
 router.get('/:id/comments', authenticate, async (req, res, next) => {
   try {
     const postId = req.params.id as string;
     const userId = req.user!.userId;
+    const cursor = req.query.cursor as string | undefined;
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 20, 1), 50);
 
     const post = await prisma.post.findUnique({ where: { id: postId } });
     if (!post) throw new AppError(404, 'Post not found');
@@ -26,6 +28,8 @@ router.get('/:id/comments', authenticate, async (req, res, next) => {
     const comments = await prisma.comment.findMany({
       where: { postId, parentId: null },
       orderBy: { createdAt: 'asc' },
+      take: limit,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       include: {
         author: { select: AUTHOR_SELECT },
         commentLikes: { where: { userId }, select: { id: true } },
@@ -50,7 +54,9 @@ router.get('/:id/comments', authenticate, async (req, res, next) => {
       })),
     }));
 
-    res.json({ success: true, data: mapped });
+    const nextCursor = mapped.length === limit ? (mapped[mapped.length - 1]?.id ?? null) : null;
+
+    res.json({ success: true, data: mapped, nextCursor, hasMore: mapped.length === limit });
   } catch (err) {
     next(err);
   }
@@ -148,6 +154,40 @@ router.delete('/:id/comments/:commentId/like', authenticate, async (req, res, ne
     ]);
 
     res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── DELETE /api/posts/:id/comments/:commentId ── delete comment
+router.delete('/:id/comments/:commentId', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const postId = req.params.id as string;
+    const commentId = req.params.commentId as string;
+
+    const comment = await prisma.comment.findUnique({ where: { id: commentId } });
+    if (!comment) throw new AppError(404, 'Comment not found');
+
+    // Only comment author or post owner can delete
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+    if (comment.authorId !== userId && post?.authorId !== userId) {
+      throw new AppError(403, 'Not authorized to delete this comment');
+    }
+
+    await prisma.$transaction([
+      prisma.comment.delete({ where: { id: commentId } }),
+      prisma.post.update({
+        where: { id: postId },
+        data: { commentCount: { decrement: 1 } },
+      }),
+    ]);
+
+    logActivity(userId, 'COMMENT_DELETE', 'Comment', commentId, { postId }, req);
+    res.json({ success: true, message: 'Comment deleted' });
   } catch (err) {
     next(err);
   }

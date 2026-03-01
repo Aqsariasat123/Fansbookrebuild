@@ -5,9 +5,13 @@ import { SettingsPrivacy } from './settings/SettingsPrivacy';
 import { SettingsSecurity } from './settings/SettingsSecurity';
 import { SettingsDisplay } from './settings/SettingsDisplay';
 import { SettingsSessions } from './settings/SettingsSessions';
+import { SettingsProfile } from './settings/SettingsProfile';
+import { SettingsBecomeCreator } from './settings/SettingsBecomeCreator';
+import { useAuthStore } from '../stores/authStore';
 
-const TABS = [
+const BASE_TABS = [
   { key: 'account', label: 'Account' },
+  { key: 'profile', label: 'Profile' },
   { key: 'notifications', label: 'Notifications' },
   { key: 'privacy', label: 'Privacy' },
   { key: 'security', label: 'Security' },
@@ -15,10 +19,30 @@ const TABS = [
   { key: 'sessions', label: 'Sessions' },
 ] as const;
 
-type TabKey = (typeof TABS)[number]['key'];
+type TabKey = (typeof BASE_TABS)[number]['key'] | 'become-creator';
+
+function SettingsTabContent({ tab }: { tab: TabKey }) {
+  const map: Record<TabKey, React.ReactNode> = {
+    account: <SettingsAccount />,
+    profile: <SettingsProfile />,
+    notifications: <SettingsNotifications />,
+    privacy: <SettingsPrivacy />,
+    security: <SettingsSecurity />,
+    display: <SettingsDisplay />,
+    sessions: <SettingsSessions />,
+    'become-creator': <SettingsBecomeCreator />,
+  };
+  return <>{map[tab]}</>;
+}
 
 export default function Settings() {
   const [tab, setTab] = useState<TabKey>('account');
+  const user = useAuthStore((s) => s.user);
+  const isFan = user?.role === 'FAN';
+
+  const tabs = isFan
+    ? [...BASE_TABS, { key: 'become-creator' as const, label: 'Become Creator' }]
+    : BASE_TABS;
 
   return (
     <div className="flex flex-col gap-[20px]">
@@ -27,7 +51,7 @@ export default function Settings() {
       <div className="flex flex-col rounded-[22px] bg-card px-[20px] py-[20px]">
         {/* Tab Navigation */}
         <div className="mb-[20px] flex gap-[4px] overflow-x-auto scrollbar-hide">
-          {TABS.map((t) => (
+          {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
@@ -43,12 +67,7 @@ export default function Settings() {
         </div>
 
         {/* Tab Content */}
-        {tab === 'account' && <SettingsAccount />}
-        {tab === 'notifications' && <SettingsNotifications />}
-        {tab === 'privacy' && <SettingsPrivacy />}
-        {tab === 'security' && <SettingsSecurity />}
-        {tab === 'display' && <SettingsDisplay />}
-        {tab === 'sessions' && <SettingsSessions />}
+        <SettingsTabContent tab={tab} />
       </div>
     </div>
   );
