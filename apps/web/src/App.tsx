@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MainLayout } from './components/layout/MainLayout';
+import { adminRoutes } from './pages/admin/AdminRoutes';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { RoleRoute } from './components/RoleRoute';
 import { useAuthStore } from './stores/authStore';
@@ -53,7 +54,6 @@ const MarketplaceCreate = lazy(() => import('./pages/MarketplaceCreate'));
 const HashtagFeed = lazy(() => import('./pages/HashtagFeed'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-// Creator pages
 const CreatorProfileOwner = lazy(() => import('./pages/CreatorProfileOwner'));
 const CreatorProfileEdit = lazy(() => import('./pages/CreatorProfileEdit'));
 const CreatorWallet = lazy(() => import('./pages/CreatorWallet'));
@@ -87,23 +87,16 @@ function Loading() {
 
 function AuthBootstrap({ children }: { children: React.ReactNode }) {
   const setUser = useAuthStore((s) => s.setUser);
-
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
       setUser(null);
       return;
     }
-
     getMeApi()
-      .then((res) => {
-        setUser(res.data);
-      })
-      .catch(() => {
-        setUser(null);
-      });
+      .then((res) => setUser(res.data))
+      .catch(() => setUser(null));
   }, [setUser]);
-
   return <>{children}</>;
 }
 
@@ -193,6 +186,8 @@ export default function App() {
                   </Route>
                 </Route>
               </Route>
+
+              {adminRoutes()}
 
               <Route path="*" element={<NotFound />} />
             </Routes>

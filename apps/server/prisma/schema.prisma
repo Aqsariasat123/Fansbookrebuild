@@ -885,6 +885,8 @@ model Faq {
   question  String
   answer    String
   order     Int      @default(0)
+  sequence  Int      @default(0)
+  status    String   @default("Active")
   createdAt DateTime @default(now())
 }
 
@@ -908,5 +910,88 @@ model PlatformConfig {
   minWithdrawal    Float    @default(50)
   maintenanceMode  Boolean  @default(false)
   maxUploadSizeMb  Int      @default(50)
+  homeSettings     Json     @default("{}")
+  generalSettings  Json     @default("{}")
   updatedAt        DateTime @updatedAt
+}
+
+// ─── Admin Masters (Phase 9) ───────────────────────────
+
+model CmsPage {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProfileStatType {
+  id        String        @id @default(cuid())
+  name      String
+  status    String        @default("Active")
+  createdAt DateTime      @default(now())
+  stats     ProfileStat[]
+}
+
+model ProfileStat {
+  id                String          @id @default(cuid())
+  name              String
+  profileStatTypeId String
+  status            String          @default("Active")
+  createdAt         DateTime        @default(now())
+
+  profileStatType ProfileStatType @relation(fields: [profileStatTypeId], references: [id], onDelete: Cascade)
+
+  @@index([profileStatTypeId])
+}
+
+model ProfileType {
+  id        String   @id @default(cuid())
+  name      String
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+}
+
+model Platform {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String?
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+}
+
+model Translation {
+  id        String   @id @default(cuid())
+  textKey   String   @unique
+  textValue String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Country {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+}
+
+model CountryForm {
+  id           String   @id @default(cuid())
+  inputTitle   String
+  inputType    String
+  countryNames Json     @default("[]")
+  status       String   @default("Active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
