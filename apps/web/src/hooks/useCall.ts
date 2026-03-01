@@ -40,6 +40,11 @@ export function useCall() {
       }
     };
     pc.ontrack = (e) => gs().setRemoteStream(e.streams[0]);
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+        gs().setStatus('ended');
+      }
+    };
     return pc;
   }, []);
 
