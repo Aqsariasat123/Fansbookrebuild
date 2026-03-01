@@ -42,6 +42,38 @@ export function passwordResetTemplate(
   return { subject: 'Reset your Fansbook password', html: wrapInLayout('Reset Password', body) };
 }
 
+const NOTIF_LABELS: Record<string, string> = {
+  LIKE: 'New Like',
+  COMMENT: 'New Comment',
+  FOLLOW: 'New Follower',
+  SUBSCRIBE: 'New Subscriber',
+  TIP: 'Tip Received',
+  MESSAGE: 'New Message',
+  LIVE: 'Live Stream',
+  STORY: 'New Story',
+  MENTION: 'You Were Mentioned',
+  POST: 'New Post',
+  SYSTEM: 'System Notification',
+  BADGE: 'Badge Earned',
+  MARKETPLACE: 'Marketplace Update',
+};
+
+export function notificationEmailTemplate(
+  type: string,
+  message: string,
+): { subject: string; html: string } {
+  const label = NOTIF_LABELS[type] || 'Notification';
+  const body = `
+    <h2 style="margin:0 0 20px; font-size:22px; color:#f8f8f8;">${label}</h2>
+    <p style="${textStyle}">${message}</p>
+    <p style="text-align:center; margin:30px 0;">
+      <a href="${baseUrl}/notifications" style="${btnStyle}">View on Fansbook</a>
+    </p>
+    <p style="font-size:13px; color:#5d5d5d;">You can manage notification preferences in your settings.</p>
+  `;
+  return { subject: `Fansbook: ${label}`, html: wrapInLayout(label, body) };
+}
+
 export function welcomeTemplate(username: string): { subject: string; html: string } {
   const body = `
     <h2 style="margin:0 0 20px; font-size:22px; color:#f8f8f8;">Welcome to Fansbook!</h2>

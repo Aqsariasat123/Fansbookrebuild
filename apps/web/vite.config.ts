@@ -9,6 +9,19 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          query: ['@tanstack/react-query'],
+          ui: ['lucide-react', 'clsx', 'tailwind-merge'],
+          socket: ['socket.io-client'],
+          mediasoup: ['mediasoup-client'],
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     proxy: {

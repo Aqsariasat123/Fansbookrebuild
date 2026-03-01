@@ -3,8 +3,73 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
+import type { NotificationType } from '@prisma/client';
+
+const NOTIFICATION_TYPES: NotificationType[] = [
+  'LIKE',
+  'COMMENT',
+  'FOLLOW',
+  'SUBSCRIBE',
+  'TIP',
+  'MESSAGE',
+  'LIVE',
+  'STORY',
+  'MENTION',
+  'POST',
+  'SYSTEM',
+  'BADGE',
+  'MARKETPLACE',
+];
 
 const router = Router();
+
+// ─── GET /api/settings/notification-preferences ─────
+router.get('/notification-preferences', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const saved = await prisma.notificationPreference.findMany({
+      where: { userId },
+    });
+    const map = new Map(saved.map((p) => [p.type, { inApp: p.inApp, email: p.email }]));
+    const data = NOTIFICATION_TYPES.map((type) => ({
+      type,
+      inApp: map.get(type)?.inApp ?? true,
+      email: map.get(type)?.email ?? true,
+    }));
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── PUT /api/settings/notification-preferences ─────
+router.put('/notification-preferences', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const prefs = req.body.preferences as {
+      type: NotificationType;
+      inApp: boolean;
+      email: boolean;
+    }[];
+    if (!Array.isArray(prefs)) throw new AppError(400, 'preferences array required');
+
+    const results = await Promise.all(
+      prefs
+        .filter((p) => NOTIFICATION_TYPES.includes(p.type))
+        .map((p) =>
+          prisma.notificationPreference.upsert({
+            where: { userId_type: { userId, type: p.type } },
+            create: { userId, type: p.type, inApp: p.inApp, email: p.email },
+            update: { inApp: p.inApp, email: p.email },
+          }),
+        ),
+    );
+
+    res.json({ success: true, data: results });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // ─── PUT /api/settings/notifications ─────────────────────
 router.put('/notifications', authenticate, async (req, res, next) => {

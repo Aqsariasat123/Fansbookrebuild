@@ -1,43 +1,50 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 
-interface NotifSettings {
-  emailNotifs: boolean;
-  pushNotifs: boolean;
-  inAppNotifs: boolean;
-  dmNotifs: boolean;
+interface NotifPref {
+  type: string;
+  inApp: boolean;
+  email: boolean;
 }
 
-const defaults: NotifSettings = {
-  emailNotifs: true,
-  pushNotifs: true,
-  inAppNotifs: true,
-  dmNotifs: true,
+const TYPE_LABELS: Record<string, { label: string; desc: string }> = {
+  LIKE: { label: 'Likes', desc: 'When someone likes your content' },
+  COMMENT: { label: 'Comments', desc: 'When someone comments on your post' },
+  FOLLOW: { label: 'Follows', desc: 'When someone follows you' },
+  SUBSCRIBE: { label: 'Subscriptions', desc: 'When someone subscribes to you' },
+  TIP: { label: 'Tips', desc: 'When you receive a tip' },
+  MESSAGE: { label: 'Messages', desc: 'When you receive a new message' },
+  LIVE: { label: 'Live Streams', desc: 'When a creator goes live' },
+  STORY: { label: 'Stories', desc: 'When someone posts a story' },
+  MENTION: { label: 'Mentions', desc: 'When someone mentions you' },
+  POST: { label: 'Posts', desc: 'When a creator publishes a post' },
+  SYSTEM: { label: 'System', desc: 'Platform announcements and updates' },
+  BADGE: { label: 'Badges', desc: 'When you earn a badge' },
+  MARKETPLACE: { label: 'Marketplace', desc: 'Marketplace activity updates' },
 };
 
 export function SettingsNotifications() {
-  const [settings, setSettings] = useState<NotifSettings>(defaults);
+  const [prefs, setPrefs] = useState<NotifPref[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
     api
-      .get('/auth/me')
+      .get('/settings/notification-preferences')
       .then((res) => {
-        const s = res.data.data?.notifSettings;
-        if (s && typeof s === 'object') setSettings({ ...defaults, ...s });
+        if (res.data.data) setPrefs(res.data.data);
       })
       .catch(() => {});
   }, []);
 
-  const toggle = (key: keyof NotifSettings) => {
-    setSettings((p) => ({ ...p, [key]: !p[key] }));
+  const toggle = (type: string, field: 'inApp' | 'email') => {
+    setPrefs((prev) => prev.map((p) => (p.type === type ? { ...p, [field]: !p[field] } : p)));
   };
 
   const save = async () => {
     setSaving(true);
     try {
-      await api.put('/settings/notifications', settings);
+      await api.put('/settings/notification-preferences', { preferences: prefs });
       setMsg('Saved');
       setTimeout(() => setMsg(''), 2000);
     } catch {
@@ -50,32 +57,46 @@ export function SettingsNotifications() {
   return (
     <div className="flex flex-col gap-[16px]">
       <p className="text-[16px] text-foreground">Notification Preferences</p>
-      {(
-        [
-          ['emailNotifs', 'Email Notifications', 'Receive updates via email'],
-          ['pushNotifs', 'Push Notifications', 'Browser push notifications'],
-          ['inAppNotifs', 'In-App Notifications', 'Show notification badge'],
-          ['dmNotifs', 'DM Notifications', 'Notify for new messages'],
-        ] as const
-      ).map(([key, label, desc]) => (
-        <div
-          key={key}
-          className="flex items-center justify-between rounded-[12px] bg-muted p-[14px]"
-        >
-          <div>
-            <p className="text-[14px] text-foreground">{label}</p>
-            <p className="text-[12px] text-muted-foreground">{desc}</p>
-          </div>
-          <button
-            onClick={() => toggle(key)}
-            className={`h-[26px] w-[46px] rounded-full transition-colors ${settings[key] ? 'bg-[#01adf1]' : 'bg-muted-foreground'}`}
+      <div className="grid grid-cols-[1fr_60px_60px] gap-[8px] text-[12px] text-muted-foreground px-[14px]">
+        <span>Type</span>
+        <span className="text-center">In-App</span>
+        <span className="text-center">Email</span>
+      </div>
+      {prefs.map((p) => {
+        const info = TYPE_LABELS[p.type];
+        if (!info) return null;
+        return (
+          <div
+            key={p.type}
+            className="grid grid-cols-[1fr_60px_60px] items-center gap-[8px] rounded-[12px] bg-muted p-[14px]"
           >
-            <div
-              className={`h-[22px] w-[22px] rounded-full bg-card transition-transform ${settings[key] ? 'translate-x-[22px]' : 'translate-x-[2px]'}`}
-            />
-          </button>
-        </div>
-      ))}
+            <div>
+              <p className="text-[14px] text-foreground">{info.label}</p>
+              <p className="text-[12px] text-muted-foreground">{info.desc}</p>
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={() => toggle(p.type, 'inApp')}
+                className={`h-[26px] w-[46px] rounded-full transition-colors ${p.inApp ? 'bg-[#01adf1]' : 'bg-muted-foreground/40'}`}
+              >
+                <div
+                  className={`h-[22px] w-[22px] rounded-full bg-card transition-transform ${p.inApp ? 'translate-x-[22px]' : 'translate-x-[2px]'}`}
+                />
+              </button>
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={() => toggle(p.type, 'email')}
+                className={`h-[26px] w-[46px] rounded-full transition-colors ${p.email ? 'bg-[#01adf1]' : 'bg-muted-foreground/40'}`}
+              >
+                <div
+                  className={`h-[22px] w-[22px] rounded-full bg-card transition-transform ${p.email ? 'translate-x-[22px]' : 'translate-x-[2px]'}`}
+                />
+              </button>
+            </div>
+          </div>
+        );
+      })}
       <div className="flex items-center gap-3">
         <button
           onClick={save}

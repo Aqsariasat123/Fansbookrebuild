@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
-
 interface MessageUser {
   id: string;
   username: string;
@@ -27,23 +26,24 @@ function formatTime(dateStr: string) {
   });
 }
 
-function DoneAllIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="#2e80c8"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M1 12l5 5L17 6" />
-      <path d="M7 12l5 5L23 6" />
-    </svg>
-  );
-}
+const checkSvg = (stroke: string, paths: string[]) => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={stroke}
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {paths.map((d) => (
+      <path key={d} d={d} />
+    ))}
+  </svg>
+);
+const SingleCheck = () => checkSvg('#999', ['M5 12l5 5L20 6']);
+const DoubleCheck = () => checkSvg('#01adf1', ['M1 12l5 5L17 6', 'M7 12l5 5L23 6']);
 
 function DeleteMenu({
   msgId,
@@ -136,7 +136,6 @@ export function OtherBubble({ msg, onDelete, onViewImage }: BubbleProps) {
     </div>
   );
 }
-
 export function TypingDots() {
   return (
     <div className="flex items-center gap-[8px] px-[10px] py-[4px]">
@@ -154,40 +153,33 @@ export function TypingDots() {
   );
 }
 
-const PHONE_PATH =
+const PHONE_D =
   'M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z';
-const VIDEO_PATH =
+const VIDEO_D =
   'M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z';
-
 export function CallBubble({ msg, userId }: { msg: ChatMessage; userId?: string }) {
   const isMissed = msg.text?.startsWith('Missed');
-  const isOutgoing = !isMissed && userId === msg.senderId;
-  const arrow = isOutgoing ? '↗' : '↙';
-  const arrowColor = isMissed ? 'text-red-400' : 'text-green-500';
-  const iconPath = msg.text?.includes('Audio') ? PHONE_PATH : VIDEO_PATH;
+  const arrow = !isMissed && userId === msg.senderId ? '↗' : '↙';
   return (
     <div className="flex justify-center py-[8px]">
       <div className="flex items-center gap-[8px] rounded-[20px] bg-muted px-[16px] py-[8px]">
         <svg width="16" height="16" viewBox="0 0 24 24" fill={isMissed ? '#ef4444' : '#22c55e'}>
-          <path d={iconPath} />
+          <path d={msg.text?.includes('Audio') ? PHONE_D : VIDEO_D} />
         </svg>
         <span className={`text-[13px] ${isMissed ? 'text-red-400' : 'text-foreground'}`}>
-          <span className={arrowColor}>{arrow}</span> {msg.text}
+          <span className={isMissed ? 'text-red-400' : 'text-green-500'}>{arrow}</span> {msg.text}
         </span>
         <span className="text-[11px] text-muted-foreground">{formatTime(msg.createdAt)}</span>
       </div>
     </div>
   );
 }
-
 export function SelfBubble({ msg, onDelete, onViewImage }: BubbleProps) {
   const isImage = msg.mediaUrl && msg.mediaType === 'IMAGE';
   return (
     <div className="group flex items-end justify-end gap-[8px]">
       <DeleteMenu msgId={msg.id} isSelf={true} onDelete={onDelete} />
-      <div className="shrink-0 mb-[10px]">
-        <DoneAllIcon />
-      </div>
+      <div className="shrink-0 mb-[10px]">{msg.readAt ? <DoubleCheck /> : <SingleCheck />}</div>
       <div className="flex flex-col gap-[6px] items-end">
         {!isImage && (
           <p className="text-[12px] leading-[1.7] text-muted-foreground">

@@ -1,6 +1,8 @@
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { NavbarSearch } from './NavbarSearch';
 import { NavbarUserMenu } from './NavbarUserMenu';
+import { NotificationDropdown } from './NotificationDropdown';
 import { useNotificationStore } from '../../stores/notificationStore';
 
 function BellIcon({ className }: { className?: string }) {
@@ -42,6 +44,25 @@ function NotifBadge() {
   );
 }
 
+function BellButton() {
+  const [open, setOpen] = useState(false);
+  const close = useCallback(() => setOpen(false), []);
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((p) => !p)}
+        className={`relative shrink-0 ${iconCircle}`}
+        aria-label="Notifications"
+      >
+        <BellIcon className="size-[22px]" />
+        <NotifBadge />
+      </button>
+      <NotificationDropdown open={open} onClose={close} />
+    </div>
+  );
+}
+
 export function Navbar({ onMenuToggle }: NavbarProps) {
   return (
     <header className="sticky top-0 z-50 bg-muted">
@@ -51,14 +72,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
           <img src="/icons/dashboard/menu.svg" alt="" className="size-[30px]" />
         </button>
         <div className="flex items-center gap-[6px]">
-          <Link
-            to="/notifications"
-            className={`relative shrink-0 ${iconCircle}`}
-            aria-label="Notifications"
-          >
-            <BellIcon className="size-[22px]" />
-            <NotifBadge />
-          </Link>
+          <BellButton />
           <Link to="/messages" className={`shrink-0 ${iconCircle}`} aria-label="Messages">
             <MessageIcon className="size-[22px]" />
           </Link>
@@ -79,14 +93,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
           <div className="flex items-center gap-[60px]">
             <div className="flex items-center gap-[6px]">
               <NavbarSearch />
-              <Link
-                to="/notifications"
-                className={`relative shrink-0 ${iconCircle}`}
-                aria-label="Notifications"
-              >
-                <BellIcon className="size-[22px]" />
-                <NotifBadge />
-              </Link>
+              <BellButton />
               <Link to="/messages" className={`shrink-0 ${iconCircle}`} aria-label="Messages">
                 <MessageIcon className="size-[22px]" />
               </Link>

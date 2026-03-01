@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
@@ -54,8 +55,26 @@ const app = express();
 // Trust Nginx proxy (fixes express-rate-limit X-Forwarded-For error)
 app.set('trust proxy', 1);
 
+// Compression
+app.use(compression());
+
 // Security middleware
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+        fontSrc: ["'self'", 'fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'blob:'],
+        connectSrc: ["'self'", 'wss:', 'ws:'],
+        mediaSrc: ["'self'", 'blob:'],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  }),
+);
 app.use(
   cors({
     origin: env.CLIENT_URL,
@@ -76,6 +95,9 @@ app.use(
     stream: { write: (message) => logger.info(message.trim()) },
   }),
 );
+
+// Static file serving with cache headers
+app.use('/uploads', express.static('uploads', { maxAge: '7d', etag: true }));
 
 // Rate limiting
 app.use('/api', apiLimiter);

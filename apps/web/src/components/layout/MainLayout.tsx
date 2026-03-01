@@ -4,9 +4,11 @@ import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { MobileSidebar } from './MobileSidebar';
 import { IncomingCallModal } from '../call/IncomingCallModal';
+import { useNotificationSocket } from '../../hooks/useNotificationSocket';
 
 export function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  useNotificationSocket();
 
   return (
     <div className="min-h-screen bg-muted font-outfit">

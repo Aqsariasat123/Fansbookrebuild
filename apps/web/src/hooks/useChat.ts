@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { getSocket } from '../lib/socket';
+import { playSound } from '../lib/sounds';
+import { useAuthStore } from '../stores/authStore';
 
 interface Message {
   id: string;
@@ -22,6 +24,7 @@ export function useChat(conversationId: string | undefined) {
   const [incomingMessages, setIncomingMessages] = useState<Message[]>([]);
   const [typingUsers, setTypingUsers] = useState<Map<string, boolean>>(new Map());
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const currentUserId = useAuthStore((s) => s.user?.id);
 
   useEffect(() => {
     const socket = getSocket();
@@ -30,6 +33,9 @@ export function useChat(conversationId: string | undefined) {
     const handleNewMessage = (msg: Message) => {
       if (msg.conversationId === conversationId) {
         setIncomingMessages((prev) => [...prev, msg]);
+        if (msg.senderId !== currentUserId) {
+          playSound('message');
+        }
       }
     };
 
@@ -64,7 +70,7 @@ export function useChat(conversationId: string | undefined) {
       socket.off('typing:indicator', handleTyping);
       socket.off('message:read', handleReadReceipt);
     };
-  }, [conversationId]);
+  }, [conversationId, currentUserId]);
 
   const sendMessage = useCallback(
     (text: string) => {
