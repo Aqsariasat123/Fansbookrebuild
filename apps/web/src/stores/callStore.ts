@@ -16,6 +16,8 @@ interface CallState {
   localStream: MediaStream | null;
   remoteStream: MediaStream | null;
   peerConnection: RTCPeerConnection | null;
+  pendingOffer: RTCSessionDescriptionInit | null;
+  pendingCandidates: RTCIceCandidateInit[];
 
   setIncoming: (data: {
     callId: string;
@@ -31,6 +33,8 @@ interface CallState {
   setLocalStream: (stream: MediaStream | null) => void;
   setRemoteStream: (stream: MediaStream | null) => void;
   setPeerConnection: (pc: RTCPeerConnection | null) => void;
+  setPendingOffer: (sdp: RTCSessionDescriptionInit) => void;
+  addPendingCandidate: (c: RTCIceCandidateInit) => void;
   reset: () => void;
 }
 
@@ -47,6 +51,8 @@ const initialState = {
   localStream: null,
   remoteStream: null,
   peerConnection: null,
+  pendingOffer: null as RTCSessionDescriptionInit | null,
+  pendingCandidates: [] as RTCIceCandidateInit[],
 };
 
 export const useCallStore = create<CallState>((set) => ({
@@ -69,6 +75,8 @@ export const useCallStore = create<CallState>((set) => ({
   setLocalStream: (stream) => set({ localStream: stream }),
   setRemoteStream: (stream) => set({ remoteStream: stream }),
   setPeerConnection: (pc) => set({ peerConnection: pc }),
+  setPendingOffer: (sdp) => set({ pendingOffer: sdp }),
+  addPendingCandidate: (c) => set((s) => ({ pendingCandidates: [...s.pendingCandidates, c] })),
 
   reset: () => {
     const state = useCallStore.getState();

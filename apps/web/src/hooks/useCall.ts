@@ -33,7 +33,10 @@ export function useCall() {
     const handleEnded = () => store.reset();
 
     const handleOffer = async (data: { callId: string; sdp: RTCSessionDescriptionInit }) => {
-      if (!pcRef.current) return;
+      if (!pcRef.current) {
+        store.setPendingOffer(data.sdp);
+        return;
+      }
       await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.sdp));
       const answer = await pcRef.current.createAnswer();
       await pcRef.current.setLocalDescription(answer);
@@ -46,7 +49,10 @@ export function useCall() {
     };
 
     const handleIce = async (data: { candidate: RTCIceCandidateInit }) => {
-      if (!pcRef.current) return;
+      if (!pcRef.current) {
+        store.addPendingCandidate(data.candidate);
+        return;
+      }
       await pcRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
     };
 
@@ -124,7 +130,7 @@ export function useCall() {
 
   const acceptCall = useCallback(async () => {
     const socket = getSocket();
-    const { callId, mode } = useCallStore.getState();
+    const { callId, mode, pendingOffer, pendingCandidates } = useCallStore.getState();
     if (!socket || !callId) return;
 
     const constraints =
@@ -134,6 +140,18 @@ export function useCall() {
 
     const pc = createPeerConnection();
     stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+    // Apply buffered offer from caller
+    if (pendingOffer) {
+      await pc.setRemoteDescription(new RTCSessionDescription(pendingOffer));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      socket.emit('call:answer', { callId, sdp: answer });
+    }
+    // Apply buffered ICE candidates
+    for (const c of pendingCandidates) {
+      await pc.addIceCandidate(new RTCIceCandidate(c));
+    }
 
     socket.emit('call:accept', { callId });
     store.setStatus('active');
