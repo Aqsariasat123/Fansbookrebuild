@@ -98,7 +98,7 @@ export function useExploreData(
     setPostsLoading(true);
     api
       .get('/feed/explore?limit=20')
-      .then((r) => setTrendingPosts(r.data.data || []))
+      .then((r) => setTrendingPosts(r.data.data?.posts || r.data.data || []))
       .catch(() => setTrendingPosts([]))
       .finally(() => setPostsLoading(false));
   }, [tab]);
