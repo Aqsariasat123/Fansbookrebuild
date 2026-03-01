@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCallStore } from '../stores/callStore';
+import { useCallStore, type CallMode } from '../stores/callStore';
 import { getSocket } from '../lib/socket';
 
 const ICE_SERVERS: RTCConfiguration = {
@@ -22,6 +22,7 @@ export function useCall() {
       callerId: string;
       callerName: string;
       callerAvatar: string | null;
+      mode?: CallMode;
     }) => {
       store.setIncoming(data);
     };
@@ -88,18 +89,20 @@ export function useCall() {
   }, [store]);
 
   const startCall = useCallback(
-    async (calleeId: string) => {
+    async (calleeId: string, mode: CallMode = 'video') => {
       const socket = getSocket();
       if (!socket) return;
 
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const constraints =
+        mode === 'audio' ? { video: false, audio: true } : { video: true, audio: true };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       store.setLocalStream(stream);
+      store.setMode(mode);
       store.setStatus('ringing');
 
       const pc = createPeerConnection();
       stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
-      // Listen for callId from server
       socket.once('call:initiated', async (data: { callId: string }) => {
         store.setCallId(data.callId);
         const offer = await pc.createOffer();
@@ -108,17 +111,19 @@ export function useCall() {
         navigate(`/call/${data.callId}`);
       });
 
-      socket.emit('call:initiate', { calleeId });
+      socket.emit('call:initiate', { calleeId, mode });
     },
     [store, createPeerConnection, navigate],
   );
 
   const acceptCall = useCallback(async () => {
     const socket = getSocket();
-    const { callId } = useCallStore.getState();
+    const { callId, mode } = useCallStore.getState();
     if (!socket || !callId) return;
 
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const constraints =
+      mode === 'audio' ? { video: false, audio: true } : { video: true, audio: true };
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
     store.setLocalStream(stream);
 
     const pc = createPeerConnection();

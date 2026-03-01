@@ -7,6 +7,7 @@ export function IncomingCallModal() {
   const callerId = useCallStore((s) => s.callerId);
   const callerName = useCallStore((s) => s.callerName);
   const callerAvatar = useCallStore((s) => s.callerAvatar);
+  const mode = useCallStore((s) => s.mode);
   const userId = useAuthStore((s) => s.user?.id);
   const { acceptCall, rejectCall } = useCall();
 
@@ -30,7 +31,9 @@ export function IncomingCallModal() {
         {/* Info */}
         <div className="text-center">
           <p className="text-[18px] font-semibold text-foreground">{callerName}</p>
-          <p className="mt-[4px] text-[14px] text-muted-foreground">Incoming Video Call...</p>
+          <p className="mt-[4px] text-[14px] text-muted-foreground">
+            Incoming {mode === 'audio' ? 'Audio' : 'Video'} Call...
+          </p>
         </div>
 
         {/* Buttons */}

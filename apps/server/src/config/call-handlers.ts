@@ -5,7 +5,7 @@ import { logger } from '../utils/logger.js';
 export function registerCallHandlers(io: Server, socket: Socket) {
   const userId = socket.data.userId as string;
 
-  socket.on('call:initiate', async (data: { calleeId: string }) => {
+  socket.on('call:initiate', async (data: { calleeId: string; mode?: string }) => {
     try {
       const caller = await prisma.user.findUnique({
         where: { id: userId },
@@ -17,11 +17,13 @@ export function registerCallHandlers(io: Server, socket: Socket) {
         data: { callerId: userId, calleeId: data.calleeId, status: 'RINGING' },
       });
 
+      const mode = data.mode === 'audio' ? 'audio' : 'video';
       io.to(`user:${data.calleeId}`).emit('call:incoming', {
         callId: call.id,
         callerId: caller.id,
         callerName: caller.displayName,
         callerAvatar: caller.avatar,
+        mode,
       });
 
       socket.emit('call:initiated', { callId: call.id });

@@ -10,6 +10,12 @@ import { useChat } from '../hooks/useChat';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useCall } from '../hooks/useCall';
 import type { ChatMessage } from '../components/chat/ChatBubbles';
+import type { CallMode } from '../stores/callStore';
+
+function buildCallProps(id: string | undefined, fn: (id: string, m: CallMode) => void) {
+  if (!id) return {};
+  return { onAudioCall: () => fn(id, 'audio'), onVideoCall: () => fn(id, 'video') };
+}
 
 export default function MessageChat() {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -34,6 +40,7 @@ export default function MessageChat() {
     useChat(conversationId);
   const otherOnline = useOnlineStatus(other?.id);
   const { startCall } = useCall();
+  const callProps = buildCallProps(other?.id, startCall);
 
   useEffect(() => {
     if (!conversationId) return;
@@ -136,9 +143,10 @@ export default function MessageChat() {
         <ChatUserHeader
           otherName={other?.displayName}
           otherAvatar={other?.avatar}
+          otherId={other?.id}
           onBack={() => navigate('/messages')}
           isOnline={otherOnline}
-          onVideoCall={other?.id ? () => startCall(other.id) : undefined}
+          {...callProps}
         />
         <div
           ref={scrollRef}
