@@ -44,6 +44,7 @@ import badgesRouter from './routes/badges.js';
 import adminRouter from './routes/admin/index.js';
 import uploadsRouter from './routes/uploads.js';
 import contactRouter from './routes/contact.js';
+import tipsRouter from './routes/tips.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -116,6 +117,7 @@ app.use('/api/badges', badgesRouter);
 app.use('/api/uploads', uploadsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/contact', contactRouter);
+app.use('/api/tips', tipsRouter);
 
 // Error handling
 app.use(errorHandler);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { MessagePageHeader } from '../components/chat/ChatHeader';
@@ -71,9 +71,22 @@ function ConvRow({
 export default function Messages() {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // Handle ?user=username - find/create conversation and navigate to chat
+  useEffect(() => {
+    const targetUser = searchParams.get('user');
+    if (!targetUser) return;
+    api
+      .post('/messages/conversations', { username: targetUser })
+      .then(({ data: res }) => {
+        if (res.success) navigate(`/messages/${res.data.conversationId}`, { replace: true });
+      })
+      .catch(() => {});
+  }, [searchParams, navigate]);
 
   useEffect(() => {
     api

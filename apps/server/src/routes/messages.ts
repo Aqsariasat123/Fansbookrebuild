@@ -45,37 +45,9 @@ router.get('/file/:filename', (req, res, next) => {
   }
 });
 
-router.get('/conversations', authenticate, async (req, res, next) => {
-  try {
-    const userId = req.user!.userId;
-    const conversations = await prisma.conversation.findMany({
-      where: { OR: [{ participant1Id: userId }, { participant2Id: userId }] },
-      include: {
-        participant1: { select: SENDER_SELECT },
-        participant2: { select: SENDER_SELECT },
-      },
-      orderBy: { lastMessageAt: 'desc' },
-    });
-    const result = await Promise.all(
-      conversations.map(async (c) => {
-        const other = c.participant1Id === userId ? c.participant2 : c.participant1;
-        const unreadCount = await prisma.message.count({
-          where: { conversationId: c.id, senderId: { not: userId }, readAt: null },
-        });
-        return {
-          id: c.id,
-          other,
-          lastMessage: c.lastMessage,
-          lastMessageAt: c.lastMessageAt,
-          unreadCount,
-        };
-      }),
-    );
-    res.json({ success: true, data: result });
-  } catch (err) {
-    next(err);
-  }
-});
+// Conversation endpoints (find/create + list) extracted to messages-conversations.ts
+import messagesConvRouter from './messages-conversations.js';
+router.use('/conversations', messagesConvRouter);
 
 router.get('/:conversationId', authenticate, async (req, res, next) => {
   try {
