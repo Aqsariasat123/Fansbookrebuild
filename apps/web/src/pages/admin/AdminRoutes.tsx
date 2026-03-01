@@ -8,6 +8,7 @@ const AdminLogin = lazy(() => import('./AdminLogin'));
 const AdminUsers = lazy(() => import('./AdminUsers'));
 const AdminProfile = lazy(() => import('./AdminProfile'));
 const AdminProfileEdit = lazy(() => import('./AdminProfileEdit'));
+const AdminChangePassword = lazy(() => import('./AdminChangePassword'));
 const AdminBookings = lazy(() => import('./AdminBookings'));
 const AdminEarnings = lazy(() => import('./AdminEarnings'));
 const AdminReports = lazy(() => import('./AdminReports'));
@@ -43,6 +44,7 @@ export function adminRoutes() {
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/profile" element={<AdminProfile />} />
             <Route path="/admin/profile/edit" element={<AdminProfileEdit />} />
+            <Route path="/admin/profile/change-password" element={<AdminChangePassword />} />
             <Route path="/admin/bookings" element={<AdminBookings />} />
             <Route path="/admin/earnings" element={<AdminEarnings />} />
             <Route path="/admin/reports" element={<AdminReports />} />

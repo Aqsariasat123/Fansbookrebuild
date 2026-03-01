@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import bcrypt from 'bcryptjs';
 import { prisma } from '../../config/database.js';
 import { AppError } from '../../middleware/errorHandler.js';
 
@@ -77,6 +78,34 @@ router.put('/', async (req, res, next) => {
     });
 
     res.json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── PUT /api/admin/profile/password ── change password ───
+router.put('/password', async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      throw new AppError(400, 'Current and new password are required');
+    }
+    if (newPassword.length < 8) {
+      throw new AppError(400, 'Password must be at least 8 characters');
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.userId },
+      select: { passwordHash: true },
+    });
+    if (!user) throw new AppError(404, 'User not found');
+    const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!valid) throw new AppError(400, 'Current password is incorrect');
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: { passwordHash },
+    });
+    res.json({ success: true, message: 'Password changed successfully' });
   } catch (err) {
     next(err);
   }

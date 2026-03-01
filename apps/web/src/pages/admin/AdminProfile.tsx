@@ -7,35 +7,72 @@ export default function AdminProfile() {
 
   return (
     <div>
-      <p className="mb-[20px] font-outfit text-[32px] font-normal text-black">My Profile</p>
-      <div className="rounded-[22px] bg-[#f8f8f8] p-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-        <div className="flex items-center gap-[20px]">
-          <img
-            src={user?.avatar || '/icons/admin/admin-avatar.png'}
-            alt=""
-            className="size-[80px] rounded-full object-cover"
-          />
-          <div>
-            <p className="font-outfit text-[24px] font-normal text-black">
-              {user?.displayName || 'Admin'}
-            </p>
-            <p className="font-outfit text-[16px] font-normal text-[#5d5d5d]">
-              {user?.email || 'admin@fansbook.com'}
-            </p>
+      <p className="mb-[20px] font-outfit text-[32px] font-bold capitalize text-black">
+        My Profile
+      </p>
+      <div className="rounded-[22px] bg-[#f8f8f8] px-[26px] py-[40px]">
+        {/* Avatar + Name centered */}
+        <div className="flex flex-col items-center">
+          <div className="relative">
+            <div className="flex size-[158px] items-center justify-center rounded-full border-[3px] border-[#2e4882]">
+              <img
+                src={user?.avatar || '/icons/admin/admin-avatar.png'}
+                alt=""
+                className="size-[150px] rounded-full object-cover"
+              />
+            </div>
+            <button className="absolute bottom-0 right-0 flex size-[30px] items-center justify-center rounded-[20px] bg-[#2e4882]">
+              <img
+                src="/icons/dashboard/camera-edit.svg"
+                alt=""
+                className="size-[20px] brightness-0 invert"
+              />
+            </button>
           </div>
+          <p className="mt-[16px] font-outfit text-[24px] font-normal text-black">
+            {user?.displayName || 'Admin Fanbook'}
+          </p>
+          <p className="font-outfit text-[20px] font-normal text-[#5d5d5d]">
+            {user?.email || 'admin@fansbook.com'}
+          </p>
         </div>
-        <div className="mt-[24px] flex gap-[16px]">
+
+        {/* Menu items */}
+        <div className="mx-auto mt-[40px] max-w-[819px]">
           <button
             onClick={() => navigate('/admin/profile/edit')}
-            className="rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[24px] py-[10px] font-outfit text-[16px] font-normal text-[#f8f8f8] shadow-[0px_2px_18px_0px_rgba(34,34,34,0.25)]"
+            className="flex w-full items-center justify-between border-b border-[#ddd] py-[20px]"
           >
-            Edit Profile
+            <div className="flex items-center gap-[15px]">
+              <div className="flex size-[30px] items-center justify-center rounded-[20px] bg-[#2e4882]">
+                <img
+                  src="/icons/dashboard/edit-property.svg"
+                  alt=""
+                  className="size-[15px] brightness-0 invert"
+                />
+              </div>
+              <span className="font-outfit text-[20px] font-medium text-black">Edit Profile</span>
+            </div>
+            <img src="/icons/dashboard/chevron-forward.svg" alt="" className="size-[15px]" />
           </button>
+
           <button
             onClick={() => navigate('/admin/profile/change-password')}
-            className="rounded-[80px] border border-[#15191c] px-[24px] py-[10px] font-outfit text-[16px] font-normal text-[#15191c]"
+            className="flex w-full items-center justify-between py-[20px]"
           >
-            Change Password
+            <div className="flex items-center gap-[15px]">
+              <div className="flex size-[30px] items-center justify-center rounded-[20px] bg-[#2e4882]">
+                <img
+                  src="/icons/dashboard/password-lock.svg"
+                  alt=""
+                  className="size-[15px] brightness-0 invert"
+                />
+              </div>
+              <span className="font-outfit text-[20px] font-medium text-black">
+                Change Password
+              </span>
+            </div>
+            <img src="/icons/dashboard/chevron-forward.svg" alt="" className="size-[15px]" />
           </button>
         </div>
       </div>
