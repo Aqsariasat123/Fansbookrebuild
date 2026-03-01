@@ -29,7 +29,7 @@ export function Sidebar() {
 
   return (
     <aside className="hidden shrink-0 lg:block">
-      <nav className="sticky top-[122px] rounded-[22px] bg-card p-[32px]">
+      <nav className="sticky top-[122px] max-h-[calc(100vh-140px)] overflow-y-auto rounded-[22px] bg-card p-[32px] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
         <div className="flex flex-col gap-[55px]">
           <div className="flex flex-col gap-[32px]">
             {navItems.map(({ to, icon, labelKey }) => (
