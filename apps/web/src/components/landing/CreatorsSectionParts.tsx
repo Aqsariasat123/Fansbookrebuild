@@ -8,7 +8,6 @@ const features = [
     icon: 'video_chat',
     title: 'One-to-One Video Streaming',
     desc: 'Connect privately with your fans through high-quality, real-time video sessions — exclusive, personal, and fully secure.',
-    highlight: true,
   },
   {
     icon: 'sell',
@@ -60,15 +59,12 @@ export function FeaturesSection() {
 
       <div className="mx-auto mt-[32px] grid max-w-[1128px] grid-cols-1 gap-[20px] sm:grid-cols-2 md:mt-[60px] md:gap-[30px] lg:grid-cols-3">
         {features.map((f) => (
-          <div
-            key={f.title}
-            className={`rounded-[22px] border border-border ${f.highlight ? 'bg-muted' : 'bg-card'}`}
-          >
+          <div key={f.title} className="rounded-[22px] border border-border bg-card">
             <div
               className="flex h-[90px] w-[110px] items-center justify-center shadow-[2px_2px_15.7px_rgba(93,93,93,0.25)] md:h-[131px] md:w-[153px]"
               style={{
                 borderRadius: '22px 0 50px 0',
-                background: f.highlight ? 'hsl(var(--muted))' : 'hsl(var(--card))',
+                background: 'hsl(var(--card))',
               }}
             >
               <img
