@@ -18,6 +18,7 @@ interface CallState {
   peerConnection: RTCPeerConnection | null;
   pendingOffer: RTCSessionDescriptionInit | null;
   pendingCandidates: RTCIceCandidateInit[];
+  returnPath: string | null;
 
   setIncoming: (data: {
     callId: string;
@@ -35,6 +36,7 @@ interface CallState {
   setPeerConnection: (pc: RTCPeerConnection | null) => void;
   setPendingOffer: (sdp: RTCSessionDescriptionInit) => void;
   addPendingCandidate: (c: RTCIceCandidateInit) => void;
+  setReturnPath: (path: string) => void;
   reset: () => void;
 }
 
@@ -53,6 +55,7 @@ const initialState = {
   peerConnection: null,
   pendingOffer: null as RTCSessionDescriptionInit | null,
   pendingCandidates: [] as RTCIceCandidateInit[],
+  returnPath: null as string | null,
 };
 
 export const useCallStore = create<CallState>((set) => ({
@@ -77,6 +80,7 @@ export const useCallStore = create<CallState>((set) => ({
   setPeerConnection: (pc) => set({ peerConnection: pc }),
   setPendingOffer: (sdp) => set({ pendingOffer: sdp }),
   addPendingCandidate: (c) => set((s) => ({ pendingCandidates: [...s.pendingCandidates, c] })),
+  setReturnPath: (path) => set({ returnPath: path }),
 
   reset: () => {
     const state = useCallStore.getState();

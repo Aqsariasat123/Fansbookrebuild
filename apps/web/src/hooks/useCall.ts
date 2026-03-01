@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCallStore, type CallMode } from '../stores/callStore';
 import { getSocket } from '../lib/socket';
 
@@ -7,8 +7,15 @@ const ICE_SERVERS: RTCConfiguration = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
 };
 
+function navigateBack(navigate: ReturnType<typeof useNavigate>) {
+  const path = useCallStore.getState().returnPath;
+  if (path) navigate(path);
+  else navigate(-1);
+}
+
 export function useCall() {
   const navigate = useNavigate();
+  const location = useLocation();
   const store = useCallStore();
   const pcRef = useRef<RTCPeerConnection | null>(null);
 
@@ -30,12 +37,12 @@ export function useCall() {
 
     const handleAccepted = () => store.setStatus('active');
     const handleRejected = () => {
+      navigateBack(navigate);
       store.reset();
-      navigate(-1);
     };
     const handleEnded = () => {
+      navigateBack(navigate);
       store.reset();
-      navigate(-1);
     };
 
     const handleOffer = async (data: { callId: string; sdp: RTCSessionDescriptionInit }) => {
@@ -118,6 +125,7 @@ export function useCall() {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       store.setLocalStream(stream);
       store.setMode(mode);
+      store.setReturnPath(location.pathname);
       if (peer) store.setPeer(peer.name, peer.avatar);
       store.setStatus('ringing');
 
@@ -134,7 +142,7 @@ export function useCall() {
 
       socket.emit('call:initiate', { calleeId, mode });
     },
-    [store, createPeerConnection, navigate],
+    [store, createPeerConnection, navigate, location.pathname],
   );
 
   const acceptCall = useCallback(async () => {
@@ -146,6 +154,7 @@ export function useCall() {
       mode === 'audio' ? { video: false, audio: true } : { video: true, audio: true };
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     store.setLocalStream(stream);
+    store.setReturnPath(location.pathname);
 
     const pc = createPeerConnection();
     stream.getTracks().forEach((track) => pc.addTrack(track, stream));
@@ -165,7 +174,7 @@ export function useCall() {
     socket.emit('call:accept', { callId });
     store.setStatus('active');
     navigate(`/call/${callId}`);
-  }, [store, createPeerConnection, navigate]);
+  }, [store, createPeerConnection, navigate, location.pathname]);
 
   const rejectCall = useCallback(() => {
     const socket = getSocket();
@@ -182,8 +191,8 @@ export function useCall() {
     if (socket && callId) {
       socket.emit('call:end', { callId });
     }
+    navigateBack(navigate);
     store.reset();
-    navigate(-1);
   }, [store, navigate]);
 
   const toggleMute = useCallback((kind: 'audio' | 'video') => {
