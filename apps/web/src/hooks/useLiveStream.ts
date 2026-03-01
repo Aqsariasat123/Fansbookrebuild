@@ -1,16 +1,18 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Device, types as mediasoupTypes } from 'mediasoup-client';
 import { api } from '../lib/api';
 import { getSocket } from '../lib/socket';
 import { useLiveStore } from '../stores/liveStore';
 import type { LiveChatMessage } from '@fansbook/shared';
 
+// Module-level state — persists across component navigations
+let msDevice: Device | null = null;
+let sendTransport: mediasoupTypes.Transport | null = null;
+let recvTransport: mediasoupTypes.Transport | null = null;
+let localStream: MediaStream | null = null;
+
 export function useLiveStream() {
   const store = useLiveStore();
-  const deviceRef = useRef<Device | null>(null);
-  const sendTransportRef = useRef<mediasoupTypes.Transport | null>(null);
-  const recvTransportRef = useRef<mediasoupTypes.Transport | null>(null);
-  const localStreamRef = useRef<MediaStream | null>(null);
 
   // Socket event listeners for live chat + viewer count
   useEffect(() => {
@@ -46,7 +48,7 @@ export function useLiveStream() {
         video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
         audio: true,
       });
-      localStreamRef.current = stream;
+      localStream = stream;
 
       if (videoEl) {
         videoEl.srcObject = stream;
@@ -64,23 +66,23 @@ export function useLiveStream() {
       const { data: capData } = await api.get(`/live/${sessionId}/router-capabilities`);
       const device = new Device();
       await device.load({ routerRtpCapabilities: capData.data });
-      deviceRef.current = device;
+      msDevice = device;
 
       // 3. Create send transport
-      const sendTransport = device.createSendTransport(transportOptions);
-      sendTransportRef.current = sendTransport;
+      const transport = device.createSendTransport(transportOptions);
+      sendTransport = transport;
 
-      sendTransport.on('connect', ({ dtlsParameters }, callback) => {
+      transport.on('connect', ({ dtlsParameters }, callback) => {
         const socket = getSocket();
         socket?.emit('live:transport-connect', {
           sessionId,
-          transportId: sendTransport.id,
+          transportId: transport.id,
           dtlsParameters,
         });
         callback();
       });
 
-      sendTransport.on('produce', async ({ kind, rtpParameters }, callback) => {
+      transport.on('produce', async ({ kind, rtpParameters }, callback) => {
         const { data: produceRes } = await api.post(`/live/${sessionId}/produce`, {
           kind,
           rtpParameters,
@@ -90,7 +92,7 @@ export function useLiveStream() {
 
       // 4. Produce audio + video tracks
       for (const track of stream.getTracks()) {
-        await sendTransport.produce({ track });
+        await transport.produce({ track });
       }
 
       // 5. Join socket room
@@ -111,10 +113,10 @@ export function useLiveStream() {
 
     await api.post(`/live/${sessionId}/end`).catch(() => {});
 
-    sendTransportRef.current?.close();
-    localStreamRef.current?.getTracks().forEach((t) => t.stop());
-    sendTransportRef.current = null;
-    localStreamRef.current = null;
+    sendTransport?.close();
+    localStream?.getTracks().forEach((t) => t.stop());
+    sendTransport = null;
+    localStream = null;
     store.reset();
   }, [store]);
 
@@ -128,18 +130,18 @@ export function useLiveStream() {
       const { data: capData } = await api.get(`/live/${sessionId}/router-capabilities`);
       const device = new Device();
       await device.load({ routerRtpCapabilities: capData.data });
-      deviceRef.current = device;
+      msDevice = device;
 
       // 2. Create recv transport
       const { data: tData } = await api.post(`/live/${sessionId}/transport`);
-      const recvTransport = device.createRecvTransport(tData.data.transportOptions);
-      recvTransportRef.current = recvTransport;
+      const recv = device.createRecvTransport(tData.data.transportOptions);
+      recvTransport = recv;
 
-      recvTransport.on('connect', ({ dtlsParameters }, callback) => {
+      recv.on('connect', ({ dtlsParameters }, callback) => {
         const socket = getSocket();
         socket?.emit('live:transport-connect', {
           sessionId,
-          transportId: recvTransport.id,
+          transportId: recv.id,
           dtlsParameters,
         });
         callback();
@@ -156,20 +158,18 @@ export function useLiveStream() {
       socket?.emit('live:join', { sessionId });
       store.setIsLive(true);
 
-      return { device, recvTransport, videoEl };
+      return { device, recvTransport: recv, videoEl };
     },
     [store],
   );
 
   const consumeTrack = useCallback(
     async (sessionId: string, producerId: string, videoEl: HTMLVideoElement | null) => {
-      const device = deviceRef.current;
-      const recvTransport = recvTransportRef.current;
-      if (!device || !recvTransport) return;
+      if (!msDevice || !recvTransport) return;
 
       const { data: consumeData } = await api.post(`/live/${sessionId}/consume`, {
         producerId,
-        rtpCapabilities: device.rtpCapabilities,
+        rtpCapabilities: msDevice.rtpCapabilities,
       });
 
       const consumer = await recvTransport.consume({
@@ -199,8 +199,8 @@ export function useLiveStream() {
     if (socket && sessionId) {
       socket.emit('live:leave', { sessionId });
     }
-    recvTransportRef.current?.close();
-    recvTransportRef.current = null;
+    recvTransport?.close();
+    recvTransport = null;
     store.reset();
   }, [store]);
 
@@ -212,7 +212,7 @@ export function useLiveStream() {
     }
   }, []);
 
-  const getLocalStream = useCallback(() => localStreamRef.current, []);
+  const getLocalStream = useCallback(() => localStream, []);
 
   return {
     startBroadcast,

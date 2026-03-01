@@ -16,14 +16,24 @@ export default function LiveBroadcasting() {
   const { stopBroadcast, sendChat, getLocalStream } = useLiveStream();
   const [elapsed, setElapsed] = useState(0);
 
-  // Attach local stream to video element
+  // Attach local stream to video element (retry until stream is available)
   useEffect(() => {
-    const stream = getLocalStream();
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
-    }
+    const attach = () => {
+      const stream = getLocalStream();
+      if (videoRef.current && stream) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.muted = true;
+        videoRef.current.play().catch(() => {});
+        return true;
+      }
+      return false;
+    };
+    if (attach()) return;
+    // Stream may not be ready yet after navigation — retry a few times
+    const interval = setInterval(() => {
+      if (attach()) clearInterval(interval);
+    }, 200);
+    return () => clearInterval(interval);
   }, [getLocalStream, isLive]);
 
   // Timer
