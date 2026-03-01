@@ -3,10 +3,12 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { adminNavItems, type AdminNavItem } from './adminNavItems';
 
 const iconMap: Record<string, string> = {
+  dashboard: '/icons/admin/finance.png',
   person: '/icons/admin/user.png',
   booking: '/icons/admin/booking.png',
   earnings: '/icons/admin/transaction.png',
   report: '/icons/admin/report.png',
+  audit: '/icons/admin/eye.png',
   finance: '/icons/admin/finance.png',
   masters: '/icons/admin/masters.png',
   settings: '/icons/admin/settings.png',

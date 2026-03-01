@@ -6,10 +6,12 @@ export interface AdminNavItem {
 }
 
 export const adminNavItems: AdminNavItem[] = [
+  { to: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
   { to: '/admin/users', label: 'User', icon: 'person' },
   { to: '/admin/bookings', label: 'Booking', icon: 'booking' },
   { to: '/admin/earnings', label: 'Earnings', icon: 'earnings' },
   { to: '/admin/reports', label: 'Report', icon: 'report' },
+  { to: '/admin/audit-log', label: 'Audit Log', icon: 'audit' },
   {
     to: '#finance',
     label: 'Finance',

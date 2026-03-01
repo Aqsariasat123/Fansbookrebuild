@@ -25,7 +25,7 @@ export default function AdminLogin() {
         return;
       }
       setUser(user as never);
-      navigate('/admin/users');
+      navigate('/admin/dashboard');
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
