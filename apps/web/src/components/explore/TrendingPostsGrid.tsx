@@ -40,7 +40,7 @@ export function TrendingPostsGrid({ posts, loading }: Props) {
           to={`/post/${post.id}`}
           className="group relative aspect-square overflow-hidden rounded-[12px] bg-card"
         >
-          {post.media[0] ? (
+          {post.media?.[0] ? (
             <img
               src={post.media[0].thumbnail || post.media[0].url}
               alt=""
