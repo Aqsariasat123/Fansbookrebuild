@@ -2,11 +2,14 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 
+type StoryVisibility = 'PUBLIC' | 'SUBSCRIBERS';
+
 export default function CreateStory() {
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [visibility, setVisibility] = useState<StoryVisibility>('PUBLIC');
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
@@ -28,6 +31,7 @@ export default function CreateStory() {
     setError('');
     const fd = new FormData();
     fd.append('media', file);
+    fd.append('visibility', visibility);
     try {
       await api.post('/stories', fd);
       navigate('/feed');
@@ -52,6 +56,23 @@ export default function CreateStory() {
         </div>
 
         <div className="rounded-[22px] bg-card p-[20px]">
+          {/* Visibility selector */}
+          <div className="mb-[16px] flex gap-[8px]">
+            {(['PUBLIC', 'SUBSCRIBERS'] as StoryVisibility[]).map((v) => (
+              <button
+                key={v}
+                onClick={() => setVisibility(v)}
+                className={`rounded-[50px] px-[16px] py-[6px] text-[12px] font-medium transition-colors md:text-[14px] ${
+                  visibility === v
+                    ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'
+                    : 'bg-muted text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {v === 'PUBLIC' ? 'Public' : 'Subscribers Only'}
+              </button>
+            ))}
+          </div>
+
           {!preview ? (
             <button
               onClick={() => fileRef.current?.click()}

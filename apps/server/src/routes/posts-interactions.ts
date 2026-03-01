@@ -113,4 +113,69 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
   }
 });
 
+// ─── POST /api/posts/:id/ppv-unlock ── unlock PPV content ───
+router.post('/:id/ppv-unlock', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const postId = req.params.id as string;
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      include: { author: { select: AUTHOR_SELECT }, media: { orderBy: { order: 'asc' } } },
+    });
+    if (!post) throw new AppError(404, 'Post not found');
+    if (!post.ppvPrice) throw new AppError(400, 'This post is not PPV');
+
+    const existing = await prisma.ppvPurchase.findUnique({
+      where: { userId_postId: { userId, postId } },
+    });
+    if (existing) throw new AppError(409, 'Already unlocked');
+
+    const fanWallet = await prisma.wallet.findUnique({ where: { userId } });
+    if (!fanWallet || fanWallet.balance < post.ppvPrice) {
+      throw new AppError(400, 'Insufficient balance');
+    }
+
+    const creatorWallet = await prisma.wallet.findUnique({ where: { userId: post.authorId } });
+    if (!creatorWallet) throw new AppError(500, 'Creator wallet not found');
+
+    await prisma.$transaction([
+      prisma.wallet.update({
+        where: { id: fanWallet.id },
+        data: { balance: { decrement: post.ppvPrice! } },
+      }),
+      prisma.wallet.update({
+        where: { id: creatorWallet.id },
+        data: {
+          balance: { increment: post.ppvPrice! },
+          totalEarned: { increment: post.ppvPrice! },
+        },
+      }),
+      prisma.transaction.create({
+        data: {
+          walletId: fanWallet.id,
+          type: 'PPV_PURCHASE',
+          amount: post.ppvPrice!,
+          description: `PPV unlock: post ${postId}`,
+        },
+      }),
+      prisma.transaction.create({
+        data: {
+          walletId: creatorWallet.id,
+          type: 'PPV_EARNING',
+          amount: post.ppvPrice!,
+          description: `PPV earning: post ${postId}`,
+        },
+      }),
+      prisma.ppvPurchase.create({
+        data: { userId, postId, amount: post.ppvPrice! },
+      }),
+    ]);
+
+    res.json({ success: true, data: post });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

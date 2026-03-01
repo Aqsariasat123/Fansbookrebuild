@@ -79,12 +79,14 @@ router.post(
 
       const mediaType = req.file.mimetype.startsWith('video/') ? 'VIDEO' : 'IMAGE';
       const mediaUrl = `/api/stories/file/${req.file.filename}`;
+      const visibility = req.body.visibility === 'SUBSCRIBERS' ? 'SUBSCRIBERS' : 'PUBLIC';
 
       const story = await prisma.story.create({
         data: {
           authorId: req.user!.userId,
           mediaUrl,
           mediaType,
+          visibility,
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         },
         include: {

@@ -57,6 +57,28 @@ async function createPostMedia(postId: string, files: Express.Multer.File[]) {
   }
 }
 
+function parsePpvPrice(ppvPrice?: string): number | null {
+  if (!ppvPrice) return null;
+  const parsed = parseFloat(ppvPrice);
+  if (parsed < 1 || parsed > 500) {
+    throw new AppError(400, 'PPV price must be between $1 and $500');
+  }
+  return parsed;
+}
+
+function buildPostCreateData(userId: string, body: Record<string, string>) {
+  const resolvedVis = resolveVisibility(body.visibility);
+  const parsedPpv = parsePpvPrice(body.ppvPrice);
+
+  return {
+    authorId: userId,
+    text: body.text?.trim() || '',
+    visibility: resolvedVis,
+    ...(parsedPpv && resolvedVis !== 'PUBLIC' ? { ppvPrice: parsedPpv } : {}),
+    ...(body.isPinned === 'true' ? { isPinned: true } : {}),
+  };
+}
+
 // Mount comments sub-router
 router.use('/', commentsRouter);
 
@@ -81,20 +103,14 @@ router.post(
   async (req, res, next) => {
     try {
       const userId = req.user!.userId;
-      const { text, visibility } = req.body;
       const files = (req.files as Express.Multer.File[]) || [];
 
-      if ((!text || !text.trim()) && files.length === 0) {
+      if ((!req.body.text || !req.body.text.trim()) && files.length === 0) {
         throw new AppError(400, 'Text or media is required');
       }
 
-      const post = await prisma.post.create({
-        data: {
-          authorId: userId,
-          text: text?.trim() || '',
-          visibility: resolveVisibility(visibility),
-        },
-      });
+      const data = buildPostCreateData(userId, req.body);
+      const post = await prisma.post.create({ data });
 
       if (files.length > 0) await createPostMedia(post.id, files);
 

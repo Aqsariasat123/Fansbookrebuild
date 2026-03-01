@@ -23,10 +23,24 @@ const MONTH_NAMES = [
   'Dec',
 ] as const;
 
-function getSixMonthsAgo(): Date {
+function getPeriodStart(period?: string): Date {
   const d = new Date();
-  d.setMonth(d.getMonth() - 6);
-  d.setDate(1);
+  switch (period) {
+    case '7d':
+      d.setDate(d.getDate() - 7);
+      break;
+    case '90d':
+      d.setMonth(d.getMonth() - 3);
+      d.setDate(1);
+      break;
+    case 'all':
+      return new Date(0);
+    case '30d':
+    default:
+      d.setMonth(d.getMonth() - 6);
+      d.setDate(1);
+      break;
+  }
   d.setHours(0, 0, 0, 0);
   return d;
 }
@@ -96,7 +110,8 @@ router.get('/stats', async (req, res, next) => {
 router.get('/analytics', async (req, res, next) => {
   try {
     const userId = req.user!.userId;
-    const sixMonthsAgo = getSixMonthsAgo();
+    const period = req.query.period as string | undefined;
+    const sixMonthsAgo = getPeriodStart(period);
 
     const wallet = await prisma.wallet.findUnique({ where: { userId } });
 

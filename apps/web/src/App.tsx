@@ -41,6 +41,16 @@ const SinglePost = lazy(() => import('./pages/SinglePost'));
 const Bookmarks = lazy(() => import('./pages/Bookmarks'));
 const Following = lazy(() => import('./pages/Following'));
 const CreateStory = lazy(() => import('./pages/CreateStory'));
+const SearchPage = lazy(() => import('./pages/Search'));
+const BecomeCreator = lazy(() => import('./pages/BecomeCreator'));
+const TwoFactorVerify = lazy(() => import('./pages/TwoFactorVerify'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+const MarketplacePage = lazy(() => import('./pages/Marketplace'));
+const LeaderboardPage = lazy(() => import('./pages/Leaderboard'));
+const BadgesPage = lazy(() => import('./pages/Badges'));
+const MarketplaceDetail = lazy(() => import('./pages/MarketplaceDetail'));
+const MarketplaceCreate = lazy(() => import('./pages/MarketplaceCreate'));
+const HashtagFeed = lazy(() => import('./pages/HashtagFeed'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Creator pages
@@ -124,6 +134,7 @@ export default function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/2fa/verify" element={<TwoFactorVerify />} />
 
               {/* Protected app routes with layout */}
               <Route element={<ProtectedRoute />}>
@@ -138,14 +149,25 @@ export default function App() {
                   <Route path="/messages/:conversationId" element={<MessageChat />} />
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="/explore" element={<Explore />} />
+                  <Route path="/search" element={<SearchPage />} />
+                  <Route path="/hashtag/:tag" element={<HashtagFeed />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/help-support" element={<HelpSupport />} />
                   <Route path="/language" element={<Language />} />
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/marketplace" element={<MarketplacePage />} />
+                  <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
+                  <Route path="/marketplace/create" element={<MarketplaceCreate />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
+                  <Route path="/badges" element={<BadgesPage />} />
 
                   {/* Public creator profile (requires login) */}
                   <Route path="/u/:username" element={<CreatorPublicProfile />} />
 
                   {/* Fan-only routes */}
+                  <Route element={<RoleRoute allowedRoles={['FAN', 'ADMIN']} />}>
+                    <Route path="/become-creator" element={<BecomeCreator />} />
+                  </Route>
                   <Route element={<RoleRoute allowedRoles={['FAN', 'ADMIN']} />}>
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/profile/edit" element={<ProfileEdit />} />

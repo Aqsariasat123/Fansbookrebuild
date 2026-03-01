@@ -10,10 +10,14 @@ export default function CreatePost() {
   const user = useAuthStore((s) => s.user);
   const [text, setText] = useState('');
   const [visibility, setVisibility] = useState<Visibility>('PUBLIC');
+  const [ppvPrice, setPpvPrice] = useState('');
+  const [isPinned, setIsPinned] = useState(false);
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const showPpv = visibility === 'SUBSCRIBERS' || visibility === 'TIER_SPECIFIC';
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
@@ -36,6 +40,8 @@ export default function CreatePost() {
       const fd = new FormData();
       fd.append('text', text.trim());
       fd.append('visibility', visibility);
+      if (showPpv && ppvPrice) fd.append('ppvPrice', ppvPrice);
+      if (isPinned) fd.append('isPinned', 'true');
       images.forEach((img) => fd.append('media', img.file));
       await api.post('/posts', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       navigate('/creator/profile');
@@ -50,7 +56,6 @@ export default function CreatePost() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <p className="text-[20px] font-semibold text-foreground">Create Post</p>
         <button
@@ -62,9 +67,7 @@ export default function CreatePost() {
         </button>
       </div>
 
-      {/* Card */}
       <div className="rounded-[22px] bg-card p-[20px]">
-        {/* Author row */}
         <div className="flex items-start justify-between">
           <AuthorRow user={user} />
           <div className="flex items-center gap-[16px]">
@@ -97,13 +100,40 @@ export default function CreatePost() {
           </div>
         </div>
 
-        {/* Text input */}
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Say Something about this photo..."
           className="mt-[16px] min-h-[50px] w-full resize-none bg-transparent text-[14px] text-foreground placeholder-muted-foreground outline-none"
         />
+
+        {/* PPV Price + Pin toggles */}
+        <div className="mt-[12px] flex flex-wrap items-center gap-[16px]">
+          {showPpv && (
+            <div className="flex items-center gap-[8px]">
+              <label className="text-[13px] text-muted-foreground">PPV Price $</label>
+              <input
+                type="number"
+                min="1"
+                max="500"
+                step="0.01"
+                value={ppvPrice}
+                onChange={(e) => setPpvPrice(e.target.value)}
+                placeholder="0.00"
+                className="w-[90px] rounded-[8px] bg-muted px-[10px] py-[6px] text-[13px] text-foreground outline-none"
+              />
+            </div>
+          )}
+          <label className="flex cursor-pointer items-center gap-[8px]">
+            <input
+              type="checkbox"
+              checked={isPinned}
+              onChange={(e) => setIsPinned(e.target.checked)}
+              className="size-[16px] accent-[#01adf1]"
+            />
+            <span className="text-[13px] text-muted-foreground">Pin to top</span>
+          </label>
+        </div>
 
         {/* Image previews */}
         {images.length > 0 && (
@@ -131,7 +161,6 @@ export default function CreatePost() {
           </div>
         )}
 
-        {/* Empty state - click to upload */}
         {images.length === 0 && (
           <div
             onClick={() => fileRef.current?.click()}

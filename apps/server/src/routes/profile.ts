@@ -17,8 +17,10 @@ import {
   buildProfileUpdate,
   generateUsername,
 } from './profile-helpers.js';
+import onboardingRouter from './profile-onboarding.js';
 
 const router = Router();
+router.use('/', onboardingRouter);
 
 router.put('/', authenticate, validate(updateProfileSchema), async (req, res, next) => {
   try {
@@ -48,63 +50,43 @@ router.put('/', authenticate, validate(updateProfileSchema), async (req, res, ne
 router.put('/password', authenticate, validate(changePasswordSchema), async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
-
     const user = await prisma.user.findUnique({
       where: { id: req.user!.userId },
       select: { passwordHash: true },
     });
-
-    if (!user) {
-      throw new AppError(404, 'User not found');
-    }
-
+    if (!user) throw new AppError(404, 'User not found');
     const valid = await bcrypt.compare(currentPassword, user.passwordHash);
-    if (!valid) {
-      throw new AppError(400, 'Current password is incorrect');
-    }
-
+    if (!valid) throw new AppError(400, 'Current password is incorrect');
     const passwordHash = await bcrypt.hash(newPassword, 12);
-
-    await prisma.user.update({
-      where: { id: req.user!.userId },
-      data: { passwordHash },
-    });
-
+    await prisma.user.update({ where: { id: req.user!.userId }, data: { passwordHash } });
     res.json({ success: true, message: 'Password changed successfully' });
   } catch (err) {
     next(err);
   }
 });
 
+function deleteOldAvatarFile(avatarPath: string | null) {
+  if (!avatarPath?.includes('/api/profile/avatar/')) return;
+  const oldId = avatarPath.split('/').pop() ?? '';
+  const files = fs.readdirSync(uploadsDir);
+  const oldFile = files.find((f) => f.startsWith(oldId));
+  if (oldFile) fs.unlinkSync(path.join(uploadsDir, oldFile));
+}
+
 router.post('/avatar', authenticate, upload.single('avatar'), async (req, res, next) => {
   try {
-    if (!req.file) {
-      throw new AppError(400, 'No image file provided');
-    }
-
-    // Store URL without extension to avoid Nginx static file regex
-    const nameNoExt = path.parse(req.file.filename).name;
-    const avatarUrl = `/api/profile/avatar/${nameNoExt}`;
-
-    // Delete old avatar file if it's an upload (not default)
+    if (!req.file) throw new AppError(400, 'No image file provided');
+    const avatarUrl = `/api/profile/avatar/${path.parse(req.file.filename).name}`;
     const current = await prisma.user.findUnique({
       where: { id: req.user!.userId },
       select: { avatar: true },
     });
-
-    if (current?.avatar?.includes('/api/profile/avatar/')) {
-      const oldId = current.avatar.split('/').pop() ?? '';
-      const files = fs.readdirSync(uploadsDir);
-      const oldFile = files.find((f) => f.startsWith(oldId));
-      if (oldFile) fs.unlinkSync(path.join(uploadsDir, oldFile));
-    }
-
+    deleteOldAvatarFile(current?.avatar ?? null);
     const user = await prisma.user.update({
       where: { id: req.user!.userId },
       data: { avatar: avatarUrl },
       select: USER_SELECT,
     });
-
     res.json({ success: true, data: user });
   } catch (err) {
     next(err);

@@ -33,6 +33,13 @@ import creatorDashboardRouter from './routes/creator-dashboard.js';
 import storiesRouter from './routes/stories.js';
 import settingsRouter from './routes/settings.js';
 import socialRouter from './routes/social.js';
+import searchRouter from './routes/search.js';
+import hashtagsRouter from './routes/hashtags.js';
+import becomeCreatorRouter from './routes/become-creator.js';
+import twoFactorRouter from './routes/two-factor.js';
+import marketplaceRouter from './routes/marketplace.js';
+import leaderboardRouter from './routes/leaderboard.js';
+import badgesRouter from './routes/badges.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -92,6 +99,13 @@ app.use('/api/creator/dashboard', creatorDashboardRouter);
 app.use('/api/stories', storiesRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/social', socialRouter);
+app.use('/api/search', searchRouter);
+app.use('/api/hashtags', hashtagsRouter);
+app.use('/api/auth', becomeCreatorRouter);
+app.use('/api/auth/2fa', twoFactorRouter);
+app.use('/api/marketplace', marketplaceRouter);
+app.use('/api/leaderboard', leaderboardRouter);
+app.use('/api/badges', badgesRouter);
 
 // Error handling
 app.use(errorHandler);

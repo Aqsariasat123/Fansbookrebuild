@@ -216,9 +216,13 @@ model User {
   introVideoUrl    String?
   isVerified       Boolean    @default(false)
   statusText       String?
-  twoFactorSecret  String?
-  twoFactorEnabled Boolean    @default(false)
-  onboardingStep   Int        @default(0)
+  twoFactorSecret    String?
+  twoFactorEnabled   Boolean    @default(false)
+  backupCodes        String[]   @default([])
+  onboardingStep     Int        @default(0)
+  onboardingCompleted Boolean   @default(false)
+  interests          String[]   @default([])
+  verificationStatus String     @default("UNVERIFIED")
   emailVerified      Boolean    @default(false)
   emailVerifyToken   String?
   passwordResetToken String?
@@ -667,14 +671,15 @@ model NotificationPreference {
 // ─── Stories (Phase 6) ──────────────────────────────────
 
 model Story {
-  id        String    @id @default(cuid())
-  authorId  String
-  mediaUrl  String
-  mediaType MediaType
-  overlays  Json?
-  expiresAt DateTime
-  viewCount Int       @default(0)
-  createdAt DateTime  @default(now())
+  id         String         @id @default(cuid())
+  authorId   String
+  mediaUrl   String
+  mediaType  MediaType
+  overlays   Json?
+  visibility PostVisibility @default(PUBLIC)
+  expiresAt  DateTime
+  viewCount  Int            @default(0)
+  createdAt  DateTime       @default(now())
 
   author User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
   views  StoryView[]
@@ -893,4 +898,15 @@ model SupportTicket {
   status      String   @default("OPEN")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// ─── Platform Config (Admin) ────────────────────────────
+
+model PlatformConfig {
+  id               String   @id @default("singleton")
+  commissionRate   Float    @default(20)
+  minWithdrawal    Float    @default(50)
+  maintenanceMode  Boolean  @default(false)
+  maxUploadSizeMb  Int      @default(50)
+  updatedAt        DateTime @updatedAt
 }

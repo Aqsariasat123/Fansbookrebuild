@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { PostActions } from '../components/feed/PostActions';
 import { SinglePostMedia } from '../components/feed/SinglePostMedia';
+import { PPVOverlay } from '../components/feed/PPVOverlay';
 
 interface Author {
   id: string;
@@ -30,6 +31,8 @@ interface PostData {
   media: Media[];
   isLiked: boolean;
   isBookmarked: boolean;
+  ppvPrice?: number | null;
+  isPpvUnlocked?: boolean;
 }
 
 export default function SinglePost() {
@@ -38,7 +41,7 @@ export default function SinglePost() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const fetchPost = useCallback(() => {
     if (!id) return;
     api
       .get(`/posts/${id}`)
@@ -46,6 +49,10 @@ export default function SinglePost() {
       .catch(() => setError('Post not found'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    fetchPost();
+  }, [fetchPost]);
 
   if (loading) {
     return (
@@ -81,7 +88,18 @@ export default function SinglePost() {
             {post.text}
           </p>
         )}
-        <SinglePostMedia media={post.media} />
+        {post.ppvPrice && !post.isPpvUnlocked ? (
+          <div className="mt-[14px]">
+            <PPVOverlay
+              postId={post.id}
+              price={post.ppvPrice}
+              thumbnailUrl={post.media[0]?.url}
+              onUnlocked={fetchPost}
+            />
+          </div>
+        ) : (
+          <SinglePostMedia media={post.media} />
+        )}
         <div className="mt-[20px]">
           <PostActions
             postId={post.id}

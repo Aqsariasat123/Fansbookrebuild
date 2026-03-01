@@ -156,6 +156,28 @@ router.put('/:id', async (req, res, next) => {
   }
 });
 
+// ─── PUT /api/creator/tiers/reorder ── reorder tiers ────────
+router.put('/reorder', async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const items = req.body.items as { id: string; order: number }[];
+    if (!Array.isArray(items)) throw new AppError(400, 'items must be an array');
+
+    for (const item of items) {
+      const tier = await prisma.subscriptionTier.findUnique({ where: { id: item.id } });
+      if (!tier || tier.creatorId !== userId) continue;
+      await prisma.subscriptionTier.update({
+        where: { id: item.id },
+        data: { order: item.order },
+      });
+    }
+
+    res.json({ success: true, message: 'Tiers reordered' });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── DELETE /api/creator/tiers/:id ── soft delete tier ──────
 router.delete('/:id', async (req, res, next) => {
   try {
