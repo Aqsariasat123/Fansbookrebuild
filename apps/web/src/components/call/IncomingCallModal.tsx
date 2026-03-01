@@ -1,6 +1,6 @@
 import { useCallStore } from '../../stores/callStore';
-import { useCall } from '../../hooks/useCall';
 import { useAuthStore } from '../../stores/authStore';
+import { useCall } from '../../hooks/useCall';
 
 export function IncomingCallModal() {
   const status = useCallStore((s) => s.status);
@@ -9,34 +9,42 @@ export function IncomingCallModal() {
   const callerAvatar = useCallStore((s) => s.callerAvatar);
   const mode = useCallStore((s) => s.mode);
   const userId = useAuthStore((s) => s.user?.id);
-  const { acceptCall, rejectCall } = useCall();
 
-  // Only show when ringing AND callerId is set (callee only — caller has callerId=null)
+  // Only show when ringing AND current user is the callee
   if (status !== 'ringing' || !callerId || callerId === userId) return null;
+
+  return <IncomingCallUI name={callerName} avatar={callerAvatar} mode={mode} />;
+}
+
+function IncomingCallUI({
+  name,
+  avatar,
+  mode,
+}: {
+  name: string | null;
+  avatar: string | null;
+  mode: string;
+}) {
+  const { acceptCall, rejectCall } = useCall();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       <div className="flex w-[320px] flex-col items-center gap-[24px] rounded-[22px] bg-card p-[32px] shadow-2xl">
-        {/* Avatar */}
         <div className="size-[80px] overflow-hidden rounded-full bg-muted">
-          {callerAvatar ? (
-            <img src={callerAvatar} alt="" className="h-full w-full object-cover" />
+          {avatar ? (
+            <img src={avatar} alt="" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-[28px] font-bold text-muted-foreground">
-              {callerName?.charAt(0) || '?'}
+              {name?.charAt(0) || '?'}
             </div>
           )}
         </div>
-
-        {/* Info */}
         <div className="text-center">
-          <p className="text-[18px] font-semibold text-foreground">{callerName}</p>
+          <p className="text-[18px] font-semibold text-foreground">{name}</p>
           <p className="mt-[4px] text-[14px] text-muted-foreground">
             Incoming {mode === 'audio' ? 'Audio' : 'Video'} Call...
           </p>
         </div>
-
-        {/* Buttons */}
         <div className="flex items-center gap-[24px]">
           <button
             onClick={rejectCall}
