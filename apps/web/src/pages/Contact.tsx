@@ -42,7 +42,7 @@ export default function Contact() {
           onSubmit={handleSubmit}
           className="mx-auto flex w-full max-w-[986px] flex-col items-center gap-[40px] pt-[40px] pb-[40px] md:pt-[70px] md:pb-[70px]"
         >
-          <div className="flex w-full flex-col items-start gap-[15px]">
+          <div className="flex w-full flex-col items-start gap-[15px] rounded-[16px] bg-card p-[20px] md:rounded-[22px] md:p-[32px]">
             {/* Name */}
             <div className="flex w-full flex-col items-start">
               <div className="px-[15px] py-[10px]">
@@ -94,7 +94,7 @@ export default function Contact() {
           {/* Send button — gradient pill */}
           <button
             type="submit"
-            className="flex items-center gap-[10px] rounded-[49px] md:rounded-[80px] px-[18px] py-[9px] md:px-[30px] md:py-[15px] text-[12px] md:text-[20px] font-medium text-foreground shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)]"
+            className="flex items-center gap-[10px] rounded-[49px] md:rounded-[80px] px-[18px] py-[9px] md:px-[30px] md:py-[15px] text-[12px] md:text-[20px] font-medium text-white shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)]"
             style={{
               backgroundImage:
                 'linear-gradient(-90deg, rgb(166, 22, 81) 0%, rgb(1, 173, 241) 100%)',
