@@ -2,7 +2,7 @@ import { Router, Request } from 'express';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
-import { emitToUser } from '../utils/notify.js';
+import { createNotification } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
 import { FEES } from '@fansbook/shared';
 
@@ -39,11 +39,13 @@ async function getWallets(userId: string, receiverId: string, tipAmount: number)
 async function notifyTipSent(userId: string, receiverId: string, tipAmount: number) {
   const actor = await prisma.user.findUnique({
     where: { id: userId },
-    select: { displayName: true },
+    select: { displayName: true, avatar: true },
   });
-  emitToUser(receiverId, 'notification', {
+  createNotification({
+    userId: receiverId,
     type: 'TIP',
     actorId: userId,
+    entityType: `TIP|avatar:${actor?.avatar || ''}`,
     message: `${actor?.displayName || 'Someone'} sent you a $${tipAmount} tip!`,
   });
 }

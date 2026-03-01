@@ -10,6 +10,23 @@ import { useChat } from '../hooks/useChat';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import type { ChatMessage } from '../components/chat/ChatBubbles';
 
+function TypingDots() {
+  return (
+    <div className="flex items-center gap-[8px] px-[10px] py-[4px]">
+      <div className="flex gap-[3px]">
+        {[0, 150, 300].map((d) => (
+          <span
+            key={d}
+            className="size-[6px] rounded-full bg-muted-foreground/50 animate-bounce"
+            style={{ animationDelay: `${d}ms` }}
+          />
+        ))}
+      </div>
+      <span className="text-[12px] text-muted-foreground">typing...</span>
+    </div>
+  );
+}
+
 export default function MessageChat() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const userId = useAuthStore((s) => s.user?.id);
@@ -23,6 +40,9 @@ export default function MessageChat() {
   const [newMsg, setNewMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loadingOlder, setLoadingOlder] = useState(false);
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [viewImage, setViewImage] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -38,6 +58,8 @@ export default function MessageChat() {
         if (res.success) {
           setMessages(res.data.messages);
           setOther(res.data.other);
+          setHasMore(res.data.hasMore ?? false);
+          setNextCursor(res.data.nextCursor ?? null);
         }
       })
       .catch(() => navigate('/messages'))
@@ -47,7 +69,6 @@ export default function MessageChat() {
     return () => clearIncoming();
   }, [conversationId, navigate, markRead, clearIncoming]);
 
-  // Merge incoming real-time messages
   useEffect(() => {
     if (incomingMessages.length === 0) return;
     setMessages((prev) => {
@@ -83,10 +104,10 @@ export default function MessageChat() {
     if (!conversationId) return;
     setSending(true);
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      if (caption.trim()) formData.append('caption', caption.trim());
-      const { data: res } = await api.post(`/messages/${conversationId}/image`, formData);
+      const fd = new FormData();
+      fd.append('image', file);
+      if (caption.trim()) fd.append('caption', caption.trim());
+      const { data: res } = await api.post(`/messages/${conversationId}/image`, fd);
       if (res.success) {
         setMessages((prev) => [...prev, res.data]);
         setPreviewFile(null);
@@ -98,14 +119,21 @@ export default function MessageChat() {
     }
   }
 
-  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) setPreviewFile(file);
-    e.target.value = '';
-  }
-
-  function handleDelete(msgId: string) {
-    setMessages((prev) => prev.filter((m) => m.id !== msgId));
+  async function handleLoadOlder() {
+    if (!conversationId || !nextCursor || loadingOlder) return;
+    setLoadingOlder(true);
+    try {
+      const { data: res } = await api.get(`/messages/${conversationId}?cursor=${nextCursor}`);
+      if (res.success) {
+        setMessages((prev) => [...res.data.messages, ...prev]);
+        setHasMore(res.data.hasMore ?? false);
+        setNextCursor(res.data.nextCursor ?? null);
+      }
+    } catch {
+      /* */
+    } finally {
+      setLoadingOlder(false);
+    }
   }
 
   if (loading) {
@@ -130,51 +158,46 @@ export default function MessageChat() {
           ref={scrollRef}
           className="flex-1 overflow-y-auto flex flex-col gap-[12px] md:gap-[20px] p-[10px] md:p-[17px]"
         >
+          {hasMore && (
+            <button
+              onClick={handleLoadOlder}
+              disabled={loadingOlder}
+              className="self-center rounded-[50px] bg-muted px-[16px] py-[6px] text-[12px] text-muted-foreground hover:text-foreground disabled:opacity-50"
+            >
+              {loadingOlder ? 'Loading...' : 'Load older messages'}
+            </button>
+          )}
           {messages.map((msg) =>
             msg.senderId === userId ? (
               <SelfBubble
                 key={msg.id}
                 msg={msg}
-                onDelete={handleDelete}
+                onDelete={(id) => setMessages((p) => p.filter((m) => m.id !== id))}
                 onViewImage={setViewImage}
               />
             ) : (
               <OtherBubble
                 key={msg.id}
                 msg={msg}
-                onDelete={handleDelete}
+                onDelete={(id) => setMessages((p) => p.filter((m) => m.id !== id))}
                 onViewImage={setViewImage}
               />
             ),
           )}
-          {typingUsers.size > 0 && (
-            <div className="flex items-center gap-[8px] px-[10px] py-[4px]">
-              <div className="flex gap-[3px]">
-                <span
-                  className="size-[6px] rounded-full bg-muted-foreground/50 animate-bounce"
-                  style={{ animationDelay: '0ms' }}
-                />
-                <span
-                  className="size-[6px] rounded-full bg-muted-foreground/50 animate-bounce"
-                  style={{ animationDelay: '150ms' }}
-                />
-                <span
-                  className="size-[6px] rounded-full bg-muted-foreground/50 animate-bounce"
-                  style={{ animationDelay: '300ms' }}
-                />
-              </div>
-              <span className="text-[12px] text-muted-foreground">typing...</span>
-            </div>
-          )}
+          {typingUsers.size > 0 && <TypingDots />}
         </div>
         <ChatInputBar
           value={newMsg}
-          onChange={(val) => {
-            setNewMsg(val);
-            emitTyping(val.length > 0);
+          onChange={(v) => {
+            setNewMsg(v);
+            emitTyping(v.length > 0);
           }}
           onSend={handleSend}
-          onFileSelect={handleFileSelect}
+          onFileSelect={(e) => {
+            const f = e.target.files?.[0];
+            if (f) setPreviewFile(f);
+            e.target.value = '';
+          }}
           sending={sending}
         />
       </div>

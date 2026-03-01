@@ -27,23 +27,24 @@ router.get('/', authenticate, async (req, res, next) => {
   }
 });
 
-router.put('/:id/read', authenticate, async (req, res, next) => {
-  try {
-    const userId = req.user!.userId;
-    const id = req.params.id as string;
-    await prisma.notification.updateMany({ where: { id, userId }, data: { read: true } });
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-});
-
+// IMPORTANT: /read-all must be above /:id/read to avoid matching "read-all" as an id
 router.put('/read-all', authenticate, async (req, res, next) => {
   try {
     await prisma.notification.updateMany({
       where: { userId: req.user!.userId, read: false },
       data: { read: true },
     });
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put('/:id/read', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const id = req.params.id as string;
+    await prisma.notification.updateMany({ where: { id, userId }, data: { read: true } });
     res.json({ success: true });
   } catch (err) {
     next(err);

@@ -63,11 +63,36 @@ export interface LiveFilterParams {
 }
 
 export interface SocketEvents {
-  'notification:new': (data: { id: string; type: string; message: string }) => void;
-  'message:new': (data: { chatId: string; message: unknown }) => void;
-  'message:read': (data: { chatId: string; userId: string }) => void;
+  'notification:new': (data: {
+    id: string;
+    type: string;
+    message: string;
+    actorId?: string;
+    entityId?: string;
+    entityType?: string;
+    read: boolean;
+    createdAt: string;
+  }) => void;
+  'message:new': (data: {
+    id: string;
+    conversationId: string;
+    senderId: string;
+    text: string | null;
+    mediaUrl: string | null;
+    mediaType: string;
+    tipAmount: number | null;
+    readAt: string | null;
+    createdAt: string;
+    sender: { id: string; username: string; displayName: string; avatar: string | null };
+  }) => void;
+  'message:read': (data: { conversationId: string; userId: string }) => void;
+  'conversation:update': (data: {
+    conversationId: string;
+    lastMessage: string;
+    lastMessageAt: string;
+  }) => void;
+  'typing:indicator': (data: { conversationId: string; userId: string; isTyping: boolean }) => void;
   'user:online': (data: { userId: string }) => void;
   'user:offline': (data: { userId: string }) => void;
-  'typing:start': (data: { chatId: string; userId: string }) => void;
-  'typing:stop': (data: { chatId: string; userId: string }) => void;
+  'user:online_list': (data: { userIds: string[] }) => void;
 }

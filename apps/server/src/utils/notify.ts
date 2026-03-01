@@ -15,6 +15,7 @@ interface NotifyParams {
   type: NotificationType;
   actorId?: string;
   entityId?: string;
+  entityType?: string;
   message: string;
 }
 
@@ -26,6 +27,7 @@ export async function createNotification(params: NotifyParams) {
         type: params.type,
         actorId: params.actorId ?? null,
         entityId: params.entityId ?? null,
+        entityType: params.entityType ?? null,
         message: params.message,
       },
     });

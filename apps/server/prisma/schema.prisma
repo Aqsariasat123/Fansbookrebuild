@@ -103,6 +103,7 @@ enum NotificationType {
   LIVE
   STORY
   MENTION
+  POST
   SYSTEM
 }
 

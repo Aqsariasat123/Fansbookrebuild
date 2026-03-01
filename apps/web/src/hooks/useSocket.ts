@@ -11,6 +11,7 @@ export function useSocket() {
   const setConnected = useSocketStore((s) => s.setConnected);
   const addOnlineUser = useSocketStore((s) => s.addOnlineUser);
   const removeOnlineUser = useSocketStore((s) => s.removeOnlineUser);
+  const setOnlineUsers = useSocketStore((s) => s.setOnlineUsers);
   const incrementNotif = useNotificationStore((s) => s.increment);
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export function useSocket() {
     socket.on('disconnect', () => setConnected(false));
     socket.on('user:online', (data: { userId: string }) => addOnlineUser(data.userId));
     socket.on('user:offline', (data: { userId: string }) => removeOnlineUser(data.userId));
+    socket.on('user:online_list', (data: { userIds: string[] }) => setOnlineUsers(data.userIds));
     socket.on('notification:new', (data: { message?: string }) => {
       incrementNotif();
       if (data?.message) showToast(data.message);
@@ -47,5 +49,5 @@ export function useSocket() {
       disconnectSocket();
       setConnected(false);
     };
-  }, [user, setConnected, addOnlineUser, removeOnlineUser, incrementNotif]);
+  }, [user, setConnected, addOnlineUser, removeOnlineUser, setOnlineUsers, incrementNotif]);
 }

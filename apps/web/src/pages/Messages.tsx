@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { getSocket } from '../lib/socket';
 import { MessagePageHeader } from '../components/chat/ChatHeader';
 
 const IMG = '/icons/dashboard';
@@ -32,6 +34,7 @@ function ConvRow({
   onClick: () => void;
 }) {
   const { other, lastMessage, lastMessageAt, unreadCount } = c;
+  const isOnline = useOnlineStatus(other.id);
   const initial = other.displayName?.charAt(0)?.toUpperCase() || '?';
   return (
     <button
@@ -46,7 +49,9 @@ function ConvRow({
             <span className="text-[14px] font-medium text-foreground">{initial}</span>
           </div>
         )}
-        <div className="absolute bottom-0 right-0 size-[8px] rounded-full bg-green-500" />
+        {isOnline && (
+          <div className="absolute bottom-0 right-0 size-[8px] rounded-full bg-green-500" />
+        )}
       </div>
       <div className="flex-1 text-left min-w-0">
         <p className="text-[16px] leading-[1.7] text-foreground">{other.displayName}</p>
@@ -96,6 +101,38 @@ export default function Messages() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+  }, []);
+
+  // Real-time conversation list updates
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleConvUpdate = (data: {
+      conversationId: string;
+      lastMessage: string;
+      lastMessageAt: string;
+    }) => {
+      setConversations((prev) => {
+        const idx = prev.findIndex((c) => c.id === data.conversationId);
+        if (idx === -1) return prev;
+        const updated = [...prev];
+        updated[idx] = {
+          ...updated[idx],
+          lastMessage: data.lastMessage,
+          lastMessageAt: data.lastMessageAt,
+          unreadCount: updated[idx].unreadCount + 1,
+        };
+        return updated.sort(
+          (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
+        );
+      });
+    };
+
+    socket.on('conversation:update', handleConvUpdate);
+    return () => {
+      socket.off('conversation:update', handleConvUpdate);
+    };
   }, []);
 
   const filtered = search

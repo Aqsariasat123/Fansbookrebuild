@@ -45,23 +45,19 @@ describe('createSubscriptionTierSchema', () => {
 
 describe('sendMessageSchema', () => {
   it('should accept text message', () => {
-    expect(sendMessageSchema.safeParse({ content: 'Hello!' }).success).toBe(true);
+    expect(sendMessageSchema.safeParse({ text: 'Hello!' }).success).toBe(true);
   });
 
   it('should reject content over 5000 chars', () => {
-    expect(sendMessageSchema.safeParse({ content: 'a'.repeat(5001) }).success).toBe(false);
+    expect(sendMessageSchema.safeParse({ text: 'a'.repeat(5001) }).success).toBe(false);
   });
 
-  it('should accept tip amount', () => {
-    expect(sendMessageSchema.safeParse({ tipAmount: 5 }).success).toBe(true);
+  it('should reject empty text', () => {
+    expect(sendMessageSchema.safeParse({ text: '' }).success).toBe(false);
   });
 
-  it('should reject tip below 1', () => {
-    expect(sendMessageSchema.safeParse({ tipAmount: 0 }).success).toBe(false);
-  });
-
-  it('should reject tip above 10000', () => {
-    expect(sendMessageSchema.safeParse({ tipAmount: 10001 }).success).toBe(false);
+  it('should reject missing text', () => {
+    expect(sendMessageSchema.safeParse({}).success).toBe(false);
   });
 });
 

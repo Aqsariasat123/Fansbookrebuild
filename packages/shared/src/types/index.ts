@@ -54,11 +54,13 @@ export enum NotificationType {
   LIKE = 'LIKE',
   COMMENT = 'COMMENT',
   FOLLOW = 'FOLLOW',
-  SUBSCRIPTION = 'SUBSCRIPTION',
+  SUBSCRIBE = 'SUBSCRIBE',
   MESSAGE = 'MESSAGE',
   TIP = 'TIP',
   MENTION = 'MENTION',
   POST = 'POST',
+  LIVE = 'LIVE',
+  STORY = 'STORY',
   SYSTEM = 'SYSTEM',
 }
 

@@ -123,9 +123,7 @@ export const withdrawalSchema = z.object({
 // ─── Chat Schemas ────────────────────────────────────────
 
 export const sendMessageSchema = z.object({
-  content: z.string().max(5000).optional(),
-  mediaIds: z.array(z.string().uuid()).max(10).optional(),
-  tipAmount: z.number().min(1).max(10000).optional(),
+  text: z.string().min(1).max(5000),
 });
 
 // ─── Report Schema ───────────────────────────────────────

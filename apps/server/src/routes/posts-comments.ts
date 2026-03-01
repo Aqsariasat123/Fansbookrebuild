@@ -3,6 +3,7 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { logActivity } from '../utils/audit.js';
+import { createNotification } from '../utils/notify.js';
 
 const router = Router({ mergeParams: true });
 
@@ -13,6 +14,24 @@ const AUTHOR_SELECT = {
   avatar: true,
   isVerified: true,
 };
+
+function notifyCommentAuthor(
+  post: { authorId: string },
+  userId: string,
+  postId: string,
+  author: { displayName: string; avatar: string | null } | undefined,
+) {
+  if (post.authorId === userId) return;
+  const actorName = author?.displayName || 'Someone';
+  createNotification({
+    userId: post.authorId,
+    type: 'COMMENT',
+    actorId: userId,
+    entityId: postId,
+    entityType: `POST|avatar:${author?.avatar || ''}`,
+    message: `${actorName} commented on your post`,
+  });
+}
 
 // ─── GET /api/posts/:id/comments ── cursor-based paginated comments
 router.get('/:id/comments', authenticate, async (req, res, next) => {
@@ -101,6 +120,7 @@ router.post('/:id/comment', authenticate, async (req, res, next) => {
       }),
     ]);
 
+    notifyCommentAuthor(post, userId, postId, comment.author);
     logActivity(userId, 'COMMENT', 'Post', postId, { commentId: comment.id }, req);
     res.status(201).json({ success: true, data: { ...comment, isLiked: false } });
   } catch (err) {

@@ -2,13 +2,13 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { z } from 'zod';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { emitToUser } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
+import { sendMessageSchema } from '@fansbook/shared';
 
 const router = Router();
 const msgUploadsDir = path.join(process.cwd(), 'uploads', 'messages');
@@ -24,7 +24,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
 const SENDER_SELECT = { id: true, username: true, displayName: true, avatar: true };
-const sendMessageSchema = z.object({ text: z.string().min(1).max(5000) });
 
 async function verifyParticipant(conversationId: string, userId: string) {
   const conv = await prisma.conversation.findUnique({ where: { id: conversationId } });
@@ -53,16 +52,22 @@ router.get('/:conversationId', authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.userId;
     const conversationId = req.params.conversationId as string;
+    const cursor = req.query.cursor as string | undefined;
+    const limit = 50;
     const conv = await verifyParticipant(conversationId, userId);
     const messages = await prisma.message.findMany({
       where: { conversationId },
       include: { sender: { select: SENDER_SELECT } },
-      orderBy: { createdAt: 'asc' },
-      take: 100,
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
+    const reversed = messages.reverse();
+    const nextCursor = messages.length === limit ? (messages[0]?.id ?? null) : null;
+    const hasMore = messages.length === limit;
     const otherId = conv.participant1Id === userId ? conv.participant2Id : conv.participant1Id;
     const other = await prisma.user.findUnique({ where: { id: otherId }, select: SENDER_SELECT });
-    res.json({ success: true, data: { messages, other } });
+    res.json({ success: true, data: { messages: reversed, other, nextCursor, hasMore } });
   } catch (err) {
     next(err);
   }

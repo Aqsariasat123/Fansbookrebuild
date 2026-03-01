@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { api } from '../lib/api';
+import { getSocket } from '../lib/socket';
+import { useNotificationStore } from '../stores/notificationStore';
 import { NotificationRow } from '../components/notifications/NotificationRow';
 import type { Notification } from '../components/notifications/NotificationRow';
 
@@ -31,6 +33,8 @@ export default function Notifications() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<FilterTab>('All');
+  const decrement = useNotificationStore((s) => s.decrement);
+  const resetNotif = useNotificationStore((s) => s.reset);
 
   useEffect(() => {
     api
@@ -40,6 +44,21 @@ export default function Notifications() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+  }, []);
+
+  // Real-time notification updates
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleNew = (data: Notification) => {
+      setItems((prev) => [data, ...prev]);
+    };
+
+    socket.on('notification:new', handleNew);
+    return () => {
+      socket.off('notification:new', handleNew);
+    };
   }, []);
 
   const toggleSelect = (id: string) => {
@@ -53,8 +72,10 @@ export default function Notifications() {
 
   const handleDelete = async (id: string) => {
     try {
+      const item = items.find((n) => n.id === id);
       await api.delete(`/notifications/${id}`);
       setItems((prev) => prev.filter((n) => n.id !== id));
+      if (item && !item.read) decrement();
     } catch {
       /* ignore */
     }
@@ -64,6 +85,17 @@ export default function Notifications() {
     try {
       await api.put(`/notifications/${n.id}/read`);
       setItems((prev) => prev.map((item) => (item.id === n.id ? { ...item, read: true } : item)));
+      if (!n.read) decrement();
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await api.put('/notifications/read-all');
+      setItems((prev) => prev.map((item) => ({ ...item, read: true })));
+      resetNotif();
     } catch {
       /* ignore */
     }
@@ -94,6 +126,7 @@ export default function Notifications() {
   }, [items, search, activeTab]);
 
   const totalFiltered = grouped.reduce((acc, g) => acc + g.items.length, 0);
+  const hasUnread = items.some((n) => !n.read);
 
   return (
     <div className="flex flex-col gap-[20px]">
@@ -113,7 +146,17 @@ export default function Notifications() {
           />
         </div>
 
-        <p className="mt-[16px] text-[20px] text-foreground">Notifications</p>
+        <div className="mt-[16px] flex items-center justify-between">
+          <p className="text-[20px] text-foreground">Notifications</p>
+          {hasUnread && (
+            <button
+              onClick={handleMarkAllRead}
+              className="rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[16px] py-[6px] text-[12px] font-medium text-white transition-opacity hover:opacity-90 md:text-[14px]"
+            >
+              Mark All Read
+            </button>
+          )}
+        </div>
 
         {/* Filter tabs */}
         <div className="mt-[12px] flex gap-[8px] overflow-x-auto pb-[4px]">

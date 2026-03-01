@@ -52,6 +52,10 @@ export function initSocketIO(httpServer: HttpServer) {
     await redis.sadd(ONLINE_KEY, userId);
     io!.emit('user:online', { userId });
 
+    // Send full online users list to newly connected socket
+    const onlineUserIds = await redis.smembers(ONLINE_KEY);
+    socket.emit('user:online_list', { userIds: onlineUserIds });
+
     // Register event handlers
     registerChatHandlers(io!, socket);
 
