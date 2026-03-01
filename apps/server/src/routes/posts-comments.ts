@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { logActivity } from '../utils/audit.js';
 
 const router = Router({ mergeParams: true });
 
@@ -94,6 +95,7 @@ router.post('/:id/comment', authenticate, async (req, res, next) => {
       }),
     ]);
 
+    logActivity(userId, 'COMMENT', 'Post', postId, { commentId: comment.id }, req);
     res.status(201).json({ success: true, data: { ...comment, isLiked: false } });
   } catch (err) {
     next(err);

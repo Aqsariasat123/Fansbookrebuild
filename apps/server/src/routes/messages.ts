@@ -8,6 +8,7 @@ import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { emitToUser } from '../utils/notify.js';
+import { logActivity } from '../utils/audit.js';
 
 const router = Router();
 const msgUploadsDir = path.join(process.cwd(), 'uploads', 'messages');
@@ -121,6 +122,14 @@ router.post(
         lastMessage: text,
         lastMessageAt: new Date(),
       });
+      logActivity(
+        userId,
+        'MESSAGE_SEND',
+        'Conversation',
+        conversationId,
+        { recipientId: otherId },
+        req,
+      );
       res.status(201).json({ success: true, data: message });
     } catch (err) {
       next(err);
@@ -168,6 +177,7 @@ router.delete('/message/:messageId', authenticate, async (req, res, next) => {
       throw new AppError(403, 'Can only delete your own messages for everyone');
     }
     await prisma.message.delete({ where: { id: messageId } });
+    logActivity(userId, 'MESSAGE_DELETE', 'Message', messageId, { mode }, req);
     res.json({ success: true, message: 'Message deleted' });
   } catch (err) {
     next(err);

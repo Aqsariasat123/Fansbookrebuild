@@ -3,6 +3,7 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { createNotification } from '../utils/notify.js';
+import { logActivity } from '../utils/audit.js';
 
 const router = Router();
 
@@ -52,6 +53,7 @@ router.post('/:creatorId', authenticate, async (req, res, next) => {
       actorId: userId,
       message: `${actor?.displayName || 'Someone'} started following you`,
     });
+    logActivity(userId, 'FOLLOW', 'User', creatorId, null, req);
     res.status(201).json({ success: true, message: 'Followed' });
   } catch (err) {
     next(err);
@@ -67,6 +69,7 @@ router.delete('/:creatorId', authenticate, async (req, res, next) => {
     });
     if (!follow) throw new AppError(404, 'Not following');
     await prisma.follow.delete({ where: { id: follow.id } });
+    logActivity(userId, 'UNFOLLOW', 'User', creatorId, null, req);
     res.json({ success: true, message: 'Unfollowed' });
   } catch (err) {
     next(err);

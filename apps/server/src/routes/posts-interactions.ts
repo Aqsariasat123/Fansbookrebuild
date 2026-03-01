@@ -3,6 +3,7 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { createNotification } from '../utils/notify.js';
+import { logActivity } from '../utils/audit.js';
 
 const router = Router();
 
@@ -27,6 +28,7 @@ router.put('/:id/pin', authenticate, async (req, res, next) => {
       data: { isPinned: !post.isPinned },
       include: { author: { select: AUTHOR_SELECT }, media: { orderBy: { order: 'asc' } } },
     });
+    logActivity(userId, 'POST_PIN', 'Post', postId, { isPinned: !post.isPinned }, req);
     res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -60,6 +62,7 @@ router.post('/:id/like', authenticate, async (req, res, next) => {
         message: `${actor?.displayName || 'Someone'} liked your post`,
       });
     }
+    logActivity(userId, 'POST_LIKE', 'Post', postId, null, req);
     res.status(201).json({ success: true, message: 'Post liked' });
   } catch (err) {
     next(err);
@@ -77,6 +80,7 @@ router.delete('/:id/like', authenticate, async (req, res, next) => {
       prisma.like.delete({ where: { id: existing.id } }),
       prisma.post.update({ where: { id: postId }, data: { likeCount: { decrement: 1 } } }),
     ]);
+    logActivity(userId, 'POST_UNLIKE', 'Post', postId, null, req);
     res.json({ success: true, message: 'Post unliked' });
   } catch (err) {
     next(err);
@@ -137,6 +141,7 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
     ]);
 
     notifyTip(post.authorId, userId, postId, amount);
+    logActivity(userId, 'TIP', 'Post', postId, { amount, creatorId: post.authorId }, req);
     res.json({ success: true, message: 'Tip sent!' });
   } catch (err) {
     next(err);
@@ -202,6 +207,14 @@ router.post('/:id/ppv-unlock', authenticate, async (req, res, next) => {
       }),
     ]);
 
+    logActivity(
+      userId,
+      'PPV_UNLOCK',
+      'Post',
+      postId,
+      { amount: post.ppvPrice, creatorId: post.authorId },
+      req,
+    );
     res.json({ success: true, data: post });
   } catch (err) {
     next(err);

@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-build-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fansbook
+          POSTGRES_PASSWORD: fansbook
+          POSTGRES_DB: fansbook_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://fansbook:fansbook@localhost:5432/fansbook_test
+      JWT_SECRET: ci-test-secret-key-minimum-10
+      JWT_REFRESH_SECRET: ci-test-refresh-key-minimum-10
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: TypeScript check
+        run: npx tsc --noEmit -p apps/server/tsconfig.json
+
+      - name: Generate Prisma client
+        run: cd apps/server && npx prisma generate
+
+      - name: Run migrations
+        run: cd apps/server && npx prisma migrate deploy
+
+      - name: Run tests
+        run: npm run test --if-present
+
+      - name: Build shared package
+        run: cd packages/shared && npm run build --if-present
+
+      - name: Build server
+        run: cd apps/server && npm run build --if-present
+
+      - name: Build web
+        run: cd apps/web && npm run build

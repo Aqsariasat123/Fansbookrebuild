@@ -18,6 +18,7 @@ import {
   generateUsername,
 } from './profile-helpers.js';
 import onboardingRouter from './profile-onboarding.js';
+import { logActivity } from '../utils/audit.js';
 
 const router = Router();
 router.use('/', onboardingRouter);
@@ -41,6 +42,14 @@ router.put('/', authenticate, validate(updateProfileSchema), async (req, res, ne
       data: updateData,
       select: USER_SELECT,
     });
+    logActivity(
+      req.user!.userId,
+      'PROFILE_UPDATE',
+      'User',
+      req.user!.userId,
+      { fields: Object.keys(req.body) },
+      req,
+    );
     res.json({ success: true, data: user });
   } catch (err) {
     next(err);
@@ -59,6 +68,7 @@ router.put('/password', authenticate, validate(changePasswordSchema), async (req
     if (!valid) throw new AppError(400, 'Current password is incorrect');
     const passwordHash = await bcrypt.hash(newPassword, 12);
     await prisma.user.update({ where: { id: req.user!.userId }, data: { passwordHash } });
+    logActivity(req.user!.userId, 'PASSWORD_CHANGE', 'User', req.user!.userId, null, req);
     res.json({ success: true, message: 'Password changed successfully' });
   } catch (err) {
     next(err);
@@ -87,6 +97,7 @@ router.post('/avatar', authenticate, upload.single('avatar'), async (req, res, n
       data: { avatar: avatarUrl },
       select: USER_SELECT,
     });
+    logActivity(req.user!.userId, 'AVATAR_UPLOAD', 'User', req.user!.userId, null, req);
     res.json({ success: true, data: user });
   } catch (err) {
     next(err);
@@ -114,6 +125,7 @@ router.post('/cover', authenticate, coverUpload.single('cover'), async (req, res
       data: { cover: coverUrl },
       select: USER_SELECT,
     });
+    logActivity(req.user!.userId, 'COVER_UPLOAD', 'User', req.user!.userId, null, req);
     res.json({ success: true, data: user });
   } catch (err) {
     next(err);

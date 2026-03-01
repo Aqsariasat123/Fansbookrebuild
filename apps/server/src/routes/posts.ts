@@ -7,6 +7,7 @@ import { authenticate } from '../middleware/auth.js';
 import { requireRole } from '../middleware/requireRole.js';
 import { AppError } from '../middleware/errorHandler.js';
 import commentsRouter from './posts-comments.js';
+import { logActivity } from '../utils/audit.js';
 
 const router = Router();
 const postsUploadsDir = path.join(process.cwd(), 'uploads', 'posts');
@@ -118,6 +119,14 @@ router.post(
         where: { id: post.id },
         include: POST_INCLUDE,
       });
+      logActivity(
+        userId,
+        'POST_CREATE',
+        'Post',
+        post.id,
+        { visibility: data.visibility, hasMedia: files.length > 0 },
+        req,
+      );
       res.status(201).json({ success: true, data: fullPost });
     } catch (err) {
       next(err);
@@ -161,6 +170,7 @@ router.put('/:id', authenticate, async (req, res, next) => {
       },
     });
 
+    logActivity(userId, 'POST_UPDATE', 'Post', postId, { fields: Object.keys(updateData) }, req);
     res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -179,6 +189,7 @@ router.delete('/:id', authenticate, async (req, res, next) => {
 
     await prisma.post.delete({ where: { id: postId } });
 
+    logActivity(userId, 'POST_DELETE', 'Post', postId, null, req);
     res.json({ success: true, message: 'Post deleted' });
   } catch (err) {
     next(err);

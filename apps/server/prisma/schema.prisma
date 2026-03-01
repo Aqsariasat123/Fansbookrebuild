@@ -875,6 +875,7 @@ model AuditLog {
 
   @@index([adminId])
   @@index([action])
+  @@index([targetType])
   @@index([createdAt])
 }
 

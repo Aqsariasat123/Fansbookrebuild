@@ -19,6 +19,7 @@ router.get('/', async (req, res, next) => {
         { action: { contains: search, mode: 'insensitive' } },
         { targetType: { contains: search, mode: 'insensitive' } },
         { admin: { username: { contains: search, mode: 'insensitive' } } },
+        { admin: { displayName: { contains: search, mode: 'insensitive' } } },
       ];
     }
     if (action) where.action = action;
@@ -32,7 +33,7 @@ router.get('/', async (req, res, next) => {
     const [items, total] = await Promise.all([
       prisma.auditLog.findMany({
         where,
-        include: { admin: { select: { id: true, username: true, displayName: true } } },
+        include: { admin: { select: { id: true, username: true, displayName: true, role: true } } },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,

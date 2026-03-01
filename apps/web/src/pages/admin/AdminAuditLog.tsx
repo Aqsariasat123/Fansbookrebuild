@@ -3,85 +3,10 @@ import { api } from '../../lib/api';
 import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminSearchBar, AdminFilter, AdminDateRange } from '../../components/admin/AdminSearchBar';
 import { AdminPagination } from '../../components/admin/AdminPagination';
-
-interface AuditEntry {
-  id: string;
-  action: string;
-  targetType: string;
-  targetId: string;
-  details: unknown;
-  ipAddress: string | null;
-  createdAt: string;
-  admin: { id: string; username: string; displayName: string };
-  [key: string]: unknown;
-}
-
-const actionColors: Record<string, string> = {
-  CREATE: 'bg-[#28a745]',
-  UPDATE: 'bg-[#f0ad4e]',
-  DELETE: 'bg-[#dc3545]',
-};
-
-const fmt = (d: string) => {
-  const dt = new Date(d);
-  return `${dt.toLocaleDateString()}\n${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-};
-
-type Row = Record<string, unknown>;
-
-const columns = [
-  {
-    key: 'createdAt',
-    header: 'Date & Time',
-    render: (r: Row) => <span className="whitespace-pre-wrap">{fmt(r.createdAt as string)}</span>,
-  },
-  {
-    key: 'admin',
-    header: 'Admin',
-    render: (r: Row) => {
-      const admin = r.admin as { username: string; displayName: string };
-      return <span className="font-medium">{admin?.displayName || admin?.username || '-'}</span>;
-    },
-  },
-  {
-    key: 'action',
-    header: 'Action',
-    render: (r: Row) => (
-      <span
-        className={`inline-flex h-[19px] items-center rounded-[26px] px-[8px] text-[10px] font-medium text-[#f8f8f8] ${actionColors[r.action as string] || 'bg-[#5d5d5d]'}`}
-      >
-        {r.action as string}
-      </span>
-    ),
-  },
-  {
-    key: 'targetType',
-    header: 'Target',
-    render: (r: Row) => <span className="text-[#15191c]">{(r.targetType as string) || '-'}</span>,
-  },
-  {
-    key: 'details',
-    header: 'Details',
-    render: (r: Row) => {
-      const d = r.details;
-      if (!d) return <span className="text-[#5d5d5d]">-</span>;
-      const str = JSON.stringify(d);
-      return (
-        <span className="text-[#5d5d5d]" title={str}>
-          {str.length > 40 ? str.slice(0, 40) + '…' : str}
-        </span>
-      );
-    },
-  },
-  {
-    key: 'ipAddress',
-    header: 'IP Address',
-    render: (r: Row) => <span className="text-[#5d5d5d]">{(r.ipAddress as string) || '-'}</span>,
-  },
-];
+import { auditLogColumns, actionFilterOptions } from './auditLogColumns';
 
 export default function AdminAuditLog() {
-  const [items, setItems] = useState<AuditEntry[]>([]);
+  const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [search, setSearch] = useState('');
   const [action, setAction] = useState('');
   const [dateFrom, setDateFrom] = useState('');
@@ -142,11 +67,7 @@ export default function AdminAuditLog() {
             setAction(v);
             setPage(1);
           }}
-          options={[
-            { value: 'CREATE', label: 'Create' },
-            { value: 'UPDATE', label: 'Update' },
-            { value: 'DELETE', label: 'Delete' },
-          ]}
+          options={actionFilterOptions}
         />
         <AdminDateRange
           from={dateFrom}
@@ -172,7 +93,7 @@ export default function AdminAuditLog() {
           <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
         </div>
       ) : (
-        <AdminTable columns={columns} data={items as unknown as Record<string, unknown>[]} />
+        <AdminTable columns={auditLogColumns} data={items} />
       )}
 
       <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />

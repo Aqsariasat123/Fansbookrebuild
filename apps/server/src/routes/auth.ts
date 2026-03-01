@@ -12,6 +12,7 @@ import { generateAndStoreTokens, ME_SELECT } from '../utils/tokens.js';
 import { sendEmail } from '../utils/email.js';
 import { welcomeTemplate, emailVerificationTemplate } from '../utils/email-templates.js';
 import crypto from 'crypto';
+import { logActivity } from '../utils/audit.js';
 
 const router = Router();
 
@@ -67,6 +68,7 @@ router.post('/register', authLimiter, validate(registerSchema), async (req, res,
     const verify = emailVerificationTemplate(username, verifyToken);
     sendEmail(email, verify.subject, verify.html);
     const tokens = await generateAndStoreTokens(user.id, user.role);
+    logActivity(user.id, 'REGISTER', 'User', user.id, { username, email, role }, req);
     res.status(201).json({ success: true, data: { user, ...tokens } });
   } catch (err) {
     next(err);
@@ -90,6 +92,7 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res, next)
       where: { id: user.id },
       select: ME_SELECT,
     });
+    logActivity(user.id, 'LOGIN', 'User', user.id, { method: 'password' }, req);
     res.json({
       success: true,
       data: {
@@ -144,6 +147,7 @@ router.post('/refresh', async (req, res, next) => {
 router.post('/logout', authenticate, async (req, res, next) => {
   try {
     await prisma.refreshToken.deleteMany({ where: { userId: req.user!.userId } });
+    logActivity(req.user!.userId, 'LOGOUT', 'User', req.user!.userId, null, req);
     res.json({ success: true, message: 'Logged out successfully' });
   } catch (err) {
     next(err);

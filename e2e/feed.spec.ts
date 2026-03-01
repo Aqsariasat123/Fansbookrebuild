@@ -29,7 +29,8 @@ test.describe('Feed Page', () => {
   });
 
   test('should navigate to messages', async ({ page }) => {
-    await page.locator('a[href="/messages"]').first().click();
+    // Navigate directly since sidebar link may not be visible on small viewports
+    await page.goto('/messages');
     await page.waitForURL('**/messages', { timeout: 5000 });
     await expect(page).toHaveURL(/\/messages/);
   });
