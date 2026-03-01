@@ -12,6 +12,19 @@ interface Badge {
   earnedAt: string | null;
 }
 
+const ICON_MAP: Record<string, string> = {
+  rocket: '🚀',
+  pencil: '✏️',
+  star: '⭐',
+  gem: '💎',
+  heart: '❤️',
+  trophy: '🏆',
+  fire: '🔥',
+  crown: '👑',
+  medal: '🏅',
+  shield: '🛡️',
+};
+
 const RARITY_COLORS: Record<string, string> = {
   COMMON: 'text-gray-600 dark:text-gray-400 border-gray-400/30',
   RARE: 'text-blue-600 dark:text-blue-400 border-blue-400/30',
@@ -80,7 +93,7 @@ export default function Badges() {
               }`}
             >
               <div className="flex size-[56px] items-center justify-center rounded-full bg-muted text-[24px]">
-                {badge.icon || '🏆'}
+                {ICON_MAP[badge.icon] || badge.icon || '🏆'}
               </div>
               <p className="text-[14px] font-medium text-foreground">{badge.name}</p>
               <p className="text-[11px] text-muted-foreground">{badge.description}</p>
