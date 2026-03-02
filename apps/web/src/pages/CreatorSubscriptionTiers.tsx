@@ -75,8 +75,8 @@ export default function CreatorSubscriptionTiers() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <div className="flex items-center justify-between">
-        <p className="text-[24px] font-semibold text-foreground">My Subscriptions</p>
+      <div className="flex flex-col gap-[12px] md:flex-row md:items-center md:justify-between">
+        <p className="text-[20px] font-semibold text-foreground md:text-[24px]">My Subscriptions</p>
         <button
           onClick={() => setShowCreate(true)}
           className="rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[24px] py-[8px] text-[13px] font-medium text-white md:text-[14px]"

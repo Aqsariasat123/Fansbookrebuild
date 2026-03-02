@@ -100,7 +100,7 @@ export default function CreatorProfileEdit() {
     <div className="flex flex-col gap-[0px]">
       {toast && (
         <div
-          className={`fixed right-[24px] top-[24px] z-50 rounded-[12px] px-[20px] py-[12px] text-[14px] font-medium shadow-lg ${toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}
+          className={`fixed right-[12px] top-[12px] z-50 rounded-[12px] px-[16px] py-[10px] text-[13px] font-medium shadow-lg md:right-[24px] md:top-[24px] md:px-[20px] md:py-[12px] md:text-[14px] ${toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}
         >
           {toast.message}
         </div>

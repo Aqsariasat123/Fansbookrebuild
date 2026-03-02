@@ -31,7 +31,7 @@ export function SubscriptionModal({ tiers, loading, onClose, onSubscribe }: Prop
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative mx-[16px] max-h-[90vh] w-full max-w-[730px] overflow-y-auto rounded-[22px] bg-card px-[40px] py-[36px]">
+      <div className="relative mx-[16px] max-h-[90vh] w-full max-w-[730px] overflow-y-auto rounded-[22px] bg-card px-[20px] py-[24px] md:px-[40px] md:py-[36px]">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -43,7 +43,7 @@ export function SubscriptionModal({ tiers, loading, onClose, onSubscribe }: Prop
         </button>
 
         {/* Title */}
-        <h2 className="mb-[28px] text-center text-[28px] font-semibold text-foreground">
+        <h2 className="mb-[20px] text-center text-[20px] font-semibold text-foreground md:mb-[28px] md:text-[28px]">
           Choose Your Subscription Plan
         </h2>
 
@@ -57,7 +57,7 @@ export function SubscriptionModal({ tiers, loading, onClose, onSubscribe }: Prop
           {tiers.map((tier) => (
             <div
               key={tier.id}
-              className="flex flex-col gap-[12px] rounded-[22px] bg-muted p-[24px] sm:flex-row sm:items-start sm:justify-between sm:gap-[20px]"
+              className="flex flex-col gap-[12px] rounded-[22px] bg-muted p-[16px] md:flex-row md:items-start md:justify-between md:gap-[20px] md:p-[24px]"
             >
               {/* Left: name + benefits + description */}
               <div className="flex-1">
@@ -98,8 +98,8 @@ export function SubscriptionModal({ tiers, loading, onClose, onSubscribe }: Prop
               </div>
 
               {/* Right: price + subscribe button */}
-              <div className="flex shrink-0 flex-col items-center gap-[12px] sm:items-end">
-                <div className="text-center sm:text-right">
+              <div className="flex shrink-0 flex-col items-center gap-[12px] md:items-end">
+                <div className="text-center md:text-right">
                   <p className="text-[20px] font-bold text-foreground">
                     {tier.price === 0 ? 'Free' : `$${tier.price.toFixed(2)} / month`}
                   </p>

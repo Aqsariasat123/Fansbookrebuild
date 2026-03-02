@@ -70,11 +70,11 @@ export default function CreatorEarnings() {
             className="flex-1 bg-transparent text-[14px] text-foreground placeholder-muted-foreground outline-none"
           />
         </div>
-        <div className="flex flex-wrap items-center gap-[12px]">
+        <div className="flex flex-col gap-[12px] md:flex-row md:flex-wrap md:items-center">
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-[8px] rounded-[8px] border border-border px-[14px] py-[8px] text-[14px] text-foreground"
+              className="flex w-full items-center justify-between gap-[8px] rounded-[8px] border border-border px-[14px] py-[8px] text-[14px] text-foreground md:w-auto"
             >
               {category}{' '}
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -84,7 +84,7 @@ export default function CreatorEarnings() {
             {dropdownOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
-                <div className="absolute left-0 top-[40px] z-20 min-w-[180px] rounded-[8px] bg-card py-[4px] shadow-lg">
+                <div className="absolute left-0 right-0 top-[40px] z-20 rounded-[8px] bg-card py-[4px] shadow-lg md:right-auto md:min-w-[180px]">
                   {CATEGORIES.map((c) => (
                     <button
                       key={c}
@@ -101,23 +101,25 @@ export default function CreatorEarnings() {
               </>
             )}
           </div>
-          <div className="flex items-center gap-[8px]">
-            <span className="text-[14px] text-muted-foreground">From:</span>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="rounded-[6px] border border-border bg-transparent px-[10px] py-[6px] text-[13px] text-foreground outline-none"
-            />
-          </div>
-          <div className="flex items-center gap-[8px]">
-            <span className="text-[14px] text-muted-foreground">To:</span>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="rounded-[6px] border border-border bg-transparent px-[10px] py-[6px] text-[13px] text-foreground outline-none"
-            />
+          <div className="grid grid-cols-2 gap-[8px] md:flex md:items-center md:gap-[12px]">
+            <div className="flex items-center gap-[6px]">
+              <span className="text-[13px] text-muted-foreground md:text-[14px]">From:</span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full rounded-[6px] border border-border bg-transparent px-[8px] py-[6px] text-[12px] text-foreground outline-none md:w-auto md:px-[10px] md:text-[13px]"
+              />
+            </div>
+            <div className="flex items-center gap-[6px]">
+              <span className="text-[13px] text-muted-foreground md:text-[14px]">To:</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full rounded-[6px] border border-border bg-transparent px-[8px] py-[6px] text-[12px] text-foreground outline-none md:w-auto md:px-[10px] md:text-[13px]"
+              />
+            </div>
           </div>
           {(startDate || endDate) && (
             <button

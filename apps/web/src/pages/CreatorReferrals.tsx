@@ -47,11 +47,15 @@ export default function CreatorReferrals() {
       <p className="text-[24px] font-semibold text-foreground">My Referrals</p>
 
       {/* Referral Code Card */}
-      <div className="rounded-[16px] bg-card p-[24px]">
-        <p className="mb-[16px] text-[18px] font-semibold text-foreground">Your Referral Code</p>
+      <div className="rounded-[16px] bg-card p-[16px] md:p-[24px]">
+        <p className="mb-[12px] text-[16px] font-semibold text-foreground md:mb-[16px] md:text-[18px]">
+          Your Referral Code
+        </p>
         <div className="flex flex-col items-start gap-[16px] md:flex-row md:items-center">
-          <div className="flex h-[50px] w-full items-center justify-center rounded-[8px] bg-muted px-[24px] md:min-w-[300px] md:w-auto">
-            <span className="text-[18px] tracking-wider text-foreground">{code || '------'}</span>
+          <div className="flex h-[44px] w-full items-center justify-center rounded-[8px] bg-muted px-[16px] md:h-[50px] md:min-w-[300px] md:w-auto md:px-[24px]">
+            <span className="text-[15px] tracking-wider text-foreground md:text-[18px]">
+              {code || '------'}
+            </span>
           </div>
           <button
             onClick={copyCode}

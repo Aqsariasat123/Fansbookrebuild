@@ -66,10 +66,12 @@ export default function LiveBroadcasting() {
   return (
     <div className="flex flex-col gap-[20px]">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-[12px] md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-[18px] font-semibold text-foreground">Live Broadcasting</p>
-          <p className="text-[14px] text-muted-foreground">
+          <p className="text-[16px] font-semibold text-foreground md:text-[18px]">
+            Live Broadcasting
+          </p>
+          <p className="text-[13px] text-muted-foreground md:text-[14px]">
             You are live! Your fans can watch you in real-time.
           </p>
         </div>

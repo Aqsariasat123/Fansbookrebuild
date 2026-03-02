@@ -55,7 +55,7 @@ export function ProfileTabContent({ activeTab, posts, isSubscribed, viewMode = '
 
 function FeedGridView({ posts }: { posts: PublicPost[] }) {
   return (
-    <div className="grid grid-cols-3 gap-[8px]">
+    <div className="grid grid-cols-2 gap-[8px] md:grid-cols-3">
       {posts.map((post) => (
         <Link
           key={post.id}

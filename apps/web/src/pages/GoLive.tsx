@@ -117,7 +117,7 @@ export default function GoLive() {
       </div>
 
       {/* Checkboxes */}
-      <div className="flex flex-wrap items-center gap-[32px]">
+      <div className="flex flex-wrap items-center gap-[16px] md:gap-[32px]">
         <label className="flex cursor-pointer items-center gap-[10px]">
           <Checkbox checked={privateShow} onClick={() => setPrivateShow(!privateShow)} />
           <span className="text-[14px] text-foreground">Available for the private show</span>
@@ -129,17 +129,17 @@ export default function GoLive() {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-center gap-[20px]">
+      <div className="flex flex-col items-center gap-[12px] md:flex-row md:justify-center md:gap-[20px]">
         <button
           disabled={!policyAgreed || !previewing || starting}
           onClick={handleGoLive}
-          className="w-[240px] rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[14px] text-[16px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="w-full rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[14px] text-[16px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 md:w-[240px]"
         >
           {starting ? 'Starting...' : 'Go Live'}
         </button>
         <button
           onClick={() => navigate(-1)}
-          className="w-[240px] rounded-[8px] border border-border py-[14px] text-[16px] text-foreground transition-colors hover:border-foreground"
+          className="w-full rounded-[8px] border border-border py-[14px] text-[16px] text-foreground transition-colors hover:border-foreground md:w-[240px]"
         >
           Cancel
         </button>

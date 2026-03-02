@@ -21,7 +21,7 @@ export function MediaGrid({ media }: MediaGridProps) {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-[4px] md:gap-[6px]">
+      <div className="grid grid-cols-2 gap-[4px] md:grid-cols-3 md:gap-[6px]">
         {media.map((item) => (
           <div
             key={item.id}

@@ -79,7 +79,7 @@ export function ProfileSidebar({
       </div>
 
       {/* Stats */}
-      <div className="mt-[24px] flex items-center justify-center gap-[40px] md:justify-start">
+      <div className="mt-[24px] flex items-center justify-center gap-[24px] md:justify-start md:gap-[40px]">
         <div className="text-center md:text-left">
           <p className="text-[16px] font-medium text-foreground">
             {formatCount(profile.followingCount)}
@@ -129,7 +129,7 @@ export function ProfileSidebar({
           {hashtags.map((tag) => (
             <span
               key={tag}
-              className="rounded-[8px] border border-border px-[18px] py-[8px] text-[14px] text-muted-foreground"
+              className="rounded-[8px] border border-border px-[12px] py-[6px] text-[13px] text-muted-foreground md:px-[18px] md:py-[8px] md:text-[14px]"
             >
               {tag.startsWith('#') ? tag : `#${tag}`}
             </span>
