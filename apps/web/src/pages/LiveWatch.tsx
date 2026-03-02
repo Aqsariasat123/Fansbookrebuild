@@ -51,7 +51,8 @@ export default function LiveWatch() {
       hlsRef.current?.destroy();
       hlsRef.current = null;
     };
-  }, [sessionId, joinLive, leaveLive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
 
   async function attachHlsFallback(sid: string) {
     const { data } = await api.get(`/live/${sid}`);

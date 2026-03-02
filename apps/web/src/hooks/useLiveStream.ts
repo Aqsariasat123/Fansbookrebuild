@@ -11,22 +11,22 @@ let sendTransport: mediasoupTypes.Transport | null = null;
 let recvTransport: mediasoupTypes.Transport | null = null;
 let localStream: MediaStream | null = null;
 
-export function useLiveStream() {
-  const store = useLiveStore();
+const gs = () => useLiveStore.getState();
 
+export function useLiveStream() {
   // Socket event listeners for live chat + viewer count
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
 
     const handleViewerCount = (data: { sessionId: string; count: number }) => {
-      store.setViewerCount(data.count);
+      gs().setViewerCount(data.count);
     };
     const handleChat = (data: LiveChatMessage) => {
-      store.addChat(data);
+      gs().addChat(data);
     };
     const handleEnded = () => {
-      store.setIsLive(false);
+      gs().setIsLive(false);
     };
 
     socket.on('live:viewer-count', handleViewerCount);
@@ -38,74 +38,71 @@ export function useLiveStream() {
       socket.off('live:chat', handleChat);
       socket.off('live:ended', handleEnded);
     };
-  }, [store]);
+  }, []);
 
   // ─── Creator: start broadcasting ──────────────────────
 
-  const startBroadcast = useCallback(
-    async (title: string, videoEl: HTMLVideoElement | null) => {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
-        audio: true,
-      });
-      localStream = stream;
+  const startBroadcast = useCallback(async (title: string, videoEl: HTMLVideoElement | null) => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
+      audio: true,
+    });
+    localStream = stream;
 
-      if (videoEl) {
-        videoEl.srcObject = stream;
-        videoEl.muted = true;
-        await videoEl.play();
-      }
+    if (videoEl) {
+      videoEl.srcObject = stream;
+      videoEl.muted = true;
+      await videoEl.play();
+    }
 
-      // 1. Start session + get producer transport options
-      const { data: startData } = await api.post('/live/start', { title });
-      const { sessionId, transportOptions } = startData.data;
-      store.setSession(sessionId);
-      store.setIsLive(true);
+    // 1. Start session + get producer transport options
+    const { data: startData } = await api.post('/live/start', { title });
+    const { sessionId, transportOptions } = startData.data;
+    gs().setSession(sessionId);
+    gs().setIsLive(true);
 
-      // 2. Load mediasoup device with router capabilities
-      const { data: capData } = await api.get(`/live/${sessionId}/router-capabilities`);
-      const device = new Device();
-      await device.load({ routerRtpCapabilities: capData.data });
-      msDevice = device;
+    // 2. Load mediasoup device with router capabilities
+    const { data: capData } = await api.get(`/live/${sessionId}/router-capabilities`);
+    const device = new Device();
+    await device.load({ routerRtpCapabilities: capData.data });
+    msDevice = device;
 
-      // 3. Create send transport
-      const transport = device.createSendTransport(transportOptions);
-      sendTransport = transport;
+    // 3. Create send transport
+    const transport = device.createSendTransport(transportOptions);
+    sendTransport = transport;
 
-      transport.on('connect', ({ dtlsParameters }, callback) => {
-        const socket = getSocket();
-        socket?.emit('live:transport-connect', {
-          sessionId,
-          transportId: transport.id,
-          dtlsParameters,
-        });
-        callback();
-      });
-
-      transport.on('produce', async ({ kind, rtpParameters }, callback) => {
-        const { data: produceRes } = await api.post(`/live/${sessionId}/produce`, {
-          kind,
-          rtpParameters,
-        });
-        callback({ id: produceRes.data.producerId });
-      });
-
-      // 4. Produce audio + video tracks
-      for (const track of stream.getTracks()) {
-        await transport.produce({ track });
-      }
-
-      // 5. Join socket room
+    transport.on('connect', ({ dtlsParameters }, callback) => {
       const socket = getSocket();
-      socket?.emit('live:join', { sessionId });
+      socket?.emit('live:transport-connect', {
+        sessionId,
+        transportId: transport.id,
+        dtlsParameters,
+      });
+      callback();
+    });
 
-      return sessionId;
-    },
-    [store],
-  );
+    transport.on('produce', async ({ kind, rtpParameters }, callback) => {
+      const { data: produceRes } = await api.post(`/live/${sessionId}/produce`, {
+        kind,
+        rtpParameters,
+      });
+      callback({ id: produceRes.data.producerId });
+    });
+
+    // 4. Produce audio + video tracks
+    for (const track of stream.getTracks()) {
+      await transport.produce({ track });
+    }
+
+    // 5. Join socket room
+    const socket = getSocket();
+    socket?.emit('live:join', { sessionId });
+
+    return sessionId;
+  }, []);
 
   const stopBroadcast = useCallback(async () => {
-    const sessionId = useLiveStore.getState().sessionId;
+    const sessionId = gs().sessionId;
     if (!sessionId) return;
 
     const socket = getSocket();
@@ -117,51 +114,48 @@ export function useLiveStream() {
     localStream?.getTracks().forEach((t) => t.stop());
     sendTransport = null;
     localStream = null;
-    store.reset();
-  }, [store]);
+    gs().reset();
+  }, []);
 
   // ─── Viewer: join live ────────────────────────────────
 
-  const joinLive = useCallback(
-    async (sessionId: string, videoEl: HTMLVideoElement | null) => {
-      store.setSession(sessionId);
+  const joinLive = useCallback(async (sessionId: string, videoEl: HTMLVideoElement | null) => {
+    gs().setSession(sessionId);
 
-      // 1. Load device with router caps
-      const { data: capData } = await api.get(`/live/${sessionId}/router-capabilities`);
-      const device = new Device();
-      await device.load({ routerRtpCapabilities: capData.data });
-      msDevice = device;
+    // 1. Load device with router caps
+    const { data: capData } = await api.get(`/live/${sessionId}/router-capabilities`);
+    const device = new Device();
+    await device.load({ routerRtpCapabilities: capData.data });
+    msDevice = device;
 
-      // 2. Create recv transport
-      const { data: tData } = await api.post(`/live/${sessionId}/transport`);
-      const recv = device.createRecvTransport(tData.data.transportOptions);
-      recvTransport = recv;
+    // 2. Create recv transport
+    const { data: tData } = await api.post(`/live/${sessionId}/transport`);
+    const recv = device.createRecvTransport(tData.data.transportOptions);
+    recvTransport = recv;
 
-      recv.on('connect', ({ dtlsParameters }, callback) => {
-        const socket = getSocket();
-        socket?.emit('live:transport-connect', {
-          sessionId,
-          transportId: recv.id,
-          dtlsParameters,
-        });
-        callback();
-      });
-
-      // 3. Fetch existing chat messages
-      const { data: chatData } = await api.get(`/live/${sessionId}/chat`);
-      for (const msg of chatData.data ?? []) {
-        store.addChat(msg);
-      }
-
-      // 4. Join socket room
+    recv.on('connect', ({ dtlsParameters }, callback) => {
       const socket = getSocket();
-      socket?.emit('live:join', { sessionId });
-      store.setIsLive(true);
+      socket?.emit('live:transport-connect', {
+        sessionId,
+        transportId: recv.id,
+        dtlsParameters,
+      });
+      callback();
+    });
 
-      return { device, recvTransport: recv, videoEl };
-    },
-    [store],
-  );
+    // 3. Fetch existing chat messages
+    const { data: chatData } = await api.get(`/live/${sessionId}/chat`);
+    for (const msg of chatData.data ?? []) {
+      gs().addChat(msg);
+    }
+
+    // 4. Join socket room
+    const socket = getSocket();
+    socket?.emit('live:join', { sessionId });
+    gs().setIsLive(true);
+
+    return { device, recvTransport: recv, videoEl };
+  }, []);
 
   const consumeTrack = useCallback(
     async (sessionId: string, producerId: string, videoEl: HTMLVideoElement | null) => {
@@ -194,18 +188,18 @@ export function useLiveStream() {
   );
 
   const leaveLive = useCallback(() => {
-    const sessionId = useLiveStore.getState().sessionId;
+    const sessionId = gs().sessionId;
     const socket = getSocket();
     if (socket && sessionId) {
       socket.emit('live:leave', { sessionId });
     }
     recvTransport?.close();
     recvTransport = null;
-    store.reset();
-  }, [store]);
+    gs().reset();
+  }, []);
 
   const sendChat = useCallback((text: string) => {
-    const sessionId = useLiveStore.getState().sessionId;
+    const sessionId = gs().sessionId;
     const socket = getSocket();
     if (socket && sessionId && text.trim()) {
       socket.emit('live:chat', { sessionId, text });
