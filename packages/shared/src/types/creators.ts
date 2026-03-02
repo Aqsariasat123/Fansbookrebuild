@@ -56,6 +56,7 @@ export interface UpcomingLive {
 }
 
 export interface LiveFilterParams {
+  q?: string;
   category?: string;
   gender?: string;
   region?: string;

@@ -124,9 +124,7 @@ function filterMockSessions(params?: LiveFilterParams): LiveCreatorCard[] {
 
 /* ─── API Functions ─── */
 
-export async function getLiveSessionsApi(
-  params?: LiveFilterParams,
-): Promise<LiveCreatorCard[]> {
+export async function getLiveSessionsApi(params?: LiveFilterParams): Promise<LiveCreatorCard[]> {
   try {
     const query: Record<string, string> = {};
     if (params) {
@@ -149,11 +147,19 @@ export async function getLiveSessionsApi(
   }
 }
 
+export async function getFollowingLiveApi(): Promise<LiveCreatorCard[]> {
+  try {
+    const { data } = await api.get<ApiResponse<LiveCreatorCard[]>>('/live/following');
+    if (!data.data) throw new Error('Invalid response');
+    return data.data;
+  } catch {
+    return [];
+  }
+}
+
 export async function getUpcomingLivesApi(): Promise<UpcomingLive[]> {
   try {
-    const { data } = await api.get<ApiResponse<UpcomingLive[]>>(
-      '/live/upcoming',
-    );
+    const { data } = await api.get<ApiResponse<UpcomingLive[]>>('/live/upcoming');
 
     if (!data.data) throw new Error('Invalid response');
     return data.data;

@@ -54,6 +54,7 @@ const BadgesPage = lazy(() => import('./pages/Badges'));
 const MarketplaceDetail = lazy(() => import('./pages/MarketplaceDetail'));
 const MarketplaceCreate = lazy(() => import('./pages/MarketplaceCreate'));
 const HashtagFeed = lazy(() => import('./pages/HashtagFeed'));
+const LiveBrowse = lazy(() => import('./pages/LiveBrowse'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const CreatorProfileOwner = lazy(() => import('./pages/CreatorProfileOwner'));
@@ -164,7 +165,8 @@ export default function App() {
                   <Route path="/leaderboard" element={<LeaderboardPage />} />
                   <Route path="/badges" element={<BadgesPage />} />
 
-                  {/* Live stream viewer + Video call */}
+                  {/* Live browsing + viewer + Video call */}
+                  <Route path="/live-browse" element={<LiveBrowse />} />
                   <Route path="/live/:sessionId" element={<LiveWatch />} />
                   <Route path="/call/:callId" element={<VideoCallScreen />} />
 
