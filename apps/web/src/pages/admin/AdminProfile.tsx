@@ -26,7 +26,7 @@ export default function AdminProfile() {
 
   return (
     <div>
-      <p className="mb-[20px] font-outfit text-[32px] font-bold capitalize text-black">
+      <p className="mb-[12px] font-outfit text-[20px] font-bold capitalize text-black md:mb-[20px] md:text-[32px]">
         My Profile
       </p>
       <div className="rounded-[22px] bg-[#f8f8f8] px-[26px] py-[40px]">

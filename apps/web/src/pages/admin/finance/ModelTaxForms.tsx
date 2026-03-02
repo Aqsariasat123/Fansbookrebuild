@@ -85,7 +85,7 @@ export default function ModelTaxForms() {
 
   return (
     <div>
-      <p className="mb-[16px] font-outfit text-[32px] font-normal text-black">
+      <p className="mb-[12px] font-outfit text-[20px] font-normal text-black md:mb-[16px] md:text-[32px]">
         Finance {'>'} Model Tax Form
       </p>
       <AdminSearchBar value={search} onChange={setSearch}>

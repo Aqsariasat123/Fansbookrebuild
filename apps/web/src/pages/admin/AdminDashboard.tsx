@@ -44,7 +44,9 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <p className="mb-[24px] font-outfit text-[32px] font-normal text-black">Dashboard</p>
+      <p className="mb-[16px] font-outfit text-[22px] font-normal text-black md:mb-[24px] md:text-[32px]">
+        Dashboard
+      </p>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-[16px] mb-[24px]">
         <StatCard icon="👥" label="Total Users" value={data.totalUsers} color="#01adf1" />

@@ -51,7 +51,9 @@ export default function AdminAuditLog() {
 
   return (
     <div>
-      <p className="mb-[16px] font-outfit text-[32px] font-normal text-black">Audit Log</p>
+      <p className="mb-[12px] font-outfit text-[20px] font-normal text-black md:mb-[16px] md:text-[32px]">
+        Audit Log
+      </p>
 
       <AdminSearchBar
         value={search}

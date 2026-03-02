@@ -96,7 +96,9 @@ export default function AdminBookings() {
 
   return (
     <div>
-      <p className="mb-[16px] font-outfit text-[32px] font-normal text-black">Booking List</p>
+      <p className="mb-[12px] font-outfit text-[20px] font-normal text-black md:mb-[16px] md:text-[32px]">
+        Booking List
+      </p>
       <AdminSearchBar value={search} onChange={setSearch}>
         <AdminFilter
           label="Refund Status"

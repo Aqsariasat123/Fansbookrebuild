@@ -16,7 +16,7 @@ export default function BannerSetting() {
 
   return (
     <div>
-      <p className="mb-[16px] font-outfit text-[32px] font-normal text-black">
+      <p className="mb-[12px] font-outfit text-[20px] font-normal text-black md:mb-[16px] md:text-[32px]">
         Settings {'>'} Banner Image Setting
       </p>
       <div className="rounded-[22px] bg-[#f8f8f8] p-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">

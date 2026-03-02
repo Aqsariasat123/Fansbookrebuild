@@ -112,7 +112,9 @@ export default function AdminContent() {
 
   return (
     <div>
-      <p className="mb-[16px] font-outfit text-[32px] font-normal text-black">Content Moderation</p>
+      <p className="mb-[12px] font-outfit text-[20px] font-normal text-black md:mb-[16px] md:text-[32px]">
+        Content Moderation
+      </p>
       <AdminSearchBar value={search} onChange={setSearch}>
         <AdminFilter
           label="Status"

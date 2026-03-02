@@ -44,7 +44,7 @@ export default function AdminProfileEdit() {
 
   return (
     <div>
-      <p className="mb-[20px] font-outfit text-[32px] font-normal text-black">
+      <p className="mb-[12px] font-outfit text-[20px] font-normal text-black md:mb-[20px] md:text-[32px]">
         My Profile {'>'} Edit
       </p>
       <div className="rounded-[22px] bg-[#f8f8f8] p-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">

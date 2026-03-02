@@ -79,7 +79,9 @@ export function MasterListPage({
 
   return (
     <div>
-      <p className="mb-[16px] font-outfit text-[32px] font-normal text-black">{title}</p>
+      <p className="mb-[12px] font-outfit text-[20px] font-normal text-black md:mb-[16px] md:text-[32px]">
+        {title}
+      </p>
       <AdminSearchBar
         value={crud.search}
         onChange={crud.setSearch}

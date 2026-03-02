@@ -16,17 +16,17 @@ export function AdminSearchBar({
   children,
 }: Props) {
   return (
-    <div className="mb-[16px] rounded-[22px] bg-[#f8f8f8] px-[22px] py-[29px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+    <div className="mb-[12px] rounded-[16px] bg-[#f8f8f8] px-[14px] py-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] md:mb-[16px] md:rounded-[22px] md:px-[22px] md:py-[29px]">
       <div className="flex items-center gap-[5px] rounded-[6px] border border-[#15191c] px-[10px] py-[6px]">
-        <img src="/icons/admin/search.svg" alt="" className="size-[24px]" />
+        <img src="/icons/admin/search.svg" alt="" className="size-[20px] md:size-[24px]" />
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 bg-transparent font-outfit text-[16px] font-normal text-black outline-none placeholder:text-[#5d5d5d]"
+          className="flex-1 bg-transparent font-outfit text-[14px] font-normal text-black outline-none placeholder:text-[#5d5d5d] md:text-[16px]"
         />
       </div>
-      <div className="mt-[12px] flex flex-wrap items-center gap-[35px]">
+      <div className="mt-[12px] flex flex-wrap items-center gap-[10px] md:gap-[35px]">
         {children}
         {onAdd && (
           <button
@@ -53,11 +53,11 @@ export function AdminFilter({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="flex h-[32px] items-center rounded-[6px] border border-[#15191c] pl-[13px] pr-[10px]">
+    <div className="flex h-[32px] items-center rounded-[6px] border border-[#15191c] pl-[10px] pr-[8px] md:pl-[13px] md:pr-[10px]">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="bg-transparent font-outfit text-[16px] font-normal text-[#5d5d5d] outline-none"
+        className="bg-transparent font-outfit text-[13px] font-normal text-[#5d5d5d] outline-none md:text-[16px]"
       >
         <option value="">{label}</option>
         {options.map((o) => (
@@ -85,24 +85,30 @@ export function AdminDateRange({
   onClear: () => void;
 }) {
   return (
-    <div className="flex items-center gap-[12px]">
-      <div className="flex items-center gap-[6px]">
-        <span className="font-outfit text-[16px] font-normal text-[#15191c]">From:</span>
-        <input
-          type="date"
-          value={from}
-          onChange={(e) => onFromChange(e.target.value)}
-          className="rounded-[6px] border border-[#15191c] bg-transparent px-[10px] py-[6px] font-outfit text-[16px] text-[#5d5d5d] outline-none"
-        />
-      </div>
-      <div className="flex items-center gap-[6px]">
-        <span className="font-outfit text-[16px] font-normal text-[#15191c]">To:</span>
-        <input
-          type="date"
-          value={to}
-          onChange={(e) => onToChange(e.target.value)}
-          className="rounded-[6px] border border-[#15191c] bg-transparent px-[10px] py-[6px] font-outfit text-[16px] text-[#5d5d5d] outline-none"
-        />
+    <div className="flex flex-col gap-[8px] md:flex-row md:items-center md:gap-[12px]">
+      <div className="grid grid-cols-2 gap-[8px] md:flex md:items-center md:gap-[12px]">
+        <div className="flex items-center gap-[4px]">
+          <span className="font-outfit text-[13px] font-normal text-[#15191c] md:text-[16px]">
+            From:
+          </span>
+          <input
+            type="date"
+            value={from}
+            onChange={(e) => onFromChange(e.target.value)}
+            className="w-full rounded-[6px] border border-[#15191c] bg-transparent px-[6px] py-[6px] font-outfit text-[12px] text-[#5d5d5d] outline-none md:w-auto md:px-[10px] md:text-[16px]"
+          />
+        </div>
+        <div className="flex items-center gap-[4px]">
+          <span className="font-outfit text-[13px] font-normal text-[#15191c] md:text-[16px]">
+            To:
+          </span>
+          <input
+            type="date"
+            value={to}
+            onChange={(e) => onToChange(e.target.value)}
+            className="w-full rounded-[6px] border border-[#15191c] bg-transparent px-[6px] py-[6px] font-outfit text-[12px] text-[#5d5d5d] outline-none md:w-auto md:px-[10px] md:text-[16px]"
+          />
+        </div>
       </div>
       <button
         onClick={onClear}

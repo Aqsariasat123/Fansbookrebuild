@@ -26,7 +26,7 @@ export function AdminTable<T extends Record<string, unknown>>({
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`px-[16px] py-[16px] text-left font-outfit text-[16px] font-bold text-[#f8f8f8] ${col.className ?? ''}`}
+                className={`px-[10px] py-[12px] text-left font-outfit text-[12px] font-bold text-[#f8f8f8] md:px-[16px] md:py-[16px] md:text-[16px] ${col.className ?? ''}`}
               >
                 {col.header}
               </th>
@@ -52,7 +52,7 @@ export function AdminTable<T extends Record<string, unknown>>({
                 {columns.map((col) => (
                   <td
                     key={col.key}
-                    className={`px-[16px] py-[14px] font-outfit text-[12px] font-normal text-black ${col.className ?? ''}`}
+                    className={`px-[10px] py-[10px] font-outfit text-[11px] font-normal text-black md:px-[16px] md:py-[14px] md:text-[12px] ${col.className ?? ''}`}
                   >
                     {col.render ? col.render(row) : String(row[col.key] ?? '-')}
                   </td>

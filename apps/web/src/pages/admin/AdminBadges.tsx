@@ -118,7 +118,9 @@ export default function AdminBadges() {
   return (
     <div>
       <div className="mb-[16px] flex items-center justify-between">
-        <p className="font-outfit text-[32px] font-normal text-black">Badge Management</p>
+        <p className="font-outfit text-[20px] font-normal text-black md:text-[32px]">
+          Badge Management
+        </p>
         <button
           onClick={() => {
             setEditBadge(null);
