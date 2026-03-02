@@ -110,7 +110,7 @@ export function MarketingFooter() {
               />
             </a>
             <a href="https://x.com/FansBook__" target="_blank" rel="noopener noreferrer">
-              <img src="/icons/landing/twitter.svg" alt="Twitter" className="h-[25px] w-[25px]" />
+              <img src="/icons/landing/twitter.svg" alt="X" className="h-[25px] w-[25px]" />
             </a>
           </div>
         </div>
