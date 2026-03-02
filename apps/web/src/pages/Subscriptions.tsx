@@ -108,14 +108,64 @@ export default function Subscriptions() {
         />
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-[22px]">
-        <div className="min-w-[800px] overflow-hidden rounded-[22px] bg-card">
-          <div className="grid grid-cols-6 bg-[#01adf1] px-[16px] py-[14px] md:px-[30px] md:py-[22px]">
+      {/* Mobile Cards */}
+      <div className="flex flex-col gap-[12px] md:hidden">
+        {displayed.length === 0 ? (
+          <div className="rounded-[22px] bg-card py-[40px] text-center text-muted-foreground">
+            No data available
+          </div>
+        ) : (
+          displayed.map((s) => (
+            <div key={s.id} className="rounded-[16px] bg-card px-[16px] py-[14px]">
+              <div className="flex items-center justify-between">
+                <p className="text-[14px] font-semibold text-foreground">{s.creatorName}</p>
+                <span
+                  className={`rounded-[4px] px-[8px] py-[2px] text-[11px] font-medium ${s.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-muted text-muted-foreground'}`}
+                >
+                  {s.status}
+                </span>
+              </div>
+              <p className="mt-[4px] text-[11px] text-muted-foreground">#{s.id.slice(-7)}</p>
+              <div className="mt-[10px] grid grid-cols-2 gap-y-[8px] text-[12px]">
+                <div>
+                  <p className="text-muted-foreground">Amount</p>
+                  <p className="text-foreground">${s.amount.toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Plan</p>
+                  <p className="text-foreground">{s.planName}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Start</p>
+                  <p className="text-foreground">{formatDate(s.startDate)}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Renewal</p>
+                  <p className="text-foreground">{formatDate(s.renewalDate)}</p>
+                </div>
+              </div>
+              {s.status === 'ACTIVE' && (
+                <button
+                  onClick={() => handleCancel(s.id)}
+                  disabled={cancellingId === s.id}
+                  className="mt-[12px] w-full rounded-[8px] border border-red-500/50 py-[8px] text-[12px] text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+                >
+                  {cancellingId === s.id ? 'Cancelling...' : 'Cancel Subscription'}
+                </button>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden overflow-hidden rounded-[22px] md:block">
+        <div className="overflow-hidden rounded-[22px] bg-card">
+          <div className="grid grid-cols-6 bg-[#01adf1] px-[30px] py-[22px]">
             {TABLE_HEADERS.map((h) => (
               <p
                 key={h}
-                className="whitespace-pre-line text-center text-[11px] font-bold text-foreground md:text-[16px]"
+                className="whitespace-pre-line text-center text-[16px] font-bold text-foreground"
               >
                 {h}
               </p>
@@ -129,21 +179,13 @@ export default function Subscriptions() {
             displayed.map((s, i) => (
               <div
                 key={s.id}
-                className={`grid grid-cols-6 px-[16px] py-[14px] md:px-[30px] md:py-[20px] ${i < displayed.length - 1 ? 'border-b border-muted' : ''}`}
+                className={`grid grid-cols-6 px-[30px] py-[20px] ${i < displayed.length - 1 ? 'border-b border-muted' : ''}`}
               >
-                <p className="text-center text-[12px] text-foreground md:text-[16px]">
-                  #{s.id.slice(-7)}
-                </p>
-                <p className="text-center text-[12px] text-foreground md:text-[16px]">
-                  {s.creatorName}
-                </p>
-                <p className="text-center text-[12px] text-foreground md:text-[16px]">
-                  ${s.amount.toFixed(2)}
-                </p>
-                <p className="text-center text-[12px] text-foreground md:text-[16px]">
-                  {formatDate(s.startDate)}
-                </p>
-                <p className="text-center text-[12px] text-foreground md:text-[16px]">
+                <p className="text-center text-[16px] text-foreground">#{s.id.slice(-7)}</p>
+                <p className="text-center text-[16px] text-foreground">{s.creatorName}</p>
+                <p className="text-center text-[16px] text-foreground">${s.amount.toFixed(2)}</p>
+                <p className="text-center text-[16px] text-foreground">{formatDate(s.startDate)}</p>
+                <p className="text-center text-[16px] text-foreground">
                   {formatDate(s.renewalDate)}
                 </p>
                 <div className="flex items-center justify-center">
@@ -151,14 +193,12 @@ export default function Subscriptions() {
                     <button
                       onClick={() => handleCancel(s.id)}
                       disabled={cancellingId === s.id}
-                      className="rounded-[6px] border border-red-500/50 px-[12px] py-[4px] text-[11px] text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50 md:text-[13px]"
+                      className="rounded-[6px] border border-red-500/50 px-[12px] py-[4px] text-[13px] text-red-400 hover:bg-red-500/10 disabled:opacity-50"
                     >
                       {cancellingId === s.id ? 'Cancelling...' : 'Cancel'}
                     </button>
                   ) : (
-                    <span className="text-[11px] text-muted-foreground md:text-[13px]">
-                      {s.status}
-                    </span>
+                    <span className="text-[13px] text-muted-foreground">{s.status}</span>
                   )}
                 </div>
               </div>

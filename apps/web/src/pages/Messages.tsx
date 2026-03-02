@@ -142,7 +142,7 @@ export default function Messages() {
   const userInitial = user?.displayName?.charAt(0)?.toUpperCase() || '?';
 
   return (
-    <div className="flex flex-col rounded-[11px] bg-card md:rounded-[22px] md:h-[calc(100vh-130px)]">
+    <div className="flex flex-col rounded-[11px] bg-card h-[calc(100vh-160px)] md:rounded-[22px] md:h-[calc(100vh-130px)]">
       <MessagePageHeader />
 
       <div className="flex-1 overflow-y-auto border border-muted rounded-[8px] mx-[10px] mb-[10px] md:mx-[22px] md:mb-[22px]">
