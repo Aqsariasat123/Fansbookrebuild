@@ -69,6 +69,8 @@ router.post('/:id/consume', authenticate, async (req, res, next) => {
     const consumer = await transport.consume({ producerId, rtpCapabilities, paused: true });
     if (!sessionConsumers.has(id)) sessionConsumers.set(id, []);
     sessionConsumers.get(id)!.push(consumer);
+    // Resume server-side consumer so media actually flows to the client
+    await consumer.resume();
     res.json({
       success: true,
       data: {
