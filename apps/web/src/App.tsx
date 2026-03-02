@@ -1,14 +1,11 @@
-import { Suspense, useEffect } from 'react';
+import { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MainLayout } from './components/layout/MainLayout';
 import { adminRoutes } from './pages/admin/AdminRoutes';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { RoleRoute } from './components/RoleRoute';
-import { useAuthStore } from './stores/authStore';
-import { getMeApi } from './lib/auth';
-import { useSocket } from './hooks/useSocket';
-import { useImpersonation, ImpersonationBanner } from './hooks/useImpersonation';
+import { AuthBootstrap } from './components/AuthBootstrap';
 import { NotificationToastContainer } from './components/shared/NotificationToast';
 import {
   LandingPage,
@@ -89,30 +86,6 @@ function Loading() {
     <div className="flex min-h-[50vh] items-center justify-center">
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
     </div>
-  );
-}
-
-function AuthBootstrap({ children }: { children: React.ReactNode }) {
-  const setUser = useAuthStore((s) => s.setUser);
-  useSocket();
-  useImpersonation();
-
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      setUser(null);
-      return;
-    }
-    getMeApi()
-      .then((res) => setUser(res.data))
-      .catch(() => setUser(null));
-  }, [setUser]);
-
-  return (
-    <>
-      <ImpersonationBanner />
-      {children}
-    </>
   );
 }
 
