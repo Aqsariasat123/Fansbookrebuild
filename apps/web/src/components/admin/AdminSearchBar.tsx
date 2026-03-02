@@ -112,7 +112,7 @@ export function AdminDateRange({
       </div>
       <button
         onClick={onClear}
-        className="flex h-[32px] items-center rounded-[26px] bg-[#5d5d5d] px-[8px] font-outfit text-[10px] text-[#f8f8f8]"
+        className="flex h-[32px] w-fit items-center rounded-[26px] bg-[#5d5d5d] px-[8px] font-outfit text-[10px] text-[#f8f8f8]"
       >
         Clear Dates
       </button>
