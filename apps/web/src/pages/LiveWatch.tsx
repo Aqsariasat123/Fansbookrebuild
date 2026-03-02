@@ -157,7 +157,7 @@ export default function LiveWatch() {
           </div>
           <div className="relative bg-[#0a0c0e]">
             {loading && (
-              <div className="flex aspect-video items-center justify-center">
+              <div className="absolute inset-0 z-10 flex items-center justify-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e91e8c] border-t-transparent" />
               </div>
             )}
@@ -165,7 +165,7 @@ export default function LiveWatch() {
               ref={videoRef}
               autoPlay
               playsInline
-              className={`aspect-video w-full object-cover ${loading ? 'hidden' : ''}`}
+              className="aspect-video w-full object-cover"
             />
             {!isLive && !loading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/80">

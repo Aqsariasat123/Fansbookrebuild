@@ -5,6 +5,7 @@ import { requireRole } from '../middleware/requireRole.js';
 import { createWebRtcTransport, getTransportOptions, getRouter } from '../config/mediasoup.js';
 import type { MediaKind, RtpParameters, RtpCapabilities } from 'mediasoup/types';
 import { sessionTransports, sessionProducers, sessionConsumers, cleanupSession } from './live.js';
+import { getIO } from '../config/socket.js';
 
 const router = Router();
 
@@ -99,6 +100,7 @@ router.post('/:id/end', authenticate, requireRole('CREATOR'), async (req, res, n
       where: { id },
       data: { status: 'ENDED', endedAt: new Date() },
     });
+    getIO().to(`live:${id}`).emit('live:ended', { sessionId: id });
     cleanupSession(id);
     res.json({ success: true });
   } catch (err) {
