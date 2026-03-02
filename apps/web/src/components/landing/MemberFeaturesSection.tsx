@@ -1,39 +1,62 @@
 import { useState } from 'react';
 
-const memberContent: Record<string, Record<string, string[]>> = {
+interface TabContent {
+  items: string[];
+  image: string;
+}
+
+const memberContent: Record<string, Record<string, TabContent>> = {
   creators: {
-    Payouts: [
-      'Creators earn 90% on all sales',
-      'Weekly payouts direct to your bank account',
-      'PCI compliant to keep your sensitive info safe',
-    ],
-    'Custom Offers': [
-      'Create custom offers for your fans',
-      'Set your own prices and terms',
-      'Manage all offers from your dashboard',
-    ],
-    'Uploading Content': [
-      'Upload high-quality content easily',
-      'Multiple file format support',
-      'Content scheduling and management',
-    ],
+    Payouts: {
+      items: [
+        'Creators earn 90% on all sales',
+        'Weekly payouts direct to your bank account',
+        'PCI compliant to keep your sensitive info safe',
+      ],
+      image: '/icons/landing/Payouts.png',
+    },
+    'Custom Offers': {
+      items: [
+        'Create custom offers for your fans',
+        'Set your own prices and terms',
+        'Manage all offers from your dashboard',
+      ],
+      image: '/icons/landing/Custom Offers.png',
+    },
+    'Uploading Content': {
+      items: [
+        'Upload high-quality content easily',
+        'Multiple file format support',
+        'Content scheduling and management',
+      ],
+      image: '/icons/landing/Uploading Content.png',
+    },
   },
   subscribers: {
-    'Premium Access': [
-      'Access exclusive content from creators',
-      'High-quality streaming and downloads',
-      'Mobile and desktop access',
-    ],
-    Interaction: [
-      'Direct messaging with creators',
-      'Live chat during broadcasts',
-      'Custom requests and interactions',
-    ],
-    Support: [
-      '24/7 customer support',
-      'Secure payment processing',
-      'Privacy protection guaranteed',
-    ],
+    'Premium Access': {
+      items: [
+        'Access exclusive content from creators',
+        'High-quality streaming and downloads',
+        'Mobile and desktop access',
+      ],
+      image: '/icons/landing/Premium Access.png',
+    },
+    Interaction: {
+      items: [
+        'Direct messaging with creators',
+        'Live chat during broadcasts',
+        'Custom requests and interactions',
+      ],
+      image: '/icons/landing/Interaction.png',
+    },
+    Support: {
+      items: [
+        '24/7 customer support',
+        'Secure payment processing',
+        'Privacy protection guaranteed',
+      ],
+      image: '/icons/landing/Support.png',
+    },
   },
 };
 
@@ -62,7 +85,7 @@ export function MemberFeaturesSection() {
 
   const subTabs = Object.keys(memberContent[tab]);
   const activeSubTab = subTabs.includes(subTab) ? subTab : subTabs[0];
-  const items = memberContent[tab][activeSubTab];
+  const { items, image } = memberContent[tab][activeSubTab];
 
   function switchTab(newTab: 'creators' | 'subscribers') {
     setTab(newTab);
@@ -121,8 +144,8 @@ export function MemberFeaturesSection() {
           ))}
         </ul>
         <img
-          src="/images/landing/member-features.webp"
-          alt=""
+          src={image}
+          alt={activeSubTab}
           className="h-[160px] w-[200px] object-contain md:h-[213px] md:w-[262px]"
         />
       </div>
