@@ -12,7 +12,7 @@ export default function LiveWatch() {
 
   const isLive = useLiveStore((s) => s.isLive);
   const viewerCount = useLiveStore((s) => s.viewerCount);
-  const { joinLive, leaveLive, sendChat } = useLiveStream();
+  const { joinLive, consumeTrack, leaveLive, sendChat } = useLiveStream();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isHls, setIsHls] = useState(false);
@@ -26,6 +26,12 @@ export default function LiveWatch() {
     (async () => {
       try {
         await joinLive(sessionId, videoRef.current);
+        // Fetch producer list and consume each track
+        const { data: prodData } = await api.get(`/live/${sessionId}/producers`);
+        const producers: { producerId: string; kind: string }[] = prodData.data ?? [];
+        for (const p of producers) {
+          await consumeTrack(sessionId, p.producerId, videoRef.current);
+        }
         if (mounted) setLoading(false);
       } catch {
         // mediasoup failed — try HLS fallback

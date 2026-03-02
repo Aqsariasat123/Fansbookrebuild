@@ -130,6 +130,21 @@ router.get('/:id/chat', authenticate, async (req, res, next) => {
   }
 });
 
+// ─── GET /api/live/:id/producers — List active producer IDs for viewers ──
+
+router.get('/:id/producers', authenticate, async (req, res, next) => {
+  try {
+    const id = req.params.id as string;
+    const producers = sessionProducers.get(id) ?? [];
+    const items = producers
+      .filter((p) => !p.closed)
+      .map((p) => ({ producerId: p.id, kind: p.kind }));
+    res.json({ success: true, data: items });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── GET /api/live/:id — Session details ──
 
 router.get('/:id', authenticate, async (req, res, next) => {
