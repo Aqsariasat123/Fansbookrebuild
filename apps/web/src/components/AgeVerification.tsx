@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 
 const STORAGE_KEY = 'age_verified';
+const SKIP_PATHS = ['/privacy', '/terms', '/cookies', '/complaints', '/contact', '/about', '/faq'];
 
 export function AgeVerification({ children }: { children: React.ReactNode }) {
-  const [verified, setVerified] = useState(() => localStorage.getItem(STORAGE_KEY) === 'true');
+  const skip = SKIP_PATHS.includes(window.location.pathname);
+  const [verified, setVerified] = useState(
+    () => skip || localStorage.getItem(STORAGE_KEY) === 'true',
+  );
   const [privacyChecked, setPrivacyChecked] = useState(false);
   const [termsChecked, setTermsChecked] = useState(false);
 
