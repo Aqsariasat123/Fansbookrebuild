@@ -130,10 +130,33 @@ router.get('/:id/chat', authenticate, async (req, res, next) => {
   }
 });
 
+// ─── GET /api/live/:id — Session details ──
+
+router.get('/:id', authenticate, async (req, res, next) => {
+  try {
+    const id = req.params.id as string;
+    const session = await prisma.liveSession.findUnique({
+      where: { id },
+      select: { id: true, title: true, status: true, hlsUrl: true, viewerCount: true },
+    });
+    if (!session) {
+      return res.status(404).json({ success: false, error: 'Session not found' });
+    }
+    res.json({ success: true, data: session });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── GET /api/live/:id/router-capabilities ──
 
-router.get('/:id/router-capabilities', authenticate, async (_req, res, next) => {
+router.get('/:id/router-capabilities', authenticate, async (req, res, next) => {
   try {
+    const id = req.params.id as string;
+    const session = await prisma.liveSession.findUnique({ where: { id } });
+    if (!session || session.status !== 'LIVE') {
+      return res.status(404).json({ success: false, error: 'Session not live' });
+    }
     const msRouter = getRouter();
     res.json({ success: true, data: msRouter.rtpCapabilities });
   } catch (err) {

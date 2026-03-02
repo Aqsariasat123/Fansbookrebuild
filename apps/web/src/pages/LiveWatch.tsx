@@ -38,7 +38,7 @@ export default function LiveWatch() {
           }
         } catch {
           if (mounted) {
-            setError('Stream not available or has ended.');
+            setError('This stream is not currently available or has ended.');
             setLoading(false);
           }
         }
@@ -103,7 +103,7 @@ export default function LiveWatch() {
           <rect x="1" y="5" width="15" height="14" rx="2" />
           <line x1="2" y1="2" x2="22" y2="22" stroke="#e02a2a" strokeWidth="2" />
         </svg>
-        <p className="text-[18px] font-semibold text-foreground">Stream Ended</p>
+        <p className="text-[18px] font-semibold text-foreground">Stream Unavailable</p>
         <p className="text-[14px] text-muted-foreground">{error}</p>
         <button
           onClick={() => navigate(-1)}
@@ -149,18 +149,17 @@ export default function LiveWatch() {
             <span className="text-[12px] text-white/80">{formatViewers(viewerCount)} viewers</span>
           </div>
           <div className="relative bg-[#0a0c0e]">
-            {loading ? (
+            {loading && (
               <div className="flex aspect-video items-center justify-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e91e8c] border-t-transparent" />
               </div>
-            ) : (
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                className="aspect-video w-full object-cover"
-              />
             )}
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className={`aspect-video w-full object-cover ${loading ? 'hidden' : ''}`}
+            />
             {!isLive && !loading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/80">
                 <p className="text-[16px] text-white">Stream has ended</p>

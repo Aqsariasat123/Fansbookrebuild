@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import type { LiveCreatorCard } from '@fansbook/shared';
+import { useAuthStore } from '../../stores/authStore';
 
 const CATEGORY_ICONS: Record<string, string> = {
   Artist: 'palette',
@@ -20,6 +21,7 @@ function formatViewers(count: number): string {
 
 export function LiveCard({ session }: { session: LiveCreatorCard }) {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const categoryIcon = session.category ? CATEGORY_ICONS[session.category] || 'palette' : 'palette';
 
   return (
@@ -96,7 +98,7 @@ export function LiveCard({ session }: { session: LiveCreatorCard }) {
 
         {/* Join button */}
         <button
-          onClick={() => navigate(`/live/${session.id}`)}
+          onClick={() => navigate(user ? `/live/${session.id}` : '/login')}
           className="rounded-[3px] bg-gradient-to-r from-[#01adf1] to-[#a61651] p-[8px] font-outfit text-[10px] font-normal text-foreground sm:rounded-[4px] sm:p-[10px] sm:text-[12px]"
         >
           Join Live Session
