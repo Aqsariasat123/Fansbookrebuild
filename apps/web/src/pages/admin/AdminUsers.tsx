@@ -3,6 +3,7 @@ import { api } from '../../lib/api';
 import { AdminTable } from '../../components/admin/AdminTable';
 import { AdminSearchBar, AdminFilter, AdminDateRange } from '../../components/admin/AdminSearchBar';
 import { AdminPagination } from '../../components/admin/AdminPagination';
+import { ConfirmStatusModal } from '../../components/admin/ConfirmStatusModal';
 
 interface User {
   id: string;
@@ -62,6 +63,19 @@ export default function AdminUsers() {
     fetchUsers();
   };
 
+  const handleImpersonate = async (user: User) => {
+    try {
+      const { data: r } = await api.post(`/admin/users/${user.id}/impersonate`);
+      if (r.success)
+        window.open(
+          `${window.location.origin}/feed?impersonate=${r.data.accessToken}&user=${encodeURIComponent(r.data.user.username)}`,
+          '_blank',
+        );
+    } catch {
+      /* ignore */
+    }
+  };
+
   const fmt = (d: string) => {
     const dt = new Date(d);
     return `${dt.toLocaleDateString()}\n${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
@@ -118,17 +132,27 @@ export default function AdminUsers() {
           <button title="View">
             <img src="/icons/admin/eye.png" alt="View" className="size-[20px]" />
           </button>
+          {u.role !== 'ADMIN' && (
+            <button
+              onClick={() => handleImpersonate(u)}
+              title="Impersonate"
+              className="rounded bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[8px] py-[3px] text-[10px] text-white"
+            >
+              Login As
+            </button>
+          )}
         </div>
       ),
     },
   ];
 
-  if (loading && !didLoad.current)
-    return (
-      <div className="flex justify-center py-20">
-        <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
-      </div>
-    );
+  const spinner = (
+    <div className="flex justify-center py-20">
+      <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+    </div>
+  );
+
+  if (loading && !didLoad.current) return spinner;
 
   return (
     <div>
@@ -165,37 +189,11 @@ export default function AdminUsers() {
           }}
         />
       </AdminSearchBar>
-      {loading ? (
-        <div className="flex justify-center py-20">
-          <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
-        </div>
-      ) : (
-        <AdminTable columns={columns} data={users} />
-      )}
+      {loading ? spinner : <AdminTable columns={columns} data={users} />}
       <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       {confirmUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-[360px] rounded-[22px] bg-[#f8f8f8] p-[32px] text-center shadow-lg">
-            <p className="font-outfit text-[20px] font-normal text-black">
-              Are You Sure Want To Change Status?
-            </p>
-            <div className="mt-[24px] flex justify-center gap-[16px]">
-              <button
-                onClick={toggleStatus}
-                className="rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[10px] font-outfit text-[16px] text-[#f8f8f8]"
-              >
-                YES
-              </button>
-              <button
-                onClick={() => setConfirmUser(null)}
-                className="rounded-[80px] border border-[#15191c] px-[32px] py-[10px] font-outfit text-[16px] text-[#15191c]"
-              >
-                NO
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmStatusModal onConfirm={toggleStatus} onCancel={() => setConfirmUser(null)} />
       )}
     </div>
   );

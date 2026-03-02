@@ -103,4 +103,64 @@ router.put('/:userId/reject', async (req, res, next) => {
   }
 });
 
+// POST /api/admin/verification/bulk-approve
+router.post('/bulk-approve', async (req, res, next) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ success: false, message: 'ids array is required' });
+    }
+    await prisma.$transaction(async (tx) => {
+      await tx.user.updateMany({
+        where: { id: { in: ids }, verificationStatus: 'PENDING' },
+        data: { verificationStatus: 'VERIFIED', isVerified: true },
+      });
+      for (const id of ids) {
+        await tx.auditLog.create({
+          data: {
+            adminId: req.user!.userId,
+            action: 'BULK_VERIFY_CREATOR',
+            targetType: 'User',
+            targetId: id,
+            details: { status: 'VERIFIED', bulkCount: ids.length },
+          },
+        });
+      }
+    });
+    res.json({ success: true, message: `${ids.length} creators approved` });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/admin/verification/bulk-reject
+router.post('/bulk-reject', async (req, res, next) => {
+  try {
+    const { ids, reason } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ success: false, message: 'ids array is required' });
+    }
+    await prisma.$transaction(async (tx) => {
+      await tx.user.updateMany({
+        where: { id: { in: ids }, verificationStatus: 'PENDING' },
+        data: { verificationStatus: 'REJECTED' },
+      });
+      for (const id of ids) {
+        await tx.auditLog.create({
+          data: {
+            adminId: req.user!.userId,
+            action: 'BULK_REJECT_CREATOR',
+            targetType: 'User',
+            targetId: id,
+            details: { status: 'REJECTED', reason: reason || null, bulkCount: ids.length },
+          },
+        });
+      }
+    });
+    res.json({ success: true, message: `${ids.length} creators rejected` });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

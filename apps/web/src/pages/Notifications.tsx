@@ -55,9 +55,15 @@ export default function Notifications() {
       setItems((prev) => [data, ...prev]);
     };
 
+    const handleUpdated = (data: Notification) => {
+      setItems((prev) => prev.map((n) => (n.id === data.id ? { ...n, message: data.message } : n)));
+    };
+
     socket.on('notification:new', handleNew);
+    socket.on('notification:updated', handleUpdated);
     return () => {
       socket.off('notification:new', handleNew);
+      socket.off('notification:updated', handleUpdated);
     };
   }, []);
 

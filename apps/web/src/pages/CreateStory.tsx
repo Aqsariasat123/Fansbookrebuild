@@ -1,8 +1,14 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
+import { StoryFilters } from '../components/stories/StoryFilters';
+import { StoryTextOverlay, type TextOverlay } from '../components/stories/StoryTextOverlay';
+import { StoryStickers, type Sticker } from '../components/stories/StoryStickers';
+import { StoryPreview } from '../components/stories/StoryPreview';
+import { StorySourceSelector } from '../components/stories/StorySourceSelector';
 
 type StoryVisibility = 'PUBLIC' | 'SUBSCRIBERS';
+type SourceMode = 'upload' | 'camera';
 
 export default function CreateStory() {
   const navigate = useNavigate();
@@ -12,6 +18,14 @@ export default function CreateStory() {
   const [visibility, setVisibility] = useState<StoryVisibility>('PUBLIC');
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [sourceMode, setSourceMode] = useState<SourceMode>('upload');
+
+  // Enhancement: filters, text overlay, stickers
+  const [filterCss, setFilterCss] = useState('');
+  const [textOverlay, setTextOverlay] = useState<TextOverlay | null>(null);
+  const [stickers, setStickers] = useState<Sticker[]>([]);
+
+  const isVideo = file?.type.startsWith('video/') ?? false;
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -25,6 +39,19 @@ export default function CreateStory() {
     setError('');
   };
 
+  const handleFileSelect = (selectedFile: File) => {
+    setFile(selectedFile);
+    setPreview(URL.createObjectURL(selectedFile));
+  };
+
+  const clearMedia = () => {
+    setFile(null);
+    setPreview(null);
+    setFilterCss('');
+    setTextOverlay(null);
+    setStickers([]);
+  };
+
   const handleSubmit = async () => {
     if (!file) return;
     setUploading(true);
@@ -32,6 +59,17 @@ export default function CreateStory() {
     const fd = new FormData();
     fd.append('media', file);
     fd.append('visibility', visibility);
+
+    // Send overlays as JSON (text overlay + stickers + filter)
+    const overlays = {
+      filter: filterCss || null,
+      text: textOverlay,
+      stickers: stickers.length > 0 ? stickers : null,
+    };
+    if (overlays.filter || overlays.text || overlays.stickers) {
+      fd.append('overlays', JSON.stringify(overlays));
+    }
+
     try {
       await api.post('/stories', fd);
       navigate('/feed');
@@ -73,51 +111,22 @@ export default function CreateStory() {
             ))}
           </div>
 
-          {!preview ? (
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="flex w-full flex-col items-center gap-3 rounded-[16px] border-2 border-dashed border-border/40 py-16 hover:border-[#01adf1]/50"
-            >
-              <svg
-                className="size-12 text-muted-foreground"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              <span className="text-[14px] text-muted-foreground">Upload Image or Video</span>
-              <span className="text-[12px] text-muted-foreground/60">Max 50MB</span>
-            </button>
+          {preview ? (
+            <StoryPreview
+              preview={preview}
+              isVideo={isVideo}
+              filterCss={filterCss}
+              textOverlay={textOverlay}
+              stickers={stickers}
+              onClear={clearMedia}
+            />
           ) : (
-            <div className="relative">
-              {file?.type.startsWith('video/') ? (
-                <video src={preview} className="w-full rounded-[16px]" controls />
-              ) : (
-                <img src={preview} alt="Preview" className="w-full rounded-[16px] object-cover" />
-              )}
-              <button
-                onClick={() => {
-                  setFile(null);
-                  setPreview(null);
-                }}
-                className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80"
-              >
-                <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
+            <StorySourceSelector
+              sourceMode={sourceMode}
+              onSourceModeChange={setSourceMode}
+              onFileSelect={handleFileSelect}
+              fileRef={fileRef}
+            />
           )}
           <input
             ref={fileRef}
@@ -127,6 +136,28 @@ export default function CreateStory() {
             className="hidden"
           />
         </div>
+
+        {/* Enhancement tools (only visible when media is selected) */}
+        {preview && !isVideo && (
+          <div className="flex flex-col gap-[16px] rounded-[22px] bg-card p-[20px]">
+            <p className="text-[14px] font-medium text-foreground">Filters</p>
+            <StoryFilters active={filterCss} onChange={setFilterCss} />
+
+            <p className="text-[14px] font-medium text-foreground">Text Overlay</p>
+            <StoryTextOverlay
+              overlay={textOverlay}
+              onChange={setTextOverlay}
+              onRemove={() => setTextOverlay(null)}
+            />
+
+            <p className="text-[14px] font-medium text-foreground">Stickers</p>
+            <StoryStickers
+              stickers={stickers}
+              onAdd={(s) => setStickers((prev) => [...prev, s])}
+              onRemoveLast={() => setStickers((prev) => prev.slice(0, -1))}
+            />
+          </div>
+        )}
 
         {error && <p className="text-[12px] text-red-400">{error}</p>}
 

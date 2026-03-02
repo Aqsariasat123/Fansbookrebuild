@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../../config/database.js';
 import { AppError } from '../../middleware/errorHandler.js';
+import bulkRouter from './admin-finance-bulk.js';
 
 const router = Router();
 
@@ -173,5 +174,7 @@ router.get('/payouts', async (req, res, next) => {
     next(err);
   }
 });
+
+router.use('/withdrawals', bulkRouter);
 
 export default router;

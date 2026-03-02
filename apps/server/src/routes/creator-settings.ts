@@ -3,11 +3,13 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { requireRole } from '../middleware/requireRole.js';
 import { AppError } from '../middleware/errorHandler.js';
+import messagePriceRouter from './creator-message-price.js';
 
 const router = Router();
 
 // All routes require auth + CREATOR role
 router.use(authenticate, requireRole('CREATOR'));
+router.use('/message-price', messagePriceRouter);
 
 function validateStringField(value: unknown, fieldName: string): string {
   if (typeof value !== 'string') throw new AppError(400, `${fieldName} must be a string`);
@@ -24,30 +26,23 @@ function buildBasicUpdate(body: Record<string, unknown>): Record<string, unknown
     'timezone',
     'aboutMe',
   ] as const;
-
   for (const field of stringFields) {
     if (body[field] !== undefined) {
       updateData[field] = validateStringField(body[field], field);
     }
   }
-
-  // Auto-update displayName if both names provided
   if (updateData.firstName && updateData.lastName) {
     updateData.displayName = `${updateData.firstName} ${updateData.lastName}`;
   }
-
   return updateData;
 }
 
 function buildStatsUpdate(body: Record<string, unknown>): Record<string, unknown> {
   const updateData: Record<string, unknown> = {};
-
   if (body.dateOfBirth !== undefined) {
     const dob = new Date(body.dateOfBirth as string);
     if (isNaN(dob.getTime())) throw new AppError(400, 'Invalid dateOfBirth format');
     updateData.dateOfBirth = dob;
-
-    // Auto-calculate age from dateOfBirth
     const today = new Date();
     let age = today.getFullYear() - dob.getFullYear();
     const monthDiff = today.getMonth() - dob.getMonth();
@@ -56,15 +51,12 @@ function buildStatsUpdate(body: Record<string, unknown>): Record<string, unknown
     }
     updateData.age = age;
   }
-
   if (body.gender !== undefined) {
     updateData.gender = validateStringField(body.gender, 'gender');
   }
-
   if (body.region !== undefined) {
     updateData.region = validateStringField(body.region, 'region');
   }
-
   return updateData;
 }
 

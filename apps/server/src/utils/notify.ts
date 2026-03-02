@@ -80,16 +80,59 @@ async function sendWebPush(userId: string, type: string, message: string) {
   }
 }
 
+async function tryGroupNotification(params: NotifyParams): Promise<boolean> {
+  if (!params.entityId) return false;
+
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  const existing = await prisma.notification.findFirst({
+    where: {
+      userId: params.userId,
+      type: params.type,
+      entityId: params.entityId,
+      read: false,
+      createdAt: { gte: oneHourAgo },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+  if (!existing) return false;
+
+  const othersMatch = existing.message.match(/ and (\d+) others?$/);
+  const currentCount = othersMatch ? parseInt(othersMatch[1]) : 0;
+  const newCount = currentCount + 1;
+
+  let baseMessage = existing.message;
+  if (othersMatch) {
+    baseMessage = baseMessage.replace(/ and \d+ others?$/, '');
+  }
+  const suffix = newCount === 1 ? ' and 1 other' : ` and ${newCount} others`;
+  const groupedMessage = baseMessage + suffix;
+
+  const updated = await prisma.notification.update({
+    where: { id: existing.id },
+    data: { message: groupedMessage, createdAt: new Date() },
+  });
+
+  if (ioInstance) {
+    ioInstance.to(`user:${params.userId}`).emit('notification:updated', updated);
+  }
+  return true;
+}
+
 export async function createNotification(params: NotifyParams) {
   try {
     const pref = await getUserPref(params.userId, params.type);
-    const notification = pref.inApp ? await writeAndEmit(params) : null;
+
+    if (pref.inApp) {
+      const grouped = await tryGroupNotification(params);
+      if (!grouped) await writeAndEmit(params);
+    }
+
     if (pref.email) await sendNotifEmail(params.userId, params.type, params.message);
     // Web push — fire-and-forget, runs for all notification types
     sendWebPush(params.userId, params.type, params.message).catch((err) => {
       logger.error({ err }, 'Web push delivery failed');
     });
-    return notification;
+    return null;
   } catch (err) {
     logger.error({ err }, 'Failed to create notification');
     return null;

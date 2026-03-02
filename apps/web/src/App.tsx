@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MainLayout } from './components/layout/MainLayout';
@@ -8,71 +8,72 @@ import { RoleRoute } from './components/RoleRoute';
 import { useAuthStore } from './stores/authStore';
 import { getMeApi } from './lib/auth';
 import { useSocket } from './hooks/useSocket';
+import { useImpersonation, ImpersonationBanner } from './hooks/useImpersonation';
 import { NotificationToastContainer } from './components/shared/NotificationToast';
-
-const LandingPage = lazy(() => import('./pages/LandingPage'));
-const MakeMoney = lazy(() => import('./pages/MakeMoney'));
-const Creators = lazy(() => import('./pages/Creators'));
-const CreatorsLive = lazy(() => import('./pages/CreatorsLive'));
-const Home = lazy(() => import('./pages/Home'));
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const Profile = lazy(() => import('./pages/Profile'));
-const ProfileEdit = lazy(() => import('./pages/ProfileEdit'));
-const Messages = lazy(() => import('./pages/Messages'));
-const MessageChat = lazy(() => import('./pages/MessageChat'));
-const Wallet = lazy(() => import('./pages/Wallet'));
-const Followers = lazy(() => import('./pages/Followers'));
-const Subscriptions = lazy(() => import('./pages/Subscriptions'));
-const Notifications = lazy(() => import('./pages/Notifications'));
-const Explore = lazy(() => import('./pages/Explore'));
-const Settings = lazy(() => import('./pages/Settings'));
-const HelpSupport = lazy(() => import('./pages/HelpSupport'));
-const Language = lazy(() => import('./pages/Language'));
-const About = lazy(() => import('./pages/About'));
-const Contact = lazy(() => import('./pages/Contact'));
-const HowItWorks = lazy(() => import('./pages/HowItWorks'));
-const Privacy = lazy(() => import('./pages/Privacy'));
-const Terms = lazy(() => import('./pages/Terms'));
-const Cookies = lazy(() => import('./pages/Cookies'));
-const Complaints = lazy(() => import('./pages/Complaints'));
-const FAQ = lazy(() => import('./pages/FAQ'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
-const ResetPassword = lazy(() => import('./pages/ResetPassword'));
-const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
-const SinglePost = lazy(() => import('./pages/SinglePost'));
-const Bookmarks = lazy(() => import('./pages/Bookmarks'));
-const Following = lazy(() => import('./pages/Following'));
-const CreateStory = lazy(() => import('./pages/CreateStory'));
-const SearchPage = lazy(() => import('./pages/Search'));
-const BecomeCreator = lazy(() => import('./pages/BecomeCreator'));
-const TwoFactorVerify = lazy(() => import('./pages/TwoFactorVerify'));
-const Onboarding = lazy(() => import('./pages/Onboarding'));
-const MarketplacePage = lazy(() => import('./pages/Marketplace'));
-const LeaderboardPage = lazy(() => import('./pages/Leaderboard'));
-const BadgesPage = lazy(() => import('./pages/Badges'));
-const MarketplaceDetail = lazy(() => import('./pages/MarketplaceDetail'));
-const MarketplaceCreate = lazy(() => import('./pages/MarketplaceCreate'));
-const HashtagFeed = lazy(() => import('./pages/HashtagFeed'));
-const LiveBrowse = lazy(() => import('./pages/LiveBrowse'));
-const NotFound = lazy(() => import('./pages/NotFound'));
-
-const CreatorProfileOwner = lazy(() => import('./pages/CreatorProfileOwner'));
-const CreatorProfileEdit = lazy(() => import('./pages/CreatorProfileEdit'));
-const CreatorWallet = lazy(() => import('./pages/CreatorWallet'));
-const CreatorEarnings = lazy(() => import('./pages/CreatorEarnings'));
-const CreatorReferrals = lazy(() => import('./pages/CreatorReferrals'));
-const CreatorSubscriptionTiers = lazy(() => import('./pages/CreatorSubscriptionTiers'));
-const CreatorBookings = lazy(() => import('./pages/CreatorBookings'));
-const CreatorPublicProfile = lazy(() => import('./pages/CreatorPublicProfile'));
-const CreatePost = lazy(() => import('./pages/CreatePost'));
-const GoLive = lazy(() => import('./pages/GoLive'));
-const LiveBroadcasting = lazy(() => import('./pages/LiveBroadcasting'));
-const CreatorDashboardHome = lazy(() => import('./pages/CreatorDashboardHome'));
-const CreatorAnalytics = lazy(() => import('./pages/CreatorAnalytics'));
-const LiveWatch = lazy(() => import('./pages/LiveWatch'));
-const VideoCallScreen = lazy(() => import('./pages/VideoCallScreen'));
-const PaymentGateway = lazy(() => import('./pages/PaymentGateway'));
+import {
+  LandingPage,
+  MakeMoney,
+  Creators,
+  CreatorsLive,
+  Home,
+  Login,
+  Register,
+  Profile,
+  ProfileEdit,
+  Messages,
+  MessageChat,
+  Wallet,
+  Followers,
+  Subscriptions,
+  Notifications,
+  Explore,
+  Settings,
+  HelpSupport,
+  Language,
+  About,
+  Contact,
+  HowItWorks,
+  Privacy,
+  Terms,
+  Cookies,
+  Complaints,
+  FAQ,
+  ForgotPassword,
+  ResetPassword,
+  VerifyEmail,
+  SinglePost,
+  Bookmarks,
+  Following,
+  CreateStory,
+  SearchPage,
+  BecomeCreator,
+  TwoFactorVerify,
+  Onboarding,
+  MarketplacePage,
+  LeaderboardPage,
+  BadgesPage,
+  MarketplaceDetail,
+  MarketplaceCreate,
+  HashtagFeed,
+  LiveBrowse,
+  NotFound,
+  CreatorProfileOwner,
+  CreatorProfileEdit,
+  CreatorWallet,
+  CreatorEarnings,
+  CreatorReferrals,
+  CreatorSubscriptionTiers,
+  CreatorBookings,
+  CreatorPublicProfile,
+  CreatePost,
+  GoLive,
+  LiveBroadcasting,
+  CreatorDashboardHome,
+  CreatorAnalytics,
+  LiveWatch,
+  VideoCallScreen,
+  PaymentGateway,
+} from './lazyPages';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,6 +95,8 @@ function Loading() {
 function AuthBootstrap({ children }: { children: React.ReactNode }) {
   const setUser = useAuthStore((s) => s.setUser);
   useSocket();
+  useImpersonation();
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -104,7 +107,13 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
       .then((res) => setUser(res.data))
       .catch(() => setUser(null));
   }, [setUser]);
-  return <>{children}</>;
+
+  return (
+    <>
+      <ImpersonationBanner />
+      {children}
+    </>
+  );
 }
 
 export default function App() {

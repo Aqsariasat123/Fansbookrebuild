@@ -60,6 +60,20 @@ async function releasePreviousBidHold(listingId: string, title: string): Promise
   return { ops, prevBidderId: prevHighest.bidderId, prevAmount: prevHighest.amount };
 }
 
+function applyAntiSniping(ops: BidOps['ops'], listing: { id: string; endsAt: Date | null }) {
+  const SNIPE_WINDOW_MS = 5 * 60 * 1000;
+  if (!listing.endsAt) return;
+  const timeLeft = listing.endsAt.getTime() - Date.now();
+  if (timeLeft > 0 && timeLeft < SNIPE_WINDOW_MS) {
+    ops.push(
+      prisma.marketplaceListing.update({
+        where: { id: listing.id },
+        data: { endsAt: new Date(listing.endsAt.getTime() + SNIPE_WINDOW_MS) },
+      }),
+    );
+  }
+}
+
 // POST /api/marketplace/:id/bid — Place bid (with hold/release)
 router.post('/:id/bid', authenticate, async (req, res, next) => {
   try {
@@ -94,6 +108,8 @@ router.post('/:id/bid', authenticate, async (req, res, next) => {
       }),
       prisma.bid.create({ data: { listingId, bidderId: userId, amount } }),
     );
+
+    applyAntiSniping(ops, listing!);
 
     await prisma.$transaction(ops);
 

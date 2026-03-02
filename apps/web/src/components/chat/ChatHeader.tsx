@@ -1,8 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
+import type { CallMode } from '../../stores/callStore';
 
 const IMG = '/icons/dashboard';
+
+export function buildCallProps(
+  other: { id: string; displayName: string; avatar: string | null } | null,
+  fn: (id: string, m: CallMode, peer?: { name: string; avatar: string | null }) => void,
+) {
+  if (!other) return {};
+  const peer = { name: other.displayName, avatar: other.avatar };
+  return {
+    onAudioCall: () => fn(other.id, 'audio', peer),
+    onVideoCall: () => fn(other.id, 'video', peer),
+  };
+}
 
 interface MessagePageHeaderProps {
   onInvite?: () => void;

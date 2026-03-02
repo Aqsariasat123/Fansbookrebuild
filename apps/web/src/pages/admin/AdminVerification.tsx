@@ -18,6 +18,30 @@ export default function AdminVerification() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('PENDING');
   const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
+
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleBulkAction = async (action: 'approve' | 'reject') => {
+    if (selected.size === 0) return;
+    setBulkLoading(true);
+    try {
+      await api.post(`/admin/verification/bulk-${action}`, { ids: Array.from(selected) });
+      setSelected(new Set());
+      fetchData();
+    } catch {
+      /* ignore */
+    }
+    setBulkLoading(false);
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -69,6 +93,32 @@ export default function AdminVerification() {
         />
       </div>
 
+      {filter === 'PENDING' && selected.size > 0 && (
+        <div className="flex items-center gap-3 rounded-xl bg-[#f0f8ff] p-3">
+          <span className="text-sm font-medium text-black">{selected.size} selected</span>
+          <button
+            onClick={() => handleBulkAction('approve')}
+            disabled={bulkLoading}
+            className="rounded-lg bg-green-600 px-4 py-1.5 text-sm text-white disabled:opacity-50"
+          >
+            Bulk Approve
+          </button>
+          <button
+            onClick={() => handleBulkAction('reject')}
+            disabled={bulkLoading}
+            className="rounded-lg bg-red-600 px-4 py-1.5 text-sm text-white disabled:opacity-50"
+          >
+            Bulk Reject
+          </button>
+          <button
+            onClick={() => setSelected(new Set())}
+            className="text-sm text-gray-500 underline"
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <div className="text-center py-10 text-gray-400">Loading...</div>
       ) : creators.length === 0 ? (
@@ -77,6 +127,14 @@ export default function AdminVerification() {
         <div className="space-y-4">
           {creators.map((c) => (
             <div key={c.id} className="bg-[#1a1d21] rounded-xl p-4 flex items-center gap-4">
+              {filter === 'PENDING' && (
+                <input
+                  type="checkbox"
+                  checked={selected.has(c.id)}
+                  onChange={() => toggleSelect(c.id)}
+                  className="size-4 shrink-0 accent-[#01adf1]"
+                />
+              )}
               <img
                 src={c.avatar || '/icons/dashboard/person.svg'}
                 alt=""

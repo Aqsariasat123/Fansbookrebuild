@@ -9,6 +9,7 @@ import { AppError } from '../middleware/errorHandler.js';
 import { emitToUser } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
 import { sendMessageSchema } from '@fansbook/shared';
+import messagesPaidRouter, { checkPaidMessage } from './messages-paid.js';
 
 const router = Router();
 const msgUploadsDir = path.join(process.cwd(), 'uploads', 'messages');
@@ -48,6 +49,9 @@ router.get('/file/:filename', (req, res, next) => {
 import messagesConvRouter from './messages-conversations.js';
 router.use('/conversations', messagesConvRouter);
 
+// Paid message endpoints (unlock-price + unlock) extracted to messages-paid.ts
+router.use('/', messagesPaidRouter);
+
 router.get('/:conversationId', authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.userId;
@@ -82,6 +86,13 @@ router.post(
       const userId = req.user!.userId;
       const conversationId = req.params.conversationId as string;
       await verifyParticipant(conversationId, userId);
+
+      // Check paid message requirement
+      const { required, price } = await checkPaidMessage(conversationId, userId);
+      if (required) {
+        throw new AppError(402, `This conversation requires a ${price} coin unlock fee`);
+      }
+
       const { text } = req.body;
       const message = await prisma.message.create({
         data: { conversationId, senderId: userId, text, mediaType: 'TEXT' },

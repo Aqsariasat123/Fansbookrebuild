@@ -3,37 +3,21 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { OtherBubble, SelfBubble, TypingDots, CallBubble } from '../components/chat/ChatBubbles';
-import { MessagePageHeader, ChatUserHeader } from '../components/chat/ChatHeader';
+import { MessagePageHeader, ChatUserHeader, buildCallProps } from '../components/chat/ChatHeader';
 import { ChatOverlays } from '../components/chat/ImagePreview';
 import { ChatInputBar } from '../components/chat/ChatInputBar';
+import { MessageUnlockPrompt } from '../components/chat/MessageUnlockPrompt';
 import { useChat } from '../hooks/useChat';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useCall } from '../hooks/useCall';
 import type { ChatMessage } from '../components/chat/ChatBubbles';
-import type { CallMode } from '../stores/callStore';
-
-function buildCallProps(
-  other: { id: string; displayName: string; avatar: string | null } | null,
-  fn: (id: string, m: CallMode, peer?: { name: string; avatar: string | null }) => void,
-) {
-  if (!other) return {};
-  const peer = { name: other.displayName, avatar: other.avatar };
-  return {
-    onAudioCall: () => fn(other.id, 'audio', peer),
-    onVideoCall: () => fn(other.id, 'video', peer),
-  };
-}
-
 export default function MessageChat() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const userId = useAuthStore((s) => s.user?.id);
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [other, setOther] = useState<{
-    id: string;
-    displayName: string;
-    avatar: string | null;
-  } | null>(null);
+  type OtherUser = { id: string; displayName: string; avatar: string | null };
+  const [other, setOther] = useState<OtherUser | null>(null);
   const [newMsg, setNewMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -42,6 +26,8 @@ export default function MessageChat() {
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [viewImage, setViewImage] = useState<string | null>(null);
+  const [unlockRequired, setUnlockRequired] = useState(false);
+  const [unlockPrice, setUnlockPrice] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { incomingMessages, typingUsers, emitTyping, markRead, clearIncoming } =
     useChat(conversationId);
@@ -64,6 +50,16 @@ export default function MessageChat() {
       .catch(() => navigate('/messages'))
       .finally(() => setLoading(false));
     api.put(`/messages/${conversationId}/read`).catch(() => {});
+    // Check if conversation requires paid unlock
+    api
+      .get(`/messages/${conversationId}/unlock-price`)
+      .then(({ data: r }) => {
+        if (r.success && r.data.required) {
+          setUnlockRequired(true);
+          setUnlockPrice(r.data.price);
+        }
+      })
+      .catch(() => {});
     markRead();
     return () => clearIncoming();
   }, [conversationId, navigate, markRead, clearIncoming]);
@@ -81,7 +77,6 @@ export default function MessageChat() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
-
   async function handleSend() {
     const text = newMsg.trim();
     if (!text || !conversationId || sending) return;
@@ -117,6 +112,7 @@ export default function MessageChat() {
       setSending(false);
     }
   }
+
   async function handleLoadOlder() {
     if (!conversationId || !nextCursor || loadingOlder) return;
     setLoadingOlder(true);
@@ -187,20 +183,31 @@ export default function MessageChat() {
           )}
           {typingUsers.size > 0 && <TypingDots />}
         </div>
-        <ChatInputBar
-          value={newMsg}
-          onChange={(v) => {
-            setNewMsg(v);
-            emitTyping(v.length > 0);
-          }}
-          onSend={handleSend}
-          onFileSelect={(e) => {
-            const f = e.target.files?.[0];
-            if (f) setPreviewFile(f);
-            e.target.value = '';
-          }}
-          sending={sending}
-        />
+        {unlockRequired ? (
+          <MessageUnlockPrompt
+            conversationId={conversationId!}
+            price={unlockPrice}
+            onUnlocked={() => {
+              setUnlockRequired(false);
+              setUnlockPrice(0);
+            }}
+          />
+        ) : (
+          <ChatInputBar
+            value={newMsg}
+            onChange={(v) => {
+              setNewMsg(v);
+              emitTyping(v.length > 0);
+            }}
+            onSend={handleSend}
+            onFileSelect={(e) => {
+              const f = e.target.files?.[0];
+              if (f) setPreviewFile(f);
+              e.target.value = '';
+            }}
+            sending={sending}
+          />
+        )}
       </div>
       <ChatOverlays
         previewFile={previewFile}

@@ -1,5 +1,7 @@
 import { Router } from 'express';
+import jwt from 'jsonwebtoken';
 import { prisma } from '../../config/database.js';
+import { env } from '../../config/env.js';
 import { AppError } from '../../middleware/errorHandler.js';
 import { getPagination, buildDateFilter, paginatedResponse } from './query-helpers.js';
 
@@ -138,6 +140,39 @@ router.put('/:id/role', async (req, res, next) => {
       },
     });
     res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/admin/users/:id/impersonate — login as target user
+router.post('/:id/impersonate', async (req, res, next) => {
+  try {
+    const adminId = req.user!.userId;
+    const user = await prisma.user.findUnique({
+      where: { id: req.params.id },
+      select: { id: true, username: true, displayName: true, role: true, status: true },
+    });
+    if (!user) throw new AppError(404, 'User not found');
+    if (user.role === 'ADMIN') throw new AppError(400, 'Cannot impersonate another admin');
+
+    const accessToken = jwt.sign(
+      { userId: user.id, role: user.role, impersonatedBy: adminId },
+      env.JWT_SECRET,
+      { expiresIn: '1h' },
+    );
+
+    await prisma.auditLog.create({
+      data: {
+        adminId,
+        action: 'USER_IMPERSONATE',
+        targetType: 'User',
+        targetId: user.id,
+        details: { targetUsername: user.username },
+      },
+    });
+
+    res.json({ success: true, data: { accessToken, user } });
   } catch (err) {
     next(err);
   }

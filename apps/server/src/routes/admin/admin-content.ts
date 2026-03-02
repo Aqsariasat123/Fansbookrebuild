@@ -98,4 +98,39 @@ router.put('/posts/:id/restore', async (req, res, next) => {
   }
 });
 
+// POST /api/admin/content/posts/bulk-action
+router.post('/posts/bulk-action', async (req, res, next) => {
+  try {
+    const { ids, action } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw new AppError(400, 'ids array is required');
+    }
+    if (!['delete', 'restore'].includes(action)) {
+      throw new AppError(400, 'action must be "delete" or "restore"');
+    }
+
+    const data = action === 'delete' ? { deletedAt: new Date() } : { deletedAt: null };
+    const auditAction = action === 'delete' ? 'BULK_CONTENT_DELETE' : 'BULK_CONTENT_RESTORE';
+
+    await prisma.$transaction(async (tx) => {
+      await tx.post.updateMany({ where: { id: { in: ids } }, data });
+      for (const id of ids) {
+        await tx.auditLog.create({
+          data: {
+            adminId: req.user!.userId,
+            action: auditAction,
+            targetType: 'Post',
+            targetId: id,
+            details: { bulkCount: ids.length },
+          },
+        });
+      }
+    });
+
+    res.json({ success: true, message: `${ids.length} posts ${action}d` });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

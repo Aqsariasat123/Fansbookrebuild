@@ -9,8 +9,17 @@ import { ChangePasswordTab } from '../components/creator-edit/ChangePasswordTab'
 import { BankDetailsTab } from '../components/creator-edit/BankDetailsTab';
 import { CountryBlockTab } from '../components/creator-edit/CountryBlockTab';
 import { DeactivateTab } from '../components/creator-edit/DeactivateTab';
+import { MessagePricingTab } from '../components/creator-edit/MessagePricingTab';
 
-type Tab = 'basic' | 'stats' | 'social' | 'password' | 'bank' | 'countries' | 'deactivate';
+type Tab =
+  | 'basic'
+  | 'stats'
+  | 'social'
+  | 'password'
+  | 'bank'
+  | 'countries'
+  | 'messaging'
+  | 'deactivate';
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'basic', label: 'Basic  Info' },
@@ -19,6 +28,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: 'password', label: 'Change Password' },
   { key: 'bank', label: 'Bank Details' },
   { key: 'countries', label: 'Country Block List' },
+  { key: 'messaging', label: 'Message Pricing' },
   { key: 'deactivate', label: 'Deactivate Account' },
 ];
 
@@ -31,6 +41,7 @@ const TAB_COMPONENTS: Record<Tab, React.FC<{ onToast: ToastFn }>> = {
   password: ChangePasswordTab,
   bank: BankDetailsTab,
   countries: CountryBlockTab,
+  messaging: MessagePricingTab,
   deactivate: DeactivateTab,
 };
 
