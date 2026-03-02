@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useLiveStore } from '../stores/liveStore';
 import { useLiveStream } from '../hooks/useLiveStream';
 import { LiveChatPanel } from '../components/live/LiveChatPanel';
+import { api } from '../lib/api';
 
 export default function LiveWatch() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -14,6 +15,8 @@ export default function LiveWatch() {
   const { joinLive, leaveLive, sendChat } = useLiveStream();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isHls, setIsHls] = useState(false);
+  const hlsRef = useRef<{ destroy: () => void } | null>(null);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -25,9 +28,19 @@ export default function LiveWatch() {
         await joinLive(sessionId, videoRef.current);
         if (mounted) setLoading(false);
       } catch {
-        if (mounted) {
-          setError('Stream not available or has ended.');
-          setLoading(false);
+        // mediasoup failed — try HLS fallback
+        if (!mounted) return;
+        try {
+          await attachHlsFallback(sessionId);
+          if (mounted) {
+            setIsHls(true);
+            setLoading(false);
+          }
+        } catch {
+          if (mounted) {
+            setError('Stream not available or has ended.');
+            setLoading(false);
+          }
         }
       }
     })();
@@ -35,8 +48,38 @@ export default function LiveWatch() {
     return () => {
       mounted = false;
       leaveLive();
+      hlsRef.current?.destroy();
+      hlsRef.current = null;
     };
   }, [sessionId, joinLive, leaveLive]);
+
+  async function attachHlsFallback(sid: string) {
+    const { data } = await api.get(`/live/${sid}`);
+    const hlsUrl: string | null = data?.data?.hlsUrl ?? null;
+    if (!hlsUrl) throw new Error('No HLS URL');
+
+    const video = videoRef.current;
+    if (!video) throw new Error('No video element');
+
+    // Native HLS (Safari)
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = hlsUrl;
+      await video.play();
+      return;
+    }
+
+    // hls.js fallback
+    const Hls = (await import('hls.js')).default;
+    if (!Hls.isSupported()) throw new Error('HLS not supported');
+
+    const hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+    hls.loadSource(hlsUrl);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      video.play();
+    });
+    hlsRef.current = hls;
+  }
 
   const handleLeave = () => {
     leaveLive();
@@ -95,7 +138,14 @@ export default function LiveWatch() {
         {/* Video */}
         <div className="overflow-hidden rounded-[16px] border border-[#e91e8c]">
           <div className="flex items-center justify-between bg-[#e91e8c] px-[20px] py-[10px]">
-            <p className="text-[16px] font-semibold text-white">Live Stream</p>
+            <div className="flex items-center gap-[8px]">
+              <p className="text-[16px] font-semibold text-white">Live Stream</p>
+              {isHls && (
+                <span className="rounded-[4px] bg-white/20 px-[6px] py-[2px] text-[10px] font-semibold uppercase text-white">
+                  HLS
+                </span>
+              )}
+            </div>
             <span className="text-[12px] text-white/80">{formatViewers(viewerCount)} viewers</span>
           </div>
           <div className="relative bg-[#0a0c0e]">

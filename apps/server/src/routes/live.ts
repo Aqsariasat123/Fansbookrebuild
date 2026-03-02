@@ -9,6 +9,7 @@ import { createWebRtcTransport, getTransportOptions } from '../config/mediasoup.
 import type { Producer, Consumer, WebRtcTransport } from 'mediasoup/types';
 import { logger } from '../utils/logger.js';
 import liveStreamRouter from './live-stream.js';
+import liveExtrasRouter from './live-extras.js';
 
 const router = Router();
 
@@ -132,6 +133,9 @@ router.post('/start', authenticate, requireRole('CREATOR'), async (req, res, nex
     next(err);
   }
 });
+
+// Mount sub-routes: notify-followers, recording endpoints
+router.use('/', liveExtrasRouter);
 
 // Mount streaming sub-routes (transport, produce, consume, end, chat, router-capabilities)
 router.use('/', liveStreamRouter);

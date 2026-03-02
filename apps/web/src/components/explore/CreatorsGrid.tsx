@@ -1,18 +1,39 @@
+import { useRef, useMemo } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import type { CreatorCard as CreatorCardType } from '@fansbook/shared';
 import { CreatorCard } from './CreatorCard';
+import { useGridColumns } from '../../hooks/useGridColumns';
 
-export default function CreatorsGrid({
-  creators,
-  loading,
-  loadingMore,
-  observerRef,
-}: {
+const ROW_HEIGHT = 276;
+const GAP = 16;
+
+interface Props {
   creators: CreatorCardType[];
   loading: boolean;
   loadingMore: boolean;
   observerRef: React.MutableRefObject<HTMLDivElement | null>;
-}) {
-  if (loading)
+}
+
+export default function CreatorsGrid({ creators, loading, loadingMore, observerRef }: Props) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const cols = useGridColumns({ sm: 2, md: 3, lg: 4 });
+
+  const rows = useMemo(() => {
+    const result: CreatorCardType[][] = [];
+    for (let i = 0; i < creators.length; i += cols) {
+      result.push(creators.slice(i, i + cols));
+    }
+    return result;
+  }, [creators, cols]);
+
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => ROW_HEIGHT + GAP,
+    overscan: 3,
+  });
+
+  if (loading) {
     return (
       <div className="grid grid-cols-2 gap-[16px] md:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -20,7 +41,9 @@ export default function CreatorsGrid({
         ))}
       </div>
     );
-  if (creators.length === 0)
+  }
+
+  if (creators.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-[60px]">
         <img
@@ -31,12 +54,32 @@ export default function CreatorsGrid({
         <p className="font-outfit text-[16px] text-muted-foreground">No creators found</p>
       </div>
     );
+  }
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-[16px] md:grid-cols-3 lg:grid-cols-4">
-        {creators.map((c) => (
-          <CreatorCard key={c.id} creator={c} />
-        ))}
+      <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto scrollbar-hide">
+        <div className="relative w-full" style={{ height: `${virtualizer.getTotalSize()}px` }}>
+          {virtualizer.getVirtualItems().map((virtualRow) => (
+            <div
+              key={virtualRow.key}
+              className="absolute left-0 top-0 w-full"
+              style={{
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <div
+                className="grid gap-[16px]"
+                style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+              >
+                {rows[virtualRow.index].map((c) => (
+                  <CreatorCard key={c.id} creator={c} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       {loadingMore && (
         <div className="flex justify-center py-[20px]">

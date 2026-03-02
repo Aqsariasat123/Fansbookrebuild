@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../lib/api';
 import { useStoryNav } from './useStoryNav';
 import { StoryFooter } from './StoryFooter';
 import { ProgressBars, NavArrow, getTimeAgo } from './StoryViewerParts';
@@ -128,6 +129,7 @@ export function StoryViewer({ groups, initialGroupIndex, onClose, onRefetch }: S
           className="flex flex-1 items-center justify-center bg-black"
           onDoubleClick={() => {
             setHeartAnim(true);
+            api.post(`/stories/${story.id}/react`, { emoji: '❤️' }).catch(() => {});
             setTimeout(() => setHeartAnim(false), 1000);
           }}
         >

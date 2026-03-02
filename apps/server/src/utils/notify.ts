@@ -2,6 +2,7 @@ import { prisma } from '../config/database.js';
 import { logger } from './logger.js';
 import { queueEmail } from './email.js';
 import { notificationEmailTemplate } from './email-templates.js';
+import { sendPushNotification } from '../config/web-push.js';
 import type { Server } from 'socket.io';
 import type { NotificationType } from '@prisma/client';
 
@@ -54,11 +55,40 @@ async function sendNotifEmail(userId: string, type: string, message: string) {
   queueEmail(user.email, subject, html);
 }
 
+async function sendWebPush(userId: string, type: string, message: string) {
+  const subs = await prisma.pushSubscription.findMany({
+    where: { userId },
+    select: { id: true, endpoint: true, p256dh: true, auth: true },
+  });
+  if (subs.length === 0) return;
+
+  const payload = { title: 'Fansbook', body: message, tag: type, url: '/' };
+  const expiredIds: string[] = [];
+
+  await Promise.allSettled(
+    subs.map(async (sub) => {
+      const ok = await sendPushNotification(
+        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+        payload,
+      );
+      if (!ok) expiredIds.push(sub.id);
+    }),
+  );
+
+  if (expiredIds.length > 0) {
+    await prisma.pushSubscription.deleteMany({ where: { id: { in: expiredIds } } });
+  }
+}
+
 export async function createNotification(params: NotifyParams) {
   try {
     const pref = await getUserPref(params.userId, params.type);
     const notification = pref.inApp ? await writeAndEmit(params) : null;
     if (pref.email) await sendNotifEmail(params.userId, params.type, params.message);
+    // Web push — fire-and-forget, runs for all notification types
+    sendWebPush(params.userId, params.type, params.message).catch((err) => {
+      logger.error({ err }, 'Web push delivery failed');
+    });
     return notification;
   } catch (err) {
     logger.error({ err }, 'Failed to create notification');

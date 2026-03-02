@@ -71,6 +71,7 @@ const CreatorDashboardHome = lazy(() => import('./pages/CreatorDashboardHome'));
 const CreatorAnalytics = lazy(() => import('./pages/CreatorAnalytics'));
 const LiveWatch = lazy(() => import('./pages/LiveWatch'));
 const VideoCallScreen = lazy(() => import('./pages/VideoCallScreen'));
+const PaymentGateway = lazy(() => import('./pages/PaymentGateway'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -126,6 +127,9 @@ export default function App() {
               <Route path="/cookies" element={<Cookies />} />
               <Route path="/complaints" element={<Complaints />} />
               <Route path="/faq" element={<FAQ />} />
+
+              {/* Payment checkout (no layout) */}
+              <Route path="/payment/checkout" element={<PaymentGateway />} />
 
               {/* Auth pages (no layout) */}
               <Route path="/login" element={<Login />} />

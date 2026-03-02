@@ -14,6 +14,8 @@ import auditLogRouter from './admin-audit-log.js';
 import contentRouter from './admin-content.js';
 import badgesRouter from './admin-badges.js';
 import announcementsRouter from './admin-announcements.js';
+import verificationRouter from './admin-verification.js';
+import healthRouter from './admin-health.js';
 
 const router = Router();
 
@@ -33,5 +35,7 @@ router.use('/audit-log', auditLogRouter);
 router.use('/content', contentRouter);
 router.use('/badges', badgesRouter);
 router.use('/announcements', announcementsRouter);
+router.use('/verification', verificationRouter);
+router.use('/health', healthRouter);
 
 export default router;

@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger.js';
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { apiLimiter } from './middleware/rateLimit.js';
@@ -34,6 +36,7 @@ import creatorTiersRouter from './routes/creator-tiers.js';
 import creatorBookingsRouter from './routes/creator-bookings.js';
 import creatorDashboardRouter from './routes/creator-dashboard.js';
 import storiesRouter from './routes/stories.js';
+import storyHighlightsRouter from './routes/story-highlights.js';
 import settingsRouter from './routes/settings.js';
 import socialRouter from './routes/social.js';
 import searchRouter from './routes/search.js';
@@ -41,6 +44,7 @@ import hashtagsRouter from './routes/hashtags.js';
 import becomeCreatorRouter from './routes/become-creator.js';
 import twoFactorRouter from './routes/two-factor.js';
 import marketplaceRouter from './routes/marketplace.js';
+import marketplaceReviewsRouter from './routes/marketplace-reviews.js';
 import leaderboardRouter from './routes/leaderboard.js';
 import badgesRouter from './routes/badges.js';
 import adminRouter from './routes/admin/index.js';
@@ -48,6 +52,9 @@ import uploadsRouter from './routes/uploads.js';
 import contactRouter from './routes/contact.js';
 import tipsRouter from './routes/tips.js';
 import announcementsRouter from './routes/announcements.js';
+import pushRouter from './routes/push-subscriptions.js';
+import paymentGatewayRouter from './routes/payment-gateway.js';
+import paymentWebhooksRouter from './routes/payment-webhooks.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -99,6 +106,15 @@ app.use(
 // Static file serving with cache headers
 app.use('/uploads', express.static('uploads', { maxAge: '7d', etag: true }));
 
+// API Documentation (before rate limiting)
+app.use(
+  '/api/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+  }),
+);
+
 // Rate limiting
 app.use('/api', apiLimiter);
 
@@ -130,6 +146,7 @@ app.use('/api/creator/tiers', creatorTiersRouter);
 app.use('/api/creator/bookings', creatorBookingsRouter);
 app.use('/api/creator/dashboard', creatorDashboardRouter);
 app.use('/api/stories', storiesRouter);
+app.use('/api/story-highlights', storyHighlightsRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/social', socialRouter);
 app.use('/api/search', searchRouter);
@@ -137,6 +154,7 @@ app.use('/api/hashtags', hashtagsRouter);
 app.use('/api/auth', becomeCreatorRouter);
 app.use('/api/auth/2fa', twoFactorRouter);
 app.use('/api/marketplace', marketplaceRouter);
+app.use('/api/marketplace-reviews', marketplaceReviewsRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/badges', badgesRouter);
 app.use('/api/uploads', uploadsRouter);
@@ -144,6 +162,9 @@ app.use('/api/admin', adminRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/tips', tipsRouter);
 app.use('/api/announcements', announcementsRouter);
+app.use('/api/push', pushRouter);
+app.use('/api/payments', paymentGatewayRouter);
+app.use('/api/payments/webhook', paymentWebhooksRouter);
 
 // Error handling
 app.use(errorHandler);

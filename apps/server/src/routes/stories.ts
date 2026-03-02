@@ -157,24 +157,33 @@ router.delete('/:id', authenticate, async (req, res, next) => {
   }
 });
 
-// React to a story (heart)
+// React to a story (emoji)
 router.post('/:id/react', authenticate, async (req, res, next) => {
   try {
     const storyId = req.params.id as string;
+    const emoji = req.body.emoji || '❤️';
     const story = await prisma.story.findUnique({ where: { id: storyId } });
     if (!story) throw new AppError(404, 'Story not found');
 
     const reactorId = req.user!.userId;
+
+    // Upsert reaction record
+    await prisma.storyReaction.upsert({
+      where: { storyId_userId: { storyId, userId: reactorId } },
+      update: { emoji },
+      create: { storyId, userId: reactorId, emoji },
+    });
+
     if (reactorId !== story.authorId) {
       await createStoryNotification(
         story.authorId,
         reactorId,
         story.id,
-        '{name} liked your story ❤️',
+        `{name} reacted to your story ${emoji}`,
       );
     }
 
-    res.json({ success: true });
+    res.json({ success: true, data: { emoji } });
   } catch (err) {
     next(err);
   }

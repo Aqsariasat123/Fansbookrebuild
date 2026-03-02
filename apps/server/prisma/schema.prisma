@@ -281,6 +281,11 @@ model User {
   commentLikes         CommentLike[]
   liveChatMessages     LiveChatMessage[] @relation("LiveChatMessages")
   announcements        Announcement[]
+  pushSubscriptions    PushSubscription[]
+  storyHighlights      StoryHighlight[]
+  storyReactions       StoryReaction[]
+  marketplaceReviews   MarketplaceReview[]   @relation("ReviewBuyer")
+  sellerReviews        MarketplaceReview[]   @relation("ReviewSeller")
 
   @@index([email])
   @@index([username])
@@ -688,8 +693,9 @@ model Story {
   viewCount  Int            @default(0)
   createdAt  DateTime       @default(now())
 
-  author User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  views  StoryView[]
+  author    User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  views     StoryView[]
+  reactions StoryReaction[]
 
   @@index([authorId])
   @@index([expiresAt])
@@ -718,9 +724,10 @@ model LiveSession {
   hlsUrl      String?
   status      LiveStatus @default(SCHEDULED)
   viewerCount Int        @default(0)
-  startedAt   DateTime?
-  endedAt     DateTime?
-  createdAt   DateTime   @default(now())
+  startedAt    DateTime?
+  endedAt      DateTime?
+  recordingUrl String?
+  createdAt    DateTime   @default(now())
 
   creator  User              @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   messages LiveChatMessage[]
@@ -781,8 +788,9 @@ model MarketplaceListing {
 
   images       String[]        @default([])
 
-  seller User  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  bids   Bid[]
+  seller  User                @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  bids    Bid[]
+  reviews MarketplaceReview[]
 
   @@index([sellerId])
   @@index([status])
@@ -1037,4 +1045,73 @@ model Announcement {
 
   @@index([isActive])
   @@index([createdAt])
+}
+
+// ─── Push Subscriptions (Phase 5) ──────────────────────
+
+model PushSubscription {
+  id       String @id @default(cuid())
+  userId   String
+  endpoint String
+  p256dh   String
+  auth     String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+  @@index([userId])
+}
+
+// ─── Story Highlights (Phase 6) ────────────────────────
+
+model StoryHighlight {
+  id       String   @id @default(cuid())
+  userId   String
+  name     String
+  coverUrl String?
+  storyIds String[] @default([])
+  order    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ─── Story Reactions (Phase 6) ─────────────────────────
+
+model StoryReaction {
+  id       String   @id @default(cuid())
+  storyId  String
+  userId   String
+  emoji    String   @default("❤️")
+  createdAt DateTime @default(now())
+
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, userId])
+  @@index([storyId])
+}
+
+// ─── Marketplace Reviews (Phase 8) ─────────────────────
+
+model MarketplaceReview {
+  id        String   @id @default(cuid())
+  buyerId   String
+  sellerId  String
+  listingId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  buyer   User               @relation("ReviewBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller  User               @relation("ReviewSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  listing MarketplaceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([buyerId, listingId])
+  @@index([sellerId])
+  @@index([listingId])
 }

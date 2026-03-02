@@ -37,6 +37,8 @@ const AdminAuditLog = lazy(() => import('./AdminAuditLog'));
 const AdminContent = lazy(() => import('./AdminContent'));
 const AdminBadges = lazy(() => import('./AdminBadges'));
 const AdminAnnouncements = lazy(() => import('./AdminAnnouncements'));
+const AdminVerification = lazy(() => import('./AdminVerification'));
+const AdminHealth = lazy(() => import('./AdminHealth'));
 
 export function adminRoutes() {
   return (
@@ -77,6 +79,8 @@ export function adminRoutes() {
             <Route path="/admin/content" element={<AdminContent />} />
             <Route path="/admin/badges" element={<AdminBadges />} />
             <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+            <Route path="/admin/verification" element={<AdminVerification />} />
+            <Route path="/admin/health" element={<AdminHealth />} />
           </Route>
         </Route>
       </Route>
