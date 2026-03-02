@@ -3,15 +3,18 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { adminNavItems, type AdminNavItem } from './adminNavItems';
 
 const iconMap: Record<string, string> = {
-  dashboard: '/icons/admin/finance.png',
-  person: '/icons/admin/user.png',
-  booking: '/icons/admin/booking.png',
-  earnings: '/icons/admin/transaction.png',
-  report: '/icons/admin/report.png',
-  audit: '/icons/admin/report.png',
-  finance: '/icons/admin/finance.png',
-  masters: '/icons/admin/masters.png',
-  settings: '/icons/admin/settings.png',
+  dashboard: 'dashboard',
+  person: 'person',
+  booking: 'calendar_today',
+  earnings: 'account_balance_wallet',
+  report: 'assessment',
+  audit: 'gavel',
+  content: 'description',
+  badges: 'military_tech',
+  announcements: 'campaign',
+  finance: 'payments',
+  masters: 'tune',
+  settings: 'settings',
 };
 
 function ExpandableItem({ item, onNav }: { item: AdminNavItem; onNav?: () => void }) {
@@ -26,12 +29,10 @@ function ExpandableItem({ item, onNav }: { item: AdminNavItem; onNav?: () => voi
         className="flex w-full items-center justify-between text-[#f8f8f8] text-[16px] font-normal lg:text-[20px]"
       >
         <span className="flex items-center gap-[8px]">
-          {item.icon && (
-            <img
-              src={iconMap[item.icon]}
-              alt=""
-              className="size-[18px] object-contain lg:size-[20px]"
-            />
+          {item.icon && iconMap[item.icon] && (
+            <span className="material-icons-outlined text-[18px] lg:text-[20px]">
+              {iconMap[item.icon]}
+            </span>
           )}
           {item.label}
         </span>
@@ -99,12 +100,10 @@ export function AdminSidebar({ open, onClose }: Props) {
                   : 'flex items-center gap-[8px] text-[16px] font-normal text-[#f8f8f8] hover:text-white lg:text-[20px]'
               }
             >
-              {item.icon && (
-                <img
-                  src={iconMap[item.icon]}
-                  alt=""
-                  className="size-[18px] object-contain lg:size-[20px]"
-                />
+              {item.icon && iconMap[item.icon] && (
+                <span className="material-icons-outlined text-[18px] lg:text-[20px]">
+                  {iconMap[item.icon]}
+                </span>
               )}
               {item.label}
             </NavLink>

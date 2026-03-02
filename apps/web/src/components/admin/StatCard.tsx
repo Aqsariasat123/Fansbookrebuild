@@ -11,10 +11,12 @@ export function StatCard({ icon, label, value, trend, color = '#01adf1' }: StatC
     <div className="rounded-[16px] bg-white p-[20px] shadow-sm border border-[#e8e8e8]">
       <div className="flex items-center gap-[12px] mb-[12px]">
         <div
-          className="size-[40px] rounded-[10px] flex items-center justify-center text-[20px]"
+          className="size-[40px] rounded-[10px] flex items-center justify-center"
           style={{ backgroundColor: `${color}15` }}
         >
-          {icon}
+          <span className="material-icons-outlined text-[22px]" style={{ color }}>
+            {icon}
+          </span>
         </div>
         <p className="font-outfit text-[13px] text-[#5d5d5d]">{label}</p>
       </div>

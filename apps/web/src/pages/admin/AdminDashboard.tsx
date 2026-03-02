@@ -49,17 +49,27 @@ export default function AdminDashboard() {
       </p>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-[16px] mb-[24px]">
-        <StatCard icon="👥" label="Total Users" value={data.totalUsers} color="#01adf1" />
-        <StatCard icon="🎭" label="Fans" value={data.totalFans} color="#8b5cf6" />
-        <StatCard icon="⭐" label="Creators" value={data.totalCreators} color="#f59e0b" />
-        <StatCard icon="🟢" label="Active (24h)" value={data.activeUsers24h} color="#10b981" />
+        <StatCard icon="group" label="Total Users" value={data.totalUsers} color="#01adf1" />
+        <StatCard icon="people_outline" label="Fans" value={data.totalFans} color="#8b5cf6" />
+        <StatCard icon="star_outline" label="Creators" value={data.totalCreators} color="#f59e0b" />
+        <StatCard
+          icon="radio_button_checked"
+          label="Active (24h)"
+          value={data.activeUsers24h}
+          color="#10b981"
+        />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-[16px] mb-[24px]">
-        <StatCard icon="📝" label="Total Posts" value={data.totalPosts} color="#3b82f6" />
-        <StatCard icon="💬" label="Messages" value={data.totalMessages} color="#6366f1" />
+        <StatCard icon="article" label="Total Posts" value={data.totalPosts} color="#3b82f6" />
         <StatCard
-          icon="💰"
+          icon="chat_bubble_outline"
+          label="Messages"
+          value={data.totalMessages}
+          color="#6366f1"
+        />
+        <StatCard
+          icon="payments"
           label="Total Revenue"
           value={`$${Number(data.totalRevenue).toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
           color="#10b981"
@@ -68,19 +78,19 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-[16px] mb-[24px]">
         <StatCard
-          icon="📋"
+          icon="card_membership"
           label="Active Subscriptions"
           value={data.totalSubscriptions}
           color="#0ea5e9"
         />
         <StatCard
-          icon="⏳"
+          icon="hourglass_empty"
           label="Pending Withdrawals"
           value={data.pendingWithdrawals}
           color={data.pendingWithdrawals > 0 ? '#ef4444' : '#10b981'}
         />
         <StatCard
-          icon="🚩"
+          icon="flag"
           label="Pending Reports"
           value={data.pendingReports}
           color={data.pendingReports > 0 ? '#ef4444' : '#10b981'}
