@@ -37,7 +37,7 @@ export function AgeVerification({ children }: { children: React.ReactNode }) {
     <>
       {children}
       {/* Overlay */}
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 px-[16px] backdrop-blur-sm">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 px-[16px]">
         <div className="w-full max-w-[520px] overflow-hidden rounded-[16px] bg-[#2a2d32] shadow-2xl">
           {/* Logo header */}
           <div className="bg-[#1e2126] px-[24px] py-[20px] md:px-[32px] md:py-[24px]">
