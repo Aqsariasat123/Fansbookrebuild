@@ -3,6 +3,7 @@ import { Server } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import jwt from 'jsonwebtoken';
 import { redis, redisSub } from './redis.js';
+import { prisma } from './database.js';
 import { env } from './env.js';
 import { logger } from '../utils/logger.js';
 import { registerChatHandlers } from './socket-handlers.js';
@@ -71,6 +72,32 @@ export function initSocketIO(httpServer: HttpServer) {
       if (rooms.length === 0) {
         await redis.srem(ONLINE_KEY, userId);
         io!.emit('user:offline', { userId });
+
+        // End any active/ringing calls for this user
+        try {
+          const activeCalls = await prisma.videoCall.findMany({
+            where: {
+              OR: [
+                { callerId: userId, status: { in: ['ACTIVE', 'RINGING'] } },
+                { calleeId: userId, status: { in: ['ACTIVE', 'RINGING'] } },
+              ],
+            },
+          });
+          for (const call of activeCalls) {
+            const duration = call.startedAt
+              ? Math.floor((Date.now() - call.startedAt.getTime()) / 1000)
+              : 0;
+            await prisma.videoCall.update({
+              where: { id: call.id },
+              data: { status: 'ENDED', endedAt: new Date(), duration },
+            });
+            const otherId = call.callerId === userId ? call.calleeId : call.callerId;
+            io!.to(`user:${otherId}`).emit('call:ended', { callId: call.id });
+            logger.info({ callId: call.id, otherId }, 'call:ended on disconnect');
+          }
+        } catch (err) {
+          logger.error({ err }, 'Error ending calls on disconnect');
+        }
       }
     });
   });

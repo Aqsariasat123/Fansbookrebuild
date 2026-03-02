@@ -13,6 +13,8 @@ interface CallState {
   peerAvatar: string | null;
   mode: CallMode;
   status: CallStatus;
+  audioMuted: boolean;
+  videoMuted: boolean;
   localStream: MediaStream | null;
   remoteStream: MediaStream | null;
   peerConnection: RTCPeerConnection | null;
@@ -31,6 +33,8 @@ interface CallState {
   setMode: (mode: CallMode) => void;
   setPeer: (name: string, avatar: string | null) => void;
   setStatus: (status: CallStatus) => void;
+  setAudioMuted: (muted: boolean) => void;
+  setVideoMuted: (muted: boolean) => void;
   setLocalStream: (stream: MediaStream | null) => void;
   setRemoteStream: (stream: MediaStream | null) => void;
   setPeerConnection: (pc: RTCPeerConnection | null) => void;
@@ -50,6 +54,8 @@ const initialState = {
   peerAvatar: null,
   mode: 'video' as CallMode,
   status: 'idle' as CallStatus,
+  audioMuted: false,
+  videoMuted: false,
   localStream: null,
   remoteStream: null,
   peerConnection: null,
@@ -75,6 +81,8 @@ export const useCallStore = create<CallState>((set) => ({
   setMode: (mode) => set({ mode }),
   setPeer: (name, avatar) => set({ peerName: name, peerAvatar: avatar }),
   setStatus: (status) => set({ status }),
+  setAudioMuted: (muted) => set({ audioMuted: muted }),
+  setVideoMuted: (muted) => set({ videoMuted: muted }),
   setLocalStream: (stream) => set({ localStream: stream }),
   setRemoteStream: (stream) => set({ remoteStream: stream }),
   setPeerConnection: (pc) => set({ peerConnection: pc }),

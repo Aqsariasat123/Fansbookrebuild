@@ -130,9 +130,12 @@ export function useCall() {
     const stream = gs().localStream;
     if (!stream) return;
     const tracks = kind === 'audio' ? stream.getAudioTracks() : stream.getVideoTracks();
+    const newEnabled = tracks.length > 0 ? !tracks[0].enabled : true;
     tracks.forEach((t) => {
-      t.enabled = !t.enabled;
+      t.enabled = newEnabled;
     });
+    if (kind === 'audio') gs().setAudioMuted(!newEnabled);
+    else gs().setVideoMuted(!newEnabled);
   }, []);
 
   return { startCall, acceptCall, rejectCall, endCall, toggleMute };

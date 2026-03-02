@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallStore } from '../../stores/callStore';
 
 interface CallControlBarProps {
   isAudio: boolean;
@@ -13,17 +13,14 @@ export function CallControlBar({
   onToggleVideo,
   onEndCall,
 }: CallControlBarProps) {
-  const [audioMuted, setAudioMuted] = useState(false);
-  const [videoMuted, setVideoMuted] = useState(false);
+  const audioMuted = useCallStore((s) => s.audioMuted);
+  const videoMuted = useCallStore((s) => s.videoMuted);
 
   return (
     <div className="absolute bottom-[32px] flex items-center gap-[20px]">
       {/* Toggle Audio */}
       <button
-        onClick={() => {
-          onToggleAudio();
-          setAudioMuted((m) => !m);
-        }}
+        onClick={onToggleAudio}
         className={`flex size-[56px] items-center justify-center rounded-full ${
           audioMuted ? 'bg-red-500' : 'bg-white/20'
         }`}
@@ -50,10 +47,7 @@ export function CallControlBar({
       {/* Toggle Video — only for video calls */}
       {!isAudio && (
         <button
-          onClick={() => {
-            onToggleVideo();
-            setVideoMuted((m) => !m);
-          }}
+          onClick={onToggleVideo}
           className={`flex size-[56px] items-center justify-center rounded-full ${
             videoMuted ? 'bg-red-500' : 'bg-white/20'
           }`}

@@ -83,7 +83,14 @@ export function useSocket() {
     const cb = cbRef.current;
 
     socket.on('connect', () => cb.setConnected(true));
-    socket.on('disconnect', () => cb.setConnected(false));
+    socket.on('disconnect', () => {
+      cb.setConnected(false);
+      // If in an active or ringing call, auto-end it
+      const callStatus = useCallStore.getState().status;
+      if (callStatus === 'active' || callStatus === 'ringing') {
+        useCallStore.getState().setStatus('ended');
+      }
+    });
     socket.on('user:online', (data: { userId: string }) => cb.addOnlineUser(data.userId));
     socket.on('user:offline', (data: { userId: string }) => cb.removeOnlineUser(data.userId));
     socket.on('user:online_list', (data: { userIds: string[] }) => cb.setOnlineUsers(data.userIds));
