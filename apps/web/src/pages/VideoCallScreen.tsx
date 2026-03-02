@@ -19,6 +19,16 @@ export default function VideoCallScreen() {
   const remoteRef = useRef<HTMLVideoElement | HTMLAudioElement>(null);
   const [elapsed, setElapsed] = useState(0);
 
+  // Stop all tracks when component unmounts (ensures browser releases mic/camera)
+  useEffect(() => {
+    return () => {
+      const state = useCallStore.getState();
+      state.localStream?.getTracks().forEach((t) => t.stop());
+      state.remoteStream?.getTracks().forEach((t) => t.stop());
+      state.peerConnection?.close();
+    };
+  }, []);
+
   useEffect(() => {
     if (localRef.current && localStream) localRef.current.srcObject = localStream;
   }, [localStream]);

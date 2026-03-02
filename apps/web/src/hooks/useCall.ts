@@ -17,13 +17,16 @@ export function useCall() {
   navRef.current = navigate;
   locRef.current = location.pathname;
 
-  // Watch for call ended (from socket) → navigate back + cleanup
+  // Watch for call ended (from socket) → stop tracks + navigate back + cleanup
   const status = useCallStore((s) => s.status);
   useEffect(() => {
     if (status !== 'ended') return;
-    const path = gs().returnPath;
+    const { returnPath, localStream, remoteStream, peerConnection } = gs();
+    localStream?.getTracks().forEach((t) => t.stop());
+    remoteStream?.getTracks().forEach((t) => t.stop());
+    peerConnection?.close();
     gs().reset();
-    if (path) navRef.current(path);
+    if (returnPath) navRef.current(returnPath);
     else navRef.current(-1);
   }, [status]);
 
@@ -118,8 +121,12 @@ export function useCall() {
 
   const endCall = useCallback(() => {
     const socket = getSocket();
-    const { callId, returnPath } = gs();
+    const { callId, returnPath, localStream, remoteStream, peerConnection } = gs();
     if (socket && callId) socket.emit('call:end', { callId });
+    // Stop tracks immediately before reset to release browser mic/camera
+    localStream?.getTracks().forEach((t) => t.stop());
+    remoteStream?.getTracks().forEach((t) => t.stop());
+    peerConnection?.close();
     const path = returnPath;
     gs().reset();
     if (path) navRef.current(path);
