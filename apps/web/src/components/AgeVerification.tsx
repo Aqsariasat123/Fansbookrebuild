@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const STORAGE_KEY = 'age_verified';
+const READABLE_PATHS = ['/privacy', '/terms'];
 
 export function AgeVerification({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
   const [accepted, setAccepted] = useState(() => localStorage.getItem(STORAGE_KEY) === 'true');
   const [privacyChecked, setPrivacyChecked] = useState(false);
   const [termsChecked, setTermsChecked] = useState(false);
 
-  const showPopup = !accepted;
+  const showPopup = !accepted && !READABLE_PATHS.includes(pathname);
 
   useEffect(() => {
     document.body.style.overflow = showPopup ? 'hidden' : '';
