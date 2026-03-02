@@ -88,7 +88,7 @@ export function AgeVerification({ children }: { children: React.ReactNode }) {
                 <button
                   onClick={handleEnter}
                   disabled={!privacyChecked || !termsChecked}
-                  className="rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#01adf1]/80 px-[28px] py-[10px] text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 md:px-[36px] md:py-[12px] md:text-[16px]"
+                  className="rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[28px] py-[10px] text-[14px] font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 md:px-[36px] md:py-[12px] md:text-[16px]"
                 >
                   Enter
                 </button>
