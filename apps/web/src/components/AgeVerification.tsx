@@ -65,7 +65,12 @@ export function AgeVerification({ children }: { children: React.ReactNode }) {
                 />
                 <span className="text-[14px] text-white/80 md:text-[15px]">
                   Agree{' '}
-                  <a href="/privacy" className="font-medium text-[#01adf1] underline">
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-[#01adf1] underline"
+                  >
                     Privacy Policy
                   </a>
                 </span>
@@ -79,7 +84,12 @@ export function AgeVerification({ children }: { children: React.ReactNode }) {
                 />
                 <span className="text-[14px] text-white/80 md:text-[15px]">
                   Agree{' '}
-                  <a href="/terms" className="font-medium text-[#01adf1] underline">
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-[#01adf1] underline"
+                  >
                     Terms &amp; Condition
                   </a>
                 </span>
