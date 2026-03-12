@@ -183,7 +183,7 @@ export function FAQSection() {
               </span>
             </button>
             {open === i && item.a && (
-              <p className="mt-[10px] pl-[44px] text-[13px] font-normal leading-[1.6] text-muted-foreground md:mt-[12px] md:pl-[52px] md:text-[16px]">
+              <p className="mt-[10px] pl-[44px] text-[15px] font-normal leading-[1.6] text-foreground/70 md:mt-[12px] md:pl-[52px] md:text-[16px]">
                 {item.a}
               </p>
             )}

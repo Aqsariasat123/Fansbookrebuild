@@ -11,7 +11,7 @@ const WHITE = 'brightness(0) invert(1)';
 /* ─── Hero ─── */
 function HeroSection() {
   return (
-    <section className="relative min-h-[420px] w-full overflow-hidden md:h-[615px]">
+    <section className="relative min-h-[320px] w-full overflow-hidden md:h-[615px]">
       {/* BG image */}
       <img
         src="/images/landing/hero-bg.webp"
@@ -24,7 +24,7 @@ function HeroSection() {
       <MarketingNav />
 
       {/* Content */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-[20px] pt-[100px] pb-[40px] md:pt-[40px] md:pb-0">
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-[20px] pt-[80px] pb-[20px] md:pt-[40px] md:pb-0">
         <h1 className="max-w-[580px] text-center text-[28px] font-medium leading-[1.2] text-white sm:text-[36px] md:text-[48px]">
           Connect with Creators.
           <br />
