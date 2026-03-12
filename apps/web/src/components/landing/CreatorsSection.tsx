@@ -74,78 +74,81 @@ export function CreatorsSection() {
           />
         </div>
 
-        {/* Mobile: cascade images + text + button */}
-        <div className="relative h-[212px] overflow-hidden lg:hidden">
-          <img
-            src="/images/landing/pos-1.webp"
-            alt=""
-            className="absolute rounded-[5px] object-cover"
-            style={{ left: '-25%', top: 55, width: 91, height: 92 }}
-          />
-          <img
-            src="/images/landing/pos-2.webp"
-            alt=""
-            className="absolute rounded-[5px] object-cover"
-            style={{ left: '-5.5%', top: 61, width: 77, height: 78 }}
-          />
-          <img
-            src="/images/landing/pos-3.webp"
-            alt=""
-            className="absolute rounded-[5px] object-cover"
-            style={{ left: '10.9%', top: 66, width: 67, height: 68 }}
-          />
-          <img
-            src="/images/landing/pos-4.webp"
-            alt=""
-            className="absolute rounded-[5px] object-cover"
-            style={{ left: '25%', top: 72, width: 55, height: 56 }}
-          />
-          <img
-            src="/images/landing/pos-5.webp"
-            alt=""
-            className="absolute rounded-[5px] object-cover"
-            style={{ right: '25%', top: 72, width: 55, height: 56 }}
-          />
-          <img
-            src="/images/landing/pos-6.webp"
-            alt=""
-            className="absolute rounded-[5px] object-cover"
-            style={{ right: '10.9%', top: 66, width: 67, height: 68, transform: 'scaleX(-1)' }}
-          />
-          <img
-            src="/images/landing/pos-7.webp"
-            alt=""
-            className="absolute rounded-[5px] object-cover"
-            style={{ right: '-5.5%', top: 61, width: 77, height: 78 }}
-          />
-          <img
-            src="/images/landing/pos-8.webp"
-            alt=""
-            className="absolute rounded-[5px] object-cover"
-            style={{ right: '-25%', top: 55, width: 91, height: 92, transform: 'scaleX(-1)' }}
-          />
-
-          <div className="absolute inset-x-0 top-[33px] z-[10] flex flex-col items-center">
-            <h2 className="w-[106px] text-center text-[20px] font-medium leading-[1.26] text-foreground">
-              Open to all creators
-            </h2>
-            <p className="mt-[10px] w-[91px] text-center text-[10px] font-normal leading-[1.26] text-foreground">
-              enjoying the freedom to express their creativity and earn more
-            </p>
+        {/* Mobile: cascade images arc + text below */}
+        <div className="lg:hidden">
+          {/* Images arc strip — no text overlap */}
+          <div className="relative h-[148px] overflow-hidden">
+            <img
+              src="/images/landing/pos-1.webp"
+              alt=""
+              className="absolute rounded-[5px] object-cover"
+              style={{ left: '-25vw', top: 55, width: 91, height: 92 }}
+            />
+            <img
+              src="/images/landing/pos-2.webp"
+              alt=""
+              className="absolute rounded-[5px] object-cover"
+              style={{ left: '-5.5vw', top: 61, width: 77, height: 78 }}
+            />
+            <img
+              src="/images/landing/pos-3.webp"
+              alt=""
+              className="absolute rounded-[5px] object-cover"
+              style={{ left: '10.9vw', top: 66, width: 67, height: 68 }}
+            />
+            <img
+              src="/images/landing/pos-4.webp"
+              alt=""
+              className="absolute rounded-[5px] object-cover"
+              style={{ left: '25vw', top: 72, width: 55, height: 56 }}
+            />
+            <img
+              src="/images/landing/pos-5.webp"
+              alt=""
+              className="absolute rounded-[5px] object-cover"
+              style={{ right: '25vw', top: 72, width: 55, height: 56 }}
+            />
+            <img
+              src="/images/landing/pos-6.webp"
+              alt=""
+              className="absolute rounded-[5px] object-cover"
+              style={{ right: '10.9vw', top: 66, width: 67, height: 68, transform: 'scaleX(-1)' }}
+            />
+            <img
+              src="/images/landing/pos-7.webp"
+              alt=""
+              className="absolute rounded-[5px] object-cover"
+              style={{ right: '-5.5vw', top: 61, width: 77, height: 78 }}
+            />
+            <img
+              src="/images/landing/pos-8.webp"
+              alt=""
+              className="absolute rounded-[5px] object-cover"
+              style={{ right: '-25vw', top: 55, width: 91, height: 92, transform: 'scaleX(-1)' }}
+            />
           </div>
 
-          <Link
-            to="/register"
-            className="absolute left-1/2 top-[163px] z-[10] flex -translate-x-1/2 items-center gap-[4px] rounded-[36px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[10px] py-[8px] text-[12px] font-medium text-white shadow-[0px_3px_5px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
-          >
-            Start Your Journey
-            <img
-              src="/icons/landing/arrow_forward.svg"
-              alt=""
-              className="h-[11px] w-[11px]"
-              style={{ filter: WHITE }}
-            />
-          </Link>
+          {/* Text + button — below images, no overlap */}
+          <div className="flex flex-col items-center px-[16px] pb-[28px] pt-[16px]">
+            <h2 className="text-center text-[20px] font-medium leading-[1.26] text-foreground">
+              Open to all creators
+            </h2>
+            <p className="mt-[10px] text-center text-[10px] font-normal leading-[1.26] text-foreground">
+              enjoying the freedom to express their creativity and earn more
+            </p>
+            <Link
+              to="/register"
+              className="mt-[16px] flex items-center gap-[4px] rounded-[36px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[10px] py-[8px] text-[12px] font-medium text-white shadow-[0px_3px_5px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
+            >
+              Start Your Journey
+              <img
+                src="/icons/landing/arrow_forward.svg"
+                alt=""
+                className="h-[11px] w-[11px]"
+                style={{ filter: WHITE }}
+              />
+            </Link>
+          </div>
         </div>
 
         {/* Desktop: center content */}
