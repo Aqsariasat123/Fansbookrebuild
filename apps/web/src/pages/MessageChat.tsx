@@ -12,20 +12,119 @@ import {
 import { MessagePageHeader, ChatUserHeader, buildCallProps } from '../components/chat/ChatHeader';
 import { ChatOverlays } from '../components/chat/ImagePreview';
 import { ChatInputBar } from '../components/chat/ChatInputBar';
+import { TipModal } from '../components/shared/TipModal';
 import { MessageUnlockPrompt } from '../components/chat/MessageUnlockPrompt';
 import { useChat } from '../hooks/useChat';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useCall } from '../hooks/useCall';
+import type React from 'react';
+
+type OtherUser = { id: string; displayName: string; avatar: string | null };
+type SetMsgs = React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+
+function TipOverlay({
+  show,
+  other,
+  onClose,
+}: {
+  show: boolean;
+  other: OtherUser | null;
+  onClose: () => void;
+}) {
+  if (!show || !other) return null;
+  return <TipModal receiverId={other.id} receiverName={other.displayName} onClose={onClose} />;
+}
+function TypingIndicator({ count }: { count: number }) {
+  return count > 0 ? <TypingDots /> : null;
+}
+
+type UnlockResp = { success: boolean; data: { required: boolean; price: number } };
+function applyUnlock(r: UnlockResp, setReq: (v: boolean) => void, setPrice: (v: number) => void) {
+  if (!r.success) return;
+  setReq(r.data.required);
+  r.data.required && setPrice(r.data.price);
+}
+
+async function execSend(
+  cid: string,
+  text: string,
+  sending: boolean,
+  setSending: (v: boolean) => void,
+  setMsgs: SetMsgs,
+  setMsg: (v: string) => void,
+) {
+  if (!text || !cid || sending) return;
+  setSending(true);
+  try {
+    const { data: res } = await api.post(`/messages/${cid}`, { text });
+    if (res.success) {
+      setMsgs((p) => [...p, res.data]);
+      setMsg('');
+    }
+  } catch {
+    /* */
+  } finally {
+    setSending(false);
+  }
+}
+
+async function execImageSend(
+  cid: string,
+  file: File,
+  caption: string,
+  setSending: (v: boolean) => void,
+  setMsgs: SetMsgs,
+  setPreview: (v: File | null) => void,
+) {
+  if (!cid) return;
+  setSending(true);
+  try {
+    const fd = new FormData();
+    fd.append('image', file);
+    if (caption.trim()) fd.append('caption', caption.trim());
+    const { data: res } = await api.post(`/messages/${cid}/image`, fd);
+    if (res.success) {
+      setMsgs((p) => [...p, res.data]);
+      setPreview(null);
+    }
+  } catch {
+    /* */
+  } finally {
+    setSending(false);
+  }
+}
+
+async function execLoadOlder(
+  cid: string,
+  cursor: string | null,
+  loading: boolean,
+  setLoading: (v: boolean) => void,
+  setMsgs: SetMsgs,
+  setHasMore: (v: boolean) => void,
+  setCursor: (v: string | null) => void,
+) {
+  if (!cid || !cursor || loading) return;
+  setLoading(true);
+  try {
+    const { data: res } = await api.get(`/messages/${cid}?cursor=${cursor}`);
+    if (res.success) {
+      setMsgs((p) => [...res.data.messages, ...p]);
+      setHasMore(res.data.hasMore ?? false);
+      setCursor(res.data.nextCursor ?? null);
+    }
+  } catch {
+    /* */
+  } finally {
+    setLoading(false);
+  }
+}
+
 export default function MessageChat() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const userId = useAuthStore((s) => s.user?.id);
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [other, setOther] = useState<{
-    id: string;
-    displayName: string;
-    avatar: string | null;
-  } | null>(null);
+  const [other, setOther] = useState<OtherUser | null>(null);
   const [newMsg, setNewMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -36,12 +135,14 @@ export default function MessageChat() {
   const [viewImage, setViewImage] = useState<string | null>(null);
   const [unlockRequired, setUnlockRequired] = useState(false);
   const [unlockPrice, setUnlockPrice] = useState(0);
+  const [showTip, setShowTip] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { incomingMessages, typingUsers, emitTyping, markRead, clearIncoming } =
     useChat(conversationId);
   const otherOnline = useOnlineStatus(other?.id);
   const { startCall } = useCall();
   const callProps = buildCallProps(other, startCall);
+
   useEffect(() => {
     if (!conversationId) return;
     api
@@ -57,81 +158,27 @@ export default function MessageChat() {
       .catch(() => navigate('/messages'))
       .finally(() => setLoading(false));
     api.put(`/messages/${conversationId}/read`).catch(() => {});
-    // Check if conversation requires paid unlock
     api
       .get(`/messages/${conversationId}/unlock-price`)
-      .then(({ data: r }) => {
-        if (r.success && r.data.required) {
-          setUnlockRequired(true);
-          setUnlockPrice(r.data.price);
-        }
-      })
+      .then(({ data: r }) => applyUnlock(r, setUnlockRequired, setUnlockPrice))
       .catch(() => {});
     markRead();
     return () => clearIncoming();
   }, [conversationId, navigate, markRead, clearIncoming]);
+
   useEffect(() => {
-    if (incomingMessages.length === 0) return;
     setMessages((prev) => {
       const ids = new Set(prev.map((m) => m.id));
       const newOnes = incomingMessages.filter((m) => !ids.has(m.id));
       return newOnes.length > 0 ? [...prev, ...newOnes] : prev;
     });
-    markRead();
+    incomingMessages.length && markRead();
   }, [incomingMessages, markRead]);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
-  async function handleSend() {
-    const text = newMsg.trim();
-    if (!text || !conversationId || sending) return;
-    setSending(true);
-    try {
-      const { data: res } = await api.post(`/messages/${conversationId}`, { text });
-      if (res.success) {
-        setMessages((prev) => [...prev, res.data]);
-        setNewMsg('');
-      }
-    } catch {
-      /* */
-    } finally {
-      setSending(false);
-    }
-  }
-  async function handleImageSend(file: File, caption: string) {
-    if (!conversationId) return;
-    setSending(true);
-    try {
-      const fd = new FormData();
-      fd.append('image', file);
-      if (caption.trim()) fd.append('caption', caption.trim());
-      const { data: res } = await api.post(`/messages/${conversationId}/image`, fd);
-      if (res.success) {
-        setMessages((prev) => [...prev, res.data]);
-        setPreviewFile(null);
-      }
-    } catch {
-      /* */
-    } finally {
-      setSending(false);
-    }
-  }
-  async function handleLoadOlder() {
-    if (!conversationId || !nextCursor || loadingOlder) return;
-    setLoadingOlder(true);
-    try {
-      const { data: res } = await api.get(`/messages/${conversationId}?cursor=${nextCursor}`);
-      if (res.success) {
-        setMessages((prev) => [...res.data.messages, ...prev]);
-        setHasMore(res.data.hasMore ?? false);
-        setNextCursor(res.data.nextCursor ?? null);
-      }
-    } catch {
-      /* */
-    } finally {
-      setLoadingOlder(false);
-    }
-  }
+
   if (loading)
     return (
       <div className="flex justify-center py-[60px]">
@@ -158,7 +205,17 @@ export default function MessageChat() {
         >
           {hasMore && (
             <button
-              onClick={handleLoadOlder}
+              onClick={() =>
+                execLoadOlder(
+                  conversationId!,
+                  nextCursor,
+                  loadingOlder,
+                  setLoadingOlder,
+                  setMessages,
+                  setHasMore,
+                  setNextCursor,
+                )
+              }
               disabled={loadingOlder}
               className="self-center rounded-[50px] bg-muted px-[16px] py-[6px] text-[12px] text-muted-foreground hover:text-foreground disabled:opacity-50"
             >
@@ -184,7 +241,7 @@ export default function MessageChat() {
               />
             ),
           )}
-          {typingUsers.size > 0 && <TypingDots />}
+          <TypingIndicator count={typingUsers.size} />
         </div>
         {unlockRequired ? (
           <MessageUnlockPrompt
@@ -202,19 +259,25 @@ export default function MessageChat() {
               setNewMsg(v);
               emitTyping(v.length > 0);
             }}
-            onSend={handleSend}
+            onSend={() =>
+              execSend(conversationId!, newMsg, sending, setSending, setMessages, setNewMsg)
+            }
             onFileSelect={(e) => {
               const f = e.target.files?.[0];
-              if (f) setPreviewFile(f);
+              f && setPreviewFile(f);
               e.target.value = '';
             }}
             sending={sending}
+            onTip={other ? () => setShowTip(true) : undefined}
           />
         )}
       </div>
+      <TipOverlay show={showTip} other={other} onClose={() => setShowTip(false)} />
       <ChatOverlays
         previewFile={previewFile}
-        onSendImage={handleImageSend}
+        onSendImage={(file, caption) =>
+          execImageSend(conversationId!, file, caption, setSending, setMessages, setPreviewFile)
+        }
         onClosePreview={() => setPreviewFile(null)}
         sending={sending}
         viewImage={viewImage}

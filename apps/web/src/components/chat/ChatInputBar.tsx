@@ -25,6 +25,7 @@ interface ChatInputBarProps {
   onSend: () => void;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   sending: boolean;
+  onTip?: () => void;
 }
 
 export function ChatInputBar({
@@ -33,6 +34,7 @@ export function ChatInputBar({
   onSend,
   onFileSelect,
   sending,
+  onTip,
 }: ChatInputBarProps) {
   const [showEmoji, setShowEmoji] = useState(false);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -109,6 +111,24 @@ export function ChatInputBar({
               <path d="M21 15l-5-5L5 21" />
             </svg>
           </button>
+          {onTip && (
+            <button onClick={onTip} className="hover:opacity-80" title="Send tip">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="md:w-[24px] md:h-[24px]"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v2m0 8v2M9.5 9.5a2.5 2.5 0 015 0c0 1.5-1.5 2-2.5 2.5S9 14 9 15.5a2.5 2.5 0 005 0" />
+              </svg>
+            </button>
+          )}
           <button onClick={() => fileRef.current?.click()} className="hover:opacity-80">
             <svg
               width="20"
