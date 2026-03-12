@@ -69,7 +69,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
   return (
     <Link
       to={`/u/${creator.username}`}
-      className="block w-full overflow-hidden rounded-[12px] bg-card transition-transform hover:scale-[1.02] sm:rounded-[22px]"
+      className="block w-full overflow-hidden rounded-[12px] bg-card transition-transform hover:scale-[1.02] sm:rounded-[22px] flex flex-col"
     >
       {/* Image — no overlays */}
       <div className="h-[210px] w-full overflow-hidden bg-muted sm:h-[243px]">
@@ -87,7 +87,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
       </div>
 
       {/* Info section */}
-      <div className="px-[12px] pt-[10px] pb-[12px] sm:px-[22px] sm:pt-[15px] sm:pb-[18px]">
+      <div className="flex flex-1 flex-col px-[12px] pt-[10px] pb-[12px] sm:px-[22px] sm:pt-[15px] sm:pb-[18px]">
         <div className="flex items-center justify-between gap-[6px]">
           <p className="font-outfit text-[12px] font-normal leading-normal text-foreground sm:text-[16px]">
             {creator.displayName}
@@ -131,7 +131,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
           </span>
         </div>
 
-        <div className="mt-[12px] flex w-full sm:mt-[22px] sm:w-[174px]">
+        <div className="mt-auto flex w-full pt-[12px] sm:pt-[22px]">
           <button
             onClick={handleFollow}
             disabled={followLoading}
