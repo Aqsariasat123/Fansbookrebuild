@@ -41,7 +41,7 @@ export default function LiveBrowse() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search live creators..."
-          className="h-[48px] w-full rounded-[52px] bg-[#15191c] pl-[44px] pr-[16px] font-outfit text-[14px] text-foreground placeholder:text-[#5d5d5d] focus:outline-none focus:ring-1 focus:ring-[#01adf1]"
+          className="h-[48px] w-full rounded-[52px] bg-[#15191c] pl-[44px] pr-[16px] font-outfit text-[14px] text-foreground placeholder:text-[#5d5d5d] focus:outline-none focus:ring-1 focus:ring-[#01adf1] scroll-mt-[80px]"
         />
       </div>
 
