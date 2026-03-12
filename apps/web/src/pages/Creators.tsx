@@ -10,6 +10,8 @@ import { FilterBar } from '../components/creators/FilterBar';
 function parseFilters(searchParams: URLSearchParams): CreatorsFilterParams {
   const priceMinRaw = searchParams.get('priceMin');
   const priceMaxRaw = searchParams.get('priceMax');
+  const sortByRaw = searchParams.get('sortBy');
+  const sortOrderRaw = searchParams.get('sortOrder');
   return {
     page: Number(searchParams.get('page')) || 1,
     limit: 12,
@@ -18,6 +20,9 @@ function parseFilters(searchParams: URLSearchParams): CreatorsFilterParams {
     country: searchParams.get('country') || undefined,
     priceMin: priceMinRaw ? Number(priceMinRaw) : undefined,
     priceMax: priceMaxRaw ? Number(priceMaxRaw) : undefined,
+    category: searchParams.get('category') || undefined,
+    sortBy: (sortByRaw as CreatorsFilterParams['sortBy']) || undefined,
+    sortOrder: (sortOrderRaw as CreatorsFilterParams['sortOrder']) || undefined,
   };
 }
 
@@ -123,6 +128,24 @@ export default function Creators() {
     [setSearchParams],
   );
 
+  const handleMultiFilterChange = useCallback(
+    (updates: Record<string, string>) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        for (const [key, value] of Object.entries(updates)) {
+          if (value) {
+            next.set(key, value);
+          } else {
+            next.delete(key);
+          }
+        }
+        next.delete('page');
+        return next;
+      });
+    },
+    [setSearchParams],
+  );
+
   const currentPage = filters.page || 1;
   const totalPages = data ? Math.ceil(data.total / 12) : 1;
 
@@ -131,7 +154,11 @@ export default function Creators() {
       <div className="relative h-[80px]">
         <MarketingNav onDark={false} />
       </div>
-      <FilterBar filters={filters} onFilterChange={handleFilterChange} />
+      <FilterBar
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onMultiFilterChange={handleMultiFilterChange}
+      />
       <div className="flex justify-center px-[16px] pb-[40px] md:px-[60px]">
         <CreatorsGrid data={data} isLoading={isLoading} isError={isError} />
       </div>

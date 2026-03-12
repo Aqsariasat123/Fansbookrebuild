@@ -25,6 +25,8 @@ export interface CreatorsFilterParams extends PaginationParams {
   category?: string;
   isLive?: boolean;
   isVerified?: boolean;
+  sortBy?: 'createdAt' | 'followers' | 'price';
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface CreatorFiltersResponse {
