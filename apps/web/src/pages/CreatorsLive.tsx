@@ -39,7 +39,7 @@ export default function CreatorsLive() {
         <h1 className="text-center text-[24px] font-normal md:text-[48px]">
           Creators Are Live Now!
         </h1>
-        <p className="max-w-[270px] text-center text-[12px] font-normal md:max-w-none md:text-[16px]">
+        <p className="max-w-[270px] text-center text-[15px] font-normal md:max-w-none md:text-[16px]">
           Join private live sessions, interact in real-time, and support your favourite creators.
         </p>
       </div>

@@ -1,19 +1,45 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { api } from '../../lib/api';
 import { formatScheduledTime } from './Dropdown';
 
 interface UpcomingLiveItem {
   id: string;
+  creatorId: string;
   username: string;
   avatar: string | null;
   scheduledAt: string;
 }
 
 export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | undefined }) {
+  const navigate = useNavigate();
+  const [notified, setNotified] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState<Set<string>>(new Set());
+
+  async function handleNotify(creatorId: string) {
+    if (notified.has(creatorId) || loading.has(creatorId)) return;
+    setLoading((prev) => new Set(prev).add(creatorId));
+    try {
+      await api.post(`/followers/${creatorId}`);
+      setNotified((prev) => new Set(prev).add(creatorId));
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status === 401) navigate('/login');
+    } finally {
+      setLoading((prev) => {
+        const next = new Set(prev);
+        next.delete(creatorId);
+        return next;
+      });
+    }
+  }
+
   return (
     <>
       {/* Upcoming Lives Section */}
       <div className="mt-[30px] flex flex-col items-center gap-[5px] px-[20px] text-foreground md:mt-[60px] md:gap-[11px]">
         <h2 className="text-center text-[24px] font-normal md:text-[48px]">Upcoming Lives</h2>
-        <p className="text-center text-[12px] font-normal md:text-[16px]">
+        <p className="text-center text-[15px] font-normal md:text-[16px]">
           Don't miss out! Get notified when your favorite creators go live.
         </p>
       </div>
@@ -69,14 +95,22 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
 
                   {/* Action */}
                   <div className="flex flex-1 items-center justify-center">
-                    <button className="flex items-center gap-[5px] rounded-[4px] border border-border p-[5px] md:gap-[10px] md:p-[10px]">
+                    <button
+                      onClick={() => handleNotify(item.creatorId)}
+                      disabled={loading.has(item.creatorId)}
+                      className={`flex items-center gap-[5px] rounded-[4px] border p-[5px] transition-colors md:gap-[10px] md:p-[10px] disabled:opacity-50 ${
+                        notified.has(item.creatorId)
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border text-foreground'
+                      }`}
+                    >
                       <img
                         src="/icons/creators/notification_add.svg"
                         alt=""
                         className="h-[10px] w-[10px] md:h-[20px] md:w-[20px]"
                       />
-                      <span className="font-outfit text-[12px] font-normal text-foreground md:text-[16px]">
-                        Notify me
+                      <span className="font-outfit text-[12px] font-normal md:text-[16px]">
+                        {notified.has(item.creatorId) ? 'Notified ✓' : 'Notify me'}
                       </span>
                     </button>
                   </div>
