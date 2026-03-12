@@ -25,72 +25,60 @@ export function LiveCard({ session }: { session: LiveCreatorCard }) {
   const categoryIcon = session.category ? CATEGORY_ICONS[session.category] || 'palette' : 'palette';
 
   return (
-    <div className="flex h-[235px] w-full items-center rounded-[22px] bg-card px-[16px] py-[16px] sm:h-[278px] sm:w-[227px] sm:px-[23px] sm:py-[20px]">
-      <div className="flex w-full flex-col items-start gap-[14px] sm:w-[180px] sm:gap-[22px]">
+    <div className="flex w-full items-center rounded-[22px] bg-card px-[16px] py-[20px] sm:h-[278px] sm:w-[227px] sm:px-[23px] sm:py-[20px]">
+      <div className="flex w-full flex-col items-start gap-[16px] sm:w-[180px] sm:gap-[22px]">
         {/* Live badge */}
-        <span className="flex items-center gap-[4px] rounded-[3px] bg-[#e02a2a] px-[6px] py-[3px] sm:gap-[5px] sm:rounded-[4px] sm:px-[8px] sm:py-[4px]">
-          <img
-            src="/icons/creators/live_dot.svg"
-            alt=""
-            className="h-[3px] w-[3px] sm:h-[4px] sm:w-[4px]"
-          />
-          <span className="font-outfit text-[10px] font-normal text-foreground sm:text-[12px]">
-            Live
-          </span>
+        <span className="flex items-center gap-[5px] rounded-[4px] bg-[#e02a2a] px-[8px] py-[4px]">
+          <img src="/icons/creators/live_dot.svg" alt="" className="h-[5px] w-[5px]" />
+          <span className="font-outfit text-[13px] font-medium text-foreground">Live</span>
         </span>
 
         {/* Creator info */}
-        <div className="flex items-center gap-[8px] sm:gap-[10px]">
-          <div className="h-[34px] w-[34px] shrink-0 overflow-hidden rounded-full bg-muted sm:h-[40px] sm:w-[40px]">
+        <div className="flex items-center gap-[10px]">
+          <div className="h-[44px] w-[44px] shrink-0 overflow-hidden rounded-full bg-muted">
             {session.avatar ? (
               <img
                 src={session.avatar}
                 alt={session.displayName}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover object-top"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-[14px] font-bold text-muted-foreground sm:text-[16px]">
+              <div className="flex h-full w-full items-center justify-center text-[18px] font-bold text-muted-foreground">
                 {session.displayName.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
           <div className="font-outfit leading-none text-foreground">
-            <p className="text-[13px] sm:text-[16px]">{session.displayName}</p>
-            <p className="mt-[2px] text-[10px] text-muted-foreground sm:text-[12px]">
-              @{session.username}
-            </p>
+            <p className="text-[16px] font-semibold">{session.displayName}</p>
+            <p className="mt-[3px] text-[13px] text-muted-foreground">@{session.username}</p>
           </div>
         </div>
 
         {/* Details */}
-        <div className="flex w-full flex-col items-start gap-[8px] sm:gap-[10px]">
-          <div className="flex items-center gap-[8px] sm:gap-[10px]">
+        <div className="flex w-full flex-col items-start gap-[10px]">
+          <div className="flex items-center gap-[10px]">
             <img
               src={`/icons/creators/${categoryIcon}.svg`}
               alt=""
-              className="h-[15px] w-[15px] sm:h-[18px] sm:w-[18px]"
+              className="h-[18px] w-[18px] shrink-0"
             />
-            <span className="font-outfit text-[10px] font-normal text-foreground sm:text-[12px]">
+            <span className="font-outfit text-[14px] text-foreground">
               {session.category || 'Creator'}
             </span>
           </div>
-          <div className="flex items-center gap-[8px] sm:gap-[10px]">
+          <div className="flex items-center gap-[10px]">
             <img
               src="/icons/creators/visibility.svg"
               alt=""
-              className="h-[15px] w-[15px] sm:h-[18px] sm:w-[18px]"
+              className="h-[18px] w-[18px] shrink-0"
             />
-            <span className="font-outfit text-[10px] font-normal text-foreground sm:text-[12px]">
+            <span className="font-outfit text-[14px] text-foreground">
               {formatViewers(session.viewerCount)} Viewers
             </span>
           </div>
-          <div className="flex w-full items-center gap-[8px] sm:gap-[10px]">
-            <img
-              src="/icons/creators/videocam.svg"
-              alt=""
-              className="h-[15px] w-[15px] shrink-0 sm:h-[18px] sm:w-[18px]"
-            />
-            <span className="line-clamp-1 font-outfit text-[10px] font-normal text-foreground sm:text-[12px]">
+          <div className="flex w-full items-center gap-[10px]">
+            <img src="/icons/creators/videocam.svg" alt="" className="h-[18px] w-[18px] shrink-0" />
+            <span className="line-clamp-1 font-outfit text-[14px] text-foreground">
               {session.title}
             </span>
           </div>
@@ -99,7 +87,7 @@ export function LiveCard({ session }: { session: LiveCreatorCard }) {
         {/* Join button */}
         <button
           onClick={() => navigate(user ? `/live/${session.id}` : '/login')}
-          className="rounded-[3px] bg-gradient-to-r from-[#01adf1] to-[#a61651] p-[8px] font-outfit text-[10px] font-normal text-foreground sm:rounded-[4px] sm:p-[10px] sm:text-[12px]"
+          className="rounded-[6px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[16px] py-[10px] font-outfit text-[14px] font-medium text-foreground"
         >
           Join Live Session
         </button>
