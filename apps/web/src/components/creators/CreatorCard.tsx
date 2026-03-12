@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { CreatorCard as CreatorCardType } from '@fansbook/shared';
-import { api } from '../../lib/api';
 import { Badge, type BadgeType } from './Badge';
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -34,44 +32,15 @@ function formatPrice(price: number | null): string {
 }
 
 export function CreatorCard({ creator }: { creator: CreatorCardType }) {
-  const navigate = useNavigate();
-  const [followLoading, setFollowLoading] = useState(false);
-  const [isFollowed, setIsFollowed] = useState(false);
   const badges = getCreatorBadges(creator);
   const categoryIcon = getCategoryIcon(creator.category);
-
-  async function handleFollow(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (followLoading) return;
-    setFollowLoading(true);
-    try {
-      if (isFollowed) {
-        await api.delete(`/followers/${creator.id}`);
-        setIsFollowed(false);
-      } else {
-        await api.post(`/followers/${creator.id}`);
-        setIsFollowed(true);
-      }
-    } catch {
-      /* silent */
-    } finally {
-      setFollowLoading(false);
-    }
-  }
-
-  function handleMessage(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    navigate('/messages');
-  }
 
   return (
     <Link
       to={`/u/${creator.username}`}
-      className="block w-full overflow-hidden rounded-[12px] bg-card transition-transform hover:scale-[1.02] sm:rounded-[22px] flex flex-col"
+      className="flex flex-col w-full overflow-hidden rounded-[12px] bg-card transition-transform hover:scale-[1.02] sm:rounded-[22px]"
     >
-      {/* Image — no overlays */}
+      {/* Image */}
       <div className="h-[210px] w-full overflow-hidden bg-muted sm:h-[243px]">
         {creator.avatar ? (
           <img
@@ -88,18 +57,9 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
 
       {/* Info section */}
       <div className="flex flex-1 flex-col px-[12px] pt-[10px] pb-[12px] sm:px-[22px] sm:pt-[15px] sm:pb-[18px]">
-        <div className="flex items-center justify-between gap-[6px]">
-          <p className="font-outfit text-[12px] font-normal leading-normal text-foreground sm:text-[16px]">
-            {creator.displayName}
-          </p>
-          {badges.length > 0 && (
-            <div className="flex shrink-0 gap-[4px]">
-              {badges.map((b, i) => (
-                <Badge key={i} type={b} />
-              ))}
-            </div>
-          )}
-        </div>
+        <p className="font-outfit text-[12px] font-normal leading-normal text-foreground sm:text-[16px]">
+          {creator.displayName}
+        </p>
         <p className="mt-[2px] font-outfit text-[10px] font-normal leading-normal text-muted-foreground sm:text-[12px]">
           {creator.statusText || 'Available'}
         </p>
@@ -131,21 +91,14 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
           </span>
         </div>
 
-        <div className="mt-auto flex w-full pt-[12px] sm:pt-[22px]">
-          <button
-            onClick={handleFollow}
-            disabled={followLoading}
-            className="flex-1 rounded-l-[4px] bg-muted px-[7px] py-[6px] font-outfit text-[12px] font-normal text-foreground transition-opacity hover:opacity-80 disabled:opacity-50 sm:py-[8px] sm:text-[16px]"
-          >
-            {isFollowed ? 'Following' : 'Follow'}
-          </button>
-          <button
-            onClick={handleMessage}
-            className="rounded-r-[4px] bg-[#01adf1] px-[8px] py-[6px] font-outfit text-[12px] font-normal text-foreground transition-opacity hover:opacity-80 sm:px-[12px] sm:py-[8px] sm:text-[16px]"
-          >
-            Message
-          </button>
-        </div>
+        {/* Badges at bottom */}
+        {badges.length > 0 && (
+          <div className="mt-auto flex flex-wrap gap-[6px] pt-[12px] sm:pt-[18px]">
+            {badges.map((b, i) => (
+              <Badge key={i} type={b} />
+            ))}
+          </div>
+        )}
       </div>
     </Link>
   );
