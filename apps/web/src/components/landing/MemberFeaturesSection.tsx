@@ -122,7 +122,7 @@ export function MemberFeaturesSection() {
             <button
               key={t}
               onClick={() => setSubTab(t)}
-              className={`px-[12px] pb-[10px] text-[14px] font-medium sm:px-[16px] md:px-[22px] md:pb-[12px] md:text-[20px] ${active ? 'rounded-t-[4px] border-b-[2px] border-[#a61651] bg-card text-foreground' : 'text-muted-foreground'}`}
+              className={`px-[12px] py-[10px] text-[14px] font-medium sm:px-[16px] md:px-[22px] md:py-[12px] md:text-[20px] ${active ? 'rounded-t-[4px] border-b-[2px] border-[#a61651] bg-card text-foreground' : 'text-muted-foreground'}`}
             >
               {t}
             </button>
