@@ -38,8 +38,6 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
   const [followLoading, setFollowLoading] = useState(false);
   const [isFollowed, setIsFollowed] = useState(false);
   const badges = getCreatorBadges(creator);
-  const leftBadges = badges.filter((b) => b === 'live');
-  const rightBadges = badges.filter((b) => b !== 'live');
   const categoryIcon = getCategoryIcon(creator.category);
 
   async function handleFollow(e: React.MouseEvent) {
@@ -73,8 +71,8 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
       to={`/u/${creator.username}`}
       className="block w-full overflow-hidden rounded-[12px] bg-card transition-transform hover:scale-[1.02] sm:rounded-[22px]"
     >
-      {/* Image with badges */}
-      <div className="relative h-[210px] w-full overflow-hidden bg-muted sm:h-[243px]">
+      {/* Image — no overlays */}
+      <div className="h-[210px] w-full overflow-hidden bg-muted sm:h-[243px]">
         {creator.avatar ? (
           <img
             src={creator.avatar}
@@ -86,25 +84,22 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
             {creator.displayName.charAt(0).toUpperCase()}
           </div>
         )}
-        <div className="absolute inset-x-[12px] top-[12px] flex items-start justify-between">
-          <div className="flex gap-[6px]">
-            {leftBadges.map((b, i) => (
-              <Badge key={i} type={b} />
-            ))}
-          </div>
-          <div className="flex gap-[6px]">
-            {rightBadges.map((b, i) => (
-              <Badge key={i} type={b} />
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Info section */}
       <div className="px-[12px] pt-[10px] pb-[12px] sm:px-[22px] sm:pt-[15px] sm:pb-[18px]">
-        <p className="font-outfit text-[12px] font-normal leading-normal text-foreground sm:text-[16px]">
-          {creator.displayName}
-        </p>
+        <div className="flex items-center justify-between gap-[6px]">
+          <p className="font-outfit text-[12px] font-normal leading-normal text-foreground sm:text-[16px]">
+            {creator.displayName}
+          </p>
+          {badges.length > 0 && (
+            <div className="flex shrink-0 gap-[4px]">
+              {badges.map((b, i) => (
+                <Badge key={i} type={b} />
+              ))}
+            </div>
+          )}
+        </div>
         <p className="mt-[2px] font-outfit text-[10px] font-normal leading-normal text-muted-foreground sm:text-[12px]">
           {creator.statusText || 'Available'}
         </p>
