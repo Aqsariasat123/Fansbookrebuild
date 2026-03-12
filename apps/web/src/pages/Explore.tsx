@@ -8,7 +8,7 @@ import SearchAndSort from '../components/explore/SearchAndSort';
 import CreatorsGrid from '../components/explore/CreatorsGrid';
 import { useExploreData } from '../hooks/useExploreData';
 
-type SortOption = 'createdAt' | 'followers' | 'price';
+type SortOption = 'createdAt' | 'followers';
 
 const PLACEHOLDERS: Record<ExploreTab, string> = {
   all: 'Search creators...',
@@ -24,13 +24,14 @@ export default function Explore() {
   const [category, setCategory] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('createdAt');
   const [sortOpen, setSortOpen] = useState(false);
+  const [isLive, setIsLive] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(t);
   }, [search]);
 
-  const data = useExploreData(tab, debouncedSearch, category, sortBy);
+  const data = useExploreData(tab, debouncedSearch, category, sortBy, isLive);
   const showSort = tab === 'all' || tab === 'creators';
 
   return (
@@ -47,6 +48,8 @@ export default function Explore() {
           setSortBy(s as SortOption);
           setSortOpen(false);
         }}
+        isLive={isLive}
+        onLiveToggle={() => setIsLive((v) => !v)}
       />
       <ExploreTabs active={tab} onChange={setTab} />
       <ExploreTabContent

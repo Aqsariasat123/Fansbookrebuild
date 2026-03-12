@@ -32,7 +32,7 @@ export function SuggestedCarousel({ creators, onSeeAll }: Props) {
           >
             <div className="size-[56px] overflow-hidden rounded-full">
               {c.avatar ? (
-                <img src={c.avatar} alt="" className="size-full object-cover" />
+                <img src={c.avatar} alt="" className="size-full object-cover object-top" />
               ) : (
                 <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[20px] font-medium text-white">
                   {c.displayName.charAt(0).toUpperCase()}

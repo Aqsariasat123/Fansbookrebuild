@@ -1,10 +1,9 @@
-type SortOption = 'createdAt' | 'followers' | 'price';
+type SortOption = 'createdAt' | 'followers';
 const SORT_LABELS: Record<SortOption, string> = {
   createdAt: 'Newest',
   followers: 'Most Followers',
-  price: 'Price Low-High',
 };
-const SORT_OPTIONS: SortOption[] = ['createdAt', 'followers', 'price'];
+const SORT_OPTIONS: SortOption[] = ['createdAt', 'followers'];
 
 export default function SearchAndSort({
   search,
@@ -15,6 +14,8 @@ export default function SearchAndSort({
   sortOpen,
   onSortToggle,
   onSortChange,
+  isLive,
+  onLiveToggle,
 }: {
   search: string;
   onSearch: (v: string) => void;
@@ -24,6 +25,8 @@ export default function SearchAndSort({
   sortOpen: boolean;
   onSortToggle: () => void;
   onSortChange: (s: SortOption) => void;
+  isLive?: boolean;
+  onLiveToggle?: () => void;
 }) {
   return (
     <div className="flex flex-col gap-[12px] sm:flex-row sm:items-center sm:gap-[16px]">
@@ -42,31 +45,46 @@ export default function SearchAndSort({
         />
       </div>
       {showSort && (
-        <div className="relative">
+        <div className="flex items-center gap-[8px]">
           <button
-            onClick={onSortToggle}
-            className="flex items-center gap-[8px] rounded-[52px] border border-border bg-card px-[20px] py-[12px] font-outfit text-[14px] text-foreground"
+            onClick={onLiveToggle}
+            className={`flex items-center gap-[6px] rounded-[52px] border px-[16px] py-[12px] font-outfit text-[14px] transition-colors ${
+              isLive
+                ? 'border-red-500 bg-red-500/10 text-red-400'
+                : 'border-border bg-card text-foreground hover:border-red-500 hover:text-red-400'
+            }`}
           >
-            {SORT_LABELS[sortBy]}
-            <img
-              src="/icons/dashboard/arrow-drop-down.svg"
-              alt=""
-              className={`h-[16px] w-[16px] transition-transform ${sortOpen ? 'rotate-180' : ''}`}
+            <span
+              className={`size-[8px] rounded-full ${isLive ? 'bg-red-500' : 'bg-muted-foreground'}`}
             />
+            Live
           </button>
-          {sortOpen && (
-            <div className="absolute right-0 z-10 mt-[4px] rounded-[12px] border border-border bg-card py-[4px] shadow-lg">
-              {SORT_OPTIONS.map((opt) => (
-                <button
-                  key={opt}
-                  onClick={() => onSortChange(opt)}
-                  className={`block w-full whitespace-nowrap px-[20px] py-[10px] text-left font-outfit text-[14px] transition-colors ${sortBy === opt ? 'text-primary' : 'text-foreground hover:text-primary'}`}
-                >
-                  {SORT_LABELS[opt]}
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="relative w-fit">
+            <button
+              onClick={onSortToggle}
+              className="flex items-center gap-[8px] rounded-[52px] border border-border bg-card px-[20px] py-[12px] font-outfit text-[14px] text-foreground"
+            >
+              {SORT_LABELS[sortBy]}
+              <img
+                src="/icons/dashboard/arrow-drop-down.svg"
+                alt=""
+                className={`h-[16px] w-[16px] transition-transform ${sortOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+            {sortOpen && (
+              <div className="absolute left-0 top-full z-10 mt-[4px] rounded-[12px] border border-border bg-card py-[4px] shadow-lg">
+                {SORT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt}
+                    onClick={() => onSortChange(opt)}
+                    className={`block w-full whitespace-nowrap px-[20px] py-[10px] text-left font-outfit text-[14px] transition-colors ${sortBy === opt ? 'text-primary' : 'text-foreground hover:text-primary'}`}
+                  >
+                    {SORT_LABELS[opt]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

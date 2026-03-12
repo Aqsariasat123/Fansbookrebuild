@@ -3,7 +3,7 @@ import type { CreatorCard as CreatorCardType, CreatorFiltersResponse } from '@fa
 import { api } from '../lib/api';
 import type { ExploreTab } from '../components/explore/ExploreTabs';
 
-type SortOption = 'createdAt' | 'followers' | 'price';
+type SortOption = 'createdAt' | 'followers';
 
 interface CreatorsResponse {
   items: CreatorCardType[];
@@ -21,15 +21,16 @@ interface TrendingPost {
   media: { id: string; url: string; type: string; thumbnail?: string | null }[];
 }
 
-function buildParams(pg: number, sort: SortOption, search: string, cat: string) {
+function buildParams(pg: number, sort: SortOption, search: string, cat: string, live: boolean) {
   const p = new URLSearchParams({
     page: String(pg),
     limit: '12',
     sortBy: sort,
-    sortOrder: sort === 'price' ? 'asc' : 'desc',
+    sortOrder: 'desc',
   });
   if (search) p.set('search', search);
   if (cat) p.set('category', cat);
+  if (live) p.set('isLive', 'true');
   return p.toString();
 }
 
@@ -45,6 +46,7 @@ export function useExploreData(
   debouncedSearch: string,
   category: string,
   sortBy: SortOption,
+  isLive: boolean = false,
 ) {
   const [filters, setFilters] = useState<CreatorFiltersResponse | null>(null);
   const [creators, setCreators] = useState<CreatorCardType[]>([]);
@@ -82,7 +84,7 @@ export function useExploreData(
     setLoading(true);
     api
       .get<{ data: CreatorsResponse }>(
-        `/creators?${buildParams(1, sortBy, debouncedSearch, category)}`,
+        `/creators?${buildParams(1, sortBy, debouncedSearch, category, isLive)}`,
       )
       .then((r) => {
         setCreators(r.data.data.items);
@@ -90,7 +92,7 @@ export function useExploreData(
       })
       .catch(() => setCreators([]))
       .finally(() => setLoading(false));
-  }, [debouncedSearch, category, sortBy, tab]);
+  }, [debouncedSearch, category, sortBy, tab, isLive]);
 
   // Posts tab
   useEffect(() => {
@@ -120,7 +122,7 @@ export function useExploreData(
     setLoadingMore(true);
     api
       .get<{ data: CreatorsResponse }>(
-        `/creators?${buildParams(next, sortBy, debouncedSearch, category)}`,
+        `/creators?${buildParams(next, sortBy, debouncedSearch, category, isLive)}`,
       )
       .then((r) => {
         setCreators((p) => [...p, ...r.data.data.items]);
@@ -128,7 +130,7 @@ export function useExploreData(
         setPage(next);
       })
       .finally(() => setLoadingMore(false));
-  }, [loadingMore, hasMore, page, sortBy, debouncedSearch, category]);
+  }, [loadingMore, hasMore, page, sortBy, debouncedSearch, category, isLive]);
 
   useEffect(() => {
     const el = observerRef.current;
