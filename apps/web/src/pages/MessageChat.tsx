@@ -2,7 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-import { OtherBubble, SelfBubble, TypingDots, CallBubble } from '../components/chat/ChatBubbles';
+import {
+  OtherBubble,
+  SelfBubble,
+  TypingDots,
+  CallBubble,
+  type ChatMessage,
+} from '../components/chat/ChatBubbles';
 import { MessagePageHeader, ChatUserHeader, buildCallProps } from '../components/chat/ChatHeader';
 import { ChatOverlays } from '../components/chat/ImagePreview';
 import { ChatInputBar } from '../components/chat/ChatInputBar';
@@ -10,14 +16,16 @@ import { MessageUnlockPrompt } from '../components/chat/MessageUnlockPrompt';
 import { useChat } from '../hooks/useChat';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useCall } from '../hooks/useCall';
-import type { ChatMessage } from '../components/chat/ChatBubbles';
 export default function MessageChat() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const userId = useAuthStore((s) => s.user?.id);
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  type OtherUser = { id: string; displayName: string; avatar: string | null };
-  const [other, setOther] = useState<OtherUser | null>(null);
+  const [other, setOther] = useState<{
+    id: string;
+    displayName: string;
+    avatar: string | null;
+  } | null>(null);
   const [newMsg, setNewMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -34,7 +42,6 @@ export default function MessageChat() {
   const otherOnline = useOnlineStatus(other?.id);
   const { startCall } = useCall();
   const callProps = buildCallProps(other, startCall);
-
   useEffect(() => {
     if (!conversationId) return;
     api
@@ -63,7 +70,6 @@ export default function MessageChat() {
     markRead();
     return () => clearIncoming();
   }, [conversationId, navigate, markRead, clearIncoming]);
-
   useEffect(() => {
     if (incomingMessages.length === 0) return;
     setMessages((prev) => {
@@ -73,7 +79,6 @@ export default function MessageChat() {
     });
     markRead();
   }, [incomingMessages, markRead]);
-
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
@@ -93,7 +98,6 @@ export default function MessageChat() {
       setSending(false);
     }
   }
-
   async function handleImageSend(file: File, caption: string) {
     if (!conversationId) return;
     setSending(true);
@@ -112,7 +116,6 @@ export default function MessageChat() {
       setSending(false);
     }
   }
-
   async function handleLoadOlder() {
     if (!conversationId || !nextCursor || loadingOlder) return;
     setLoadingOlder(true);
@@ -129,7 +132,6 @@ export default function MessageChat() {
       setLoadingOlder(false);
     }
   }
-
   if (loading)
     return (
       <div className="flex justify-center py-[60px]">
@@ -145,6 +147,7 @@ export default function MessageChat() {
           otherName={other?.displayName}
           otherAvatar={other?.avatar}
           otherId={other?.id}
+          conversationId={conversationId}
           onBack={() => navigate('/messages')}
           isOnline={otherOnline}
           {...callProps}

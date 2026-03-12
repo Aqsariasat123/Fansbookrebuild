@@ -17,12 +17,7 @@ export function buildCallProps(
   };
 }
 
-interface MessagePageHeaderProps {
-  onInvite?: () => void;
-}
-
-export function MessagePageHeader({ onInvite }: MessagePageHeaderProps) {
-  const navigate = useNavigate();
+export function MessagePageHeader({ onInvite }: { onInvite?: () => void }) {
   const [copied, setCopied] = useState(false);
 
   const handleInvite = () => {
@@ -45,31 +40,45 @@ export function MessagePageHeader({ onInvite }: MessagePageHeaderProps) {
           <img src={`${IMG}/person-heart.svg`} alt="" className="size-[24px]" />
           <span className="text-[20px] text-muted-foreground">{copied ? 'Copied!' : 'Invite'}</span>
         </button>
-        <button
-          onClick={() => navigate('/notifications')}
-          className="size-[34px] flex items-center justify-center hover:opacity-80 transition-opacity"
-        >
-          <img src={`${IMG}/notifications.svg`} alt="" className="size-[24px]" />
-        </button>
       </div>
     </div>
   );
 }
 
-function ChatSettingsMenu({ otherId, onClose }: { otherId?: string; onClose: () => void }) {
-  const [muted, setMuted] = useState(false);
+interface SettingsMenuProps {
+  otherId?: string;
+  conversationId?: string;
+  muted: boolean;
+  onToggleMute: () => void;
+  onClose: () => void;
+  onDeleted: () => void;
+}
 
+function ChatSettingsMenu({
+  otherId,
+  conversationId,
+  muted,
+  onToggleMute,
+  onClose,
+  onDeleted,
+}: SettingsMenuProps) {
   const handleBlock = async () => {
     if (!otherId) return;
     await api.post(`/social/users/${otherId}/block`).catch(() => {});
-    onClose();
+    onDeleted();
+  };
+
+  const handleDelete = async () => {
+    if (!conversationId) return;
+    await api.delete(`/messages/conversations/${conversationId}`).catch(() => {});
+    onDeleted();
   };
 
   return (
     <div className="absolute top-full right-0 mt-[4px] bg-card border border-muted rounded-[8px] py-[4px] w-[180px] z-20 shadow-lg">
       <button
         onClick={() => {
-          setMuted(!muted);
+          onToggleMute();
           onClose();
         }}
         className="w-full text-left px-[14px] py-[10px] text-[14px] text-foreground hover:bg-muted"
@@ -83,7 +92,7 @@ function ChatSettingsMenu({ otherId, onClose }: { otherId?: string; onClose: () 
         Block User
       </button>
       <button
-        onClick={onClose}
+        onClick={handleDelete}
         className="w-full text-left px-[14px] py-[10px] text-[14px] text-red-400 hover:bg-muted"
       >
         Delete Chat
@@ -96,6 +105,7 @@ interface ChatUserHeaderProps {
   otherName?: string;
   otherAvatar?: string | null;
   otherId?: string;
+  conversationId?: string;
   onBack: () => void;
   isOnline?: boolean;
   onAudioCall?: () => void;
@@ -106,12 +116,15 @@ export function ChatUserHeader({
   otherName,
   otherAvatar,
   otherId,
+  conversationId,
   onBack,
   isOnline,
   onAudioCall,
   onVideoCall,
 }: ChatUserHeaderProps) {
+  const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+  const [muted, setMuted] = useState(false);
   const initial = otherName?.charAt(0)?.toUpperCase() || '?';
   return (
     <div className="flex items-center border-b border-muted pl-[12px] py-[14px] pr-[17px]">
@@ -165,7 +178,16 @@ export function ChatUserHeader({
         >
           <img src={`${IMG}/settings.svg`} alt="" className="size-[20px] opacity-50" />
         </button>
-        {showMenu && <ChatSettingsMenu otherId={otherId} onClose={() => setShowMenu(false)} />}
+        {showMenu && (
+          <ChatSettingsMenu
+            otherId={otherId}
+            conversationId={conversationId}
+            muted={muted}
+            onToggleMute={() => setMuted((v) => !v)}
+            onClose={() => setShowMenu(false)}
+            onDeleted={() => navigate('/messages')}
+          />
+        )}
       </div>
     </div>
   );
@@ -183,8 +205,8 @@ function CallButton({
   return (
     <button
       onClick={onClick}
-      className="flex size-[36px] items-center justify-center rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] hover:opacity-80 transition-opacity"
       title={title}
+      className="flex size-[36px] items-center justify-center rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] hover:opacity-80 transition-opacity"
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
         {children}

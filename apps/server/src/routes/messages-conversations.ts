@@ -75,4 +75,26 @@ router.get('/', authenticate, async (req, res, next) => {
   }
 });
 
+// Delete a conversation (and all its messages) for the requesting user
+router.delete('/:id', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const { id } = req.params as { id: string };
+
+    const conv = await prisma.conversation.findFirst({
+      where: { id, OR: [{ participant1Id: userId }, { participant2Id: userId }] },
+    });
+    if (!conv) throw new AppError(404, 'Conversation not found');
+
+    await prisma.$transaction([
+      prisma.message.deleteMany({ where: { conversationId: id } }),
+      prisma.conversation.delete({ where: { id } }),
+    ]);
+
+    res.json({ success: true, message: 'Conversation deleted' });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;
