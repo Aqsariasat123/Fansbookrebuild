@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import type { CallMode } from '../../stores/callStore';
@@ -19,16 +19,13 @@ export function buildCallProps(
 
 export function MessagePageHeader({ onInvite }: { onInvite?: () => void }) {
   const [copied, setCopied] = useState(false);
-
   const handleInvite = () => {
     if (onInvite) return onInvite();
-    const link = `${window.location.origin}/explore`;
-    navigator.clipboard.writeText(link).then(() => {
+    navigator.clipboard.writeText(`${window.location.origin}/explore`).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   };
-
   return (
     <div className="flex items-center justify-between border-b border-muted px-[39px] py-[16px]">
       <p className="text-[20px] text-foreground">Message</p>
@@ -67,13 +64,12 @@ function ChatSettingsMenu({
     await api.post(`/social/users/${otherId}/block`).catch(() => {});
     onDeleted();
   };
-
   const handleDelete = async () => {
     if (!conversationId) return;
     await api.delete(`/messages/conversations/${conversationId}`).catch(() => {});
     onDeleted();
   };
-
+  const MENU_BTN = 'w-full text-left px-[14px] py-[10px] text-[14px] hover:bg-muted';
   return (
     <div className="absolute top-full right-0 mt-[4px] bg-card border border-muted rounded-[8px] py-[4px] w-[180px] z-20 shadow-lg">
       <button
@@ -81,20 +77,14 @@ function ChatSettingsMenu({
           onToggleMute();
           onClose();
         }}
-        className="w-full text-left px-[14px] py-[10px] text-[14px] text-foreground hover:bg-muted"
+        className={`${MENU_BTN} text-foreground`}
       >
         {muted ? 'Unmute Notifications' : 'Mute Notifications'}
       </button>
-      <button
-        onClick={handleBlock}
-        className="w-full text-left px-[14px] py-[10px] text-[14px] text-foreground hover:bg-muted"
-      >
+      <button onClick={handleBlock} className={`${MENU_BTN} text-foreground`}>
         Block User
       </button>
-      <button
-        onClick={handleDelete}
-        className="w-full text-left px-[14px] py-[10px] text-[14px] text-red-400 hover:bg-muted"
-      >
+      <button onClick={handleDelete} className={`${MENU_BTN} text-red-400`}>
         Delete Chat
       </button>
     </div>
@@ -125,7 +115,16 @@ export function ChatUserHeader({
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [muted, setMuted] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const initial = otherName?.charAt(0)?.toUpperCase() || '?';
+  useEffect(() => {
+    if (!showMenu) return;
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showMenu]);
   return (
     <div className="flex items-center border-b border-muted pl-[12px] py-[14px] pr-[17px]">
       <button onClick={onBack} className="mr-[12px] hover:opacity-80 transition-opacity">
@@ -171,23 +170,25 @@ export function ChatUserHeader({
             <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
           </CallButton>
         )}
-        <button
-          onClick={() => setShowMenu(!showMenu)}
-          className="hover:opacity-80 transition-opacity"
-          title="Settings"
-        >
-          <img src={`${IMG}/settings.svg`} alt="" className="size-[20px] opacity-50" />
-        </button>
-        {showMenu && (
-          <ChatSettingsMenu
-            otherId={otherId}
-            conversationId={conversationId}
-            muted={muted}
-            onToggleMute={() => setMuted((v) => !v)}
-            onClose={() => setShowMenu(false)}
-            onDeleted={() => navigate('/messages')}
-          />
-        )}
+        <div ref={menuRef} className="relative">
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="hover:opacity-80 transition-opacity"
+            title="Settings"
+          >
+            <img src={`${IMG}/settings.svg`} alt="" className="size-[20px] opacity-50" />
+          </button>
+          {showMenu && (
+            <ChatSettingsMenu
+              otherId={otherId}
+              conversationId={conversationId}
+              muted={muted}
+              onToggleMute={() => setMuted((v) => !v)}
+              onClose={() => setShowMenu(false)}
+              onDeleted={() => navigate('/messages')}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
