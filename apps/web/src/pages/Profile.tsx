@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { api } from '../lib/api';
 import { ChangePasswordModal } from '../components/profile/ChangePasswordModal';
+import { AvatarCropModal } from '../components/profile/AvatarCropModal';
 
 const IMG = '/icons/dashboard';
 
@@ -94,12 +95,20 @@ export default function Profile() {
   const navigate = useNavigate();
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
 
   const displayName = getDisplayName(user);
   const username = user?.username || 'unknown';
   const avatar = user?.avatar || null;
 
-  async function handleAvatarChange(file: File) {
+  function handleFileSelected(file: File) {
+    const url = URL.createObjectURL(file);
+    setCropSrc(url);
+  }
+
+  async function handleCropApply(file: File) {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
     setUploading(true);
     try {
       const fd = new FormData();
@@ -115,6 +124,11 @@ export default function Profile() {
     }
   }
 
+  function handleCropCancel() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  }
+
   return (
     <div className="flex flex-col gap-[12px] md:gap-[22px]">
       <p className="text-[20px] font-normal text-foreground capitalize">my profile</p>
@@ -122,7 +136,7 @@ export default function Profile() {
         <AvatarSection
           avatar={avatar}
           displayName={displayName}
-          onAvatarChange={handleAvatarChange}
+          onAvatarChange={handleFileSelected}
           uploading={uploading}
         />
         <div className="flex flex-col items-center mt-[10px] md:mt-[13px]">
@@ -147,6 +161,9 @@ export default function Profile() {
         </div>
       </div>
       <ChangePasswordModal open={passwordOpen} onClose={() => setPasswordOpen(false)} />
+      {cropSrc && (
+        <AvatarCropModal src={cropSrc} onApply={handleCropApply} onCancel={handleCropCancel} />
+      )}
     </div>
   );
 }
