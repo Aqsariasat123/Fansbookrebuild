@@ -87,6 +87,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
   const [viewerIndex, setViewerIndex] = useState(0);
 
   const { author } = post;
+  const authorUsername = author ? author.username : '';
   const images = post.media.filter((m) => m.type === 'IMAGE');
   const video = post.media.find((m) => m.type === 'VIDEO');
   const hasImages = images.length > 0;
@@ -150,7 +151,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
 
       {hasImages && (
         <div className="mb-[14px] md:mb-[18px]">
-          <ImageGrid media={post.media} onImageClick={openViewer} />
+          <ImageGrid media={post.media} onImageClick={openViewer} username={authorUsername} />
         </div>
       )}
 

@@ -140,7 +140,7 @@ export function PostCard({ post, isSubscribed }: PostCardProps) {
           {post.text}
         </p>
       )}
-      <PostMediaDisplay images={images} isLocked={isLocked} />
+      <PostMediaDisplay images={images} isLocked={isLocked} username={post.author?.username} />
       <PostActions
         postId={post.id}
         likeCount={post.likeCount}

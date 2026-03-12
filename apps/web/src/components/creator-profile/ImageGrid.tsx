@@ -3,9 +3,10 @@ import type { PostMedia } from './PostCard';
 interface ImageGridProps {
   media: PostMedia[];
   onImageClick: (index: number) => void;
+  username: string;
 }
 
-export function ImageGrid({ media, onImageClick }: ImageGridProps) {
+export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
   const images = media.filter((m) => m.type === 'IMAGE');
   if (images.length === 0) return null;
   const extra = images.length > 4 ? images.length - 3 : 0;
@@ -14,10 +15,13 @@ export function ImageGrid({ media, onImageClick }: ImageGridProps) {
   if (shown.length === 1) {
     return (
       <div
-        className="aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[16px]"
+        className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[16px]"
         onClick={() => onImageClick(0)}
       >
         <img src={shown[0].url} alt="" className="h-full w-full object-cover" />
+        <div className="absolute bottom-0 inset-x-0 bg-black/40 px-[8px] py-[4px] font-outfit text-[10px] text-white/80 select-none">
+          fansbook.vip/u/{username}
+        </div>
       </div>
     );
   }

@@ -10,6 +10,7 @@ interface MediaItem {
 interface PostMediaDisplayProps {
   images: MediaItem[];
   isLocked: boolean;
+  username?: string;
 }
 
 function LockedOverlay() {
@@ -25,13 +26,26 @@ function LockedOverlay() {
   );
 }
 
-function SingleImage({ image, onClick }: { image: MediaItem; onClick: () => void }) {
+function SingleImage({
+  image,
+  onClick,
+  username,
+}: {
+  image: MediaItem;
+  onClick: () => void;
+  username?: string;
+}) {
   return (
     <div
       className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[22px]"
       onClick={onClick}
     >
       <img src={image.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      {username && (
+        <div className="absolute bottom-0 inset-x-0 bg-black/40 px-[8px] py-[4px] font-outfit text-[10px] text-white/80 select-none">
+          fansbook.vip/u/{username}
+        </div>
+      )}
     </div>
   );
 }
@@ -95,7 +109,7 @@ function LockedImage({ image }: { image: MediaItem }) {
   );
 }
 
-export function PostMediaDisplay({ images, isLocked }: PostMediaDisplayProps) {
+export function PostMediaDisplay({ images, isLocked, username }: PostMediaDisplayProps) {
   const [viewerIdx, setViewerIdx] = useState<number | null>(null);
 
   if (images.length === 0) return null;
@@ -108,7 +122,7 @@ export function PostMediaDisplay({ images, isLocked }: PostMediaDisplayProps) {
     <>
       <div className="mb-[14px]">
         {images.length === 1 ? (
-          <SingleImage image={images[0]!} onClick={() => setViewerIdx(0)} />
+          <SingleImage image={images[0]!} onClick={() => setViewerIdx(0)} username={username} />
         ) : (
           <MultiImageGrid images={images} onClickIndex={setViewerIdx} />
         )}
