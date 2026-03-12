@@ -38,11 +38,13 @@ export function MarketingNav({ onDark = true }: { onDark?: boolean }) {
     <>
       <nav className="absolute top-[20px] left-[20px] right-[20px] z-20 flex items-center font-outfit lg:top-[34px] lg:left-[37px] lg:right-[37px]">
         {/* Logo */}
-        <img
-          src="/images/landing/logo.webp"
-          alt="Fansbook"
-          className="h-[40px] w-auto object-contain lg:h-[56px] lg:w-[205px]"
-        />
+        <Link to="/">
+          <img
+            src="/images/landing/logo.webp"
+            alt="Fansbook"
+            className="h-[40px] w-auto object-contain lg:h-[56px] lg:w-[205px]"
+          />
+        </Link>
 
         {/* Desktop Nav links */}
         <div className="ml-[147px] hidden items-center gap-[45px] lg:flex">

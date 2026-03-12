@@ -60,7 +60,7 @@ export default function FAQ() {
           <h1 className="text-center text-[30px] font-medium text-white md:text-[48px]">
             Frequently Asked Questions
           </h1>
-          <p className="text-center text-[10px] font-normal text-white md:text-[20px]">
+          <p className="text-center text-[15px] font-normal text-white md:text-[20px]">
             Find answers to common questions about FansBook.
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function FAQ() {
                 </span>
               </button>
               {open === i && item.a && (
-                <p className="mt-[10px] pl-[44px] text-[13px] font-normal leading-[1.6] text-muted-foreground md:mt-[12px] md:pl-[52px] md:text-[16px]">
+                <p className="mt-[10px] pl-[44px] text-[15px] font-normal leading-[1.6] text-foreground md:mt-[12px] md:pl-[52px] md:text-[16px]">
                   {item.a}
                 </p>
               )}
