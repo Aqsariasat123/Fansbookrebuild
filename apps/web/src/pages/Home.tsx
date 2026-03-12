@@ -196,11 +196,11 @@ function PopularModels({ models }: { models: Author[] }) {
             to={`/u/${m.username}`}
             className="flex w-[35px] shrink-0 flex-col items-center gap-[4px] hover:opacity-80 md:w-[89px] md:gap-[10px]"
           >
-            <div className="relative h-[35px] w-full md:h-[89px]">
+            <div className="relative h-[35px] w-full overflow-hidden rounded-full md:h-[89px]">
               <img
                 src={m.avatar || ''}
                 alt=""
-                className="absolute block size-full max-w-none rounded-full object-cover"
+                className="absolute inset-0 size-full object-cover"
               />
             </div>
             <p className="w-full whitespace-pre-wrap text-center text-[10px] font-medium text-foreground md:text-[16px]">

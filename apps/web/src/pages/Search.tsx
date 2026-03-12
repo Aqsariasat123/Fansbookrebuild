@@ -88,7 +88,10 @@ export default function Search() {
           {TABS.map((t) => (
             <button
               key={t.value}
-              onClick={() => setTab(t.value)}
+              onClick={() => {
+                setTab(t.value);
+                setResults([]);
+              }}
               className={`rounded-[50px] px-[16px] py-[6px] text-[12px] font-medium transition-colors md:text-[14px] ${
                 tab === t.value
                   ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'

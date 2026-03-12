@@ -109,7 +109,7 @@ export function NotificationDropdown({ open, onClose }: Props) {
   return (
     <div
       ref={ref}
-      className="absolute top-[52px] right-0 z-50 w-[360px] rounded-[16px] bg-card shadow-2xl border border-muted-foreground/10 overflow-hidden"
+      className="absolute top-[52px] right-[-106px] lg:right-0 z-50 w-[360px] max-w-[calc(100vw-8px)] rounded-[16px] bg-card shadow-2xl border border-muted-foreground/10 overflow-hidden"
     >
       <div className="flex items-center justify-between px-[16px] py-[12px] border-b border-muted-foreground/10">
         <p className="text-[15px] font-semibold text-foreground">Notifications</p>

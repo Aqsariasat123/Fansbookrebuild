@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/authStore';
 import { logoutApi } from '../../lib/auth';
@@ -42,11 +42,13 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         className={`absolute left-0 top-[50px] h-[calc(100%-50px)] w-[242px] rounded-br-[22px] rounded-tr-[22px] bg-muted shadow-[4px_8px_27.2px_0px_rgba(0,0,0,0.42)] transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="px-[32px] pt-[20px]">
-          <img
-            src="/icons/dashboard/fansbook-logo.webp"
-            alt="Fansbook"
-            className="h-[43px] w-[158px] object-contain"
-          />
+          <Link to="/feed" onClick={onClose}>
+            <img
+              src="/icons/dashboard/fansbook-logo.webp"
+              alt="Fansbook"
+              className="h-[43px] w-[158px] object-contain"
+            />
+          </Link>
         </div>
 
         <div className="flex flex-col gap-[55px] px-[32px] pt-[60px]">
