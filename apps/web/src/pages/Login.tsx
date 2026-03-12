@@ -65,7 +65,7 @@ export default function Login() {
             <h1 className="font-medium text-[36px] leading-[1.25] text-foreground lg:text-[48px]">
               Welcome Back to FansBook
             </h1>
-            <p className="mt-[21px] text-[12px] font-normal leading-[1.25] text-foreground lg:mt-[27px] lg:text-[16px]">
+            <p className="mt-[21px] text-[15px] font-normal leading-[1.25] text-foreground lg:mt-[27px] lg:text-[16px]">
               Log in to connect with your favorite creators and unlock exclusive content.
             </p>
           </div>
@@ -81,7 +81,7 @@ export default function Login() {
             onSubmit={handleSubmit}
           >
             <div>
-              <label className="block text-[12px] font-normal text-foreground lg:text-[16px]">
+              <label className="block text-[15px] font-normal text-foreground lg:text-[16px]">
                 Email / Username
               </label>
               <div className="mt-[6px] lg:mt-[8px]">
@@ -90,14 +90,14 @@ export default function Login() {
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
                   placeholder="Enter your Email or username..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-border bg-transparent px-[12px] text-[10px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]"
+                  className="h-[44px] w-full rounded-[46px] border-[0.77px] border-border bg-transparent px-[12px] text-[15px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:text-[12px]"
                   required
                 />
               </div>
             </div>
 
             <div className="mt-[14px] lg:mt-[20px]">
-              <label className="block text-[12px] font-normal text-foreground lg:text-[16px]">
+              <label className="block text-[15px] font-normal text-foreground lg:text-[16px]">
                 Password
               </label>
               <div className="mt-[6px] relative lg:mt-[8px]">
@@ -106,7 +106,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password..."
-                  className="h-[38px] w-full rounded-[46px] border-[0.77px] border-border bg-transparent px-[12px] pr-[40px] text-[10px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]"
+                  className="h-[44px] w-full rounded-[46px] border-[0.77px] border-border bg-transparent px-[12px] pr-[40px] text-[15px] font-normal text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#01adf1] lg:h-[49px] lg:rounded-[59px] lg:border lg:px-[12px] lg:py-[17px] lg:pr-[48px] lg:text-[12px]"
                   required
                 />
                 <button
@@ -129,13 +129,13 @@ export default function Login() {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-[14px] w-[14px] rounded border-border accent-[#01adf1] lg:h-[16px] lg:w-[16px]"
                   />
-                  <span className="text-[10px] font-normal text-muted-foreground lg:text-[12px]">
+                  <span className="text-[14px] font-normal text-muted-foreground lg:text-[12px]">
                     Remember me
                   </span>
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-[10px] font-normal text-primary hover:underline lg:text-[12px]"
+                  className="text-[14px] font-normal text-primary hover:underline lg:text-[12px]"
                 >
                   Forgot Password?
                 </Link>
@@ -153,7 +153,7 @@ export default function Login() {
             <SocialLoginButtons />
           </form>
 
-          <p className="mt-[20px] text-[12px] font-normal text-foreground lg:mt-[40px] lg:text-[16px]">
+          <p className="mt-[20px] text-[15px] font-normal text-foreground lg:mt-[40px] lg:text-[16px]">
             Don&apos;t have an account?{' '}
             <Link to="/register" className="text-primary hover:underline">
               Signup
