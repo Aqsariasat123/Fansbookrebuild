@@ -71,7 +71,7 @@ export function CreatorCard({ creator }: { creator: CreatorCardType }) {
   return (
     <Link
       to={`/u/${creator.username}`}
-      className="block w-full overflow-hidden rounded-[12px] bg-card transition-transform hover:scale-[1.02] sm:w-[244px] sm:rounded-[22px]"
+      className="block w-full overflow-hidden rounded-[12px] bg-card transition-transform hover:scale-[1.02] sm:rounded-[22px]"
     >
       {/* Image with badges */}
       <div className="relative h-[210px] w-full overflow-hidden bg-muted sm:h-[243px]">

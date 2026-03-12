@@ -159,7 +159,7 @@ export default function Creators() {
         onFilterChange={handleFilterChange}
         onMultiFilterChange={handleMultiFilterChange}
       />
-      <div className="flex justify-center px-[16px] pb-[40px] md:px-[60px]">
+      <div className="flex justify-center px-[8px] pb-[40px] md:px-[60px]">
         <CreatorsGrid data={data} isLoading={isLoading} isError={isError} />
       </div>
       {data && (
