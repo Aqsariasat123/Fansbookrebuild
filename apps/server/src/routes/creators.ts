@@ -32,7 +32,7 @@ function buildCreatorWhere(params: CreatorQuery): Record<string, unknown> {
       { displayName: { contains: params.search, mode: 'insensitive' } },
     ];
   }
-  if (params.gender) where.gender = params.gender;
+  if (params.gender) where.gender = { equals: params.gender, mode: 'insensitive' };
   if (params.country) where.country = params.country;
   if (params.category) where.category = params.category;
   if (params.priceMin !== undefined || params.priceMax !== undefined) {
@@ -164,7 +164,7 @@ router.get('/filters', async (_req, res, next) => {
     res.json({
       success: true,
       data: {
-        genders: genderResults.map((r) => r.gender).filter(Boolean),
+        genders: [...new Set(genderResults.map((r) => r.gender?.toUpperCase()).filter(Boolean))],
         countries: countryResults.map((r) => r.country).filter(Boolean),
         categories: categoryResults.map((r) => r.category).filter(Boolean),
         priceRange: {

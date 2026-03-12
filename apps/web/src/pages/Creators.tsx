@@ -128,7 +128,7 @@ export default function Creators() {
 
   return (
     <div className="min-h-screen bg-muted font-outfit">
-      <div className="relative h-[130px]">
+      <div className="relative h-[80px]">
         <MarketingNav onDark={false} />
       </div>
       <FilterBar filters={filters} onFilterChange={handleFilterChange} />
