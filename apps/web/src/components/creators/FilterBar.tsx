@@ -116,7 +116,7 @@ export function FilterBar({ filters, onFilterChange, onMultiFilterChange }: Filt
   };
 
   return (
-    <div className="flex items-center justify-center px-[8px] pt-[30px] pb-[30px] md:px-0 md:pt-[55px] md:pb-[50px]">
+    <div className="flex items-center justify-center px-[16px] pt-[30px] pb-[30px] md:px-0 md:pt-[55px] md:pb-[50px]">
       <div className="flex w-full flex-col items-stretch md:w-auto md:flex-row md:items-center">
         <div className="flex flex-wrap items-center gap-[20px] rounded-t-[16px] bg-card px-[16px] py-[16px] md:flex-nowrap md:gap-[30px] md:rounded-l-[52px] md:rounded-tr-none md:px-[32px] md:py-[22px]">
           {/* Search */}
