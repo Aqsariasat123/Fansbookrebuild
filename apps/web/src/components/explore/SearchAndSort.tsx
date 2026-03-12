@@ -1,3 +1,5 @@
+import { useRef, useEffect } from 'react';
+
 type SortOption = 'createdAt' | 'followers';
 const SORT_LABELS: Record<SortOption, string> = {
   createdAt: 'Newest',
@@ -28,6 +30,19 @@ export default function SearchAndSort({
   isLive?: boolean;
   onLiveToggle?: () => void;
 }) {
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sortOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        onSortToggle();
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [sortOpen, onSortToggle]);
+
   return (
     <div className="flex flex-col gap-[12px] sm:flex-row sm:items-center sm:gap-[16px]">
       <div className="relative flex-1">
@@ -59,7 +74,7 @@ export default function SearchAndSort({
             />
             Live
           </button>
-          <div className="relative w-fit">
+          <div ref={sortRef} className="relative w-fit">
             <button
               onClick={onSortToggle}
               className="flex items-center gap-[8px] rounded-[52px] border border-border bg-card px-[20px] py-[12px] font-outfit text-[14px] text-foreground"
