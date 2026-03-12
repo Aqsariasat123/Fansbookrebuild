@@ -6,12 +6,11 @@ export default function About() {
     <div className="min-h-screen font-outfit">
       {/* Hero Section — 355px, dark overlay on bg image */}
       <div className="relative h-[323px] md:h-[355px]">
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0">
           <img
             src="/images/about/hero-bg.webp"
             alt=""
-            className="absolute left-0 w-full max-w-none"
-            style={{ height: '239.44%', top: '-4.26%' }}
+            className="h-full w-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-[rgba(21,25,28,0.94)]" />
         </div>
@@ -20,7 +19,7 @@ export default function About() {
           <h1 className="w-full text-center text-[30px] md:text-[48px] font-medium">
             About FansBook
           </h1>
-          <p className="w-full text-center text-[10px] md:text-[20px] font-normal">
+          <p className="w-full text-center text-[15px] md:text-[20px] font-normal">
             A modern platform for fans and creators to connect.
           </p>
         </div>
@@ -39,7 +38,7 @@ export default function About() {
             <div className="absolute left-0 top-[6px] h-[252px] w-[257px] rounded-[8px] border-[4px] border-white/30" />
           </div>
           {/* Text block — 470px width, positioned left */}
-          <div className="w-full text-center lg:w-[470px] lg:text-left text-[12px] md:text-[16px] font-normal leading-normal text-foreground">
+          <div className="w-full text-center lg:w-[470px] lg:text-left text-[15px] md:text-[16px] font-normal leading-normal text-foreground">
             <p className="mb-[16px]">
               FansBook is a next-generation fan engagement platform that allows creators to live
               stream, share exclusive content, and interact with their fans in real time.
@@ -79,7 +78,7 @@ export default function About() {
         {/* Heading */}
         <div className="flex w-full max-w-[335px] flex-col items-center gap-[20px] text-center text-foreground">
           <h2 className="w-full text-[30px] md:text-[48px] font-medium">Our Purpose</h2>
-          <p className="w-full text-[10px] md:text-[16px] font-medium">
+          <p className="w-full text-[15px] md:text-[16px] font-medium">
             Empowering creators and connecting fans through a bold and exclusive digital experience.
           </p>
         </div>
@@ -102,7 +101,7 @@ export default function About() {
                   alt=""
                   className="h-[60px] w-[60px] md:h-[132px] md:w-[132px] shrink-0"
                 />
-                <p className="w-full md:w-[356px] text-[10px] md:text-[16px] font-medium leading-normal text-foreground">
+                <p className="w-full md:w-[356px] text-[15px] md:text-[16px] font-medium leading-normal text-foreground">
                   To create a safe, powerful, and direct platform where creators can earn, express,
                   and connect with their fans without limitations — live, personal, and on their own
                   terms.
@@ -130,7 +129,7 @@ export default function About() {
                   alt=""
                   className="h-[60px] w-[60px] md:h-[132px] md:w-[132px] shrink-0"
                 />
-                <p className="w-full md:w-[356px] text-[10px] md:text-[16px] font-medium leading-normal text-foreground">
+                <p className="w-full md:w-[356px] text-[15px] md:text-[16px] font-medium leading-normal text-foreground">
                   To be the leading global fan-engagement platform where creators feel in control,
                   fans feel valued, and connections feel real.
                   <br />

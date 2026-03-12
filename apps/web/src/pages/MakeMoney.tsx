@@ -21,7 +21,7 @@ function HeroSection() {
         <h1 className="w-full max-w-[864px] text-center font-outfit text-[24px] md:text-[40px] font-medium leading-normal text-white">
           Make Money on FansBook
         </h1>
-        <p className="mt-[12px] w-full max-w-[864px] text-center font-outfit text-[10px] md:text-[16px] font-medium leading-[1.6] text-white md:mt-[16px]">
+        <p className="mt-[12px] w-full max-w-[864px] text-center font-outfit text-[14px] md:text-[16px] font-medium leading-[1.6] text-white md:mt-[16px]">
           On FansBook, you can monetize your content creation skills through subscriptions, tips,
           and paid shoutouts. Creators also benefit from the referral program, where bringing in new
           users earns them commissions. The more you engage with your audience and share exclusive
@@ -82,7 +82,7 @@ function EarnSection() {
               alt=""
               className="h-[50px] w-[50px] md:h-[104px] md:w-[104px]"
             />
-            <p className="mt-[12px] w-full max-w-[215px] text-center font-outfit text-[10px] md:text-[16px] leading-normal text-foreground md:mt-[18px]">
+            <p className="mt-[12px] w-full max-w-[215px] text-center font-outfit text-[14px] md:text-[16px] leading-normal text-foreground md:mt-[18px]">
               <span className="font-medium">{item.title} –</span>{' '}
               <span className="font-light">{item.desc}</span>
             </p>
@@ -119,7 +119,7 @@ function WhySection() {
               alt=""
               className="h-[50px] w-[50px] md:h-[104px] md:w-[104px]"
             />
-            <p className="mt-[12px] text-center font-outfit text-[10px] md:text-[16px] font-normal leading-normal text-foreground md:mt-[18px]">
+            <p className="mt-[12px] text-center font-outfit text-[14px] md:text-[16px] font-normal leading-normal text-foreground md:mt-[18px]">
               {item.title}
             </p>
           </div>
@@ -155,7 +155,7 @@ function HowToStartSection() {
               alt=""
               className="h-[50px] w-[50px] md:h-[104px] md:w-[104px]"
             />
-            <p className="mt-[12px] text-center font-outfit text-[10px] md:text-[16px] font-medium leading-normal text-foreground md:mt-[18px]">
+            <p className="mt-[12px] text-center font-outfit text-[14px] md:text-[16px] font-medium leading-normal text-foreground md:mt-[18px]">
               {item.title}
             </p>
           </div>

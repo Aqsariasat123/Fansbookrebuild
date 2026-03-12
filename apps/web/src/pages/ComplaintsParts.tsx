@@ -100,7 +100,7 @@ export function StepsList() {
             <p className="text-[18px] font-medium">
               {item.num} {item.step}
             </p>
-            <p className="mt-[4px] text-muted-foreground">{item.desc}</p>
+            <p className="mt-[4px] text-foreground">{item.desc}</p>
           </div>
         </div>
       ))}
