@@ -52,6 +52,7 @@ function PasswordField({
       <p className="font-medium text-[16px] text-foreground">{label}</p>
       <div className="relative">
         <input
+          key={String(visible)}
           type={visible ? 'text' : 'password'}
           value={value}
           onChange={(e) => onChange(e.target.value)}
