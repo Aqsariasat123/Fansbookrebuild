@@ -104,7 +104,7 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
         </button>
 
         <p className="text-[24px] font-semibold text-foreground mb-[8px]">Purchase Coins</p>
-        <p className="text-[14px] text-muted-foreground mb-[24px]">Select a coin package below</p>
+        <p className="text-[16px] text-foreground/50 mb-[24px]">Select a coin package below</p>
 
         <div className="grid grid-cols-3 gap-[12px] mb-[24px]">
           {packages.map((pkg) => (
@@ -139,7 +139,7 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
           {loading ? 'Processing...' : 'Complete Purchase'}
         </button>
 
-        <p className="text-[12px] text-muted-foreground text-center mt-[12px]">
+        <p className="text-[14px] text-foreground/50 text-center mt-[12px]">
           Payment gateway integration coming soon. Coins are added instantly for demo.
         </p>
       </div>
