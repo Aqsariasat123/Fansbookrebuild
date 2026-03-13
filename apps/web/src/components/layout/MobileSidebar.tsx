@@ -51,7 +51,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
           </Link>
         </div>
 
-        <div className="flex flex-col gap-[55px] px-[32px] pt-[60px]">
+        <div className="flex flex-col gap-[55px] px-[32px] pt-[60px] overflow-y-auto h-[calc(100%-83px)]">
           <div className="flex flex-col gap-[32px]">
             {navItems.map(({ to, icon, labelKey }) => (
               <NavLink
