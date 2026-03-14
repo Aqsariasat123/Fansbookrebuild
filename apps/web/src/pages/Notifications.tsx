@@ -37,6 +37,7 @@ export default function Notifications() {
   const resetNotif = useNotificationStore((s) => s.reset);
 
   useEffect(() => {
+    resetNotif();
     api
       .get('/notifications')
       .then(({ data: r }) => {
