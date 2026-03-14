@@ -10,6 +10,7 @@ export default function GoLive() {
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [title, setTitle] = useState('');
   const [privateShow, setPrivateShow] = useState(false);
+  const [privateShowTokens, setPrivateShowTokens] = useState('');
   const [streamExt, setStreamExt] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [starting, setStarting] = useState(false);
@@ -122,6 +123,16 @@ export default function GoLive() {
           <Checkbox checked={privateShow} onClick={() => setPrivateShow(!privateShow)} />
           <span className="text-[14px] text-foreground">Available for the private show</span>
         </label>
+        {privateShow && (
+          <input
+            type="number"
+            min="1"
+            value={privateShowTokens}
+            onChange={(e) => setPrivateShowTokens(e.target.value)}
+            placeholder="Tokens required"
+            className="w-[160px] rounded-[8px] border border-foreground bg-transparent px-[12px] py-[8px] text-[14px] text-foreground placeholder-muted-foreground outline-none"
+          />
+        )}
         <label className="flex cursor-pointer items-center gap-[10px]">
           <Checkbox checked={streamExt} onClick={() => setStreamExt(!streamExt)} />
           <span className="text-[14px] text-foreground">Stream Extension</span>
