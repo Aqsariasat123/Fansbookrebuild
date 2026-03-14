@@ -43,6 +43,21 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(h / 24)}d ago`;
 }
 
+function PinIndicator({ isPinned }: { isPinned?: boolean }) {
+  if (!isPinned) return null;
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className="text-[#01adf1] md:size-[16px]"
+    >
+      <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" />
+    </svg>
+  );
+}
+
 function AuthorAvatar({ author }: { author: PostAuthor }) {
   if (author.avatar) {
     return <img src={author.avatar} alt="" className="h-full w-full object-cover" />;
@@ -122,6 +137,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
             </div>
           </div>
           <div className="relative flex items-center gap-[8px]">
+            <PinIndicator isPinned={post.isPinned} />
             <span className="text-[11px] text-muted-foreground md:text-[13px]">
               {timeAgo(post.createdAt)}
             </span>
