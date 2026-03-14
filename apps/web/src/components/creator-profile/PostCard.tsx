@@ -53,7 +53,7 @@ function PinIndicator({ isPinned }: { isPinned?: boolean }) {
       fill="currentColor"
       className="text-[#01adf1] md:size-[16px]"
     >
-      <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" />
+      <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97l.03 7 1 1 1-1 .03-7H19v-2c-1.66 0-3-1.34-3-3z" />
     </svg>
   );
 }
