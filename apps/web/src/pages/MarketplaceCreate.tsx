@@ -16,8 +16,6 @@ export default function MarketplaceCreate() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('DIGITAL_CONTENT');
-  const [type, setType] = useState<'FIXED_PRICE' | 'AUCTION'>('FIXED_PRICE');
-  const [price, setPrice] = useState('');
   const [startingBid, setStartingBid] = useState('');
   const [duration, setDuration] = useState('24');
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
@@ -49,12 +47,9 @@ export default function MarketplaceCreate() {
       fd.append('title', title.trim());
       fd.append('description', description.trim());
       fd.append('category', category);
-      fd.append('type', type);
-      if (type === 'FIXED_PRICE') fd.append('price', price);
-      else {
-        fd.append('startingBid', startingBid);
-        fd.append('duration', duration);
-      }
+      fd.append('type', 'AUCTION');
+      fd.append('startingBid', startingBid);
+      fd.append('duration', duration);
       images.forEach((img) => fd.append('images', img.file));
       const res = await api.post('/marketplace', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -117,65 +112,32 @@ export default function MarketplaceCreate() {
               </select>
             </div>
 
-            <div>
-              <label className="text-[13px] text-muted-foreground">Type</label>
-              <div className="mt-[4px] flex gap-[8px]">
-                {(['FIXED_PRICE', 'AUCTION'] as const).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setType(t)}
-                    className={`flex-1 rounded-[50px] py-[8px] text-[13px] font-medium ${
-                      type === t
-                        ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'
-                        : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {t === 'FIXED_PRICE' ? 'Fixed Price' : 'Auction'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {type === 'FIXED_PRICE' ? (
-              <div>
-                <label className="text-[13px] text-muted-foreground">Price ($)</label>
+            <div className="flex gap-[12px]">
+              <div className="flex-1">
+                <label className="text-[13px] text-muted-foreground">Starting Bid (tokens)</label>
                 <input
                   type="number"
                   min="1"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="0.00"
+                  value={startingBid}
+                  onChange={(e) => setStartingBid(e.target.value)}
+                  placeholder="0"
                   className="mt-[4px] w-full rounded-[8px] bg-muted px-[12px] py-[10px] text-[14px] text-foreground outline-none"
                 />
               </div>
-            ) : (
-              <div className="flex gap-[12px]">
-                <div className="flex-1">
-                  <label className="text-[13px] text-muted-foreground">Starting Bid ($)</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={startingBid}
-                    onChange={(e) => setStartingBid(e.target.value)}
-                    placeholder="0.00"
-                    className="mt-[4px] w-full rounded-[8px] bg-muted px-[12px] py-[10px] text-[14px] text-foreground outline-none"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="text-[13px] text-muted-foreground">Duration (hours)</label>
-                  <select
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    className="mt-[4px] w-full rounded-[8px] bg-muted px-[12px] py-[10px] text-[14px] text-foreground outline-none"
-                  >
-                    <option value="24">24 hours</option>
-                    <option value="48">48 hours</option>
-                    <option value="72">72 hours</option>
-                    <option value="168">7 days</option>
-                  </select>
-                </div>
+              <div className="flex-1">
+                <label className="text-[13px] text-muted-foreground">Duration (hours)</label>
+                <select
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  className="mt-[4px] w-full rounded-[8px] bg-muted px-[12px] py-[10px] text-[14px] text-foreground outline-none"
+                >
+                  <option value="24">24 hours</option>
+                  <option value="48">48 hours</option>
+                  <option value="72">72 hours</option>
+                  <option value="168">7 days</option>
+                </select>
               </div>
-            )}
+            </div>
 
             {/* Images */}
             <div>
