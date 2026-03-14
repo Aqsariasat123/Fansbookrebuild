@@ -7,7 +7,6 @@ import {
   ActionSection,
   BidHistory,
 } from '../components/marketplace/ListingParts';
-import ReviewSection from '../components/marketplace/ReviewSection';
 import type { Listing } from '../components/marketplace/ListingParts';
 
 function extractErrorMsg(err: unknown): string {
@@ -113,8 +112,6 @@ export default function MarketplaceDetail() {
         {msg && <p className="mt-[12px] text-center text-[13px] text-[#01adf1]">{msg}</p>}
 
         <BidHistory bids={listing.bids} />
-
-        <ReviewSection listingId={listing.id} sellerId={listing.seller.id} />
       </div>
     </div>
   );
