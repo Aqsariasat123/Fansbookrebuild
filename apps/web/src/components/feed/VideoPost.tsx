@@ -87,7 +87,6 @@ export function VideoPost({ post, onRefresh }: { post: FeedPost; onRefresh?: () 
           commentCount={post.commentCount}
           shareCount={post.shareCount}
           isLiked={post.isLiked ?? false}
-          isBookmarked={post.isBookmarked ?? false}
           authorName={post.author.displayName}
         />
       </div>

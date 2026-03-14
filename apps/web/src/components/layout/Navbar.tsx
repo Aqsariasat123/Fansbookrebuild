@@ -4,6 +4,7 @@ import { NavbarSearch } from './NavbarSearch';
 import { NavbarUserMenu } from './NavbarUserMenu';
 import { NotificationDropdown } from './NotificationDropdown';
 import { useNotificationStore } from '../../stores/notificationStore';
+import { useMessageStore } from '../../stores/messageStore';
 
 function BellIcon({ className }: { className?: string }) {
   return (
@@ -44,6 +45,16 @@ function NotifBadge() {
   );
 }
 
+function MsgBadge() {
+  const count = useMessageStore((s) => s.unreadCount);
+  if (count <= 0) return null;
+  return (
+    <span className="absolute -top-[2px] -right-[2px] flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[10px] font-bold px-[4px]">
+      {count > 99 ? '99+' : count}
+    </span>
+  );
+}
+
 function BellButton() {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
@@ -73,9 +84,17 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
         </button>
         <div className="flex items-center gap-[6px]">
           <BellButton />
-          <Link to="/messages" className={`shrink-0 ${iconCircle}`} aria-label="Messages">
-            <MessageIcon className="size-[22px]" />
-          </Link>
+          <div className="relative">
+            <Link
+              to="/messages"
+              onClick={() => useMessageStore.getState().reset()}
+              className={`shrink-0 ${iconCircle}`}
+              aria-label="Messages"
+            >
+              <MessageIcon className="size-[22px]" />
+              <MsgBadge />
+            </Link>
+          </div>
           <NavbarUserMenu />
         </div>
       </div>
@@ -94,9 +113,17 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
             <div className="flex items-center gap-[6px]">
               <NavbarSearch />
               <BellButton />
-              <Link to="/messages" className={`shrink-0 ${iconCircle}`} aria-label="Messages">
-                <MessageIcon className="size-[22px]" />
-              </Link>
+              <div className="relative">
+                <Link
+                  to="/messages"
+                  onClick={() => useMessageStore.getState().reset()}
+                  className={`shrink-0 ${iconCircle}`}
+                  aria-label="Messages"
+                >
+                  <MessageIcon className="size-[22px]" />
+                  <MsgBadge />
+                </Link>
+              </div>
             </div>
             <NavbarUserMenu />
           </div>

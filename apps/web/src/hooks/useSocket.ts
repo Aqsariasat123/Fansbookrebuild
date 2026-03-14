@@ -3,6 +3,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useSocketStore } from '../stores/socketStore';
 import { useNotificationStore } from '../stores/notificationStore';
 import { useCallStore } from '../stores/callStore';
+import { useMessageStore } from '../stores/messageStore';
 import { connectSocket, disconnectSocket } from '../lib/socket';
 import { showToast } from '../components/shared/NotificationToast';
 import { api } from '../lib/api';
@@ -99,6 +100,27 @@ export function useSocket() {
       if (data?.message) showToast(data.message);
     });
 
+    socket.on(
+      'message:new',
+      (msg: {
+        conversationId: string;
+        senderId: string;
+        sender?: { displayName: string; avatar: string | null };
+      }) => {
+        const pathname = window.location.pathname;
+        if (!pathname.endsWith(`/messages/${msg.conversationId}`)) {
+          useMessageStore.getState().increment();
+          if (msg.sender) {
+            useMessageStore.getState().addPending({
+              conversationId: msg.conversationId,
+              senderAvatar: msg.sender.avatar,
+              senderName: msg.sender.displayName,
+            });
+          }
+        }
+      },
+    );
+
     // Global call event listeners — registered once, never torn down mid-call
     registerCallListeners(socket);
 
@@ -111,6 +133,7 @@ export function useSocket() {
       .catch(() => {});
 
     return () => {
+      socket.off('message:new');
       disconnectSocket();
       cb.setConnected(false);
     };

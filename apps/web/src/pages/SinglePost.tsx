@@ -31,7 +31,6 @@ interface PostData {
   };
   media: Media[];
   isLiked: boolean;
-  isBookmarked: boolean;
   ppvPrice?: number | null;
   isPpvUnlocked?: boolean;
 }
@@ -124,7 +123,6 @@ export default function SinglePost() {
             commentCount={commentCount}
             shareCount={0}
             isLiked={post.isLiked}
-            isBookmarked={post.isBookmarked}
           />
         </div>
         <div className="mt-[16px]">

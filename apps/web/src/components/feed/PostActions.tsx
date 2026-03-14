@@ -11,7 +11,6 @@ interface PostActionsProps {
   commentCount: number;
   shareCount: number;
   isLiked: boolean;
-  isBookmarked?: boolean;
   authorName?: string;
 }
 
@@ -21,14 +20,12 @@ export function PostActions({
   commentCount,
   shareCount,
   isLiked,
-  isBookmarked = false,
   authorName = 'Creator',
 }: PostActionsProps) {
   const [liked, setLiked] = useState(isLiked);
   const [likes, setLikes] = useState(likeCount);
   const [comments, setComments] = useState(commentCount);
   const [showComments, setShowComments] = useState(false);
-  const [bookmarked, setBookmarked] = useState(isBookmarked);
   const [showTip, setShowTip] = useState(false);
 
   const toggleLike = async () => {
@@ -118,33 +115,6 @@ export function PostActions({
           </button>
         </div>
         <div className="flex items-center gap-[12px] md:gap-[20px]">
-          <button
-            onClick={async () => {
-              const was = bookmarked;
-              setBookmarked(!was);
-              try {
-                if (was) await api.delete(`/posts/${postId}/bookmark`);
-                else await api.post(`/posts/${postId}/bookmark`);
-              } catch {
-                setBookmarked(was);
-              }
-            }}
-            className="flex items-center gap-[5px] hover:opacity-80 md:gap-[10px]"
-          >
-            <svg
-              className={`size-[12px] md:size-[20px] ${bookmarked ? 'text-primary' : 'text-foreground'}`}
-              fill={bookmarked ? 'currentColor' : 'none'}
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-              />
-            </svg>
-          </button>
           <button
             onClick={() => setShowTip(true)}
             className="flex items-center gap-[5px] text-foreground hover:opacity-80 md:gap-[10px]"

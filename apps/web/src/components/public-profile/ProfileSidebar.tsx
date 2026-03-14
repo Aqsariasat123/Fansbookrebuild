@@ -36,6 +36,7 @@ interface Props {
   profile: SidebarProfileData;
   isOwnProfile: boolean;
   followLoading: boolean;
+  amazonLink?: string | null;
   onFollow: () => void;
   onSubscribe: () => void;
 }
@@ -44,6 +45,7 @@ export function ProfileSidebar({
   profile,
   isOwnProfile,
   followLoading,
+  amazonLink,
   onFollow,
   onSubscribe,
 }: Props) {
@@ -109,6 +111,7 @@ export function ProfileSidebar({
           isFollowing={profile.isFollowing}
           isSubscribed={profile.isSubscribed}
           followLoading={followLoading}
+          amazonLink={amazonLink}
           onFollow={onFollow}
           onSubscribe={onSubscribe}
         />

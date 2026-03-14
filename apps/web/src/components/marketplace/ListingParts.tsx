@@ -107,7 +107,7 @@ export function ActionSection({
           disabled={actionLoading}
           className="w-full rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-[16px] font-medium text-white disabled:opacity-50"
         >
-          {actionLoading ? 'Processing...' : `Buy Now — $${listing.price.toFixed(2)}`}
+          {actionLoading ? 'Processing...' : `Buy Now — ${listing.price.toFixed(0)} tokens`}
         </button>
       ) : (
         <div className="flex gap-[8px]">
@@ -143,7 +143,9 @@ export function BidHistory({ bids }: { bids: Bid[] }) {
             className="flex items-center justify-between rounded-[8px] bg-muted px-[12px] py-[8px]"
           >
             <span className="text-[13px] text-foreground">{b.bidder.displayName}</span>
-            <span className="text-[13px] font-medium text-[#01adf1]">${b.amount.toFixed(2)}</span>
+            <span className="text-[13px] font-medium text-[#01adf1]">
+              {b.amount.toFixed(0)} tokens
+            </span>
           </div>
         ))}
       </div>

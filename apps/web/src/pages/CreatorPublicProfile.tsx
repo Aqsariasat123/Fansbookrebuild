@@ -47,6 +47,7 @@ export default function CreatorPublicProfile() {
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const [subscribeLoading, setSubscribeLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [amazonLink, setAmazonLink] = useState<string | null>(null);
 
   const checkSubscription = useCallback(async (creatorId: string) => {
     try {
@@ -70,6 +71,13 @@ export default function CreatorPublicProfile() {
         if (pRes.data.success) {
           setProfile(pRes.data.data);
           checkSubscription(pRes.data.data.id);
+          const links = pRes.data.data.socialLinks;
+          if (Array.isArray(links)) {
+            const amz = (links as { platform: string; url: string }[]).find(
+              (l) => l.platform === 'Amazon',
+            );
+            if (amz) setAmazonLink(amz.url);
+          }
         }
         if (postsRes.data.success) setPosts(postsRes.data.data?.items ?? postsRes.data.data ?? []);
       })
@@ -134,6 +142,7 @@ export default function CreatorPublicProfile() {
             profile={profile}
             isOwnProfile={currentUser?.username === profile.username}
             followLoading={followLoading}
+            amazonLink={amazonLink}
             onFollow={handleFollow}
             onSubscribe={() => setShowSubscribeModal(true)}
           />

@@ -31,7 +31,6 @@ export const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 export const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 export const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
 export const SinglePost = lazy(() => import('./pages/SinglePost'));
-export const Bookmarks = lazy(() => import('./pages/Bookmarks'));
 export const Following = lazy(() => import('./pages/Following'));
 export const CreateStory = lazy(() => import('./pages/CreateStory'));
 export const SearchPage = lazy(() => import('./pages/Search'));

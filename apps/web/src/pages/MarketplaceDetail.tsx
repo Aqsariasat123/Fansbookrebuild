@@ -85,7 +85,9 @@ export default function MarketplaceDetail() {
         <ImageGallery images={listing.images} imgIdx={imgIdx} onSelect={setImgIdx} />
 
         <p className="text-[20px] font-semibold text-foreground">{listing.title}</p>
-        <p className="mt-[4px] text-[24px] font-bold text-[#01adf1]">${listing.price.toFixed(2)}</p>
+        <p className="mt-[4px] text-[24px] font-bold text-[#01adf1]">
+          {listing.price.toFixed(0)} tokens
+        </p>
         <span className="mt-[4px] inline-block rounded-[50px] bg-muted px-[12px] py-[4px] text-[11px] text-muted-foreground">
           {listing.category.replace(/_/g, ' ')} &middot;{' '}
           {listing.type === 'AUCTION' ? 'Auction' : 'Fixed Price'}

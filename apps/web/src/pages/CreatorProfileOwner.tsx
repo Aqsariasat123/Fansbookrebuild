@@ -33,17 +33,16 @@ export default function CreatorProfileOwner() {
         if (pRes.data.success) setProfile(pRes.data.data);
         if (postsRes.data.success) {
           const items = postsRes.data.data?.items ?? postsRes.data.data ?? [];
-          setPosts(
-            items.map((p: CreatorPost) => ({
-              ...p,
-              author: {
-                displayName: pRes.data.data.displayName,
-                username: pRes.data.data.username,
-                avatar: pRes.data.data.avatar,
-                isVerified: pRes.data.data.isVerified,
-              },
-            })),
-          );
+          const mapped: CreatorPost[] = items.map((p: CreatorPost) => ({
+            ...p,
+            author: {
+              displayName: pRes.data.data.displayName,
+              username: pRes.data.data.username,
+              avatar: pRes.data.data.avatar,
+              isVerified: pRes.data.data.isVerified,
+            },
+          }));
+          setPosts([...mapped].sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0)));
         }
       })
       .catch(() => {})
@@ -68,6 +67,29 @@ export default function CreatorProfileOwner() {
     },
     [user, setUser],
   );
+
+  const handleMenuAction = useCallback(async (postId: string, action: string) => {
+    try {
+      if (action === 'remove') {
+        await api.delete(`/posts/${postId}`);
+        setPosts((prev) => prev.filter((p) => p.id !== postId));
+      } else if (action === 'pin') {
+        await api.patch(`/posts/${postId}/pin`, { isPinned: true });
+        setPosts((prev) => {
+          const updated = prev.map((p) => ({ ...p, isPinned: p.id === postId }));
+          return [...updated].sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
+        });
+      } else if (action === 'unpin') {
+        await api.patch(`/posts/${postId}/pin`, { isPinned: false });
+        setPosts((prev) => {
+          const updated = prev.map((p) => (p.id === postId ? { ...p, isPinned: false } : p));
+          return [...updated].sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
+        });
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   if (loading)
     return (
@@ -139,7 +161,7 @@ export default function CreatorProfileOwner() {
                     </p>
                   ) : (
                     filtered.map((post) => (
-                      <PostCard key={post.id} post={post} onMenuAction={() => {}} />
+                      <PostCard key={post.id} post={post} onMenuAction={handleMenuAction} />
                     ))
                   )}
                 </div>

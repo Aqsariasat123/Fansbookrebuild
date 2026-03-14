@@ -29,6 +29,7 @@ export interface CreatorPost {
   commentCount: number;
   shareCount: number;
   isLiked: boolean;
+  isPinned?: boolean;
   createdAt: string;
   media: PostMedia[];
   author?: PostAuthor;
@@ -138,6 +139,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
               open={menuOpen}
               onClose={() => setMenuOpen(false)}
               onAction={(a) => onMenuAction?.(post.id, a)}
+              isPinned={post.isPinned}
             />
           </div>
         </div>

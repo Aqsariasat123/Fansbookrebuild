@@ -175,7 +175,9 @@ function ListingCard({ listing: l }: { listing: Listing }) {
       <div className="p-[12px]">
         <p className="line-clamp-1 text-[14px] font-medium text-foreground">{l.title}</p>
         <div className="mt-[4px] flex items-center justify-between">
-          <span className="text-[16px] font-semibold text-[#01adf1]">${l.price.toFixed(2)}</span>
+          <span className="text-[16px] font-semibold text-[#01adf1]">
+            {l.price.toFixed(0)} tokens
+          </span>
           {l.type === 'AUCTION' && (
             <span className="text-[11px] text-muted-foreground">{l._count.bids} bids</span>
           )}

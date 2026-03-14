@@ -33,7 +33,6 @@ export interface FeedPost {
   author: Author;
   media: Media[];
   isLiked?: boolean;
-  isBookmarked?: boolean;
   ppvPrice?: number | null;
   isPpvUnlocked?: boolean;
 }
@@ -140,7 +139,6 @@ export function ImagePost({ post, onRefresh }: { post: FeedPost; onRefresh?: () 
             commentCount={post.commentCount}
             shareCount={post.shareCount}
             isLiked={post.isLiked ?? false}
-            isBookmarked={post.isBookmarked ?? false}
             authorName={post.author.displayName}
           />
         </div>

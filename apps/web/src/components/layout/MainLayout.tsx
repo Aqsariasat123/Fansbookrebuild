@@ -4,6 +4,7 @@ import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { MobileSidebar } from './MobileSidebar';
 import { IncomingCallModal } from '../call/IncomingCallModal';
+import { FloatingChatBubble } from '../chat/FloatingChatBubble';
 import { useNotificationSocket } from '../../hooks/useNotificationSocket';
 
 export function MainLayout() {
@@ -21,6 +22,7 @@ export function MainLayout() {
       </div>
       <MobileSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <IncomingCallModal />
+      <FloatingChatBubble />
     </div>
   );
 }

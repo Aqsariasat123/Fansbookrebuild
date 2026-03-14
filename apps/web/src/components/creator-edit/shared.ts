@@ -27,7 +27,7 @@ export const TIMEZONES = [
   'Europe/Stockholm',
 ];
 
-export const SOCIAL_PLATFORMS = ['Instagram', 'Twitter', 'TikTok', 'YouTube', 'Website'];
+export const SOCIAL_PLATFORMS = ['Instagram', 'Twitter', 'TikTok', 'YouTube', 'Website', 'Amazon'];
 
 export const COUNTRIES_LIST = [
   'US',

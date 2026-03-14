@@ -185,6 +185,28 @@ router.put('/:id', authenticate, async (req, res, next) => {
   }
 });
 
+// ─── PATCH /api/posts/:id/pin ── pin/unpin post (owner only) ─
+router.patch('/:id/pin', authenticate, async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const postId = req.params.id as string;
+    const { isPinned } = req.body as { isPinned: boolean };
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) throw new AppError(404, 'Post not found');
+    if (post.authorId !== userId) throw new AppError(403, 'Not authorized');
+    if (isPinned) {
+      await prisma.post.updateMany({
+        where: { authorId: userId, isPinned: true },
+        data: { isPinned: false },
+      });
+    }
+    const updated = await prisma.post.update({ where: { id: postId }, data: { isPinned } });
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── DELETE /api/posts/:id ── delete post (owner only) ─────
 router.delete('/:id', authenticate, async (req, res, next) => {
   try {

@@ -40,7 +40,6 @@ import {
   ResetPassword,
   VerifyEmail,
   SinglePost,
-  Bookmarks,
   Following,
   CreateStory,
   SearchPage,
@@ -130,7 +129,6 @@ export default function App() {
                     {/* Shared routes (both fan + creator) */}
                     <Route path="/feed" element={<Home />} />
                     <Route path="/post/:id" element={<SinglePost />} />
-                    <Route path="/bookmarks" element={<Bookmarks />} />
                     <Route path="/following" element={<Following />} />
                     <Route path="/stories/create" element={<CreateStory />} />
                     <Route path="/messages" element={<Messages />} />
