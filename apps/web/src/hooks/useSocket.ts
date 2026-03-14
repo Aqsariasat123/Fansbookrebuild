@@ -6,7 +6,6 @@ import { useCallStore } from '../stores/callStore';
 import { useMessageStore } from '../stores/messageStore';
 import { connectSocket, disconnectSocket } from '../lib/socket';
 import { showToast } from '../components/shared/NotificationToast';
-import { api } from '../lib/api';
 import type { CallMode } from '../stores/callStore';
 import type { Socket } from 'socket.io-client';
 
@@ -97,7 +96,6 @@ export function useSocket() {
     socket.on('user:offline', (data: { userId: string }) => cb.removeOnlineUser(data.userId));
     socket.on('user:online_list', (data: { userIds: string[] }) => cb.setOnlineUsers(data.userIds));
     socket.on('notification:new', (data: { message?: string }) => {
-      cb.incrementNotif();
       if (data?.message) showToast(data.message);
     });
 
@@ -128,14 +126,6 @@ export function useSocket() {
 
     // Global call event listeners — registered once, never torn down mid-call
     registerCallListeners(socket);
-
-    api
-      .get('/notifications?limit=1')
-      .then((res: { data?: { data?: { unreadCount?: number } } }) => {
-        const count = res.data?.data?.unreadCount ?? 0;
-        useNotificationStore.getState().setUnreadCount(count);
-      })
-      .catch(() => {});
 
     return () => {
       socket.off('message:new');
