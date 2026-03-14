@@ -33,8 +33,10 @@ export function registerChatHandlers(io: Server, socket: Socket) {
       // Emit to conversation room
       io.to(`conv:${conversationId}`).emit('message:new', message);
 
-      // Also emit to the other user's personal room for conversation list update
       const otherId = conv.participant1Id === userId ? conv.participant2Id : conv.participant1Id;
+      // Emit to recipient's personal room so they get it even for new conversations
+      io.to(`user:${otherId}`).emit('message:new', message);
+      // Also emit conversation list update
       io.to(`user:${otherId}`).emit('conversation:update', {
         conversationId,
         lastMessage: text.trim(),

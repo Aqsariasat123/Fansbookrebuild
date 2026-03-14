@@ -82,6 +82,7 @@ export function useSocket() {
 
     const socket = connectSocket(token);
     const cb = cbRef.current;
+    const seenMsgIds = new Set<string>();
 
     socket.on('connect', () => cb.setConnected(true));
     socket.on('disconnect', () => {
@@ -103,10 +104,14 @@ export function useSocket() {
     socket.on(
       'message:new',
       (msg: {
+        id: string;
         conversationId: string;
         senderId: string;
         sender?: { displayName: string; avatar: string | null };
       }) => {
+        if (msg.senderId === user.id) return;
+        if (seenMsgIds.has(msg.id)) return;
+        seenMsgIds.add(msg.id);
         const pathname = window.location.pathname;
         if (!pathname.endsWith(`/messages/${msg.conversationId}`)) {
           useMessageStore.getState().increment();
