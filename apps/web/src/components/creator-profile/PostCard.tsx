@@ -192,6 +192,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
           media={hasVideoOnly ? [video] : images}
           initialIndex={viewerIndex}
           onClose={() => setViewerOpen(false)}
+          username={authorUsername}
         />
       )}
     </div>

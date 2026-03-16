@@ -147,7 +147,12 @@ export function ImagePost({ post, onRefresh }: { post: FeedPost; onRefresh?: () 
         </div>
       </div>
       {viewerIdx !== null && (
-        <MediaViewer media={images} initialIndex={viewerIdx} onClose={() => setViewerIdx(null)} />
+        <MediaViewer
+          media={images}
+          initialIndex={viewerIdx}
+          onClose={() => setViewerIdx(null)}
+          username={post.author.username}
+        />
       )}
     </div>
   );

@@ -10,9 +10,10 @@ interface MediaViewerProps {
   media: MediaItem[];
   initialIndex: number;
   onClose: () => void;
+  username?: string;
 }
 
-export function MediaViewer({ media, initialIndex, onClose }: MediaViewerProps) {
+export function MediaViewer({ media, initialIndex, onClose, username }: MediaViewerProps) {
   const [idx, setIdx] = useState(initialIndex);
   const item = media[idx];
   const hasPrev = idx > 0;
@@ -113,12 +114,26 @@ export function MediaViewer({ media, initialIndex, onClose }: MediaViewerProps) 
             className="h-full w-full rounded-none object-contain md:rounded-xl"
           />
         ) : (
-          <img
-            key={item.id}
-            src={item.url}
-            alt=""
-            className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
-          />
+          <div className="relative">
+            <img
+              key={item.id}
+              src={item.url}
+              alt=""
+              className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+            />
+            {username && (
+              <div className="absolute bottom-0 right-0 flex select-none items-center gap-[6px] rounded-bl-lg rounded-tr-lg bg-black/50 px-[8px] py-[5px] pointer-events-none">
+                <img
+                  src="/icons/dashboard/fansbook-logo.webp"
+                  alt=""
+                  className="h-[12px] w-auto opacity-90"
+                />
+                <span className="font-outfit text-[9px] text-white/80">
+                  fansbook.vip/u/{username}
+                </span>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
