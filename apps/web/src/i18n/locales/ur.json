@@ -39,7 +39,13 @@
     "logout": "لاگ آؤٹ",
     "explore": "دریافت کریں",
     "profile": "پروفائل",
-    "create": "بنائیں"
+    "create": "بنائیں",
+    "search": "تلاش",
+    "live": "لائیو",
+    "leaderboard": "لیڈر بورڈ",
+    "badges": "بیجز",
+    "marketplace": "مارکیٹ",
+    "becomeCreator": "کریٹر بنیں"
   },
   "auth": {
     "login": "لاگ ان",
@@ -61,8 +67,15 @@
     "emailUsernamePlaceholder": "ای میل یا صارف نام درج کریں...",
     "passwordPlaceholder": "پاسورڈ درج کریں..."
   },
-  "feed": { "addYourStory": "اپنی کہانی شامل کریں", "mostPopularModels": "مقبول ترین ماڈلز" },
-  "theme": { "light": "روشن", "dark": "تاریک", "system": "سسٹم" },
+  "feed": {
+    "addYourStory": "اپنی کہانی شامل کریں",
+    "mostPopularModels": "مقبول ترین ماڈلز"
+  },
+  "theme": {
+    "light": "روشن",
+    "dark": "تاریک",
+    "system": "سسٹم"
+  },
   "errors": {
     "somethingWentWrong": "کچھ غلط ہو گیا",
     "pageNotFound": "صفحہ نہیں ملا",

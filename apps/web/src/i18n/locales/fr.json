@@ -39,7 +39,13 @@
     "logout": "Déconnexion",
     "explore": "Explorer",
     "profile": "Profil",
-    "create": "Créer"
+    "create": "Créer",
+    "search": "Rechercher",
+    "live": "En Direct",
+    "leaderboard": "Classement",
+    "badges": "Badges",
+    "marketplace": "Boutique",
+    "becomeCreator": "Devenir Créateur"
   },
   "auth": {
     "login": "Connexion",
@@ -65,7 +71,11 @@
     "addYourStory": "Ajouter votre Story",
     "mostPopularModels": "Modèles les Plus Populaires"
   },
-  "theme": { "light": "Clair", "dark": "Sombre", "system": "Système" },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
   "errors": {
     "somethingWentWrong": "Une erreur est survenue",
     "pageNotFound": "Page non trouvée",

@@ -39,7 +39,13 @@
     "logout": "退出",
     "explore": "发现",
     "profile": "资料",
-    "create": "创建"
+    "create": "创建",
+    "search": "搜索",
+    "live": "直播",
+    "leaderboard": "排行榜",
+    "badges": "徽章",
+    "marketplace": "市场",
+    "becomeCreator": "成为创作者"
   },
   "auth": {
     "login": "登录",
@@ -61,8 +67,15 @@
     "emailUsernamePlaceholder": "输入邮箱或用户名...",
     "passwordPlaceholder": "输入密码..."
   },
-  "feed": { "addYourStory": "添加你的故事", "mostPopularModels": "最受欢迎的模特" },
-  "theme": { "light": "浅色", "dark": "深色", "system": "系统" },
+  "feed": {
+    "addYourStory": "添加你的故事",
+    "mostPopularModels": "最受欢迎的模特"
+  },
+  "theme": {
+    "light": "浅色",
+    "dark": "深色",
+    "system": "系统"
+  },
   "errors": {
     "somethingWentWrong": "出了点问题",
     "pageNotFound": "页面未找到",

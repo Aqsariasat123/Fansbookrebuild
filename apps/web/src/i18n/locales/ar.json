@@ -39,7 +39,13 @@
     "logout": "تسجيل الخروج",
     "explore": "استكشاف",
     "profile": "الملف الشخصي",
-    "create": "إنشاء"
+    "create": "إنشاء",
+    "search": "بحث",
+    "live": "مباشر",
+    "leaderboard": "لوحة المتصدرين",
+    "badges": "الشارات",
+    "marketplace": "السوق",
+    "becomeCreator": "كن مبدعاً"
   },
   "auth": {
     "login": "تسجيل الدخول",

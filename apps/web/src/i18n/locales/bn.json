@@ -39,7 +39,13 @@
     "logout": "লগ আউট",
     "explore": "অন্বেষণ",
     "profile": "প্রোফাইল",
-    "create": "তৈরি করুন"
+    "create": "তৈরি করুন",
+    "search": "খুঁজুন",
+    "live": "লাইভ",
+    "leaderboard": "লিডারবোর্ড",
+    "badges": "ব্যাজ",
+    "marketplace": "মার্কেটপ্লেস",
+    "becomeCreator": "ক্রিয়েটর হন"
   },
   "auth": {
     "login": "লগ ইন",
@@ -61,8 +67,15 @@
     "emailUsernamePlaceholder": "ইমেইল বা ইউজারনেম লিখুন...",
     "passwordPlaceholder": "পাসওয়ার্ড লিখুন..."
   },
-  "feed": { "addYourStory": "আপনার গল্প যোগ করুন", "mostPopularModels": "সর্বাধিক জনপ্রিয় মডেল" },
-  "theme": { "light": "হালকা", "dark": "গাঢ়", "system": "সিস্টেম" },
+  "feed": {
+    "addYourStory": "আপনার গল্প যোগ করুন",
+    "mostPopularModels": "সর্বাধিক জনপ্রিয় মডেল"
+  },
+  "theme": {
+    "light": "হালকা",
+    "dark": "গাঢ়",
+    "system": "সিস্টেম"
+  },
   "errors": {
     "somethingWentWrong": "কিছু ভুল হয়েছে",
     "pageNotFound": "পেজ পাওয়া যায়নি",
