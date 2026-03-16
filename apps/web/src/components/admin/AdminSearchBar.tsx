@@ -85,8 +85,8 @@ export function AdminDateRange({
   onClear: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-[8px] md:flex-row md:items-center md:gap-[12px]">
-      <div className="grid grid-cols-2 gap-[8px] md:flex md:items-center md:gap-[12px]">
+    <div className="flex flex-wrap items-center gap-[8px] md:gap-[12px]">
+      <div className="flex flex-wrap items-center gap-[8px] md:gap-[12px]">
         <div className="flex items-center gap-[4px]">
           <span className="font-outfit text-[13px] font-normal text-[#15191c] md:text-[16px]">
             From:
