@@ -45,6 +45,7 @@ import {
   BecomeCreator,
   TwoFactorVerify,
   Onboarding,
+  Language,
   MarketplacePage,
   LeaderboardPage,
   BadgesPage,
@@ -137,7 +138,7 @@ export default function App() {
                     <Route path="/hashtag/:tag" element={<HashtagFeed />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/help-support" element={<HelpSupport />} />
-                    <Route path="/language" element={<Navigate to="/settings" replace />} />
+                    <Route path="/language" element={<Language />} />
                     <Route path="/onboarding" element={<Onboarding />} />
                     <Route path="/marketplace" element={<MarketplacePage />} />
                     <Route path="/marketplace/:id" element={<MarketplaceDetail />} />

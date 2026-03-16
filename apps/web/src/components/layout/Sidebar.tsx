@@ -2,11 +2,12 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/authStore';
 import { logoutApi } from '../../lib/auth';
-import { fanNavItems, creatorNavItems, fallbackLabels } from './navItems';
+import { fanNavItems, creatorNavItems, fallbackLabels, REVERSE_LANG } from './navItems';
 
 export function Sidebar() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const currentLangName = REVERSE_LANG[i18n.language] || 'English';
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
   const navItems = user?.role === 'CREATOR' ? creatorNavItems : fanNavItems;
@@ -46,6 +47,19 @@ export function Sidebar() {
               </NavLink>
             ))}
           </div>
+
+          <button
+            onClick={() => navigate('/language')}
+            className="flex items-center gap-[15px] text-[16px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <img src="/icons/dashboard/language.svg" alt="" className="h-[20px] w-[20px]" />
+            {currentLangName}
+            <img
+              src="/icons/dashboard/chevron-forward.svg"
+              alt=""
+              className="h-[24px] w-[24px] rotate-90"
+            />
+          </button>
 
           <button
             onClick={handleLogout}

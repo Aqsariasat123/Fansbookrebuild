@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/authStore';
 import { logoutApi } from '../../lib/auth';
-import { fanNavItems, creatorNavItems, fallbackLabels } from './navItems';
+import { fanNavItems, creatorNavItems, fallbackLabels, REVERSE_LANG } from './navItems';
 
 interface MobileSidebarProps {
   open: boolean;
@@ -10,7 +10,8 @@ interface MobileSidebarProps {
 }
 
 export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLangName = REVERSE_LANG[i18n.language] || 'English';
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
@@ -74,6 +75,22 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
               </NavLink>
             ))}
           </div>
+
+          <button
+            onClick={() => {
+              navigate('/language');
+              onClose();
+            }}
+            className="flex items-center gap-[15px] text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <img src="/icons/dashboard/language.svg" alt="" className="h-[20px] w-[20px]" />
+            {currentLangName}
+            <img
+              src="/icons/dashboard/chevron-forward.svg"
+              alt=""
+              className="h-[24px] w-[24px] rotate-90"
+            />
+          </button>
 
           <button
             onClick={handleLogout}
