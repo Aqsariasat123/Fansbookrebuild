@@ -55,15 +55,15 @@ export default function Leaderboard() {
       <p className="text-[24px] font-semibold text-foreground">Leaderboard</p>
 
       {/* Type tabs */}
-      <div className="flex gap-[6px]">
+      <div className="flex gap-[3px]">
         {TYPES.map((t) => (
           <button
             key={t.value}
             onClick={() => setType(t.value)}
-            className={`flex-1 rounded-[50px] px-[8px] py-[6px] text-[11px] font-medium md:px-[16px] md:text-[14px] ${
+            className={`flex-1 rounded-[50px] px-[4px] py-[6px] text-[11px] font-medium md:px-[16px] md:text-[14px] ${
               type === t.value
                 ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'
-                : 'bg-muted text-foreground/40'
+                : 'bg-muted text-foreground/60'
             }`}
           >
             {t.label}
