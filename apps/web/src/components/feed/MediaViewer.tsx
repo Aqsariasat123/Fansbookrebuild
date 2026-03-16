@@ -115,13 +115,13 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
               className="h-full w-full rounded-none object-contain md:rounded-xl"
             />
             {username && (
-              <div className="pointer-events-none absolute bottom-[40px] right-[8px] flex select-none items-center gap-[6px] rounded-[4px] bg-black/50 px-[8px] py-[4px]">
+              <div className="pointer-events-none absolute bottom-[50px] right-[10px] flex select-none items-center gap-[8px] rounded-[6px] bg-black/55 px-[12px] py-[6px]">
                 <img
                   src="/icons/dashboard/fansbook-logo.webp"
                   alt=""
-                  className="h-[12px] w-auto opacity-90"
+                  className="h-[18px] w-auto opacity-90"
                 />
-                <span className="font-outfit text-[9px] text-white/80">
+                <span className="font-outfit text-[13px] text-white/90">
                   fansbook.vip/u/{username}
                 </span>
               </div>
@@ -136,13 +136,13 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
               className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
             />
             {username && (
-              <div className="absolute bottom-0 right-0 flex select-none items-center gap-[6px] rounded-bl-lg rounded-tr-lg bg-black/50 px-[8px] py-[5px] pointer-events-none">
+              <div className="pointer-events-none absolute bottom-[10px] right-[10px] flex select-none items-center gap-[8px] rounded-[6px] bg-black/55 px-[12px] py-[6px]">
                 <img
                   src="/icons/dashboard/fansbook-logo.webp"
                   alt=""
-                  className="h-[12px] w-auto opacity-90"
+                  className="h-[18px] w-auto opacity-90"
                 />
-                <span className="font-outfit text-[9px] text-white/80">
+                <span className="font-outfit text-[13px] text-white/90">
                   fansbook.vip/u/{username}
                 </span>
               </div>
