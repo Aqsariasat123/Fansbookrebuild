@@ -39,13 +39,7 @@
     "logout": "लॉग आउट",
     "explore": "एक्सप्लोर",
     "profile": "प्रोफ़ाइल",
-    "create": "बनाएं",
-    "search": "खोजें",
-    "live": "लाइव",
-    "leaderboard": "लीडरबोर्ड",
-    "badges": "बैज",
-    "marketplace": "बाज़ार",
-    "becomeCreator": "क्रिएटर बनें"
+    "create": "बनाएं"
   },
   "auth": {
     "login": "लॉग इन",
@@ -67,15 +61,8 @@
     "emailUsernamePlaceholder": "ईमेल या यूजरनेम दर्ज करें...",
     "passwordPlaceholder": "पासवर्ड दर्ज करें..."
   },
-  "feed": {
-    "addYourStory": "अपनी कहानी जोड़ें",
-    "mostPopularModels": "सबसे लोकप्रिय मॉडल"
-  },
-  "theme": {
-    "light": "लाइट",
-    "dark": "डार्क",
-    "system": "सिस्टम"
-  },
+  "feed": { "addYourStory": "अपनी कहानी जोड़ें", "mostPopularModels": "सबसे लोकप्रिय मॉडल" },
+  "theme": { "light": "लाइट", "dark": "डार्क", "system": "सिस्टम" },
   "errors": {
     "somethingWentWrong": "कुछ गलत हो गया",
     "pageNotFound": "पेज नहीं मिला",

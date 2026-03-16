@@ -39,13 +39,7 @@
     "logout": "Cerrar Sesión",
     "explore": "Explorar",
     "profile": "Perfil",
-    "create": "Crear",
-    "search": "Buscar",
-    "live": "En Vivo",
-    "leaderboard": "Clasificación",
-    "badges": "Insignias",
-    "marketplace": "Tienda",
-    "becomeCreator": "Ser Creador"
+    "create": "Crear"
   },
   "auth": {
     "login": "Iniciar Sesión",

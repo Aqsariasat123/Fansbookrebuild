@@ -11,8 +11,8 @@ interface MobileSidebarProps {
 
 export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
   const { t, i18n } = useTranslation();
-  const currentLangName = REVERSE_LANG[i18n.language] || 'English';
   const navigate = useNavigate();
+  const currentLangName = REVERSE_LANG[i18n.language] || 'English';
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
   const navItems = user?.role === 'CREATOR' ? creatorNavItems : fanNavItems;

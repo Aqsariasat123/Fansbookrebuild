@@ -39,13 +39,7 @@
     "logout": "Abmelden",
     "explore": "Entdecken",
     "profile": "Profil",
-    "create": "Erstellen",
-    "search": "Suche",
-    "live": "Live",
-    "leaderboard": "Rangliste",
-    "badges": "Abzeichen",
-    "marketplace": "Marktplatz",
-    "becomeCreator": "Creator werden"
+    "create": "Erstellen"
   },
   "auth": {
     "login": "Anmelden",
@@ -67,15 +61,8 @@
     "emailUsernamePlaceholder": "E-Mail oder Benutzer eingeben...",
     "passwordPlaceholder": "Passwort eingeben..."
   },
-  "feed": {
-    "addYourStory": "Story hinzufügen",
-    "mostPopularModels": "Beliebteste Models"
-  },
-  "theme": {
-    "light": "Hell",
-    "dark": "Dunkel",
-    "system": "System"
-  },
+  "feed": { "addYourStory": "Story hinzufügen", "mostPopularModels": "Beliebteste Models" },
+  "theme": { "light": "Hell", "dark": "Dunkel", "system": "System" },
   "errors": {
     "somethingWentWrong": "Etwas ist schiefgelaufen",
     "pageNotFound": "Seite nicht gefunden",

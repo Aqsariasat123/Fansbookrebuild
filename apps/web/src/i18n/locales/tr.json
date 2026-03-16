@@ -39,13 +39,7 @@
     "logout": "Çıkış",
     "explore": "Keşfet",
     "profile": "Profil",
-    "create": "Oluştur",
-    "search": "Ara",
-    "live": "Canlı",
-    "leaderboard": "Liderlik Tablosu",
-    "badges": "Rozetler",
-    "marketplace": "Pazar",
-    "becomeCreator": "İçerik Üreticisi Ol"
+    "create": "Oluştur"
   },
   "auth": {
     "login": "Giriş Yap",
@@ -67,15 +61,8 @@
     "emailUsernamePlaceholder": "E-posta veya kullanıcı adı girin...",
     "passwordPlaceholder": "Şifrenizi girin..."
   },
-  "feed": {
-    "addYourStory": "Hikayeni Ekle",
-    "mostPopularModels": "En Popüler Modeller"
-  },
-  "theme": {
-    "light": "Açık",
-    "dark": "Koyu",
-    "system": "Sistem"
-  },
+  "feed": { "addYourStory": "Hikayeni Ekle", "mostPopularModels": "En Popüler Modeller" },
+  "theme": { "light": "Açık", "dark": "Koyu", "system": "Sistem" },
   "errors": {
     "somethingWentWrong": "Bir şeyler ters gitti",
     "pageNotFound": "Sayfa bulunamadı",

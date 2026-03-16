@@ -39,13 +39,7 @@
     "logout": "Logout",
     "explore": "Explore",
     "profile": "Profile",
-    "create": "Create",
-    "search": "Search",
-    "live": "Live",
-    "leaderboard": "Leaderboard",
-    "badges": "Badges",
-    "marketplace": "Marketplace",
-    "becomeCreator": "Become Creator"
+    "create": "Create"
   },
   "auth": {
     "login": "Login",
