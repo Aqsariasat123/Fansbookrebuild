@@ -95,8 +95,8 @@ export default function Badges() {
               <div className="flex size-[56px] items-center justify-center rounded-full bg-muted text-[24px]">
                 {ICON_MAP[badge.icon] || badge.icon || '🏆'}
               </div>
-              <p className="text-[14px] font-medium text-foreground/70">{badge.name}</p>
-              <p className="text-[11px] text-muted-foreground/70">{badge.description}</p>
+              <p className="text-[14px] font-medium text-foreground/90">{badge.name}</p>
+              <p className="text-[11px] text-muted-foreground">{badge.description}</p>
               <span
                 className={`text-[10px] font-medium uppercase ${RARITY_COLORS[badge.rarity]?.split(' ')[0] || 'text-gray-400'}`}
               >
