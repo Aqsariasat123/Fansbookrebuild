@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MediaViewer } from '../feed/MediaViewer';
+import { ImageWatermark } from '../shared/ImageWatermark';
 
 interface MediaItem {
   id: string;
@@ -41,11 +42,7 @@ function SingleImage({
       onClick={onClick}
     >
       <img src={image.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      {username && (
-        <div className="absolute bottom-0 inset-x-0 bg-black/40 px-[8px] py-[4px] font-outfit text-[10px] text-white/80 select-none">
-          fansbook.vip/u/{username}
-        </div>
-      )}
+      {username && <ImageWatermark username={username} />}
     </div>
   );
 }
@@ -53,9 +50,11 @@ function SingleImage({
 function MultiImageGrid({
   images,
   onClickIndex,
+  username,
 }: {
   images: MediaItem[];
   onClickIndex: (i: number) => void;
+  username?: string;
 }) {
   return (
     <div className="flex w-full gap-[11px] md:gap-[20px]">
@@ -64,6 +63,7 @@ function MultiImageGrid({
         onClick={() => onClickIndex(0)}
       >
         <img src={images[0]?.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        {username && <ImageWatermark username={username} />}
       </div>
       <div className="flex flex-1 flex-col gap-[10px] md:gap-[20px]">
         <div
@@ -124,7 +124,7 @@ export function PostMediaDisplay({ images, isLocked, username }: PostMediaDispla
         {images.length === 1 ? (
           <SingleImage image={images[0]!} onClick={() => setViewerIdx(0)} username={username} />
         ) : (
-          <MultiImageGrid images={images} onClickIndex={setViewerIdx} />
+          <MultiImageGrid images={images} onClickIndex={setViewerIdx} username={username} />
         )}
       </div>
       {viewerIdx !== null && (

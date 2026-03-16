@@ -1,3 +1,5 @@
+import { ImageWatermark } from '../shared/ImageWatermark';
+
 interface Media {
   id: string;
   url: string;
@@ -9,9 +11,11 @@ interface Media {
 export function MultiImageGrid({
   images,
   onClickImage,
+  username,
 }: {
   images: Media[];
   onClickImage: (idx: number) => void;
+  username?: string;
 }) {
   const extraCount = images.length > 2 ? images.length - 2 : 0;
 
@@ -22,6 +26,7 @@ export function MultiImageGrid({
         onClick={() => onClickImage(0)}
       >
         <img src={images[0]?.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        {username && <ImageWatermark username={username} />}
       </div>
       <div className="flex flex-1 flex-col gap-[10px] md:gap-[20px]">
         <div

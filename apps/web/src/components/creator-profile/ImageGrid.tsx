@@ -1,4 +1,5 @@
 import type { PostMedia } from './PostCard';
+import { ImageWatermark } from '../shared/ImageWatermark';
 
 interface ImageGridProps {
   media: PostMedia[];
@@ -19,9 +20,7 @@ export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
         onClick={() => onImageClick(0)}
       >
         <img src={shown[0].url} alt="" className="h-full w-full object-cover" />
-        <div className="absolute bottom-0 inset-x-0 bg-black/40 px-[8px] py-[4px] font-outfit text-[10px] text-white/80 select-none">
-          fansbook.vip/u/{username}
-        </div>
+        <ImageWatermark username={username} />
       </div>
     );
   }
@@ -29,11 +28,12 @@ export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
   return (
     <div className="grid h-[220px] grid-cols-2 gap-[4px] overflow-hidden rounded-[12px] md:h-[360px] md:gap-[6px] md:rounded-[16px]">
       <div
-        className="cursor-pointer"
+        className="relative cursor-pointer overflow-hidden"
         style={{ gridRow: shown.length > 2 ? '1 / 3' : undefined }}
         onClick={() => onImageClick(0)}
       >
         <img src={shown[0].url} alt="" className="h-full w-full object-cover" />
+        <ImageWatermark username={username} />
       </div>
       {shown.slice(1).map((img, i) => (
         <div

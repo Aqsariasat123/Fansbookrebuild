@@ -4,6 +4,7 @@ import { PostActions } from './PostActions';
 import { MediaViewer } from './MediaViewer';
 import { MultiImageGrid } from './MultiImageGrid';
 import { PPVOverlay } from './PPVOverlay';
+import { ImageWatermark } from '../shared/ImageWatermark';
 
 const IMG = '/icons/dashboard';
 
@@ -123,14 +124,16 @@ export function ImagePost({ post, onRefresh }: { post: FeedPost; onRefresh?: () 
                     alt=""
                     className="absolute inset-0 h-full w-full object-cover"
                   />
-                  <div className="absolute bottom-0 inset-x-0 bg-black/40 px-[8px] py-[4px]">
-                    <span className="font-outfit text-[10px] text-white/80 select-none">
-                      fansbook.vip/u/{post.author.username}
-                    </span>
-                  </div>
+                  <ImageWatermark username={post.author.username} />
                 </div>
               )}
-              {images.length > 1 && <MultiImageGrid images={images} onClickImage={setViewerIdx} />}
+              {images.length > 1 && (
+                <MultiImageGrid
+                  images={images}
+                  onClickImage={setViewerIdx}
+                  username={post.author.username}
+                />
+              )}
             </>
           )}
           <PostActions
