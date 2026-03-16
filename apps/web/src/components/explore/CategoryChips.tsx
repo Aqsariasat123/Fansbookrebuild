@@ -8,26 +8,23 @@ export function CategoryChips({ categories, selected, onSelect }: CategoryChipsP
   const all = ['', ...categories];
 
   return (
-    <div className="relative">
-      <div className="flex gap-[10px] overflow-x-auto scrollbar-hide pb-[4px]">
-        {all.map((cat) => {
-          const isActive = cat === selected;
-          return (
-            <button
-              key={cat || '__all'}
-              onClick={() => onSelect(cat)}
-              className={`shrink-0 rounded-[20px] px-[16px] py-[8px] font-outfit text-[14px] font-medium transition-colors ${
-                isActive
-                  ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-foreground'
-                  : 'bg-muted text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {cat || 'All'}
-            </button>
-          );
-        })}
-      </div>
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[48px] bg-gradient-to-l from-background to-transparent" />
+    <div className="flex flex-wrap gap-[8px]">
+      {all.map((cat) => {
+        const isActive = cat === selected;
+        return (
+          <button
+            key={cat || '__all'}
+            onClick={() => onSelect(cat)}
+            className={`rounded-[20px] px-[12px] py-[6px] font-outfit text-[13px] font-medium transition-colors ${
+              isActive
+                ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-foreground'
+                : 'bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {cat || 'All'}
+          </button>
+        );
+      })}
     </div>
   );
 }
