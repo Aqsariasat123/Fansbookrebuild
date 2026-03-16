@@ -1,26 +1,31 @@
-export type ContentTab = 'feed' | 'photos' | 'videos';
-
-const TABS: { key: ContentTab; label: string }[] = [
-  { key: 'feed', label: 'Feed' },
-  { key: 'photos', label: 'Photos' },
-  { key: 'videos', label: 'Videos' },
-];
+export type ContentTab = 'feed' | 'media';
 
 export function ProfileTabBar({
   activeTab,
   onTabChange,
+  postsCount = 0,
+  mediaCount = 0,
 }: {
   activeTab: ContentTab;
   onTabChange: (t: ContentTab) => void;
+  postsCount?: number;
+  mediaCount?: number;
 }) {
+  const tabs = [
+    { key: 'feed' as ContentTab, label: `${postsCount} Posts` },
+    { key: 'media' as ContentTab, label: `${mediaCount} Media` },
+  ];
+
   return (
-    <div className="relative flex items-center rounded-[70px] bg-card p-[10px]">
-      {TABS.map((tab) => (
+    <div className="flex border-b border-border">
+      {tabs.map((tab) => (
         <button
           key={tab.key}
           onClick={() => onTabChange(tab.key)}
-          className={`relative z-10 flex-1 rounded-[70px] py-[12px] text-center text-[16px] font-medium transition-colors ${
-            activeTab === tab.key ? 'bg-[#01adf1] text-white' : 'text-foreground hover:text-primary'
+          className={`-mb-px border-b-2 px-[20px] py-[14px] text-[15px] font-medium transition-colors ${
+            activeTab === tab.key
+              ? 'border-[#01adf1] text-[#01adf1]'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
         >
           {tab.label}

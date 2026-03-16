@@ -72,11 +72,6 @@ export const creatorNavItems: NavItem[] = [
     labelKey: 'nav.mySubscription',
   },
   { to: '/creator/bookings', icon: '/icons/dashboard/pending.svg', labelKey: 'nav.myBookings' },
-  {
-    to: '/creator/go-live',
-    icon: '/icons/dashboard/video-progress.svg',
-    labelKey: 'nav.goLive',
-  },
   { to: '/marketplace', icon: '/icons/dashboard/wallet-card.svg', labelKey: 'nav.marketplace' },
   {
     to: '/notifications',
@@ -94,7 +89,7 @@ export const fallbackLabels: Record<string, string> = {
   'nav.myProfile': 'My Profile',
   'nav.messages': 'Messages',
   'nav.myWallet': 'My Wallet',
-  'nav.myFollowersModel': 'My Followers Model',
+  'nav.myFollowersModel': 'Following',
   'nav.mySubscription': 'My Subscription',
   'nav.leaderboard': 'Leaderboard',
   'nav.badges': 'Badges',

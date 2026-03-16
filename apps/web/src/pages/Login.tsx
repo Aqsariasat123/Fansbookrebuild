@@ -38,6 +38,21 @@ export default function Login() {
 
   return (
     <div className="relative flex h-screen w-screen overflow-hidden font-outfit">
+      <Link
+        to="/"
+        className="absolute left-[16px] top-[16px] z-20 flex items-center gap-[6px] text-[14px] text-white/80 hover:text-white lg:text-foreground/60 lg:hover:text-foreground"
+      >
+        <svg viewBox="0 0 24 24" fill="none" className="size-[18px]">
+          <path
+            d="M15 18l-6-6 6-6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        Home
+      </Link>
       <img
         src="/images/login-hero.webp"
         alt=""

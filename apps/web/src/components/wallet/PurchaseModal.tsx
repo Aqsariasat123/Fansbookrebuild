@@ -18,6 +18,7 @@ interface Props {
 export function PurchaseModal({ onClose, onSuccess }: Props) {
   const [packages, setPackages] = useState<CoinPackage[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [customAmount, setCustomAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState<{ coins: number; balance: number } | null>(null);
@@ -32,11 +33,15 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
   }, []);
 
   async function handlePurchase() {
-    if (!selected || loading) return;
+    const coins = parseInt(customAmount, 10);
+    const isCustom = !selected && customAmount !== '' && coins > 0;
+    if ((!selected && !isCustom) || loading) return;
     setLoading(true);
     setError('');
     try {
-      const { data: r } = await api.post('/wallet/purchase', { packageId: selected });
+      const { data: r } = isCustom
+        ? await api.post('/wallet/purchase-custom', { coins })
+        : await api.post('/wallet/purchase', { packageId: selected });
       if (r.success) {
         setSuccess({ coins: r.data.coins, balance: r.data.balance });
         onSuccess(r.data.balance);
@@ -104,7 +109,7 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
         </button>
 
         <p className="text-[24px] font-semibold text-foreground mb-[8px]">Purchase Coins</p>
-        <p className="text-[16px] text-foreground/50 mb-[24px]">Select a coin package below</p>
+        <p className="text-[18px] text-foreground/70 mb-[24px]">Select a coin package below</p>
 
         <div className="grid grid-cols-3 gap-[12px] mb-[24px]">
           {packages.map((pkg) => (
@@ -129,11 +134,40 @@ export function PurchaseModal({ onClose, onSuccess }: Props) {
           ))}
         </div>
 
+        {/* Custom amount */}
+        <div className="mb-[20px]">
+          <p className="text-[13px] text-foreground/70 mb-[8px]">Or enter a custom amount</p>
+          <div className="flex items-center gap-[10px]">
+            <div className="relative flex-1">
+              <span className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[15px] text-muted-foreground">
+                €
+              </span>
+              <input
+                type="number"
+                min="1"
+                max="100000"
+                value={customAmount}
+                onChange={(e) => {
+                  setCustomAmount(e.target.value);
+                  if (e.target.value) setSelected(null);
+                }}
+                placeholder="e.g. 150"
+                className="w-full rounded-[12px] border border-border bg-muted py-[12px] pl-[34px] pr-[14px] text-[15px] text-foreground placeholder-muted-foreground outline-none focus:border-[#01adf1]"
+              />
+            </div>
+            {customAmount && parseInt(customAmount, 10) > 0 && (
+              <span className="shrink-0 text-[14px] text-muted-foreground">
+                = {parseInt(customAmount, 10).toLocaleString()} coins
+              </span>
+            )}
+          </div>
+        </div>
+
         {error && <p className="text-red-400 text-[14px] text-center mb-[12px]">{error}</p>}
 
         <button
           onClick={handlePurchase}
-          disabled={!selected || loading}
+          disabled={(!selected && (!customAmount || parseInt(customAmount, 10) < 1)) || loading}
           className="w-full bg-gradient-to-r from-[#01adf1] to-[#a61651] rounded-[12px] py-[16px] text-[18px] font-semibold text-foreground hover:opacity-90 transition-opacity disabled:opacity-40"
         >
           {loading ? 'Processing...' : 'Complete Purchase'}

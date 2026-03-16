@@ -1,8 +1,4 @@
-import { Link } from 'react-router-dom';
-
 export { FeaturesSection } from './CreatorsSectionParts';
-
-const WHITE = 'brightness(0) invert(1)';
 
 export function CreatorsSection() {
   return (
@@ -128,7 +124,7 @@ export function CreatorsSection() {
             />
           </div>
 
-          {/* Text + button — below images, no overlap */}
+          {/* Text — below images, no overlap */}
           <div className="flex flex-col items-center px-[16px] pb-[28px] pt-[16px]">
             <h2 className="text-center text-[20px] font-medium leading-[1.26] text-foreground">
               Open to all creators
@@ -136,18 +132,6 @@ export function CreatorsSection() {
             <p className="mt-[10px] text-center text-[10px] font-normal leading-[1.26] text-foreground">
               enjoying the freedom to express their creativity and earn more
             </p>
-            <Link
-              to="/register"
-              className="mt-[16px] flex items-center gap-[4px] rounded-[36px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[10px] py-[8px] text-[12px] font-medium text-white shadow-[0px_3px_5px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
-            >
-              Start Your Journey
-              <img
-                src="/icons/landing/arrow_forward.svg"
-                alt=""
-                className="h-[11px] w-[11px]"
-                style={{ filter: WHITE }}
-              />
-            </Link>
           </div>
         </div>
 
@@ -160,18 +144,6 @@ export function CreatorsSection() {
             <p className="mt-[17px] w-[151px] text-center text-[16px] font-normal leading-[1.26] text-foreground">
               enjoying the freedom to express their creativity and earn more
             </p>
-            <Link
-              to="/register"
-              className="mt-[55px] flex items-center gap-[10px] rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[20px] py-[15px] text-[20px] font-medium text-white shadow-[0px_6px_10.1px_rgba(34,34,34,0.25)] transition-opacity hover:opacity-90"
-            >
-              Start Your Journey
-              <img
-                src="/icons/landing/arrow_forward.svg"
-                alt=""
-                className="h-[24px] w-[24px]"
-                style={{ filter: WHITE }}
-              />
-            </Link>
           </div>
         </div>
       </div>

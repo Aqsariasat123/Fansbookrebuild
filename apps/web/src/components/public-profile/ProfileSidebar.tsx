@@ -1,5 +1,3 @@
-import { ProfileActions } from './ProfileActions';
-
 const DEFAULT_HASHTAGS = [
   '#Streaming',
   '#Enjoy',
@@ -29,116 +27,92 @@ export interface SidebarProfileData {
   isFollowing: boolean;
   isSubscribed: boolean;
   likesCount?: number;
+  imagesCount?: number;
+  videosCount?: number;
   hashtags?: string[];
 }
 
 interface Props {
   profile: SidebarProfileData;
-  isOwnProfile: boolean;
-  followLoading: boolean;
   amazonLink?: string | null;
-  onFollow: () => void;
-  onSubscribe: () => void;
 }
 
-export function ProfileSidebar({
-  profile,
-  isOwnProfile,
-  followLoading,
-  amazonLink,
-  onFollow,
-  onSubscribe,
-}: Props) {
-  const hashtags = profile.hashtags || DEFAULT_HASHTAGS;
-  const initial = profile.displayName.charAt(0);
+export function ProfileSidebar({ profile, amazonLink }: Props) {
+  const hashtags = profile.hashtags?.length ? profile.hashtags : DEFAULT_HASHTAGS;
 
   return (
-    <div>
-      {/* Avatar */}
-      <div className="relative z-10 -mt-[60px] flex justify-center md:-mt-[88px] md:justify-start">
-        <div className="size-[130px] rounded-full border-4 border-muted bg-muted md:size-[176px]">
-          {profile.avatar ? (
-            <img src={profile.avatar} alt="" className="size-full rounded-full object-cover" />
-          ) : (
-            <div className="flex size-full items-center justify-center rounded-full bg-muted">
-              <span className="text-[40px] font-medium text-foreground md:text-[52px]">
-                {initial}
-              </span>
-            </div>
-          )}
-        </div>
+    <div className="relative rounded-[22px] bg-card px-[20px] pb-[24px] pt-[56px] md:pl-[144px] md:pt-[24px]">
+      {/* Avatar — overlaps cover above */}
+      <div className="absolute -top-[40px] left-[20px] size-[80px] overflow-hidden rounded-full border-4 border-card bg-muted md:-top-[52px] md:size-[106px]">
+        {profile.avatar ? (
+          <img src={profile.avatar} alt="" className="size-full object-cover" />
+        ) : (
+          <div className="flex size-full items-center justify-center text-[28px] font-medium text-foreground md:text-[38px]">
+            {profile.displayName[0]}
+          </div>
+        )}
       </div>
 
-      {/* Name */}
-      <div className="mt-[16px] text-center md:text-left">
-        <div className="flex items-center justify-center gap-[6px] md:justify-start">
-          <p className="text-[20px] font-medium text-foreground">{profile.displayName}</p>
-          {profile.isVerified && (
-            <img src="/icons/dashboard/verified.svg" alt="Verified" className="size-[18px]" />
-          )}
-        </div>
-        <p className="text-[16px] text-muted-foreground">@{profile.username}</p>
-      </div>
-
-      {/* Stats */}
-      <div className="mt-[24px] flex items-center justify-center gap-[24px] md:justify-start md:gap-[40px]">
-        <div className="text-center md:text-left">
-          <p className="text-[16px] font-medium text-foreground">
-            {formatCount(profile.followingCount)}
-          </p>
-          <p className="text-[12px] text-muted-foreground">Following</p>
-        </div>
-        <div className="text-center md:text-left">
-          <p className="text-[16px] font-medium text-foreground">
-            {formatCount(profile.followersCount)}
-          </p>
-          <p className="text-[12px] text-muted-foreground">Followers</p>
-        </div>
-        <div className="text-center md:text-left">
-          <p className="text-[16px] font-medium text-foreground">
-            {formatCount(profile.likesCount ?? 0)}
-          </p>
-          <p className="text-[12px] text-muted-foreground">Likes</p>
-        </div>
-      </div>
-
-      {/* Actions */}
-      {!isOwnProfile && (
-        <ProfileActions
-          profileId={profile.id}
-          username={profile.username}
-          displayName={profile.displayName}
-          isFollowing={profile.isFollowing}
-          isSubscribed={profile.isSubscribed}
-          followLoading={followLoading}
-          amazonLink={amazonLink}
-          onFollow={onFollow}
-          onSubscribe={onSubscribe}
-        />
-      )}
-
-      {/* About */}
-      {profile.bio && (
-        <div className="mt-[24px]">
-          <p className="text-[16px] font-medium text-foreground">About</p>
-          <p className="mt-[8px] text-[14px] leading-[1.6] text-muted-foreground">{profile.bio}</p>
-        </div>
-      )}
-
-      {/* Hashtags */}
-      <div className="mt-[24px]">
-        <p className="text-[16px] font-medium text-foreground">Hashtags</p>
-        <div className="mt-[10px] flex flex-wrap gap-[8px]">
-          {hashtags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-[8px] border border-border px-[12px] py-[6px] text-[13px] text-muted-foreground md:px-[18px] md:py-[8px] md:text-[14px]"
-            >
-              {tag.startsWith('#') ? tag : `#${tag}`}
+      <div className="flex flex-col gap-[16px] md:flex-row md:gap-[32px]">
+        {/* Left: name, username, stats, hashtags */}
+        <div className="flex-1">
+          <div className="flex items-center gap-[6px]">
+            <span className="text-[18px] font-bold text-foreground md:text-[20px]">
+              {profile.displayName}
             </span>
-          ))}
+            {profile.isVerified && (
+              <img src="/icons/dashboard/verified.svg" alt="" className="size-[16px]" />
+            )}
+          </div>
+          <p className="text-[13px] text-muted-foreground">@{profile.username}</p>
+
+          <div className="mt-[12px] flex select-none flex-wrap gap-x-[20px] gap-y-[8px] md:gap-x-[28px]">
+            {[
+              { val: profile.followingCount, label: 'Following' },
+              { val: profile.followersCount, label: 'Followers' },
+              { val: profile.likesCount ?? 0, label: 'Likes' },
+              { val: profile.imagesCount ?? 0, label: 'Images' },
+              { val: profile.videosCount ?? 0, label: 'Videos' },
+            ].map(({ val, label }) => (
+              <div key={label}>
+                <p className="text-[15px] font-semibold text-foreground">{formatCount(val)}</p>
+                <p className="text-[11px] text-muted-foreground">{label}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-[12px] flex flex-wrap gap-[6px]">
+            {hashtags.slice(0, 6).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-[6px] border border-border px-[10px] py-[4px] text-[11px] text-muted-foreground"
+              >
+                {tag.startsWith('#') ? tag : `#${tag}`}
+              </span>
+            ))}
+          </div>
         </div>
+
+        {/* Right: bio */}
+        {profile.bio && (
+          <div className="md:w-[44%]">
+            <p className="text-[13px] leading-[1.7] text-muted-foreground">{profile.bio}</p>
+          </div>
+        )}
       </div>
+
+      {/* Amazon 'a' circle — bottom-right */}
+      {amazonLink && (
+        <a
+          href={amazonLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Amazon Store"
+          className="absolute bottom-[16px] right-[16px] flex size-[36px] items-center justify-center rounded-full bg-[#FF9900] text-[18px] font-black text-white"
+        >
+          a
+        </a>
+      )}
     </div>
   );
 }

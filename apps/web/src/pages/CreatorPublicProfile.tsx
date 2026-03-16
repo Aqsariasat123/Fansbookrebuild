@@ -6,34 +6,11 @@ import { SubscriptionModal } from '../components/public-profile/SubscriptionModa
 import { ProfileTabBar } from '../components/public-profile/ProfileTabBar';
 import { ProfileSidebar } from '../components/public-profile/ProfileSidebar';
 import { ProfileTabContent } from '../components/public-profile/ProfileTabContent';
+import { ProfileActions } from '../components/public-profile/ProfileActions';
+import { SubscriptionSidebar } from '../components/public-profile/SubscriptionSidebar';
 import type { ContentTab } from '../components/public-profile/ProfileTabBar';
-import { ViewModeToggle } from '../components/public-profile/ViewModeToggle';
 import type { PublicPost } from '../components/public-profile/PostCard';
-
-interface ProfileData {
-  id: string;
-  username: string;
-  displayName: string;
-  avatar: string | null;
-  cover: string | null;
-  bio: string | null;
-  isVerified: boolean;
-  followersCount: number;
-  followingCount: number;
-  postsCount: number;
-  isFollowing: boolean;
-  isSubscribed: boolean;
-  tiers: {
-    id: string;
-    name: string;
-    price: number;
-    description: string | null;
-    benefits: string[];
-  }[];
-  likesCount?: number;
-  socialLinks?: Record<string, string>;
-  hashtags?: string[];
-}
+import type { ProfileData } from '../components/public-profile/types';
 
 export default function CreatorPublicProfile() {
   const { username } = useParams<{ username: string }>();
@@ -46,15 +23,12 @@ export default function CreatorPublicProfile() {
   const [followLoading, setFollowLoading] = useState(false);
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const [subscribeLoading, setSubscribeLoading] = useState(false);
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [amazonLink, setAmazonLink] = useState<string | null>(null);
 
   const checkSubscription = useCallback(async (creatorId: string) => {
     try {
       const { data: r } = await api.get(`/subscriptions/check/${creatorId}`);
-      if (r.success) {
-        setProfile((p) => (p ? { ...p, isSubscribed: r.data.isSubscribed } : p));
-      }
+      if (r.success) setProfile((p) => (p ? { ...p, isSubscribed: r.data.isSubscribed } : p));
     } catch {
       /* ignore */
     }
@@ -110,12 +84,29 @@ export default function CreatorPublicProfile() {
     }
   }
 
+  async function handleSubscribe(tierId: string) {
+    setSubscribeLoading(true);
+    try {
+      await api.post('/subscriptions', { tierId });
+      setProfile((p) => (p ? { ...p, isSubscribed: true } : p));
+      setShowSubscribeModal(false);
+    } catch (err) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Failed to subscribe';
+      alert(msg);
+    } finally {
+      setSubscribeLoading(false);
+    }
+  }
+
   if (loading)
     return (
       <div className="flex justify-center py-20">
         <div className="size-8 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
       </div>
     );
+
   if (notFound || !profile)
     return (
       <div className="flex flex-col items-center justify-center py-20">
@@ -126,64 +117,73 @@ export default function CreatorPublicProfile() {
       </div>
     );
 
+  const isOwnProfile = currentUser?.username === profile.username;
+  const mediaCount = posts.reduce((acc, p) => acc + p.media.length, 0);
+
   return (
     <div>
-      <div className="relative h-[180px] w-full overflow-hidden md:h-[240px]">
+      {/* Cover image */}
+      <div className="relative h-[180px] w-full overflow-hidden rounded-t-[22px] md:h-[240px]">
         {profile.cover ? (
           <img src={profile.cover} alt="" className="absolute inset-0 size-full object-cover" />
         ) : (
-          <div className="absolute inset-0 bg-muted" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#01adf1]/40 to-[#a61651]/40" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-      </div>
-      <div className="flex flex-col gap-[24px] md:flex-row md:gap-[30px]">
-        <div className="w-full shrink-0 md:w-[300px] lg:w-[380px]">
-          <ProfileSidebar
-            profile={profile}
-            isOwnProfile={currentUser?.username === profile.username}
-            followLoading={followLoading}
-            amazonLink={amazonLink}
-            onFollow={handleFollow}
-            onSubscribe={() => setShowSubscribeModal(true)}
-          />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-[8px]">
-            <div className="flex-1">
-              <ProfileTabBar activeTab={activeTab} onTabChange={setActiveTab} />
-            </div>
-            {activeTab === 'feed' && <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />}
+        {!isOwnProfile && (
+          <div className="absolute right-[12px] top-[12px]">
+            <ProfileActions
+              username={profile.username}
+              isFollowing={profile.isFollowing}
+              isSubscribed={profile.isSubscribed}
+              followLoading={followLoading}
+              onFollow={handleFollow}
+              onSubscribe={() => setShowSubscribeModal(true)}
+            />
           </div>
+        )}
+      </div>
+
+      {/* Profile info card — avatar overlaps the cover */}
+      <div className="-mt-[40px] md:-mt-[52px]">
+        <ProfileSidebar profile={profile} amazonLink={amazonLink} />
+      </div>
+
+      {/* Tabs + Content + Sidebar */}
+      <div className="mt-[20px] flex gap-[24px]">
+        <div className="min-w-0 flex-1">
+          <ProfileTabBar
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            postsCount={profile.postsCount}
+            mediaCount={mediaCount}
+          />
           <div className="mt-[20px]">
             <ProfileTabContent
               activeTab={activeTab}
               posts={posts}
               isSubscribed={profile.isSubscribed}
-              viewMode={viewMode}
             />
           </div>
         </div>
+
+        {!isOwnProfile && (
+          <SubscriptionSidebar
+            tiers={profile.tiers}
+            onSubscribe={handleSubscribe}
+            creatorUsername={profile.username}
+            profileId={profile.id}
+            displayName={profile.displayName}
+            isSubscribed={profile.isSubscribed}
+          />
+        )}
       </div>
+
       {showSubscribeModal && (
         <SubscriptionModal
           tiers={profile.tiers}
           loading={subscribeLoading}
           onClose={() => setShowSubscribeModal(false)}
-          onSubscribe={async (tierId) => {
-            setSubscribeLoading(true);
-            try {
-              await api.post('/subscriptions', { tierId });
-              setProfile((p) => (p ? { ...p, isSubscribed: true } : p));
-              setShowSubscribeModal(false);
-            } catch (err) {
-              const msg =
-                (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-                'Failed to subscribe';
-              alert(msg);
-            } finally {
-              setSubscribeLoading(false);
-            }
-          }}
+          onSubscribe={handleSubscribe}
         />
       )}
     </div>

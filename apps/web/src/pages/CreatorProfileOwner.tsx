@@ -119,7 +119,6 @@ export default function CreatorProfileOwner() {
         uploadingCover={uploadingCover}
         onAvatarUpload={(f) => handleUpload('avatar', f)}
         onCoverUpload={(f) => handleUpload('cover', f)}
-        onScheduleLive={() => setShowSchedule(true)}
       />
 
       {/* 2-column layout: left sidebar (already rendered by ProfileHeader) + right content */}

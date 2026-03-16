@@ -57,6 +57,11 @@ router.get('/:username', async (req, res, next) => {
     const isFollowing = viewerId ? await checkIsFollowing(viewerId, creator.id) : false;
     const isSubscribed = viewerId ? await checkIsSubscriber(viewerId, creator.id) : false;
 
+    const [imagesCount, videosCount] = await Promise.all([
+      prisma.postMedia.count({ where: { post: { authorId: creator.id }, type: 'IMAGE' } }),
+      prisma.postMedia.count({ where: { post: { authorId: creator.id }, type: 'VIDEO' } }),
+    ]);
+
     const { _count, subscriptionTiers, ...profile } = creator;
     res.json({
       success: true,
@@ -65,6 +70,8 @@ router.get('/:username', async (req, res, next) => {
         followersCount: _count.followers,
         followingCount: _count.following,
         postsCount: _count.posts,
+        imagesCount,
+        videosCount,
         tiers: subscriptionTiers.map((t) => ({
           ...t,
           benefits: typeof t.benefits === 'string' ? JSON.parse(t.benefits) : t.benefits,

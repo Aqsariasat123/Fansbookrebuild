@@ -16,7 +16,7 @@ interface FollowUser {
 type Tab = 'followers' | 'following';
 
 export default function Followers() {
-  const [tab, setTab] = useState<Tab>('following');
+  const [tab] = useState<Tab>('following');
   const [users, setUsers] = useState<FollowUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -84,20 +84,7 @@ export default function Followers() {
 
   return (
     <div className="flex flex-col gap-[20px]">
-      <p className="text-[20px] font-medium text-foreground">
-        {tab === 'followers' ? 'Followers' : 'Following'}
-      </p>
-      <div className="flex gap-[4px] rounded-[12px] bg-muted p-[4px]">
-        {(['following', 'followers'] as Tab[]).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`flex-1 rounded-[10px] py-[10px] text-[14px] font-medium transition-colors ${tab === t ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            {t === 'following' ? 'Following' : 'Followers'}
-          </button>
-        ))}
-      </div>
+      <p className="text-[20px] font-medium text-foreground">Following</p>
       {loading ? (
         <div className="flex justify-center py-[60px]">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />

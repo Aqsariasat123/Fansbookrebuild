@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { MarketingNav } from '../components/marketing/MarketingNav';
 import { CTASection, MarketingFooter } from '../components/marketing/MarketingFooter';
 import { CreatorsSection, FeaturesSection } from '../components/landing/CreatorsSection';
-import { MemberFeaturesSection, FAQSection } from '../components/landing/MemberFeaturesSection';
+import { MemberFeaturesSection } from '../components/landing/MemberFeaturesSection';
+import { FAQSection } from '../components/landing/FAQSection';
 import { ReviewsSection, TrendingSection } from '../components/landing/ReviewsTrendingSection';
 
 /* ─── CSS filter to turn any SVG white ─── */

@@ -33,7 +33,7 @@ export function FilterDropdown({
         </svg>
       </button>
       {open && (
-        <div className="absolute z-10 top-full left-0 w-full mt-[4px] bg-card border border-border rounded-[6px] overflow-hidden">
+        <div className="absolute z-50 top-full left-0 w-full mt-[4px] bg-card border border-border rounded-[6px]">
           {options.map((opt) => (
             <button
               key={opt}

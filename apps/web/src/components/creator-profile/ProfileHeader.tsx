@@ -19,7 +19,6 @@ interface ProfileHeaderProps {
   uploadingCover: boolean;
   onAvatarUpload: (file: File) => void;
   onCoverUpload: (file: File) => void;
-  onScheduleLive?: () => void;
 }
 
 export function ProfileHeader({
@@ -37,7 +36,6 @@ export function ProfileHeader({
   uploadingCover,
   onAvatarUpload,
   onCoverUpload,
-  onScheduleLive,
 }: ProfileHeaderProps) {
   const navigate = useNavigate();
   const avatarRef = useRef<HTMLInputElement>(null);
@@ -165,22 +163,6 @@ export function ProfileHeader({
               <circle cx="12" cy="12" r="2" />
               <circle cx="12" cy="19" r="2" />
             </svg>
-          </button>
-        </div>
-
-        {/* Go Live + Schedule */}
-        <div className="mt-[16px] flex items-center gap-[10px]">
-          <button
-            onClick={() => navigate('/creator/go-live')}
-            className="flex-1 rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-center text-[14px] font-medium text-white transition-opacity hover:opacity-90"
-          >
-            Go Live
-          </button>
-          <button
-            onClick={onScheduleLive}
-            className="flex-1 rounded-[50px] border border-border py-[12px] text-center text-[14px] text-foreground transition-colors hover:border-foreground"
-          >
-            Schedule Live
           </button>
         </div>
 

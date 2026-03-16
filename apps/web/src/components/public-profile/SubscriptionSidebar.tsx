@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
+import { TipModal } from '../shared/TipModal';
 
 interface Tier {
   id: string;
@@ -20,20 +21,26 @@ interface SuggestedCreator {
   followersCount: number;
 }
 
-interface SubscriptionSidebarProps {
+interface Props {
   tiers: Tier[];
   onSubscribe: (tierId: string) => void;
   creatorUsername: string;
+  profileId: string;
+  displayName: string;
+  isSubscribed: boolean;
 }
 
 export function SubscriptionSidebar({
   tiers,
   onSubscribe,
   creatorUsername,
-}: SubscriptionSidebarProps) {
-  const freeTier = tiers.find((t) => t.price === 0);
-  const firstTierId = freeTier?.id || tiers[0]?.id || '';
+  profileId,
+  displayName,
+  isSubscribed,
+}: Props) {
+  const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState<SuggestedCreator[]>([]);
+  const [showTip, setShowTip] = useState(false);
 
   useEffect(() => {
     api
@@ -43,37 +50,66 @@ export function SubscriptionSidebar({
   }, [creatorUsername]);
 
   return (
-    <div className="hidden w-[260px] shrink-0 flex-col gap-[20px] lg:flex">
-      {/* Subscription Card */}
+    <div className="hidden w-[260px] shrink-0 flex-col gap-[16px] lg:flex">
+      {/* Subscription card */}
       <div className="rounded-[22px] bg-card p-[20px]">
-        <p className="mb-[16px] text-[16px] font-semibold text-foreground">Subscription</p>
-        <button
-          onClick={() => onSubscribe(firstTierId)}
-          className="flex w-full items-center justify-center gap-[10px] rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#0096c7] py-[12px] text-[14px] font-medium text-white transition-opacity hover:opacity-90"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-            <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-          </svg>
-          Subscribe
-          <span className="rounded-[12px] bg-card/20 px-[8px] py-[2px] text-[11px]">For free</span>
-        </button>
+        <p className="mb-[12px] text-[15px] font-semibold text-foreground">Subscription</p>
+
+        {isSubscribed ? (
+          <div className="rounded-[12px] border border-green-500 bg-green-500/10 px-[16px] py-[10px] text-center text-[13px] font-medium text-green-400">
+            Subscribed ✓
+          </div>
+        ) : (
+          <div className="flex flex-col gap-[8px]">
+            {tiers.map((tier) => (
+              <button
+                key={tier.id}
+                onClick={() => onSubscribe(tier.id)}
+                className="w-full rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[10px] text-[13px] font-medium text-white transition-opacity hover:opacity-90"
+              >
+                Subscribe For {tier.price === 0 ? 'free' : tier.price.toFixed(2)}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-[12px] flex flex-col gap-[8px]">
+          <button
+            onClick={() => navigate(`/messages?user=${creatorUsername}`)}
+            className="flex w-full items-center justify-center gap-[8px] rounded-[50px] border border-border py-[10px] text-[13px] text-foreground transition-colors hover:border-foreground"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
+            </svg>
+            Message
+          </button>
+          <button
+            onClick={() => setShowTip(true)}
+            className="flex w-full items-center justify-center gap-[8px] rounded-[50px] border border-border py-[10px] text-[13px] text-foreground transition-colors hover:border-foreground"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+            Send Tip
+          </button>
+        </div>
       </div>
 
       {/* Suggestions */}
       {suggestions.length > 0 && (
         <div className="rounded-[22px] bg-card p-[20px]">
-          <div className="mb-[16px] flex items-center justify-between">
-            <p className="text-[16px] font-semibold text-foreground">Suggestions</p>
+          <div className="mb-[12px] flex items-center justify-between">
+            <p className="text-[15px] font-semibold text-foreground">Suggestions</p>
             <Link to="/creators" className="text-[12px] text-primary hover:underline">
               View All
             </Link>
           </div>
-          <div className="flex flex-col gap-[12px]">
+          <div className="flex flex-col gap-[10px]">
             {suggestions.map((creator) => (
               <Link
                 key={creator.id}
                 to={`/u/${creator.username}`}
-                className="group relative h-[80px] overflow-hidden rounded-[12px]"
+                className="group relative h-[76px] overflow-hidden rounded-[12px]"
               >
                 {creator.cover ? (
                   <img
@@ -85,34 +121,40 @@ export function SubscriptionSidebar({
                   <div className="absolute inset-0 bg-gradient-to-r from-[#01adf1]/30 to-[#a61651]/30" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-[8px] left-[8px] flex items-center gap-[8px]">
+                <div className="absolute bottom-[8px] left-[8px] flex items-center gap-[6px]">
                   {creator.avatar ? (
                     <img
                       src={creator.avatar}
                       alt=""
-                      className="size-[30px] rounded-full border border-border object-cover"
+                      className="size-[28px] rounded-full border border-border object-cover"
                     />
                   ) : (
-                    <div className="flex size-[30px] items-center justify-center rounded-full bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[12px] font-medium text-white">
+                    <div className="flex size-[28px] items-center justify-center rounded-full bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[11px] font-medium text-white">
                       {creator.displayName.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <div className="flex items-center gap-[4px]">
-                      <p className="text-[12px] font-medium text-foreground">
-                        {creator.displayName}
-                      </p>
+                    <div className="flex items-center gap-[3px]">
+                      <p className="text-[11px] font-medium text-white">{creator.displayName}</p>
                       {creator.isVerified && (
                         <img src="/icons/dashboard/verified.svg" alt="" className="size-[10px]" />
                       )}
                     </div>
-                    <p className="text-[10px] text-muted-foreground">@{creator.username}</p>
+                    <p className="text-[10px] text-white/70">@{creator.username}</p>
                   </div>
                 </div>
               </Link>
             ))}
           </div>
         </div>
+      )}
+
+      {showTip && (
+        <TipModal
+          receiverId={profileId}
+          receiverName={displayName}
+          onClose={() => setShowTip(false)}
+        />
       )}
     </div>
   );

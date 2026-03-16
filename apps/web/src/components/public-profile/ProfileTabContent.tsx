@@ -4,17 +4,13 @@ import { MediaGrid } from './MediaGrid';
 import type { ContentTab } from './ProfileTabBar';
 import type { PublicPost } from './PostCard';
 
-type ViewMode = 'list' | 'grid';
-
-function extractMedia(posts: PublicPost[], isSubscribed: boolean, type: 'IMAGE' | 'VIDEO') {
+function extractAllMedia(posts: PublicPost[], isSubscribed: boolean) {
   return posts.flatMap((p) =>
-    p.media
-      .filter((m) => m.type === type)
-      .map((m) => ({
-        ...m,
-        postId: p.id,
-        isLocked: !isSubscribed && p.visibility !== 'PUBLIC' && p.visibility !== 'FREE',
-      })),
+    p.media.map((m) => ({
+      ...m,
+      postId: p.id,
+      isLocked: !isSubscribed && p.visibility !== 'PUBLIC' && p.visibility !== 'FREE',
+    })),
   );
 }
 
@@ -24,33 +20,6 @@ function EmptyState({ label }: { label: string }) {
       <p className="text-[14px] text-muted-foreground">{label}</p>
     </div>
   );
-}
-
-interface Props {
-  activeTab: ContentTab;
-  posts: PublicPost[];
-  isSubscribed: boolean;
-  viewMode?: ViewMode;
-}
-
-export function ProfileTabContent({ activeTab, posts, isSubscribed, viewMode = 'list' }: Props) {
-  if (activeTab === 'feed') {
-    if (posts.length === 0) return <EmptyState label="No posts yet." />;
-    if (viewMode === 'grid') return <FeedGridView posts={posts} />;
-    return (
-      <div className="flex flex-col gap-[20px]">
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} isSubscribed={isSubscribed} />
-        ))}
-      </div>
-    );
-  }
-
-  const mediaType = activeTab === 'photos' ? ('IMAGE' as const) : ('VIDEO' as const);
-  const media = extractMedia(posts, isSubscribed, mediaType);
-  const emptyLabel = activeTab === 'photos' ? 'No photos yet.' : 'No videos yet.';
-  if (media.length === 0) return <EmptyState label={emptyLabel} />;
-  return <MediaGrid media={media} />;
 }
 
 function FeedGridView({ posts }: { posts: PublicPost[] }) {
@@ -88,4 +57,29 @@ function FeedGridView({ posts }: { posts: PublicPost[] }) {
       ))}
     </div>
   );
+}
+
+interface Props {
+  activeTab: ContentTab;
+  posts: PublicPost[];
+  isSubscribed: boolean;
+  viewMode?: 'list' | 'grid';
+}
+
+export function ProfileTabContent({ activeTab, posts, isSubscribed, viewMode = 'list' }: Props) {
+  if (activeTab === 'feed') {
+    if (posts.length === 0) return <EmptyState label="No posts yet." />;
+    if (viewMode === 'grid') return <FeedGridView posts={posts} />;
+    return (
+      <div className="flex flex-col gap-[20px]">
+        {posts.map((post) => (
+          <PostCard key={post.id} post={post} isSubscribed={isSubscribed} />
+        ))}
+      </div>
+    );
+  }
+
+  const media = extractAllMedia(posts, isSubscribed);
+  if (media.length === 0) return <EmptyState label="No media yet." />;
+  return <MediaGrid media={media} />;
 }
