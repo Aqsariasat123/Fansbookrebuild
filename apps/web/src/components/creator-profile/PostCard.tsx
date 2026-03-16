@@ -4,6 +4,7 @@ import { MediaViewer } from '../feed/MediaViewer';
 import { VideoThumbnail } from '../feed/VideoThumbnail';
 import { ImageGrid } from './ImageGrid';
 import { PostMenu } from './PostMenu';
+import { ImageWatermark } from '../shared/ImageWatermark';
 
 const IMG = '/icons/dashboard';
 
@@ -69,7 +70,15 @@ function AuthorAvatar({ author }: { author: PostAuthor }) {
   );
 }
 
-function VideoCard({ media, onClick }: { media: PostMedia; onClick: () => void }) {
+function VideoCard({
+  media,
+  onClick,
+  username,
+}: {
+  media: PostMedia;
+  onClick: () => void;
+  username?: string;
+}) {
   return (
     <div
       className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[16px]"
@@ -88,6 +97,7 @@ function VideoCard({ media, onClick }: { media: PostMedia; onClick: () => void }
           <span className="text-[14px] text-foreground md:text-[16px]">Play</span>
         </div>
       </div>
+      {username && <ImageWatermark username={username} />}
     </div>
   );
 }
@@ -175,7 +185,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
 
       {hasVideoOnly && (
         <div className="mb-[14px] md:mb-[18px]">
-          <VideoCard media={video} onClick={() => openViewer(0)} />
+          <VideoCard media={video} onClick={() => openViewer(0)} username={authorUsername} />
         </div>
       )}
 

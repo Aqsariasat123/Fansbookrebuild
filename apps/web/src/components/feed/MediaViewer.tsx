@@ -105,14 +105,28 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
         onClick={(e) => e.stopPropagation()}
       >
         {item.type === 'VIDEO' ? (
-          <video
-            key={item.id}
-            src={item.url}
-            controls
-            autoPlay
-            playsInline
-            className="h-full w-full rounded-none object-contain md:rounded-xl"
-          />
+          <div className="relative h-full w-full">
+            <video
+              key={item.id}
+              src={item.url}
+              controls
+              autoPlay
+              playsInline
+              className="h-full w-full rounded-none object-contain md:rounded-xl"
+            />
+            {username && (
+              <div className="pointer-events-none absolute bottom-[40px] right-[8px] flex select-none items-center gap-[6px] rounded-[4px] bg-black/50 px-[8px] py-[4px]">
+                <img
+                  src="/icons/dashboard/fansbook-logo.webp"
+                  alt=""
+                  className="h-[12px] w-auto opacity-90"
+                />
+                <span className="font-outfit text-[9px] text-white/80">
+                  fansbook.vip/u/{username}
+                </span>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="relative">
             <img

@@ -5,6 +5,7 @@ import { PPVOverlay } from './PPVOverlay';
 import { PostActions } from './PostActions';
 import { PostHeader } from './FeedPosts';
 import type { FeedPost } from './FeedPosts';
+import { ImageWatermark } from '../shared/ImageWatermark';
 
 interface Media {
   id: string;
@@ -14,7 +15,15 @@ interface Media {
   thumbnail?: string | null;
 }
 
-function VideoMediaPlayer({ video, onClick }: { video: Media; onClick: () => void }) {
+function VideoMediaPlayer({
+  video,
+  onClick,
+  username,
+}: {
+  video: Media;
+  onClick: () => void;
+  username?: string;
+}) {
   return (
     <div
       className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[10px] md:w-[45%] md:max-w-[380px] md:rounded-[22px]"
@@ -34,6 +43,7 @@ function VideoMediaPlayer({ video, onClick }: { video: Media; onClick: () => voi
           <span className="text-[9px] font-normal text-foreground md:text-[20px]">Play</span>
         </button>
       </div>
+      {username && <ImageWatermark username={username} />}
     </div>
   );
 }
@@ -60,7 +70,9 @@ function VideoContent({
       />
     );
   }
-  return video ? <VideoMediaPlayer video={video} onClick={onPlay} /> : null;
+  return video ? (
+    <VideoMediaPlayer video={video} onClick={onPlay} username={post.author.username} />
+  ) : null;
 }
 
 export function VideoPost({ post, onRefresh }: { post: FeedPost; onRefresh?: () => void }) {
@@ -91,7 +103,12 @@ export function VideoPost({ post, onRefresh }: { post: FeedPost; onRefresh?: () 
         />
       </div>
       {showViewer && video && (
-        <MediaViewer media={[video]} initialIndex={0} onClose={() => setShowViewer(false)} />
+        <MediaViewer
+          media={[video]}
+          initialIndex={0}
+          onClose={() => setShowViewer(false)}
+          username={post.author.username}
+        />
       )}
     </div>
   );
