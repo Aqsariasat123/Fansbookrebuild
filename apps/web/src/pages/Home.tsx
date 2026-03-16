@@ -189,7 +189,7 @@ function PopularModels({ models }: { models: Author[] }) {
           View all
         </Link>
       </div>
-      <div className="flex items-center gap-[21px] overflow-x-auto scrollbar-hide md:gap-[42px]">
+      <div className="flex items-start gap-[21px] overflow-x-auto scrollbar-hide md:gap-[42px]">
         {models.map((m) => (
           <Link
             key={m.id}
