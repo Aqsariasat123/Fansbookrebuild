@@ -142,17 +142,17 @@ export default function CreatorProfileOwner() {
           <div className="mt-[20px]">
             <div className="rounded-[22px] bg-card">
               <ContentTabs activeTab={activeTab} onTabChange={setActiveTab} />
-              <div className="flex flex-col gap-[12px] p-[12px] md:gap-[20px] md:p-[20px]">
-                {filtered.length === 0 ? (
-                  <p className="py-[40px] text-center text-[14px] text-muted-foreground">
-                    {emptyMsg}
-                  </p>
-                ) : (
-                  filtered.map((post) => (
-                    <PostCard key={post.id} post={post} onMenuAction={handleMenuAction} />
-                  ))
-                )}
-              </div>
+            </div>
+            <div className="mt-[12px] flex flex-col gap-[12px] md:mt-[16px] md:gap-[16px]">
+              {filtered.length === 0 ? (
+                <p className="py-[40px] text-center text-[14px] text-muted-foreground">
+                  {emptyMsg}
+                </p>
+              ) : (
+                filtered.map((post) => (
+                  <PostCard key={post.id} post={post} onMenuAction={handleMenuAction} />
+                ))
+              )}
             </div>
           </div>
         </div>

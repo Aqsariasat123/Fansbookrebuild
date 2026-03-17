@@ -26,29 +26,6 @@ export function CoverIcon({ d, onClick }: { d: string; onClick: () => void }) {
   );
 }
 
-/** Variant used by public profile */
-export function CoverIconAlt({ d, onClick }: { d: string; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex size-[38px] items-center justify-center rounded-full bg-muted/80 text-foreground hover:bg-muted transition-colors"
-    >
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d={d} />
-      </svg>
-    </button>
-  );
-}
-
 export function StatsRow({
   followingCount,
   followersCount,
@@ -76,46 +53,6 @@ export function StatsRow({
   );
 }
 
-export function AboutSection({ bio }: { bio: string }) {
-  if (!bio) return null;
-  return (
-    <div className="mt-[24px]">
-      <p className="text-[16px] font-medium text-foreground">About</p>
-      <p className="mt-[8px] text-[14px] leading-[1.6] text-muted-foreground">{bio}</p>
-    </div>
-  );
-}
-
-export function HashtagsSection({ hashtags }: { hashtags: string[] }) {
-  if (hashtags.length === 0) return null;
-  return (
-    <div className="mt-[24px]">
-      <p className="text-[16px] font-medium text-foreground">Hashtags</p>
-      <div className="mt-[10px] flex flex-wrap gap-[8px]">
-        {hashtags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded-[8px] border border-border px-[18px] py-[8px] text-[14px] text-muted-foreground"
-          >
-            #{tag}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export function Stat({ value, label }: { value: number; label: string }) {
-  return (
-    <div className="flex flex-col items-center">
-      <span className="text-[20px] font-bold text-foreground">
-        {value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value}
-      </span>
-      <span className="text-[13px] text-muted-foreground">{label}</span>
-    </div>
-  );
-}
-
 const SOCIAL_ICONS: Record<string, { color: string; path: string }> = {
   facebook: {
     color: '#1877f2',
@@ -131,25 +68,33 @@ const SOCIAL_ICONS: Record<string, { color: string; path: string }> = {
   },
 };
 
-export function BioSocialSection({
+export function ProfileAboutColumn({
   bio,
+  hashtags,
   socialLinks,
 }: {
   bio: string;
+  hashtags: string[];
   socialLinks?: { facebook?: string; instagram?: string; twitter?: string };
 }) {
-  const truncated = bio.length > 180;
-  const displayBio = truncated ? `${bio.slice(0, 180)}... ` : bio;
   return (
-    <div className="mt-[12px] max-w-[380px] md:mt-0 md:text-right">
-      {bio && (
-        <p className="text-[13px] leading-[1.6] text-muted-foreground md:text-[14px]">
-          {displayBio}
-          {truncated && <span className="cursor-pointer font-medium text-primary">More</span>}
-        </p>
+    <div className="flex flex-1 flex-col gap-[10px]">
+      <p className="text-[15px] font-semibold text-foreground">About</p>
+      {bio && <p className="text-[14px] leading-[1.7] text-muted-foreground">{bio}</p>}
+      {hashtags.length > 0 && (
+        <div className="flex flex-wrap gap-[8px]">
+          {hashtags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-[8px] border border-border px-[12px] py-[6px] text-[13px] text-muted-foreground"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
       )}
       {socialLinks && (
-        <div className="mt-[12px] flex gap-[10px] md:justify-end">
+        <div className="mt-auto flex items-center justify-end gap-[10px] pt-[8px]">
           {Object.entries(socialLinks)
             .filter(([, v]) => v)
             .map(([key]) => {
