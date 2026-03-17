@@ -59,7 +59,7 @@ export function StatsRow({
   likesCount: number;
 }) {
   return (
-    <div className="mt-[24px] flex items-center justify-center gap-[40px] md:justify-start">
+    <div className="mt-[24px] flex select-none items-center justify-center gap-[40px] md:justify-start">
       <div className="text-center md:text-left">
         <p className="text-[16px] font-medium text-foreground">{formatCount(followingCount)}</p>
         <p className="text-[12px] text-muted-foreground">Following</p>
