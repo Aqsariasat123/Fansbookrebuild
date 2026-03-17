@@ -8,7 +8,6 @@ import type { ContentTab } from '../components/creator-profile/ContentTabs';
 import { PostCard } from '../components/creator-profile/PostCard';
 import type { CreatorPost } from '../components/creator-profile/PostCard';
 import { ScheduleLiveModal } from '../components/creator-profile/ScheduleLiveModal';
-import { MediaGrid } from '../components/public-profile/MediaGrid';
 import { filterPosts, resolveBasic, resolveStats, ComposeBar } from './CreatorProfileOwnerParts';
 import type { CreatorProfile } from './CreatorProfileOwnerParts';
 
@@ -100,11 +99,6 @@ export default function CreatorProfileOwner() {
 
   const basic = resolveBasic(profile, user as unknown as Record<string, unknown>);
   const stats = resolveStats(profile);
-  const allMedia = posts.flatMap((p) =>
-    p.media.map((m) => ({ ...m, type: m.type as string, postId: p.id, isLocked: false })),
-  );
-  const mediaCount = allMedia.length;
-  const isMediaTab = activeTab === 'photos' || activeTab === 'videos';
   const filtered = filterPosts(posts, activeTab);
   const emptyMsg =
     activeTab === 'feed' ? 'No posts yet. Create your first post!' : `No ${activeTab} yet.`;
@@ -147,35 +141,18 @@ export default function CreatorProfileOwner() {
 
           <div className="mt-[20px]">
             <div className="rounded-[22px] bg-card">
-              <ContentTabs
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                postCount={posts.length}
-                mediaCount={mediaCount}
-              />
-              {isMediaTab ? (
-                <div className="p-[12px] md:p-[20px]">
-                  {allMedia.length === 0 ? (
-                    <p className="py-[40px] text-center text-[14px] text-muted-foreground">
-                      No media yet.
-                    </p>
-                  ) : (
-                    <MediaGrid media={allMedia} />
-                  )}
-                </div>
-              ) : (
-                <div className="flex flex-col gap-[12px] p-[12px] md:gap-[20px] md:p-[20px]">
-                  {filtered.length === 0 ? (
-                    <p className="py-[40px] text-center text-[14px] text-muted-foreground">
-                      {emptyMsg}
-                    </p>
-                  ) : (
-                    filtered.map((post) => (
-                      <PostCard key={post.id} post={post} onMenuAction={handleMenuAction} />
-                    ))
-                  )}
-                </div>
-              )}
+              <ContentTabs activeTab={activeTab} onTabChange={setActiveTab} />
+              <div className="flex flex-col gap-[12px] p-[12px] md:gap-[20px] md:p-[20px]">
+                {filtered.length === 0 ? (
+                  <p className="py-[40px] text-center text-[14px] text-muted-foreground">
+                    {emptyMsg}
+                  </p>
+                ) : (
+                  filtered.map((post) => (
+                    <PostCard key={post.id} post={post} onMenuAction={handleMenuAction} />
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </div>
