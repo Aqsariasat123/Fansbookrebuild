@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { SubscriptionModal } from '../components/public-profile/SubscriptionModal';
@@ -14,6 +14,7 @@ import type { ProfileData } from '../components/public-profile/types';
 
 export default function CreatorPublicProfile() {
   const { username } = useParams<{ username: string }>();
+  const navigate = useNavigate();
   const currentUser = useAuthStore((s) => s.user);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [posts, setPosts] = useState<PublicPost[]>([]);
@@ -24,6 +25,7 @@ export default function CreatorPublicProfile() {
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const [subscribeLoading, setSubscribeLoading] = useState(false);
   const [amazonLink, setAmazonLink] = useState<string | null>(null);
+  const [liveSessionId, setLiveSessionId] = useState<string | null>(null);
 
   const checkSubscription = useCallback(async (creatorId: string) => {
     try {
@@ -40,12 +42,18 @@ export default function CreatorPublicProfile() {
     Promise.all([
       api.get(`/creator-profile/${username}`),
       api.get(`/creator-profile/${username}/posts?tab=feed`),
+      api.get('/live').catch(() => ({ data: { success: false, data: [] } })),
     ])
-      .then(([pRes, postsRes]) => {
+      .then(([pRes, postsRes, liveRes]) => {
         if (pRes.data.success) {
-          setProfile(pRes.data.data);
-          checkSubscription(pRes.data.data.id);
-          const links = pRes.data.data.socialLinks;
+          const pd = pRes.data.data;
+          setProfile(pd);
+          checkSubscription(pd.id);
+          const liveSess = (liveRes.data.data ?? []).find(
+            (s: { creatorId: string }) => s.creatorId === pd.id,
+          );
+          if (liveSess) setLiveSessionId((liveSess as { id: string }).id);
+          const links = pd.socialLinks;
           if (Array.isArray(links)) {
             const amz = (links as { platform: string; url: string }[]).find(
               (l) => l.platform === 'Amazon',
@@ -128,6 +136,21 @@ export default function CreatorPublicProfile() {
           <img src={profile.cover} alt="" className="absolute inset-0 size-full object-cover" />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-r from-[#01adf1]/40 to-[#a61651]/40" />
+        )}
+        {liveSessionId && (
+          <div className="absolute left-[12px] top-[12px]">
+            <button
+              onClick={() =>
+                navigate(`/live/${liveSessionId}`, {
+                  state: { creatorName: profile.displayName, creatorAvatar: profile.avatar },
+                })
+              }
+              className="flex items-center gap-[8px] rounded-[8px] bg-red-600 px-[14px] py-[8px] text-[13px] font-semibold text-white shadow-lg"
+            >
+              <span className="size-[8px] animate-pulse rounded-full bg-white" />
+              LIVE · Join Now
+            </button>
+          </div>
         )}
         {!isOwnProfile && (
           <div className="absolute right-[12px] top-[12px]">
