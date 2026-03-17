@@ -62,11 +62,14 @@ export default function LiveWatch() {
     if (!socket) return;
     const onAccepted = () => setPrivateStatus('accepted');
     const onDeclined = () => setPrivateStatus('declined');
+    const onCallEnded = () => setPrivateStatus('idle');
     socket.on('live:private-accepted', onAccepted);
     socket.on('live:private-declined', onDeclined);
+    socket.on('live:private-call-ended', onCallEnded);
     return () => {
       socket.off('live:private-accepted', onAccepted);
       socket.off('live:private-declined', onDeclined);
+      socket.off('live:private-call-ended', onCallEnded);
     };
   }, []);
 

@@ -5,6 +5,7 @@ import { useLiveStream } from '../hooks/useLiveStream';
 import { useLivePrivate } from '../hooks/useLivePrivate';
 import { LiveChatPanel } from '../components/live/LiveChatPanel';
 import { useCall } from '../hooks/useCall';
+import { useCallStore } from '../stores/callStore';
 
 export default function LiveBroadcasting() {
   const navigate = useNavigate();
@@ -21,7 +22,16 @@ export default function LiveBroadcasting() {
   const { stopBroadcast, sendChat, getLocalStream } = useLiveStream();
   const { acceptPrivate, declinePrivate, endPrivateCall } = useLivePrivate();
   const { startCall } = useCall();
+  const callStatus = useCallStore((s) => s.status);
   const [elapsed, setElapsed] = useState(0);
+
+  // When the private WebRTC call ends for any reason (fan declines, fan hangs up,
+  // connection drops), automatically clear the "on private call" overlay for all viewers
+  useEffect(() => {
+    if (callStatus === 'ended' && creatorOnPrivateCall && sessionId) {
+      endPrivateCall(sessionId);
+    }
+  }, [callStatus, creatorOnPrivateCall, sessionId, endPrivateCall]);
 
   // Attach local stream to video element
   useEffect(() => {
