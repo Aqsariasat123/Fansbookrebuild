@@ -118,13 +118,16 @@ export default function GoLive() {
         )}
 
         {/* Policy checkbox */}
-        <label className="flex cursor-pointer items-center gap-[10px]">
+        <div
+          className="flex cursor-pointer items-center gap-[10px]"
+          onClick={() => setPolicyAgreed(!policyAgreed)}
+        >
           <Checkbox checked={policyAgreed} onClick={() => setPolicyAgreed(!policyAgreed)} />
           <span className="text-[14px] text-foreground">
             I have accepted the &quot;
             <span className="font-bold underline">Live Broadcast Policy</span>&quot;.
           </span>
-        </label>
+        </div>
       </div>
 
       {/* Title */}
@@ -140,10 +143,13 @@ export default function GoLive() {
 
       {/* Checkboxes */}
       <div className="flex flex-wrap items-center gap-[16px] md:gap-[32px]">
-        <label className="flex cursor-pointer items-center gap-[10px]">
+        <div
+          className="flex cursor-pointer items-center gap-[10px]"
+          onClick={() => setPrivateShow(!privateShow)}
+        >
           <Checkbox checked={privateShow} onClick={() => setPrivateShow(!privateShow)} />
           <span className="text-[14px] text-foreground">Available for the private show</span>
-        </label>
+        </div>
         {privateShow && (
           <input
             type="number"
@@ -154,10 +160,13 @@ export default function GoLive() {
             className="w-[160px] rounded-[8px] border border-foreground bg-transparent px-[12px] py-[8px] text-[14px] text-foreground placeholder-muted-foreground outline-none"
           />
         )}
-        <label className="flex cursor-pointer items-center gap-[10px]">
+        <div
+          className="flex cursor-pointer items-center gap-[10px]"
+          onClick={() => setStreamExt(!streamExt)}
+        >
           <Checkbox checked={streamExt} onClick={() => setStreamExt(!streamExt)} />
           <span className="text-[14px] text-foreground">Stream Extension</span>
-        </label>
+        </div>
       </div>
 
       {/* Action Buttons */}
