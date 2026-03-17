@@ -8,7 +8,7 @@ import type { DtlsParameters, MediaKind, RtpParameters } from 'mediasoup/types';
 const sessionViewers = new Map<string, Set<string>>();
 
 // sessionId -> boolean — tracks whether creator is currently on a private call
-const sessionOnPrivateCall = new Map<string, boolean>();
+export const sessionOnPrivateCall = new Map<string, boolean>();
 
 async function broadcastViewerCount(io: Server, sessionId: string) {
   const count = sessionViewers.get(sessionId)?.size ?? 0;

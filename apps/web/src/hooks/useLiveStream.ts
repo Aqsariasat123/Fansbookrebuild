@@ -28,6 +28,7 @@ export function useLiveStream() {
     };
     const handleEnded = () => {
       gs().setIsLive(false);
+      gs().setCreatorOnPrivateCall(false);
     };
     const handlePrivateIncoming = (data: PrivateIncoming) => {
       gs().setPrivateIncoming(data);

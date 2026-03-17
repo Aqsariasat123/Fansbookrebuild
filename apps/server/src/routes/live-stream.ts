@@ -6,6 +6,7 @@ import { createWebRtcTransport, getTransportOptions, getRouter } from '../config
 import type { MediaKind, RtpParameters, RtpCapabilities } from 'mediasoup/types';
 import { sessionTransports, sessionProducers, sessionConsumers, cleanupSession } from './live.js';
 import { getIO } from '../config/socket.js';
+import { sessionOnPrivateCall } from '../config/live-handlers.js';
 
 const router = Router();
 
@@ -100,6 +101,8 @@ router.post('/:id/end', authenticate, requireRole('CREATOR'), async (req, res, n
       where: { id },
       data: { status: 'ENDED', endedAt: new Date() },
     });
+    sessionOnPrivateCall.delete(id);
+    getIO().to(`live:${id}`).emit('live:private-call-ended', {});
     getIO().to(`live:${id}`).emit('live:ended', { sessionId: id });
     getIO().emit('live:session-ended', { sessionId: id });
     cleanupSession(id);
