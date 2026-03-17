@@ -66,6 +66,10 @@ export default function LiveBroadcasting() {
 
   const handleEnd = async () => {
     await stopBroadcast();
+    // Release camera/mic from browser — stopping tracks alone isn't enough
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
     navigate('/creator/go-live');
   };
 

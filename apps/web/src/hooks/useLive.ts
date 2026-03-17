@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { LiveFilterParams } from '@fansbook/shared';
 import { getLiveSessionsApi, getFollowingLiveApi, getUpcomingLivesApi } from '../lib/live';
 import { getSocket } from '../lib/socket';
+import { useSocketStore } from '../stores/socketStore';
 import { api } from '../lib/api';
 
 export function useLiveSessions(filters?: LiveFilterParams) {
@@ -27,10 +28,13 @@ export function useUpcomingLives() {
   });
 }
 
-// Call this once in LiveBrowse to auto-refresh when sessions start/end
+// Auto-refresh live sessions list when a stream starts or ends.
+// Re-runs when socket connects/reconnects so listeners are never missed.
 export function useLiveSessionsSync() {
   const qc = useQueryClient();
+  const isConnected = useSocketStore((s) => s.isConnected);
   useEffect(() => {
+    if (!isConnected) return;
     const socket = getSocket();
     if (!socket) return;
     const invalidate = () => {
@@ -43,7 +47,7 @@ export function useLiveSessionsSync() {
       socket.off('live:new-session', invalidate);
       socket.off('live:session-ended', invalidate);
     };
-  }, [qc]);
+  }, [qc, isConnected]);
 }
 
 // Watches for live events and calls setSessionId with updated value
@@ -52,8 +56,9 @@ export function useCreatorLiveSync(
   setSessionId: (id: string | null) => void,
 ) {
   const creatorId = profile?.id;
+  const isConnected = useSocketStore((s) => s.isConnected);
   useEffect(() => {
-    if (!creatorId) return;
+    if (!creatorId || !isConnected) return;
     const socket = getSocket();
     if (!socket) return;
     const refresh = () => {
@@ -71,5 +76,5 @@ export function useCreatorLiveSync(
       socket.off('live:new-session', refresh);
       socket.off('live:session-ended', refresh);
     };
-  }, [creatorId, setSessionId]);
+  }, [creatorId, setSessionId, isConnected]);
 }
