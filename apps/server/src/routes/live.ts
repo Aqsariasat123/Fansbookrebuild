@@ -166,6 +166,18 @@ router.post('/start', authenticate, requireRole('CREATOR'), async (req, res, nex
       privateShow?: boolean;
       privateShowTokens?: number;
     };
+    // End any existing LIVE sessions for this creator before starting a new one
+    const existing = await prisma.liveSession.findMany({
+      where: { creatorId: userId, status: 'LIVE' },
+      select: { id: true },
+    });
+    if (existing.length > 0) {
+      await prisma.liveSession.updateMany({
+        where: { creatorId: userId, status: 'LIVE' },
+        data: { status: 'ENDED', endedAt: new Date() },
+      });
+      for (const s of existing) cleanupSession(s.id);
+    }
     const session = await prisma.liveSession.create({
       data: {
         creatorId: userId,

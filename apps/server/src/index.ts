@@ -35,6 +35,15 @@ async function main() {
       logger.warn({ err }, 'mediasoup unavailable — live streaming disabled');
     }
 
+    // On startup, mark any stale LIVE sessions as ENDED (mediasoup state is lost on restart)
+    const stale = await prisma.liveSession.updateMany({
+      where: { status: 'LIVE' },
+      data: { status: 'ENDED', endedAt: new Date() },
+    });
+    if (stale.count > 0) {
+      logger.info({ count: stale.count }, 'Cleaned up stale LIVE sessions on startup');
+    }
+
     // Story cleanup cron — every hour, delete expired stories + views
     setInterval(
       async () => {
