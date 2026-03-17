@@ -7,6 +7,9 @@ import type { DtlsParameters, MediaKind, RtpParameters } from 'mediasoup/types';
 // sessionId -> Set<userId> — tracks unique viewers to prevent refresh inflation
 const sessionViewers = new Map<string, Set<string>>();
 
+// sessionId -> boolean — tracks whether creator is currently on a private call
+const sessionOnPrivateCall = new Map<string, boolean>();
+
 async function broadcastViewerCount(io: Server, sessionId: string) {
   const count = sessionViewers.get(sessionId)?.size ?? 0;
   await prisma.liveSession.update({ where: { id: sessionId }, data: { viewerCount: count } });
@@ -23,6 +26,10 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
       if (!sessionViewers.has(sessionId)) sessionViewers.set(sessionId, new Set());
       sessionViewers.get(sessionId)!.add(userId);
       await broadcastViewerCount(io, sessionId);
+      // Tell this new viewer if creator is already on a private call
+      if (sessionOnPrivateCall.get(sessionId)) {
+        socket.emit('live:on-private-call', {});
+      }
     } catch (err) {
       logger.error({ err }, 'Error in live:join');
     }
@@ -142,7 +149,8 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
       });
       // Tell fan: creator will call them now
       io.to(`user:${data.fanId}`).emit('live:private-accepted', { sessionId: data.sessionId });
-      // Notify all viewers "on private call"
+      // Track and notify all viewers "on private call"
+      sessionOnPrivateCall.set(data.sessionId, true);
       io.to(`live:${data.sessionId}`).emit('live:on-private-call', {
         creatorName: session?.creator.displayName ?? 'Creator',
       });
@@ -158,6 +166,7 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
 
   // Private call ended — notify viewers
   socket.on('live:private-ended', (data: { sessionId: string }) => {
+    sessionOnPrivateCall.delete(data.sessionId);
     io.to(`live:${data.sessionId}`).emit('live:private-call-ended', {});
   });
 

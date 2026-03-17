@@ -25,8 +25,16 @@ export default function LiveBroadcasting() {
   const callStatus = useCallStore((s) => s.status);
   const [elapsed, setElapsed] = useState(0);
 
-  // When the private WebRTC call ends for any reason (fan declines, fan hangs up,
-  // connection drops), automatically clear the "on private call" overlay for all viewers
+  // On mount: if we just returned from a call page and private overlay is still set, clear it
+  // (callStatus resets to 'idle' before LiveBroadcasting remounts, so we check idle here)
+  useEffect(() => {
+    if (creatorOnPrivateCall && callStatus === 'idle' && sessionId) {
+      endPrivateCall(sessionId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // While mounted: clear overlay the moment the call transitions to ended
   useEffect(() => {
     if (callStatus === 'ended' && creatorOnPrivateCall && sessionId) {
       endPrivateCall(sessionId);
