@@ -165,7 +165,7 @@ router.get('/:id', authenticate, async (req, res, next) => {
         creatorId: true,
         privateShow: true,
         privateShowTokens: true,
-        creator: { select: { displayName: true } },
+        creator: { select: { displayName: true, avatar: true } },
       },
     });
     if (!session) {

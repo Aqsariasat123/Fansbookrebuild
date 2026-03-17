@@ -31,6 +31,7 @@ export default function LiveWatch() {
   const [isHls, setIsHls] = useState(false);
   const hlsRef = useRef<{ destroy: () => void } | null>(null);
   const [session, setSession] = useState<SessionInfo | null>(null);
+  const [creatorAvatar, setCreatorAvatar] = useState<string | null>(null);
   const [privateStatus, setPrivateStatus] = useState<PrivateStatus>('idle');
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function LiveWatch() {
             creatorId: data.data.creatorId,
             creatorName: data.data.creator?.displayName ?? 'Creator',
           });
+          setCreatorAvatar(data.data.creator?.avatar ?? null);
         }
       })
       .catch(() => {});
@@ -124,29 +126,15 @@ export default function LiveWatch() {
           </span>
           <p className="text-[18px] font-semibold text-foreground">Watching Live</p>
         </div>
-        <div className="flex items-center gap-[12px]">
-          {showGoPrivate && (
-            <GoPrivateControls
-              status={privateStatus}
-              tokens={session?.privateShowTokens ?? 0}
-              onRequest={() => {
-                if (sessionId) {
-                  requestPrivate(sessionId);
-                  setPrivateStatus('pending');
-                }
-              }}
-            />
-          )}
-          <button
-            onClick={() => {
-              leaveLive();
-              navigate(-1);
-            }}
-            className="rounded-[8px] border border-border px-[20px] py-[8px] text-[14px] text-foreground hover:border-foreground"
-          >
-            Leave
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            leaveLive();
+            navigate(-1);
+          }}
+          className="rounded-[8px] border border-border px-[20px] py-[8px] text-[14px] text-foreground hover:border-foreground"
+        >
+          Leave
+        </button>
       </div>
       <div className="grid grid-cols-1 gap-[20px] lg:grid-cols-2">
         <VideoPanel
@@ -158,7 +146,23 @@ export default function LiveWatch() {
           creatorName={session?.creatorName ?? ''}
           viewerCount={viewerCount}
         />
-        <LiveChatPanel onSend={sendChat} />
+        <LiveChatPanel
+          onSend={sendChat}
+          creatorName={session?.creatorName}
+          creatorAvatar={creatorAvatar}
+          goPrivate={
+            showGoPrivate ? (
+              <GoPrivateControls
+                status={privateStatus}
+                tokens={session?.privateShowTokens ?? 0}
+                onRequest={() => {
+                  requestPrivate(sessionId!);
+                  setPrivateStatus('pending');
+                }}
+              />
+            ) : undefined
+          }
+        />
       </div>
     </div>
   );

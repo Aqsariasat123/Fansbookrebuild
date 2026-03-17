@@ -96,13 +96,13 @@ export function GoPrivateControls({
   onRequest: () => void;
 }) {
   if (status === 'pending')
-    return <span className="text-[13px] text-muted-foreground">Request sent...</span>;
+    return <span className="text-[13px] text-white/80">Request sent...</span>;
   if (status === 'accepted')
     return (
-      <span className="text-[13px] text-green-500 font-medium">Creator will call you shortly!</span>
+      <span className="text-[13px] text-green-300 font-medium">Creator will call you shortly!</span>
     );
   if (status === 'declined')
-    return <span className="text-[13px] text-red-400">Request declined</span>;
+    return <span className="text-[13px] text-red-200">Request declined</span>;
   return (
     <button
       onClick={onRequest}

@@ -1,11 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
+import type React from 'react';
 import { useLiveStore } from '../../stores/liveStore';
 
 interface LiveChatPanelProps {
   onSend: (text: string) => void;
+  creatorName?: string;
+  creatorAvatar?: string | null;
+  goPrivate?: React.ReactNode;
 }
 
-export function LiveChatPanel({ onSend }: LiveChatPanelProps) {
+export function LiveChatPanel({
+  onSend,
+  creatorName,
+  creatorAvatar,
+  goPrivate,
+}: LiveChatPanelProps) {
   const chatMessages = useLiveStore((s) => s.chatMessages);
   const [input, setInput] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -25,9 +34,25 @@ export function LiveChatPanel({ onSend }: LiveChatPanelProps) {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-[16px] border border-[#e91e8c]">
       {/* Header */}
-      <div className="flex items-center justify-between bg-[#e91e8c] px-[20px] py-[10px]">
-        <p className="text-[16px] font-semibold text-white">Live Chat</p>
-        <span className="text-[12px] text-white/80">{chatMessages.length} messages</span>
+      <div className="flex items-center justify-between bg-[#e91e8c] px-[16px] py-[10px]">
+        <div className="flex items-center gap-[10px]">
+          {creatorAvatar ? (
+            <img
+              src={creatorAvatar}
+              alt=""
+              className="size-[32px] shrink-0 rounded-full object-cover"
+            />
+          ) : creatorName ? (
+            <div className="flex size-[32px] shrink-0 items-center justify-center rounded-full bg-white/20 text-[13px] font-bold text-white">
+              {creatorName.charAt(0)}
+            </div>
+          ) : null}
+          <p className="text-[15px] font-semibold text-white">{creatorName || 'Live Chat'}</p>
+        </div>
+        <div className="flex items-center gap-[10px]">
+          {goPrivate}
+          <span className="text-[12px] text-white/80">{chatMessages.length} messages</span>
+        </div>
       </div>
 
       {/* Messages */}
