@@ -15,6 +15,12 @@ export default function GoLive() {
   const [previewing, setPreviewing] = useState(false);
   const [starting, setStarting] = useState(false);
 
+  const stopPreview = () => {
+    const s = videoRef.current?.srcObject as MediaStream | null;
+    s?.getTracks().forEach((t) => t.stop());
+    if (videoRef.current) videoRef.current.srcObject = null;
+  };
+
   const startPreview = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     if (videoRef.current) {
@@ -152,7 +158,10 @@ export default function GoLive() {
           {starting ? 'Starting...' : 'Go Live'}
         </button>
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            stopPreview();
+            navigate(-1);
+          }}
           className="w-full rounded-[8px] border border-border py-[14px] text-[16px] text-foreground transition-colors hover:border-foreground md:w-[240px]"
         >
           Cancel
