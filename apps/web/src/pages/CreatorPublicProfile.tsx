@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
+import { useCreatorLiveSync } from '../hooks/useLive';
 import { useAuthStore } from '../stores/authStore';
 import { SubscriptionModal } from '../components/public-profile/SubscriptionModal';
 import { ProfileTabBar } from '../components/public-profile/ProfileTabBar';
@@ -26,6 +27,8 @@ export default function CreatorPublicProfile() {
   const [subscribeLoading, setSubscribeLoading] = useState(false);
   const [amazonLink, setAmazonLink] = useState<string | null>(null);
   const [liveSessionId, setLiveSessionId] = useState<string | null>(null);
+
+  useCreatorLiveSync(profile, setLiveSessionId);
 
   const checkSubscription = useCallback(async (creatorId: string) => {
     try {
@@ -99,10 +102,10 @@ export default function CreatorPublicProfile() {
       setProfile((p) => (p ? { ...p, isSubscribed: true } : p));
       setShowSubscribeModal(false);
     } catch (err) {
-      const msg =
+      alert(
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        'Failed to subscribe';
-      alert(msg);
+          'Failed to subscribe',
+      );
     } finally {
       setSubscribeLoading(false);
     }

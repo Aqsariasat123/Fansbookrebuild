@@ -101,6 +101,7 @@ router.post('/:id/end', authenticate, requireRole('CREATOR'), async (req, res, n
       data: { status: 'ENDED', endedAt: new Date() },
     });
     getIO().to(`live:${id}`).emit('live:ended', { sessionId: id });
+    getIO().emit('live:session-ended', { sessionId: id });
     cleanupSession(id);
     res.json({ success: true });
   } catch (err) {

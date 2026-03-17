@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { LiveCreatorCard, UpcomingLive } from '@fansbook/shared';
-import { useLiveSessions, useFollowingLive, useUpcomingLives } from '../hooks/useLive';
+import {
+  useLiveSessions,
+  useFollowingLive,
+  useUpcomingLives,
+  useLiveSessionsSync,
+} from '../hooks/useLive';
 import { LiveCard, LiveCardSkeleton } from '../components/creators-live/LiveCard';
 
 type Tab = 'for-you' | 'following' | 'upcoming';
@@ -16,6 +21,7 @@ export default function LiveBrowse() {
     return () => clearTimeout(t);
   }, [search]);
 
+  useLiveSessionsSync();
   const filters = debouncedSearch ? { q: debouncedSearch } : undefined;
   const { data: forYou, isLoading: loadingForYou } = useLiveSessions(filters);
   const { data: following, isLoading: loadingFollowing } = useFollowingLive();

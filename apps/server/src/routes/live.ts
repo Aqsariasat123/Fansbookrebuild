@@ -8,6 +8,7 @@ import { requireRole } from '../middleware/requireRole.js';
 import { createWebRtcTransport, getTransportOptions } from '../config/mediasoup.js';
 import type { Producer, Consumer, WebRtcTransport } from 'mediasoup/types';
 import { logger } from '../utils/logger.js';
+import { getIO } from '../config/socket.js';
 import liveStreamRouter from './live-stream.js';
 import liveExtrasRouter from './live-extras.js';
 
@@ -192,6 +193,12 @@ router.post('/start', authenticate, requireRole('CREATOR'), async (req, res, nex
     const transport = await createWebRtcTransport();
     if (!sessionTransports.has(session.id)) sessionTransports.set(session.id, new Map());
     sessionTransports.get(session.id)!.set('producer', transport);
+    // Notify all connected users so their live browse updates without refresh
+    try {
+      getIO().emit('live:new-session', { sessionId: session.id });
+    } catch {
+      /* Socket.IO not available */
+    }
     res.json({
       success: true,
       data: { sessionId: session.id, transportOptions: getTransportOptions(transport) },
