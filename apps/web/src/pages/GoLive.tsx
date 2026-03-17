@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLiveStream } from '../hooks/useLiveStream';
 
@@ -6,6 +6,7 @@ export default function GoLive() {
   const navigate = useNavigate();
   const { startBroadcast } = useLiveStream();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [title, setTitle] = useState('');
@@ -15,29 +16,33 @@ export default function GoLive() {
   const [previewing, setPreviewing] = useState(false);
   const [starting, setStarting] = useState(false);
 
+  // Attach stream to video element once it renders
+  useEffect(() => {
+    if (!previewing || !streamRef.current) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.srcObject = streamRef.current;
+    video.muted = true;
+    video.play().catch(() => {});
+  }, [previewing]);
+
   const stopPreview = () => {
-    const s = videoRef.current?.srcObject as MediaStream | null;
-    s?.getTracks().forEach((t) => t.stop());
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
     if (videoRef.current) videoRef.current.srcObject = null;
   };
 
   const startPreview = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.muted = true;
-      await videoRef.current.play();
-    }
+    streamRef.current = stream;
     setPreviewing(true);
   };
 
   const handleGoLive = async () => {
     setStarting(true);
     try {
-      // Stop preview stream first
-      const previewStream = videoRef.current?.srcObject as MediaStream | null;
-      previewStream?.getTracks().forEach((t) => t.stop());
-
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
       const sessionId = await startBroadcast(title || 'Live Session', videoRef.current, {
         privateShow,
         privateShowTokens: privateShow ? parseInt(privateShowTokens || '0', 10) : 0,
