@@ -49,7 +49,14 @@ export default function GoLive() {
   };
 
   const Checkbox = ({ checked, onClick }: { checked: boolean; onClick: () => void }) => (
-    <button onClick={onClick} className="shrink-0">
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      className="shrink-0"
+    >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         {checked ? (
           <>
