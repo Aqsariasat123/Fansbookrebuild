@@ -121,12 +121,7 @@ export default function CreatorProfileOwner() {
         onCoverUpload={(f) => handleUpload('cover', f)}
       />
 
-      {/* 2-column layout: left sidebar (already rendered by ProfileHeader) + right content */}
-      <div className="mt-[20px] flex flex-col gap-[20px] md:flex-row md:gap-[30px]">
-        {/* LEFT spacer to align with sidebar width */}
-        <div className="hidden w-[300px] shrink-0 md:block lg:w-[380px]" />
-
-        {/* RIGHT - compose + tabs + posts */}
+      <div className="mt-[20px]">
         <div className="min-w-0 flex-1">
           {/* Go Live buttons */}
           <div className="mb-[16px] flex gap-[16px]">
