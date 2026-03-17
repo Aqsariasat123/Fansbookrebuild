@@ -53,15 +53,8 @@ export default function GoLive() {
     }
   };
 
-  const Checkbox = ({ checked, onClick }: { checked: boolean; onClick: () => void }) => (
-    <button
-      type="button"
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-      className="shrink-0"
-    >
+  const Checkbox = ({ checked }: { checked: boolean }) => (
+    <div className="pointer-events-none shrink-0">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         {checked ? (
           <>
@@ -78,7 +71,7 @@ export default function GoLive() {
           <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
         )}
       </svg>
-    </button>
+    </div>
   );
 
   return (
@@ -122,7 +115,7 @@ export default function GoLive() {
           className="flex cursor-pointer items-center gap-[10px]"
           onClick={() => setPolicyAgreed(!policyAgreed)}
         >
-          <Checkbox checked={policyAgreed} onClick={() => setPolicyAgreed(!policyAgreed)} />
+          <Checkbox checked={policyAgreed} />
           <span className="text-[14px] text-foreground">
             I have accepted the &quot;
             <span className="font-bold underline">Live Broadcast Policy</span>&quot;.
@@ -147,7 +140,7 @@ export default function GoLive() {
           className="flex cursor-pointer items-center gap-[10px]"
           onClick={() => setPrivateShow(!privateShow)}
         >
-          <Checkbox checked={privateShow} onClick={() => setPrivateShow(!privateShow)} />
+          <Checkbox checked={privateShow} />
           <span className="text-[14px] text-foreground">Available for the private show</span>
         </div>
         {privateShow && (
@@ -164,7 +157,7 @@ export default function GoLive() {
           className="flex cursor-pointer items-center gap-[10px]"
           onClick={() => setStreamExt(!streamExt)}
         >
-          <Checkbox checked={streamExt} onClick={() => setStreamExt(!streamExt)} />
+          <Checkbox checked={streamExt} />
           <span className="text-[14px] text-foreground">Stream Extension</span>
         </div>
       </div>
