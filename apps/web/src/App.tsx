@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MainLayout } from './components/layout/MainLayout';
 import { adminRoutes } from './pages/admin/AdminRoutes';
@@ -63,6 +63,7 @@ import {
   CreatorBookings,
   CreatorPublicProfile,
   CreatePost,
+  GoLive,
   LiveBroadcasting,
   CreatorDashboardHome,
   CreatorAnalytics,
@@ -178,10 +179,7 @@ export default function App() {
                       <Route path="/creator/subscriptions" element={<CreatorSubscriptionTiers />} />
                       <Route path="/creator/bookings" element={<CreatorBookings />} />
                       <Route path="/creator/post/new" element={<CreatePost />} />
-                      <Route
-                        path="/creator/go-live"
-                        element={<Navigate to="/creator/dashboard" replace />}
-                      />
+                      <Route path="/creator/go-live" element={<GoLive />} />
                       <Route path="/creator/live" element={<LiveBroadcasting />} />
                     </Route>
                   </Route>

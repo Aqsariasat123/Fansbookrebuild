@@ -45,6 +45,11 @@ export const creatorNavItems: NavItem[] = [
     labelKey: 'nav.createPost',
   },
   {
+    to: '/creator/go-live',
+    icon: '/icons/dashboard/video-progress.svg',
+    labelKey: 'nav.goLive',
+  },
+  {
     to: '/creator/analytics',
     icon: '/icons/dashboard/account-balance-wallet.svg',
     labelKey: 'nav.analytics',
