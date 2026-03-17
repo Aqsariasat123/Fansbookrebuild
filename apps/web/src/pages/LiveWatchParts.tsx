@@ -1,5 +1,11 @@
 import { api } from '../lib/api';
 
+type NavState = { creatorName?: string; creatorAvatar?: string } | null;
+export function initLiveState(s: unknown): { name: string; avatar: string | null } {
+  const loc = s as NavState;
+  return { name: loc?.creatorName ?? '', avatar: loc?.creatorAvatar ?? null };
+}
+
 export interface SessionInfo {
   privateShow: boolean;
   privateShowTokens: number;

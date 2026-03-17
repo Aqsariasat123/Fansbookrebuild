@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useLiveStore } from '../stores/liveStore';
 import { useLiveStream } from '../hooks/useLiveStream';
 import { useLivePrivate } from '../hooks/useLivePrivate';
@@ -11,6 +11,7 @@ import {
   VideoPanel,
   GoPrivateControls,
   attachHls,
+  initLiveState,
   type SessionInfo,
   type PrivateStatus,
 } from './LiveWatchParts';
@@ -18,6 +19,7 @@ import {
 export default function LiveWatch() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
+  const { state } = useLocation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const userId = useAuthStore((s) => s.user?.id);
   const isLive = useLiveStore((s) => s.isLive);
@@ -31,7 +33,8 @@ export default function LiveWatch() {
   const [isHls, setIsHls] = useState(false);
   const hlsRef = useRef<{ destroy: () => void } | null>(null);
   const [session, setSession] = useState<SessionInfo | null>(null);
-  const [creatorAvatar, setCreatorAvatar] = useState<string | null>(null);
+  const [creatorAvatar, setCreatorAvatar] = useState<string | null>(initLiveState(state).avatar);
+  const [creatorName, setCreatorName] = useState<string>(initLiveState(state).name);
   const [privateStatus, setPrivateStatus] = useState<PrivateStatus>('idle');
 
   useEffect(() => {
@@ -40,12 +43,14 @@ export default function LiveWatch() {
       .get(`/live/${sessionId}`)
       .then(({ data }) => {
         if (data.success && data.data) {
+          const name = data.data.creator?.displayName ?? 'Creator';
           setSession({
             privateShow: data.data.privateShow,
             privateShowTokens: data.data.privateShowTokens,
             creatorId: data.data.creatorId,
-            creatorName: data.data.creator?.displayName ?? 'Creator',
+            creatorName: name,
           });
+          setCreatorName(name);
           setCreatorAvatar(data.data.creator?.avatar ?? null);
         }
       })
@@ -143,12 +148,12 @@ export default function LiveWatch() {
           isHls={isHls}
           isLive={isLive}
           onPrivateCall={creatorOnPrivateCall}
-          creatorName={session?.creatorName ?? ''}
+          creatorName={creatorName}
           viewerCount={viewerCount}
         />
         <LiveChatPanel
           onSend={sendChat}
-          creatorName={session?.creatorName}
+          creatorName={creatorName}
           creatorAvatar={creatorAvatar}
           goPrivate={
             showGoPrivate ? (

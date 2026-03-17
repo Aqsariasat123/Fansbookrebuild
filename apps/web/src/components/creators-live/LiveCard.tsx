@@ -86,7 +86,14 @@ export function LiveCard({ session }: { session: LiveCreatorCard }) {
 
         {/* Join button */}
         <button
-          onClick={() => navigate(user ? `/live/${session.id}` : '/login')}
+          onClick={() =>
+            navigate(user ? `/live/${session.id}` : '/login', {
+              state: {
+                creatorName: session.displayName,
+                creatorAvatar: session.avatar,
+              },
+            })
+          }
           className="rounded-[6px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[16px] py-[10px] font-outfit text-[14px] font-medium text-foreground"
         >
           Join Live Session
