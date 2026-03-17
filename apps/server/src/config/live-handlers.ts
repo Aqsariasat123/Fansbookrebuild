@@ -4,6 +4,15 @@ import { logger } from '../utils/logger.js';
 import { sessionTransports, sessionProducers } from '../routes/live.js';
 import type { DtlsParameters, MediaKind, RtpParameters } from 'mediasoup/types';
 
+// sessionId -> Set<userId> — tracks unique viewers to prevent refresh inflation
+const sessionViewers = new Map<string, Set<string>>();
+
+async function broadcastViewerCount(io: Server, sessionId: string) {
+  const count = sessionViewers.get(sessionId)?.size ?? 0;
+  await prisma.liveSession.update({ where: { id: sessionId }, data: { viewerCount: count } });
+  io.to(`live:${sessionId}`).emit('live:viewer-count', { sessionId, count });
+}
+
 export function registerLiveHandlers(io: Server, socket: Socket) {
   const userId = socket.data.userId as string;
 
@@ -11,14 +20,9 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
     try {
       const { sessionId } = data;
       socket.join(`live:${sessionId}`);
-      const session = await prisma.liveSession.update({
-        where: { id: sessionId },
-        data: { viewerCount: { increment: 1 } },
-      });
-      io.to(`live:${sessionId}`).emit('live:viewer-count', {
-        sessionId,
-        count: session.viewerCount,
-      });
+      if (!sessionViewers.has(sessionId)) sessionViewers.set(sessionId, new Set());
+      sessionViewers.get(sessionId)!.add(userId);
+      await broadcastViewerCount(io, sessionId);
     } catch (err) {
       logger.error({ err }, 'Error in live:join');
     }
@@ -28,16 +32,20 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
     try {
       const { sessionId } = data;
       socket.leave(`live:${sessionId}`);
-      const session = await prisma.liveSession.update({
-        where: { id: sessionId },
-        data: { viewerCount: { decrement: 1 } },
-      });
-      io.to(`live:${sessionId}`).emit('live:viewer-count', {
-        sessionId,
-        count: Math.max(0, session.viewerCount),
-      });
+      sessionViewers.get(sessionId)?.delete(userId);
+      await broadcastViewerCount(io, sessionId);
     } catch (err) {
       logger.error({ err }, 'Error in live:leave');
+    }
+  });
+
+  socket.on('disconnect', () => {
+    // Remove user from all sessions they were watching
+    for (const [sessionId, viewers] of sessionViewers) {
+      if (viewers.has(userId)) {
+        viewers.delete(userId);
+        broadcastViewerCount(io, sessionId).catch(() => {});
+      }
     }
   });
 
