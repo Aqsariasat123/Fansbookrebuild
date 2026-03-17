@@ -32,7 +32,10 @@ export default function GoLive() {
       const previewStream = videoRef.current?.srcObject as MediaStream | null;
       previewStream?.getTracks().forEach((t) => t.stop());
 
-      const sessionId = await startBroadcast(title || 'Live Session', videoRef.current);
+      const sessionId = await startBroadcast(title || 'Live Session', videoRef.current, {
+        privateShow,
+        privateShowTokens: privateShow ? parseInt(privateShowTokens || '0', 10) : 0,
+      });
       navigate(`/creator/live?session=${sessionId}`);
     } catch {
       setStarting(false);

@@ -5,119 +5,25 @@ import { useAuthStore } from '../stores/authStore';
 import {
   OtherBubble,
   SelfBubble,
-  TypingDots,
   CallBubble,
   type ChatMessage,
 } from '../components/chat/ChatBubbles';
-import { MessagePageHeader, ChatUserHeader, buildCallProps } from '../components/chat/ChatHeader';
+import { MessagePageHeader, ChatUserHeader } from '../components/chat/ChatHeader';
 import { ChatOverlays } from '../components/chat/ImagePreview';
 import { ChatInputBar } from '../components/chat/ChatInputBar';
-import { TipModal } from '../components/shared/TipModal';
 import { MessageUnlockPrompt } from '../components/chat/MessageUnlockPrompt';
 import { useChat } from '../hooks/useChat';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useCall } from '../hooks/useCall';
-import type React from 'react';
-
-type OtherUser = { id: string; displayName: string; avatar: string | null };
-type SetMsgs = React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-
-function TipOverlay({
-  show,
-  other,
-  onClose,
-}: {
-  show: boolean;
-  other: OtherUser | null;
-  onClose: () => void;
-}) {
-  if (!show || !other) return null;
-  return <TipModal receiverId={other.id} receiverName={other.displayName} onClose={onClose} />;
-}
-function TypingIndicator({ count }: { count: number }) {
-  return count > 0 ? <TypingDots /> : null;
-}
-
-type UnlockResp = { success: boolean; data: { required: boolean; price: number } };
-function applyUnlock(r: UnlockResp, setReq: (v: boolean) => void, setPrice: (v: number) => void) {
-  if (!r.success) return;
-  setReq(r.data.required);
-  r.data.required && setPrice(r.data.price);
-}
-
-async function execSend(
-  cid: string,
-  text: string,
-  sending: boolean,
-  setSending: (v: boolean) => void,
-  setMsgs: SetMsgs,
-  setMsg: (v: string) => void,
-) {
-  if (!text || !cid || sending) return;
-  setSending(true);
-  try {
-    const { data: res } = await api.post(`/messages/${cid}`, { text });
-    if (res.success) {
-      setMsgs((p) => [...p, res.data]);
-      setMsg('');
-    }
-  } catch {
-    /* */
-  } finally {
-    setSending(false);
-  }
-}
-
-async function execImageSend(
-  cid: string,
-  file: File,
-  caption: string,
-  setSending: (v: boolean) => void,
-  setMsgs: SetMsgs,
-  setPreview: (v: File | null) => void,
-) {
-  if (!cid) return;
-  setSending(true);
-  try {
-    const fd = new FormData();
-    fd.append('image', file);
-    if (caption.trim()) fd.append('caption', caption.trim());
-    const { data: res } = await api.post(`/messages/${cid}/image`, fd);
-    if (res.success) {
-      setMsgs((p) => [...p, res.data]);
-      setPreview(null);
-    }
-  } catch {
-    /* */
-  } finally {
-    setSending(false);
-  }
-}
-
-async function execLoadOlder(
-  cid: string,
-  cursor: string | null,
-  loading: boolean,
-  setLoading: (v: boolean) => void,
-  setMsgs: SetMsgs,
-  setHasMore: (v: boolean) => void,
-  setCursor: (v: string | null) => void,
-) {
-  if (!cid || !cursor || loading) return;
-  setLoading(true);
-  try {
-    const { data: res } = await api.get(`/messages/${cid}?cursor=${cursor}`);
-    if (res.success) {
-      setMsgs((p) => [...res.data.messages, ...p]);
-      setHasMore(res.data.hasMore ?? false);
-      setCursor(res.data.nextCursor ?? null);
-    }
-  } catch {
-    /* */
-  } finally {
-    setLoading(false);
-  }
-}
+import {
+  TipOverlay,
+  TypingIndicator,
+  applyUnlock,
+  execSend,
+  execImageSend,
+  execLoadOlder,
+  type OtherUser,
+} from './MessageChatParts';
 
 export default function MessageChat() {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -140,8 +46,7 @@ export default function MessageChat() {
   const { incomingMessages, typingUsers, emitTyping, markRead, clearIncoming } =
     useChat(conversationId);
   const otherOnline = useOnlineStatus(other?.id);
-  const { startCall } = useCall();
-  const callProps = buildCallProps(other, startCall);
+  useCall(); // keep hook alive for incoming call handling
 
   useEffect(() => {
     if (!conversationId) return;
@@ -197,7 +102,6 @@ export default function MessageChat() {
           conversationId={conversationId}
           onBack={() => navigate('/messages')}
           isOnline={otherOnline}
-          {...callProps}
         />
         <div
           ref={scrollRef}

@@ -156,7 +156,17 @@ router.get('/:id', authenticate, async (req, res, next) => {
     const id = req.params.id as string;
     const session = await prisma.liveSession.findUnique({
       where: { id },
-      select: { id: true, title: true, status: true, hlsUrl: true, viewerCount: true },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        hlsUrl: true,
+        viewerCount: true,
+        creatorId: true,
+        privateShow: true,
+        privateShowTokens: true,
+        creator: { select: { displayName: true } },
+      },
     });
     if (!session) {
       return res.status(404).json({ success: false, error: 'Session not found' });

@@ -3,6 +3,7 @@ import { Device, types as mediasoupTypes } from 'mediasoup-client';
 import { api } from '../lib/api';
 import { getSocket } from '../lib/socket';
 import { useLiveStore } from '../stores/liveStore';
+import type { PrivateIncoming } from '../stores/liveStore';
 import type { LiveChatMessage } from '@fansbook/shared';
 
 // Module-level state — persists across component navigations
@@ -28,78 +29,104 @@ export function useLiveStream() {
     const handleEnded = () => {
       gs().setIsLive(false);
     };
+    const handlePrivateIncoming = (data: PrivateIncoming) => {
+      gs().setPrivateIncoming(data);
+    };
+    const handleOnPrivateCall = () => {
+      gs().setCreatorOnPrivateCall(true);
+    };
+    const handlePrivateCallEnded = () => {
+      gs().setCreatorOnPrivateCall(false);
+    };
 
     socket.on('live:viewer-count', handleViewerCount);
     socket.on('live:chat', handleChat);
     socket.on('live:ended', handleEnded);
+    socket.on('live:private-incoming', handlePrivateIncoming);
+    socket.on('live:on-private-call', handleOnPrivateCall);
+    socket.on('live:private-call-ended', handlePrivateCallEnded);
 
     return () => {
       socket.off('live:viewer-count', handleViewerCount);
       socket.off('live:chat', handleChat);
       socket.off('live:ended', handleEnded);
+      socket.off('live:private-incoming', handlePrivateIncoming);
+      socket.off('live:on-private-call', handleOnPrivateCall);
+      socket.off('live:private-call-ended', handlePrivateCallEnded);
     };
   }, []);
 
   // ─── Creator: start broadcasting ──────────────────────
 
-  const startBroadcast = useCallback(async (title: string, videoEl: HTMLVideoElement | null) => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
-      audio: true,
-    });
-    localStream = stream;
+  const startBroadcast = useCallback(
+    async (
+      title: string,
+      videoEl: HTMLVideoElement | null,
+      opts?: { privateShow?: boolean; privateShowTokens?: number },
+    ) => {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
+        audio: true,
+      });
+      localStream = stream;
 
-    if (videoEl) {
-      videoEl.srcObject = stream;
-      videoEl.muted = true;
-      await videoEl.play();
-    }
+      if (videoEl) {
+        videoEl.srcObject = stream;
+        videoEl.muted = true;
+        await videoEl.play();
+      }
 
-    // 1. Start session + get producer transport options
-    const { data: startData } = await api.post('/live/start', { title });
-    const { sessionId, transportOptions } = startData.data;
-    gs().setSession(sessionId);
-    gs().setIsLive(true);
+      // 1. Start session + get producer transport options
+      const { data: startData } = await api.post('/live/start', {
+        title,
+        privateShow: opts?.privateShow ?? false,
+        privateShowTokens: opts?.privateShowTokens ?? 0,
+      });
+      const { sessionId, transportOptions } = startData.data;
+      gs().setSession(sessionId);
+      gs().setIsLive(true);
 
-    // 2. Load mediasoup device with router capabilities
-    const { data: capData } = await api.get(`/live/${sessionId}/router-capabilities`);
-    const device = new Device();
-    await device.load({ routerRtpCapabilities: capData.data });
-    msDevice = device;
+      // 2. Load mediasoup device with router capabilities
+      const { data: capData } = await api.get(`/live/${sessionId}/router-capabilities`);
+      const device = new Device();
+      await device.load({ routerRtpCapabilities: capData.data });
+      msDevice = device;
 
-    // 3. Create send transport
-    const transport = device.createSendTransport(transportOptions);
-    sendTransport = transport;
+      // 3. Create send transport
+      const transport = device.createSendTransport(transportOptions);
+      sendTransport = transport;
 
-    transport.on('connect', ({ dtlsParameters }, callback) => {
+      transport.on('connect', ({ dtlsParameters }, callback) => {
+        const socket = getSocket();
+        socket?.emit('live:transport-connect', {
+          sessionId,
+          transportId: transport.id,
+          dtlsParameters,
+        });
+        callback();
+      });
+
+      transport.on('produce', async ({ kind, rtpParameters }, callback) => {
+        const { data: produceRes } = await api.post(`/live/${sessionId}/produce`, {
+          kind,
+          rtpParameters,
+        });
+        callback({ id: produceRes.data.producerId });
+      });
+
+      // 4. Produce audio + video tracks
+      for (const track of stream.getTracks()) {
+        await transport.produce({ track });
+      }
+
+      // 5. Join socket room
       const socket = getSocket();
-      socket?.emit('live:transport-connect', {
-        sessionId,
-        transportId: transport.id,
-        dtlsParameters,
-      });
-      callback();
-    });
+      socket?.emit('live:join', { sessionId });
 
-    transport.on('produce', async ({ kind, rtpParameters }, callback) => {
-      const { data: produceRes } = await api.post(`/live/${sessionId}/produce`, {
-        kind,
-        rtpParameters,
-      });
-      callback({ id: produceRes.data.producerId });
-    });
-
-    // 4. Produce audio + video tracks
-    for (const track of stream.getTracks()) {
-      await transport.produce({ track });
-    }
-
-    // 5. Join socket room
-    const socket = getSocket();
-    socket?.emit('live:join', { sessionId });
-
-    return sessionId;
-  }, []);
+      return sessionId;
+    },
+    [],
+  );
 
   const stopBroadcast = useCallback(async () => {
     const sessionId = gs().sessionId;

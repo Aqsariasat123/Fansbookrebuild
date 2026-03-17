@@ -161,7 +161,11 @@ router.get('/upcoming', async (_req, res, next) => {
 router.post('/start', authenticate, requireRole('CREATOR'), async (req, res, next) => {
   try {
     const userId = req.user!.userId;
-    const { title } = req.body as { title?: string };
+    const { title, privateShow, privateShowTokens } = req.body as {
+      title?: string;
+      privateShow?: boolean;
+      privateShowTokens?: number;
+    };
     const session = await prisma.liveSession.create({
       data: {
         creatorId: userId,
@@ -169,6 +173,8 @@ router.post('/start', authenticate, requireRole('CREATOR'), async (req, res, nex
         streamKey: crypto.randomBytes(16).toString('hex'),
         status: 'LIVE',
         startedAt: new Date(),
+        privateShow: privateShow ?? false,
+        privateShowTokens: privateShowTokens ?? 0,
       },
     });
     const transport = await createWebRtcTransport();

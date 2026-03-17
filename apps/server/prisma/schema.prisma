@@ -726,8 +726,10 @@ model LiveSession {
   viewerCount Int        @default(0)
   startedAt    DateTime?
   endedAt      DateTime?
-  recordingUrl String?
-  createdAt    DateTime   @default(now())
+  recordingUrl      String?
+  privateShow       Boolean  @default(false)
+  privateShowTokens Int      @default(0)
+  createdAt         DateTime @default(now())
 
   creator  User              @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   messages LiveChatMessage[]

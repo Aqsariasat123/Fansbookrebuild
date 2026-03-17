@@ -102,6 +102,57 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
     },
   );
 
+  // ─── Private Show: fan requests private call ─────────
+  socket.on('live:private-request', async (data: { sessionId: string }) => {
+    try {
+      const session = await prisma.liveSession.findUnique({
+        where: { id: data.sessionId },
+        select: { creatorId: true, privateShow: true, privateShowTokens: true },
+      });
+      if (!session?.privateShow) return;
+      const fan = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { displayName: true },
+      });
+      io.to(`user:${session.creatorId}`).emit('live:private-incoming', {
+        sessionId: data.sessionId,
+        userId,
+        userName: fan?.displayName ?? 'Fan',
+        tokens: session.privateShowTokens,
+      });
+    } catch (err) {
+      logger.error({ err }, 'Error in live:private-request');
+    }
+  });
+
+  // Creator accepts private request
+  socket.on('live:private-accept', async (data: { sessionId: string; fanId: string }) => {
+    try {
+      const session = await prisma.liveSession.findUnique({
+        where: { id: data.sessionId },
+        select: { creator: { select: { displayName: true } } },
+      });
+      // Tell fan: creator will call them now
+      io.to(`user:${data.fanId}`).emit('live:private-accepted', { sessionId: data.sessionId });
+      // Notify all viewers "on private call"
+      io.to(`live:${data.sessionId}`).emit('live:on-private-call', {
+        creatorName: session?.creator.displayName ?? 'Creator',
+      });
+    } catch (err) {
+      logger.error({ err }, 'Error in live:private-accept');
+    }
+  });
+
+  // Creator declines private request
+  socket.on('live:private-decline', (data: { fanId: string }) => {
+    io.to(`user:${data.fanId}`).emit('live:private-declined', {});
+  });
+
+  // Private call ended — notify viewers
+  socket.on('live:private-ended', (data: { sessionId: string }) => {
+    io.to(`live:${data.sessionId}`).emit('live:private-call-ended', {});
+  });
+
   socket.on(
     'live:produce',
     async (
