@@ -128,6 +128,22 @@ export default function CreatorProfileOwner() {
 
         {/* RIGHT - compose + tabs + posts */}
         <div className="min-w-0 flex-1">
+          {/* Go Live buttons */}
+          <div className="mb-[16px] flex gap-[16px]">
+            <button
+              onClick={() => navigate('/creator/go-live')}
+              className="flex-1 rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[14px] text-[16px] font-medium text-white"
+            >
+              Go Live
+            </button>
+            <button
+              onClick={() => setShowSchedule(true)}
+              className="flex-1 rounded-[8px] border border-foreground py-[14px] text-[16px] font-medium text-foreground"
+            >
+              Schedule Live
+            </button>
+          </div>
+
           <ComposeBar
             text={composeText}
             onChange={setComposeText}

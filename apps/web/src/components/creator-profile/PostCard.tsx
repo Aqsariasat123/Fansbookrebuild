@@ -56,7 +56,7 @@ function PinIndicator({ isPinned }: { isPinned?: boolean }) {
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="-rotate-45 text-muted-foreground md:size-[16px]"
+      className="rotate-45 text-muted-foreground md:size-[16px]"
     >
       <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97l.03 7 1 1 1-1 .03-7H19v-2c-1.66 0-3-1.34-3-3z" />
     </svg>
