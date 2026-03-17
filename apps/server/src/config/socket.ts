@@ -7,7 +7,7 @@ import { prisma } from './database.js';
 import { env } from './env.js';
 import { logger } from '../utils/logger.js';
 import { registerChatHandlers } from './socket-handlers.js';
-import { registerLiveHandlers } from './live-handlers.js';
+import { registerLiveHandlers, sessionOnPrivateCall } from './live-handlers.js';
 import { registerCallHandlers } from './call-handlers.js';
 import type { AuthPayload } from '../middleware/auth.js';
 
@@ -94,6 +94,15 @@ export function initSocketIO(httpServer: HttpServer) {
             const otherId = call.callerId === userId ? call.calleeId : call.callerId;
             io!.to(`user:${otherId}`).emit('call:ended', { callId: call.id });
             logger.info({ callId: call.id, otherId }, 'call:ended on disconnect');
+            // Clear live private call state if this user is a creator
+            const live = await prisma.liveSession.findFirst({
+              where: { creatorId: call.callerId, status: 'LIVE' },
+              select: { id: true },
+            });
+            if (live && sessionOnPrivateCall.get(live.id)) {
+              sessionOnPrivateCall.delete(live.id);
+              io!.to(`live:${live.id}`).emit('live:private-call-ended', {});
+            }
           }
         } catch (err) {
           logger.error({ err }, 'Error ending calls on disconnect');

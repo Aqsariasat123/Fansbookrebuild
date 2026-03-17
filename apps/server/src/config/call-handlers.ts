@@ -1,6 +1,18 @@
 import type { Server, Socket } from 'socket.io';
 import { prisma } from './database.js';
 import { logger } from '../utils/logger.js';
+import { sessionOnPrivateCall } from './live-handlers.js';
+
+async function endLivePrivateCall(io: Server, creatorId: string) {
+  const live = await prisma.liveSession.findFirst({
+    where: { creatorId, status: 'LIVE' },
+    select: { id: true },
+  });
+  if (live && sessionOnPrivateCall.get(live.id)) {
+    sessionOnPrivateCall.delete(live.id);
+    io.to(`live:${live.id}`).emit('live:private-call-ended', {});
+  }
+}
 
 async function insertCallMessage(callerId: string, calleeId: string, text: string) {
   const conv = await prisma.conversation.findFirst({
@@ -76,6 +88,7 @@ export function registerCallHandlers(io: Server, socket: Socket) {
         data: { status: 'REJECTED' },
       });
       io.to(`user:${call.callerId}`).emit('call:rejected', { callId: call.id });
+      await endLivePrivateCall(io, call.callerId);
       const label = call.mode === 'audio' ? 'Audio' : 'Video';
       const result = await insertCallMessage(call.callerId, call.calleeId, `Missed ${label} Call`);
       if (result) {
@@ -104,6 +117,7 @@ export function registerCallHandlers(io: Server, socket: Socket) {
       const otherId = call.callerId === userId ? call.calleeId : call.callerId;
       logger.info({ callId: call.id, otherId }, 'call:ended emitted');
       io.to(`user:${otherId}`).emit('call:ended', { callId: call.id });
+      await endLivePrivateCall(io, call.callerId);
       const label = call.mode === 'audio' ? 'Audio' : 'Video';
       const mins = Math.floor(duration / 60);
       const secs = duration % 60;
