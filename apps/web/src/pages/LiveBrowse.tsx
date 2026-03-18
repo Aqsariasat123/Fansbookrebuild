@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import type { LiveCreatorCard, UpcomingLive } from '@fansbook/shared';
 import {
   useLiveSessions,
@@ -8,6 +7,7 @@ import {
   useLiveSessionsSync,
 } from '../hooks/useLive';
 import { LiveCard, LiveCardSkeleton } from '../components/creators-live/LiveCard';
+import { UpcomingCard } from '../components/creators-live/UpcomingCard';
 
 type Tab = 'for-you' | 'following' | 'upcoming';
 
@@ -107,50 +107,12 @@ function FollowingTab({
 }
 
 function UpcomingTab({ sessions, isLoading }: { sessions?: UpcomingLive[]; isLoading: boolean }) {
-  const navigate = useNavigate();
-
   if (isLoading) return <SkeletonGrid />;
   if (!sessions?.length) return <EmptyState message="No upcoming live sessions scheduled" />;
-
   return (
     <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {sessions.map((s) => (
-        <div
-          key={s.id}
-          className="flex h-[200px] w-full flex-col justify-between rounded-[22px] bg-card px-[20px] py-[16px]"
-        >
-          <div className="flex items-center gap-[10px]">
-            <div className="h-[40px] w-[40px] shrink-0 overflow-hidden rounded-full bg-muted">
-              {s.avatar ? (
-                <img src={s.avatar} alt={s.username} className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-[16px] font-bold text-muted-foreground">
-                  {s.username.charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
-            <div className="font-outfit text-foreground">
-              <p className="text-[14px]">@{s.username}</p>
-            </div>
-          </div>
-          <p className="line-clamp-2 font-outfit text-[13px] text-foreground">{s.title}</p>
-          <div className="flex items-center justify-between">
-            <span className="font-outfit text-[11px] text-[#5d5d5d]">
-              {new Date(s.scheduledAt).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </span>
-            <button
-              onClick={() => navigate(`/u/${s.username}`)}
-              className="rounded-[4px] bg-[#15191c] px-[10px] py-[6px] font-outfit text-[11px] text-foreground hover:bg-[#1e2328]"
-            >
-              View Profile
-            </button>
-          </div>
-        </div>
+        <UpcomingCard key={s.id} s={s} />
       ))}
     </div>
   );
