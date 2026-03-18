@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../stores/authStore';
 import { useSocketStore } from '../stores/socketStore';
 import { useNotificationStore } from '../stores/notificationStore';
@@ -60,6 +61,7 @@ function registerCallListeners(socket: Socket) {
 
 export function useSocket() {
   const user = useAuthStore((s) => s.user);
+  const qc = useQueryClient();
   const cbRef = useRef({
     setConnected: useSocketStore.getState().setConnected,
     addOnlineUser: useSocketStore.getState().addOnlineUser,
@@ -123,6 +125,14 @@ export function useSocket() {
         }
       },
     );
+
+    // Global live session listeners — always active regardless of current page
+    const invalidateLive = () => {
+      qc.invalidateQueries({ queryKey: ['live-sessions'] });
+      qc.invalidateQueries({ queryKey: ['following-live'] });
+    };
+    socket.on('live:new-session', invalidateLive);
+    socket.on('live:session-ended', invalidateLive);
 
     // Global call event listeners — registered once, never torn down mid-call
     registerCallListeners(socket);
