@@ -7,7 +7,12 @@ interface UpcomingLiveItem {
   id: string;
   creatorId: string;
   username: string;
+  displayName: string;
   avatar: string | null;
+  title: string;
+  description: string | null;
+  category: string | null;
+  thumbnail: string | null;
   scheduledAt: string;
 }
 
