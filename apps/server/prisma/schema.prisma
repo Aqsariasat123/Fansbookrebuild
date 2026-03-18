@@ -724,6 +724,11 @@ model LiveSession {
   hlsUrl      String?
   status      LiveStatus @default(SCHEDULED)
   viewerCount Int        @default(0)
+  scheduledAt       DateTime?
+  thumbnail         String?
+  description       String?
+  category          String?
+  privacy           String   @default("public")
   startedAt    DateTime?
   endedAt      DateTime?
   recordingUrl      String?

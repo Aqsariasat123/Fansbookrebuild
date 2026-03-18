@@ -11,6 +11,8 @@ import { logger } from '../utils/logger.js';
 import { getIO } from '../config/socket.js';
 import liveStreamRouter from './live-stream.js';
 import liveExtrasRouter from './live-extras.js';
+import liveScheduleRouter from './live-schedule.js';
+import liveBrowseRouter from './live-browse.js';
 
 const router = Router();
 
@@ -87,76 +89,6 @@ router.get('/', validate(liveQuerySchema, 'query'), async (req, res, next) => {
   }
 });
 
-// ─── GET /api/live/following — Live sessions from followed creators ──
-router.get('/following', authenticate, async (req, res, next) => {
-  try {
-    const userId = req.user!.userId;
-    const follows = await prisma.follow.findMany({
-      where: { followerId: userId },
-      select: { followingId: true },
-    });
-    const followedIds = follows.map((f) => f.followingId);
-    if (followedIds.length === 0) {
-      return res.json({ success: true, data: [] });
-    }
-    const sessions = await prisma.liveSession.findMany({
-      where: { status: 'LIVE', creatorId: { in: followedIds } },
-      orderBy: { viewerCount: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        viewerCount: true,
-        startedAt: true,
-        creator: {
-          select: { id: true, username: true, displayName: true, avatar: true, category: true },
-        },
-      },
-    });
-    const items = sessions.map((s) => ({
-      id: s.id,
-      creatorId: s.creator.id,
-      username: s.creator.username,
-      displayName: s.creator.displayName,
-      avatar: s.creator.avatar,
-      category: s.creator.category,
-      viewerCount: s.viewerCount,
-      title: s.title,
-      startedAt: s.startedAt?.toISOString() ?? null,
-    }));
-    res.json({ success: true, data: items });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// ─── GET /api/live/upcoming ──────────────────────────────
-
-router.get('/upcoming', async (_req, res, next) => {
-  try {
-    const sessions = await prisma.liveSession.findMany({
-      where: { status: 'SCHEDULED' },
-      orderBy: { createdAt: 'asc' },
-      select: {
-        id: true,
-        title: true,
-        createdAt: true,
-        creator: { select: { id: true, username: true, avatar: true } },
-      },
-    });
-    const items = sessions.map((s) => ({
-      id: s.id,
-      creatorId: s.creator.id,
-      username: s.creator.username,
-      avatar: s.creator.avatar,
-      title: s.title,
-      scheduledAt: s.createdAt.toISOString(),
-    }));
-    res.json({ success: true, data: items });
-  } catch (err) {
-    next(err);
-  }
-});
-
 // ─── POST /api/live/start — Creator starts a live session ──
 
 router.post('/start', authenticate, requireRole('CREATOR'), async (req, res, next) => {
@@ -208,7 +140,8 @@ router.post('/start', authenticate, requireRole('CREATOR'), async (req, res, nex
   }
 });
 
-// Mount sub-routes: notify-followers, recording endpoints
+router.use('/schedule', liveScheduleRouter);
+router.use('/', liveBrowseRouter);
 router.use('/', liveExtrasRouter);
 
 // Mount streaming sub-routes (transport, produce, consume, end, chat, router-capabilities)
