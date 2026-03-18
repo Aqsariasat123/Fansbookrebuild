@@ -36,6 +36,15 @@ export default function LiveWatch() {
   const [creatorAvatar, setCreatorAvatar] = useState<string | null>(initLiveState(state).avatar);
   const [creatorName, setCreatorName] = useState<string>(initLiveState(state).name);
   const [privateStatus, setPrivateStatus] = useState<PrivateStatus>('idle');
+  const wasLiveRef = useRef(false);
+
+  useEffect(() => {
+    if (isLive) {
+      wasLiveRef.current = true;
+    } else if (wasLiveRef.current) {
+      navigate('/live-browse');
+    }
+  }, [isLive, navigate]);
 
   useEffect(() => {
     if (!sessionId) return;
