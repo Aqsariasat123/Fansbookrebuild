@@ -23,7 +23,19 @@ const storage = multer.diskStorage({
     cb(null, `${req.user!.userId}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}${ext}`);
   },
 });
-const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
+const ALLOWED_MIME = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'video/mp4',
+  'video/quicktime',
+  'video/webm',
+]);
+const upload = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => cb(null, ALLOWED_MIME.has(file.mimetype)),
+});
 
 const AUTHOR_SELECT = {
   id: true,
