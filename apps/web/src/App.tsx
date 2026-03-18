@@ -67,6 +67,7 @@ import {
   LiveBroadcasting,
   CreatorDashboardHome,
   CreatorAnalytics,
+  CreatorBotSettings,
   LiveWatch,
   VideoCallScreen,
   PaymentGateway,
@@ -181,6 +182,7 @@ export default function App() {
                       <Route path="/creator/post/new" element={<CreatePost />} />
                       <Route path="/creator/go-live" element={<GoLive />} />
                       <Route path="/creator/live" element={<LiveBroadcasting />} />
+                      <Route path="/creator/bot" element={<CreatorBotSettings />} />
                     </Route>
                   </Route>
                 </Route>

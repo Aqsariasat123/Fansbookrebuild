@@ -23,6 +23,8 @@ const envSchema = z.object({
   SMTP_PASS: z.string().optional().default(''),
   SMTP_FROM: z.string().optional().default('noreply@fansbook.com'),
   EMAIL_ENABLED: z.string().optional().default('false'),
+  // AI Chatbot (optional — bot feature disabled without it)
+  ANTHROPIC_API_KEY: z.string().optional().default(''),
   // mediasoup (optional — live streaming disabled without it)
   MEDIASOUP_ANNOUNCED_IP: z.string().optional().default('127.0.0.1'),
   MEDIASOUP_MIN_PORT: z.coerce.number().optional().default(40000),

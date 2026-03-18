@@ -62,3 +62,4 @@ export const CreatorAnalytics = lazy(() => import('./pages/CreatorAnalytics'));
 export const LiveWatch = lazy(() => import('./pages/LiveWatch'));
 export const VideoCallScreen = lazy(() => import('./pages/VideoCallScreen'));
 export const PaymentGateway = lazy(() => import('./pages/PaymentGateway'));
+export const CreatorBotSettings = lazy(() => import('./pages/CreatorBotSettings'));

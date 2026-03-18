@@ -77,6 +77,7 @@ export const creatorNavItems: NavItem[] = [
     labelKey: 'nav.mySubscription',
   },
   { to: '/creator/bookings', icon: '/icons/dashboard/pending.svg', labelKey: 'nav.myBookings' },
+  { to: '/creator/bot', icon: '/icons/dashboard/chat.svg', labelKey: 'nav.aiChatbot' },
   { to: '/marketplace', icon: '/icons/dashboard/wallet-card.svg', labelKey: 'nav.marketplace' },
   {
     to: '/notifications',
@@ -111,6 +112,7 @@ export const fallbackLabels: Record<string, string> = {
   'nav.analytics': 'Analytics',
   'nav.createPost': 'Create Post',
   'nav.goLive': 'Go Live',
+  'nav.aiChatbot': 'AI Chatbot',
   'nav.english': 'English',
   'nav.logout': 'Logout',
 };

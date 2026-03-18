@@ -286,6 +286,7 @@ model User {
   storyReactions       StoryReaction[]
   marketplaceReviews   MarketplaceReview[]   @relation("ReviewBuyer")
   sellerReviews        MarketplaceReview[]   @relation("ReviewSeller")
+  creatorBot           CreatorBot?
 
   @@index([email])
   @@index([username])
@@ -1121,4 +1122,19 @@ model MarketplaceReview {
   @@unique([buyerId, listingId])
   @@index([sellerId])
   @@index([listingId])
+}
+
+// ─── Creator AI Chatbot ─────────────────────────────────
+
+model CreatorBot {
+  id              String   @id @default(cuid())
+  creatorId       String   @unique
+  enabled         Boolean  @default(false)
+  persona         String?  @db.Text
+  greeting        String?
+  explicitAllowed Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  creator User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 }
