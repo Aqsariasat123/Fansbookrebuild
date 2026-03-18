@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLiveStore } from '../stores/liveStore';
 import { useLiveStream } from '../hooks/useLiveStream';
 import { useLivePrivate } from '../hooks/useLivePrivate';
@@ -20,6 +21,7 @@ export default function LiveWatch() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   const { state } = useLocation();
+  const qc = useQueryClient();
   const videoRef = useRef<HTMLVideoElement>(null);
   const userId = useAuthStore((s) => s.user?.id);
   const isLive = useLiveStore((s) => s.isLive);
@@ -42,9 +44,11 @@ export default function LiveWatch() {
     if (isLive) {
       wasLiveRef.current = true;
     } else if (wasLiveRef.current) {
+      qc.invalidateQueries({ queryKey: ['live-sessions'] });
+      qc.invalidateQueries({ queryKey: ['following-live'] });
       navigate('/live-browse');
     }
-  }, [isLive, navigate]);
+  }, [isLive, navigate, qc]);
 
   useEffect(() => {
     if (!sessionId) return;
