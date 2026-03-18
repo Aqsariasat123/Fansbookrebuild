@@ -9,6 +9,8 @@ import { AppError } from '../middleware/errorHandler.js';
 import commentsRouter from './posts-comments.js';
 import { logActivity } from '../utils/audit.js';
 import { checkBadges } from '../utils/check-badges.js';
+import { createPostMedia } from '../utils/postMedia.js';
+import { buildPostCreateData } from '../utils/postHelpers.js';
 
 const router = Router();
 const postsUploadsDir = path.join(process.cwd(), 'uploads', 'posts');
@@ -35,51 +37,6 @@ const POST_INCLUDE = {
   author: { select: AUTHOR_SELECT },
   media: { orderBy: { order: 'asc' as const } },
 };
-
-type PostVisibility = 'PUBLIC' | 'SUBSCRIBERS' | 'TIER_SPECIFIC';
-const VALID_VISIBILITIES: PostVisibility[] = ['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'];
-
-function resolveVisibility(visibility?: string): PostVisibility {
-  return VALID_VISIBILITIES.includes(visibility as PostVisibility)
-    ? (visibility as PostVisibility)
-    : 'PUBLIC';
-}
-
-async function createPostMedia(postId: string, files: Express.Multer.File[]) {
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    await prisma.postMedia.create({
-      data: {
-        postId,
-        url: `/api/posts/file/${file.filename}`,
-        type: file.mimetype.startsWith('video/') ? 'VIDEO' : 'IMAGE',
-        order: i,
-      },
-    });
-  }
-}
-
-function parsePpvPrice(ppvPrice?: string): number | null {
-  if (!ppvPrice) return null;
-  const parsed = parseFloat(ppvPrice);
-  if (parsed < 1 || parsed > 500) {
-    throw new AppError(400, 'PPV price must be between $1 and $500');
-  }
-  return parsed;
-}
-
-function buildPostCreateData(userId: string, body: Record<string, string>) {
-  const resolvedVis = resolveVisibility(body.visibility);
-  const parsedPpv = parsePpvPrice(body.ppvPrice);
-
-  return {
-    authorId: userId,
-    text: body.text?.trim() || '',
-    visibility: resolvedVis,
-    ...(parsedPpv && resolvedVis !== 'PUBLIC' ? { ppvPrice: parsedPpv } : {}),
-    ...(body.isPinned === 'true' ? { isPinned: true } : {}),
-  };
-}
 
 // Mount comments sub-router
 router.use('/', commentsRouter);
@@ -111,10 +68,15 @@ router.post(
         throw new AppError(400, 'Text or media is required');
       }
 
+      const creator = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { username: true },
+      });
+      const username = creator?.username ?? userId;
       const data = buildPostCreateData(userId, req.body);
       const post = await prisma.post.create({ data });
 
-      if (files.length > 0) await createPostMedia(post.id, files);
+      if (files.length > 0) await createPostMedia(post.id, files, username);
 
       const fullPost = await prisma.post.findUnique({
         where: { id: post.id },

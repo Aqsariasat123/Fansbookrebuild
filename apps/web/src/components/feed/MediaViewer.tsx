@@ -134,6 +134,8 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
               src={item.url}
               alt=""
               className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+              draggable={false}
+              onContextMenu={(e) => e.preventDefault()}
             />
             {username && (
               <div className="pointer-events-none absolute bottom-[10px] right-[10px] flex select-none items-center gap-[8px] rounded-[6px] bg-black/55 px-[12px] py-[6px]">

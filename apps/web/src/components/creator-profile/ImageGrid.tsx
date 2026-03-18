@@ -1,6 +1,8 @@
 import type { PostMedia } from './PostCard';
 import { ImageWatermark } from '../shared/ImageWatermark';
 
+const noCtx = (e: React.MouseEvent) => e.preventDefault();
+
 interface ImageGridProps {
   media: PostMedia[];
   onImageClick: (index: number) => void;
@@ -19,7 +21,13 @@ export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
         className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[16px]"
         onClick={() => onImageClick(0)}
       >
-        <img src={shown[0].url} alt="" className="h-full w-full object-cover" />
+        <img
+          src={shown[0].url}
+          alt=""
+          className="h-full w-full object-cover"
+          draggable={false}
+          onContextMenu={noCtx}
+        />
         <ImageWatermark username={username} />
       </div>
     );
@@ -32,7 +40,13 @@ export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
         style={{ gridRow: shown.length > 2 ? '1 / 3' : undefined }}
         onClick={() => onImageClick(0)}
       >
-        <img src={shown[0].url} alt="" className="h-full w-full object-cover" />
+        <img
+          src={shown[0].url}
+          alt=""
+          className="h-full w-full object-cover"
+          draggable={false}
+          onContextMenu={noCtx}
+        />
         <ImageWatermark username={username} />
       </div>
       {shown.slice(1).map((img, i) => (
@@ -41,7 +55,13 @@ export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
           className="relative h-full w-full cursor-pointer overflow-hidden"
           onClick={() => onImageClick(i + 1)}
         >
-          <img src={img.url} alt="" className="h-full w-full object-cover" />
+          <img
+            src={img.url}
+            alt=""
+            className="h-full w-full object-cover"
+            draggable={false}
+            onContextMenu={noCtx}
+          />
           {extra > 0 && i === shown.length - 2 && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50">
               <span className="text-[18px] font-semibold text-white md:text-[24px]">

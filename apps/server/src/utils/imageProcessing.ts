@@ -1,5 +1,6 @@
 import sharp from 'sharp';
 import path from 'path';
+import fs from 'fs';
 import { MEDIA_CONFIG } from '@fansbook/shared';
 
 interface ProcessedImage {
@@ -41,4 +42,35 @@ export async function convertToWebP(inputPath: string): Promise<ProcessedImage> 
 
   const basename = path.basename(inputPath, path.extname(inputPath));
   return { buffer, filename: `${basename}.webp`, mimeType: 'image/webp' };
+}
+
+export async function embedWatermark(filePath: string, username: string): Promise<void> {
+  const image = sharp(filePath);
+  const { width = 800, height = 600 } = await image.metadata();
+
+  const fontSize = Math.max(13, Math.round(width * 0.022));
+  const padding = Math.round(fontSize * 0.65);
+  const label = `FB FANSBOOK  ·  fansbook.vip/u/${username}`;
+  const approxCharWidth = fontSize * 0.55;
+  const boxW = Math.round(label.length * approxCharWidth + padding * 2 + 4);
+  const boxH = fontSize + padding * 2;
+  const margin = Math.round(Math.min(width, height) * 0.018);
+
+  const svg = Buffer.from(
+    `<svg width="${boxW}" height="${boxH}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${boxW}" height="${boxH}" rx="5" fill="rgba(0,0,0,0.58)"/>
+      <text x="${padding}" y="${fontSize + padding - 3}"
+        font-family="Arial,Helvetica,sans-serif"
+        font-size="${fontSize}"
+        font-weight="700"
+        fill="rgba(255,255,255,0.92)"
+        letter-spacing="0.3">${label}</text>
+    </svg>`,
+  );
+
+  const output = await sharp(filePath)
+    .composite([{ input: svg, gravity: 'southeast', left: margin, top: height - boxH - margin }])
+    .toBuffer();
+
+  fs.writeFileSync(filePath, output);
 }
