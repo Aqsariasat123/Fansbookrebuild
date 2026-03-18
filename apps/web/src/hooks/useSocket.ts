@@ -131,8 +131,11 @@ export function useSocket() {
       qc.invalidateQueries({ queryKey: ['live-sessions'] });
       qc.invalidateQueries({ queryKey: ['following-live'] });
     };
+    const invalidateUpcoming = () => qc.invalidateQueries({ queryKey: ['upcoming-lives'] });
     socket.on('live:new-session', invalidateLive);
     socket.on('live:session-ended', invalidateLive);
+    socket.on('live:upcoming-new', invalidateUpcoming);
+    socket.on('live:upcoming-removed', invalidateUpcoming);
 
     // Global call event listeners — registered once, never torn down mid-call
     registerCallListeners(socket);

@@ -79,4 +79,32 @@ router.post(
   },
 );
 
+router.delete('/:id', authenticate, requireRole('CREATOR'), async (req, res, next) => {
+  try {
+    const userId = req.user!.userId;
+    const id = req.params.id as string;
+    const session = await prisma.liveSession.findUnique({
+      where: { id },
+      select: { id: true, creatorId: true, status: true },
+    });
+    if (!session || session.creatorId !== userId) {
+      res.status(404).json({ success: false, message: 'Not found' });
+      return;
+    }
+    if (session.status !== 'SCHEDULED') {
+      res.status(400).json({ success: false, message: 'Only scheduled sessions can be deleted' });
+      return;
+    }
+    await prisma.liveSession.delete({ where: { id: session.id } });
+    try {
+      getIO().emit('live:upcoming-removed', { sessionId: session.id });
+    } catch {
+      /* ok */
+    }
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

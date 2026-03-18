@@ -21,23 +21,23 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
   const [notified, setNotified] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState<Set<string>>(new Set());
 
-  async function handleNotify(creatorId: string) {
-    if (notified.has(creatorId) || loading.has(creatorId)) return;
-    setLoading((prev) => new Set(prev).add(creatorId));
+  async function handleNotify(sessionId: string, creatorId: string) {
+    if (notified.has(sessionId) || loading.has(sessionId)) return;
+    setLoading((prev) => new Set(prev).add(sessionId));
     try {
       await api.post(`/followers/${creatorId}`);
-      setNotified((prev) => new Set(prev).add(creatorId));
+      setNotified((prev) => new Set(prev).add(sessionId));
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       if (status === 401) {
         navigate('/login');
         return;
       }
-      if (status === 409) setNotified((prev) => new Set(prev).add(creatorId)); // already following
+      if (status === 409) setNotified((prev) => new Set(prev).add(sessionId));
     } finally {
       setLoading((prev) => {
         const next = new Set(prev);
-        next.delete(creatorId);
+        next.delete(sessionId);
         return next;
       });
     }
@@ -105,10 +105,10 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
                   {/* Action */}
                   <div className="flex flex-1 items-center justify-center">
                     <button
-                      onClick={() => handleNotify(item.creatorId)}
-                      disabled={loading.has(item.creatorId)}
+                      onClick={() => handleNotify(item.id, item.creatorId)}
+                      disabled={loading.has(item.id)}
                       className={`flex items-center gap-[5px] rounded-[4px] border p-[5px] transition-colors md:gap-[10px] md:p-[10px] disabled:opacity-50 ${
-                        notified.has(item.creatorId)
+                        notified.has(item.id)
                           ? 'border-primary bg-primary/10 text-primary'
                           : 'border-border text-foreground'
                       }`}
@@ -119,7 +119,7 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
                         className="h-[10px] w-[10px] md:h-[20px] md:w-[20px]"
                       />
                       <span className="font-outfit text-[12px] font-normal md:text-[16px]">
-                        {notified.has(item.creatorId) ? 'Notified ✓' : 'Notify me'}
+                        {notified.has(item.id) ? 'Notified ✓' : 'Notify me'}
                       </span>
                     </button>
                   </div>

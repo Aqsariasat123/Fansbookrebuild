@@ -8,6 +8,7 @@ import type { ContentTab } from '../components/creator-profile/ContentTabs';
 import { PostCard } from '../components/creator-profile/PostCard';
 import type { CreatorPost } from '../components/creator-profile/PostCard';
 import { ScheduleLiveModal } from '../components/creator-profile/ScheduleLiveModal';
+import { useUpcomingLives } from '../hooks/useLive';
 import { filterPosts, resolveBasic, resolveStats, ComposeBar } from './CreatorProfileOwnerParts';
 import type { CreatorProfile } from './CreatorProfileOwnerParts';
 
@@ -23,6 +24,8 @@ export default function CreatorProfileOwner() {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
   const [composeText, setComposeText] = useState('');
+  const { data: allUpcoming, refetch: refetchUpcoming } = useUpcomingLives();
+  const myScheduled = allUpcoming?.filter((s) => s.creatorId === user?.id) ?? [];
 
   useEffect(() => {
     if (!user?.username) return;
@@ -65,6 +68,18 @@ export default function CreatorProfileOwner() {
       }
     },
     [user, setUser],
+  );
+
+  const handleDeleteScheduled = useCallback(
+    async (sessionId: string) => {
+      try {
+        await api.delete(`/live/schedule/${sessionId}`);
+        refetchUpcoming();
+      } catch {
+        /* ignore */
+      }
+    },
+    [refetchUpcoming],
   );
 
   const handleMenuAction = useCallback(async (postId: string, action: string) => {
@@ -132,6 +147,36 @@ export default function CreatorProfileOwner() {
               Schedule Live
             </button>
           </div>
+
+          {myScheduled.length > 0 && (
+            <div className="mb-[16px] flex flex-col gap-[8px]">
+              <p className="text-[13px] font-medium text-muted-foreground">Your Scheduled Lives</p>
+              {myScheduled.map((s) => (
+                <div
+                  key={s.id}
+                  className="flex items-center justify-between rounded-[10px] border border-border bg-card px-[14px] py-[10px]"
+                >
+                  <div>
+                    <p className="text-[14px] font-medium text-foreground">{s.title}</p>
+                    <p className="text-[12px] text-muted-foreground">
+                      {new Date(s.scheduledAt).toLocaleString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteScheduled(s.id)}
+                    className="rounded-[6px] border border-red-500/40 px-[10px] py-[6px] text-[12px] text-red-500 hover:bg-red-500/10"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
           <ComposeBar
             text={composeText}
