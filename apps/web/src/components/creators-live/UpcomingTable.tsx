@@ -16,13 +16,22 @@ interface UpcomingLiveItem {
   scheduledAt: string;
 }
 
+interface ConfirmTarget {
+  sessionId: string;
+  creatorId: string;
+  username: string;
+  title: string;
+  scheduledAt: string;
+}
+
 export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | undefined }) {
   const navigate = useNavigate();
   const [notified, setNotified] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState<Set<string>>(new Set());
+  const [confirm, setConfirm] = useState<ConfirmTarget | null>(null);
 
-  async function handleNotify(sessionId: string, creatorId: string) {
-    if (notified.has(sessionId) || loading.has(sessionId)) return;
+  async function doNotify(sessionId: string, creatorId: string) {
+    setConfirm(null);
     setLoading((prev) => new Set(prev).add(sessionId));
     try {
       await api.post(`/followers/${creatorId}`);
@@ -77,7 +86,6 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
             {upcoming && upcoming.length > 0 ? (
               upcoming.map((item) => (
                 <div key={item.id} className="flex items-center py-[12px] md:py-[20px]">
-                  {/* Creator */}
                   <div className="flex flex-1 items-center justify-center gap-[8px] md:gap-[17px]">
                     <div className="h-[20px] w-[20px] shrink-0 overflow-hidden rounded-full bg-muted md:h-[38px] md:w-[38px]">
                       {item.avatar ? (
@@ -96,22 +104,23 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
                       @{item.username}
                     </span>
                   </div>
-
-                  {/* Time */}
                   <div className="flex-1 text-center font-outfit text-[12px] font-normal text-foreground md:text-[16px]">
                     {formatScheduledTime(item.scheduledAt)}
                   </div>
-
-                  {/* Action */}
                   <div className="flex flex-1 items-center justify-center">
                     <button
-                      onClick={() => handleNotify(item.id, item.creatorId)}
+                      onClick={() =>
+                        !notified.has(item.id) &&
+                        setConfirm({
+                          sessionId: item.id,
+                          creatorId: item.creatorId,
+                          username: item.username,
+                          title: item.title,
+                          scheduledAt: item.scheduledAt,
+                        })
+                      }
                       disabled={loading.has(item.id)}
-                      className={`flex items-center gap-[5px] rounded-[4px] border p-[5px] transition-colors md:gap-[10px] md:p-[10px] disabled:opacity-50 ${
-                        notified.has(item.id)
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border text-foreground'
-                      }`}
+                      className={`flex items-center gap-[5px] rounded-[4px] border p-[5px] transition-colors md:gap-[10px] md:p-[10px] disabled:opacity-50 ${notified.has(item.id) ? 'border-primary bg-primary/10 text-primary' : 'border-border text-foreground'}`}
                     >
                       <img
                         src="/icons/creators/notification_add.svg"
@@ -133,6 +142,48 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
           </div>
         </div>
       </div>
+
+      {/* Confirmation popup */}
+      {confirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-[16px]"
+          onClick={() => setConfirm(null)}
+        >
+          <div
+            className="w-full max-w-[380px] rounded-[16px] bg-card p-[24px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="mb-[8px] text-[18px] font-semibold text-foreground">Get Notified?</h3>
+            <p className="mb-[4px] text-[14px] text-muted-foreground">
+              You'll follow <span className="font-medium text-foreground">@{confirm.username}</span>{' '}
+              and get notified when their live starts.
+            </p>
+            <p className="mb-[20px] text-[13px] font-medium text-foreground">
+              "{confirm.title}" —{' '}
+              {new Date(confirm.scheduledAt).toLocaleString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </p>
+            <div className="flex gap-[10px]">
+              <button
+                onClick={() => setConfirm(null)}
+                className="flex-1 rounded-[50px] border border-border py-[10px] text-[14px] text-foreground hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => doNotify(confirm.sessionId, confirm.creatorId)}
+                className="flex-1 rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[10px] text-[14px] font-medium text-white hover:opacity-90"
+              >
+                Yes, Notify me
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
