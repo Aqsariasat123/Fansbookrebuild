@@ -29,6 +29,7 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
   const [notified, setNotified] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState<Set<string>>(new Set());
   const [confirm, setConfirm] = useState<ConfirmTarget | null>(null);
+  const [alreadyNotified, setAlreadyNotified] = useState<string | null>(null); // username
 
   async function doNotify(sessionId: string, creatorId: string) {
     setConfirm(null);
@@ -110,14 +111,15 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
                   <div className="flex flex-1 items-center justify-center">
                     <button
                       onClick={() =>
-                        !notified.has(item.id) &&
-                        setConfirm({
-                          sessionId: item.id,
-                          creatorId: item.creatorId,
-                          username: item.username,
-                          title: item.title,
-                          scheduledAt: item.scheduledAt,
-                        })
+                        notified.has(item.id)
+                          ? setAlreadyNotified(item.username)
+                          : setConfirm({
+                              sessionId: item.id,
+                              creatorId: item.creatorId,
+                              username: item.username,
+                              title: item.title,
+                              scheduledAt: item.scheduledAt,
+                            })
                       }
                       disabled={loading.has(item.id)}
                       className={`flex items-center gap-[5px] rounded-[4px] border p-[5px] transition-colors md:gap-[10px] md:p-[10px] disabled:opacity-50 ${notified.has(item.id) ? 'border-primary bg-primary/10 text-primary' : 'border-border text-foreground'}`}
@@ -142,6 +144,47 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
           </div>
         </div>
       </div>
+
+      {/* Already notified popup */}
+      {alreadyNotified && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-[16px]"
+          onClick={() => setAlreadyNotified(null)}
+        >
+          <div
+            className="w-full max-w-[340px] rounded-[16px] bg-card p-[24px] text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mx-auto mb-[12px] flex size-[48px] items-center justify-center rounded-full bg-primary/10">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#01adf1"
+                strokeWidth="2"
+              >
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+            </div>
+            <h3 className="mb-[6px] text-[16px] font-semibold text-foreground">
+              Already Notified!
+            </h3>
+            <p className="mb-[20px] text-[13px] text-muted-foreground">
+              You're already following{' '}
+              <span className="font-medium text-foreground">@{alreadyNotified}</span> and will be
+              notified when they go live.
+            </p>
+            <button
+              onClick={() => setAlreadyNotified(null)}
+              className="w-full rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[10px] text-[14px] font-medium text-white hover:opacity-90"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Confirmation popup */}
       {confirm && (
