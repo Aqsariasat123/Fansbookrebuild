@@ -29,7 +29,11 @@ export function UpcomingTable({ upcoming }: { upcoming: UpcomingLiveItem[] | und
       setNotified((prev) => new Set(prev).add(creatorId));
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
-      if (status === 401) navigate('/login');
+      if (status === 401) {
+        navigate('/login');
+        return;
+      }
+      if (status === 409) setNotified((prev) => new Set(prev).add(creatorId)); // already following
     } finally {
       setLoading((prev) => {
         const next = new Set(prev);
