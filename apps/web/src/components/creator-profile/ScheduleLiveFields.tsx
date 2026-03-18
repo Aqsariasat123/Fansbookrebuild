@@ -97,13 +97,13 @@ export function ScheduleLiveFields(p: Props) {
             type="date"
             value={p.date}
             onChange={(e) => p.setDate(e.target.value)}
-            className={`${ic} flex-1`}
+            className={`${ic} flex-1 [color-scheme:dark]`}
           />
           <input
             type="time"
             value={p.time}
             onChange={(e) => p.setTime(e.target.value)}
-            className={`${ic} flex-1`}
+            className={`${ic} flex-1 [color-scheme:dark]`}
           />
         </div>
       </div>
