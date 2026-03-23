@@ -34,11 +34,15 @@ export function ToggleRow({
       </div>
       <button
         type="button"
-        onClick={() => onChange(!checked)}
-        className={`shrink-0 relative w-[44px] h-[24px] rounded-full transition-colors ${checked ? 'bg-[#2e80c8]' : 'bg-muted'}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onChange(!checked);
+        }}
+        className={`shrink-0 relative w-[48px] h-[26px] rounded-full overflow-hidden transition-colors duration-200 ${checked ? 'bg-[#2e80c8]' : 'bg-muted'}`}
       >
         <span
-          className={`absolute top-[3px] size-[18px] rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-[23px]' : 'translate-x-[3px]'}`}
+          className={`pointer-events-none absolute top-[3px] left-[3px] size-[20px] rounded-full bg-white shadow-sm transition-transform duration-200 ${checked ? 'translate-x-[22px]' : 'translate-x-0'}`}
         />
       </button>
     </div>
