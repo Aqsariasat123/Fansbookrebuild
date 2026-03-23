@@ -28,10 +28,8 @@ import {
 
 export default function MessageChat() {
   const { conversationId } = useParams<{ conversationId: string }>();
-  const { id: userId, role: userRole } = useAuthStore((s) => ({
-    id: s.user?.id,
-    role: s.user?.role,
-  }));
+  const userId = useAuthStore((s) => s.user?.id);
+  const userRole = useAuthStore((s) => s.user?.role);
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [other, setOther] = useState<OtherUser | null>(null);
