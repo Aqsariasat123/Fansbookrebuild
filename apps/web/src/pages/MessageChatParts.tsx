@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { TipModal } from '../components/shared/TipModal';
 import { TypingDots } from '../components/chat/ChatBubbles';
 import { SmartReplyBar } from '../components/chat/SmartReplyBar';
@@ -38,7 +39,19 @@ export function CreatorAIBar({
   onSelect: (text: string) => void;
   onPolish: (polished: string) => void;
 }) {
-  if (!isCreator || !conversationId) return null;
+  const [suggestEnabled, setSuggestEnabled] = useState(true);
+
+  useEffect(() => {
+    if (!isCreator) return;
+    api
+      .get('/creator/ai/settings')
+      .then(({ data: r }) => {
+        if (r.success) setSuggestEnabled(r.data.suggestEnabled ?? true);
+      })
+      .catch(() => {});
+  }, [isCreator]);
+
+  if (!isCreator || !conversationId || !suggestEnabled) return null;
   return (
     <SmartReplyBar
       conversationId={conversationId}

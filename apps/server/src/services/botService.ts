@@ -79,7 +79,6 @@ export async function generateSuggestions(
   conversationId: string,
 ): Promise<string[]> {
   const bot = await getBotConfig(creatorId);
-  if (bot && !bot.suggestEnabled) return [];
 
   const messages = await prisma.message.findMany({
     where: { conversationId, mediaType: 'TEXT' },
@@ -109,9 +108,6 @@ export async function generateSuggestions(
 }
 
 export async function polishMessage(creatorId: string, roughText: string): Promise<string | null> {
-  const bot = await getBotConfig(creatorId);
-  if (bot && !bot.polishEnabled) return null;
-
   const creator = await prisma.user.findUnique({
     where: { id: creatorId },
     select: { displayName: true },

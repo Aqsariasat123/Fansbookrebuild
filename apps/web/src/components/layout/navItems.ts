@@ -79,7 +79,7 @@ export const creatorNavItems: NavItem[] = [
   { to: '/creator/bookings', icon: '/icons/dashboard/pending.svg', labelKey: 'nav.myBookings' },
   {
     to: '/creator/ai-settings',
-    icon: '/icons/dashboard/fansbook-logo.webp',
+    icon: '/icons/dashboard/ai-assistant.svg',
     labelKey: 'nav.aiAssistant',
   },
   { to: '/marketplace', icon: '/icons/dashboard/wallet-card.svg', labelKey: 'nav.marketplace' },
