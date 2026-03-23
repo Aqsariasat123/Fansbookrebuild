@@ -33,6 +33,7 @@ export function ToggleRow({
         <p className="text-[12px] text-muted-foreground mt-[2px]">{description}</p>
       </div>
       <button
+        type="button"
         onClick={() => onChange(!checked)}
         className={`shrink-0 relative w-[44px] h-[24px] rounded-full transition-colors ${checked ? 'bg-[#2e80c8]' : 'bg-muted'}`}
       >
@@ -92,6 +93,7 @@ export function ToneProfileCard({
           </p>
         </div>
         <button
+          type="button"
           onClick={onRefresh}
           disabled={refreshingTone}
           className="shrink-0 rounded-[8px] border border-muted px-[12px] py-[6px] text-[12px] text-foreground hover:bg-muted disabled:opacity-50 transition-colors"
