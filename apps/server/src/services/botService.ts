@@ -1,10 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { prisma } from '../config/database.js';
-import { emitToUser } from '../utils/notify.js';
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 
-const SENDER_SELECT = { id: true, username: true, displayName: true, avatar: true };
+// Haiku: fast + cheap for real-time suggestions
+const SUGGEST_MODEL = 'claude-haiku-4-5-20251001';
+// Sonnet: better quality for polish
+const POLISH_MODEL = 'claude-sonnet-4-6';
 
 let anthropic: Anthropic | null = null;
 function getClient(): Anthropic {
@@ -22,10 +24,10 @@ export async function getBotConfig(creatorId: string) {
 export async function upsertBotConfig(
   creatorId: string,
   data: {
-    enabled?: boolean;
+    suggestEnabled?: boolean;
+    polishEnabled?: boolean;
     persona?: string;
     greeting?: string;
-    explicitAllowed?: boolean;
   },
 ) {
   return prisma.creatorBot.upsert({
@@ -35,114 +37,196 @@ export async function upsertBotConfig(
   });
 }
 
-interface ReplyParams {
-  creatorId: string;
-  conversationId: string;
-  fanMessage: string;
-  history: Array<{ role: 'user' | 'assistant'; content: string }>;
-}
-
-async function buildSystemPrompt(
+async function buildSuggestContext(
   creatorId: string,
-  bot: { persona?: string | null; explicitAllowed: boolean },
+  bot: Awaited<ReturnType<typeof getBotConfig>>,
 ) {
   const creator = await prisma.user.findUnique({
     where: { id: creatorId },
     select: { displayName: true, username: true },
   });
-  const displayName = creator?.displayName ?? 'Creator';
-  const username = creator?.username ?? 'creator';
-  const base = bot.persona?.trim()
-    ? bot.persona.trim()
-    : `You are ${displayName} (@${username}), a creator on Fansbook. Be friendly, engaging, and authentic.`;
-  const explicitNote = bot.explicitAllowed
-    ? ' You may engage with adult and explicit content in a consensual, creative way. Stay in character.'
-    : ' Keep responses tasteful. Redirect explicit requests politely.';
-  return `${base}${explicitNote}\n\nYou are responding to a fan in a private chat. Keep replies concise (1-3 sentences). Be personal and warm. Never break character or mention being an AI.`;
+  const toneNote = bot?.toneProfile ? `\nYour communication style: ${bot.toneProfile}` : '';
+  const personaNote = bot?.persona?.trim() ? `\nPersona note: ${bot.persona.trim()}` : '';
+  return `You are helping ${creator?.displayName ?? 'a creator'} (@${creator?.username ?? 'creator'}) draft replies to fans on Fansbook.${toneNote}${personaNote}
+Generate exactly 3 short, natural reply options. Each reply must be under 2 sentences. Be warm and authentic.
+Return ONLY a JSON array of 3 strings, nothing else. Example: ["Reply 1", "Reply 2", "Reply 3"]`;
 }
 
-async function callLLM(
-  systemPrompt: string,
-  messages: Array<{ role: 'user' | 'assistant'; content: string }>,
-): Promise<string | null> {
+async function callSuggestLLM(
+  system: string,
+  history: Array<{ role: 'user' | 'assistant'; content: string }>,
+  creatorId: string,
+): Promise<string[]> {
+  const response = await getClient().messages.create({
+    model: SUGGEST_MODEL,
+    max_tokens: 250,
+    system,
+    messages: history,
+  });
+  const text = response.content[0]?.type === 'text' ? response.content[0].text.trim() : '[]';
+  const suggestions = JSON.parse(text) as string[];
+  await logAIUsage(
+    creatorId,
+    'suggest_reply',
+    response.usage.input_tokens,
+    response.usage.output_tokens,
+  );
+  return Array.isArray(suggestions) ? suggestions.slice(0, 3) : [];
+}
+
+export async function generateSuggestions(
+  creatorId: string,
+  conversationId: string,
+): Promise<string[]> {
+  const bot = await getBotConfig(creatorId);
+  if (bot && !bot.suggestEnabled) return [];
+
+  const messages = await prisma.message.findMany({
+    where: { conversationId, mediaType: 'TEXT' },
+    orderBy: { createdAt: 'desc' },
+    take: 15,
+    select: { senderId: true, text: true },
+  });
+
+  if (messages.length === 0) return [];
+
+  const history = messages
+    .reverse()
+    .filter((m) => m.text)
+    .map((m) => ({
+      role: (m.senderId === creatorId ? 'assistant' : 'user') as 'user' | 'assistant',
+      content: m.text!,
+    }));
+
+  const system = await buildSuggestContext(creatorId, bot);
+
+  try {
+    return await callSuggestLLM(system, history, creatorId);
+  } catch (err) {
+    logger.error({ err }, 'generateSuggestions failed');
+    return [];
+  }
+}
+
+export async function polishMessage(creatorId: string, roughText: string): Promise<string | null> {
+  const bot = await getBotConfig(creatorId);
+  if (bot && !bot.polishEnabled) return null;
+
+  const creator = await prisma.user.findUnique({
+    where: { id: creatorId },
+    select: { displayName: true },
+  });
+
+  const system = `You are helping ${creator?.displayName ?? 'a creator'} rewrite a rough message into a warm, engaging reply for a fan on Fansbook.
+Keep the same meaning. Make it more natural and engaging. Keep it concise (1-3 sentences).
+Return ONLY the polished message text, nothing else.`;
+
   try {
     const response = await getClient().messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: POLISH_MODEL,
       max_tokens: 300,
-      system: systemPrompt,
-      messages,
+      system,
+      messages: [{ role: 'user', content: `Rough message: "${roughText}"` }],
     });
-    const block = response.content[0];
-    return block.type === 'text' ? block.text.trim() : null;
+
+    const polished = response.content[0]?.type === 'text' ? response.content[0].text.trim() : null;
+    if (polished) {
+      await logAIUsage(
+        creatorId,
+        'polish',
+        response.usage.input_tokens,
+        response.usage.output_tokens,
+      );
+    }
+    return polished;
   } catch (err) {
-    logger.error({ err }, 'Bot reply generation failed');
+    logger.error({ err }, 'polishMessage failed');
     return null;
   }
 }
 
-export async function generateBotReply(params: ReplyParams): Promise<string | null> {
-  const { creatorId, fanMessage, history } = params;
-  const bot = await getBotConfig(creatorId);
-  if (!bot?.enabled) return null;
-  const systemPrompt = await buildSystemPrompt(creatorId, bot);
-  const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [
-    ...history.slice(-10),
-    { role: 'user', content: fanMessage },
-  ];
-  return callLLM(systemPrompt, messages);
-}
-
-export async function sendBotMessage(conversationId: string, creatorId: string, text: string) {
-  const message = await prisma.message.create({
-    data: { conversationId, senderId: creatorId, text, mediaType: 'TEXT' },
-    include: { sender: { select: SENDER_SELECT } },
+export async function updateToneProfile(creatorId: string): Promise<string | null> {
+  const sentMessages = await prisma.message.findMany({
+    where: { senderId: creatorId, mediaType: 'TEXT', text: { not: null } },
+    orderBy: { createdAt: 'desc' },
+    take: 50,
+    select: { text: true },
   });
 
-  await prisma.conversation.update({
-    where: { id: conversationId },
-    data: { lastMessage: text, lastMessageAt: new Date() },
-  });
+  if (sentMessages.length < 10) return null;
 
-  const conv = await prisma.conversation.findUnique({ where: { id: conversationId } });
-  if (conv) {
-    const fanId = conv.participant1Id === creatorId ? conv.participant2Id : conv.participant1Id;
-    emitToUser(fanId, 'message:new', message);
-    emitToUser(fanId, 'conversation:update', {
-      conversationId,
-      lastMessage: text,
-      lastMessageAt: new Date(),
-    });
-  }
+  const sample = sentMessages
+    .slice(0, 30)
+    .map((m) => m.text)
+    .join('\n---\n');
 
-  return message;
-}
+  const system = `Analyze these messages and describe the sender's communication style in 2-3 sentences.
+Focus on: tone (formal/casual), emoji usage, message length, warmth. Be concise.
+This will help an AI assistant match their writing style.`;
 
-export async function triggerBotReply(
-  conversationId: string,
-  creatorId: string,
-  fanMessage: string,
-) {
   try {
-    const recentMessages = await prisma.message.findMany({
-      where: { conversationId, mediaType: 'TEXT' },
-      orderBy: { createdAt: 'desc' },
-      take: 20,
-      select: { senderId: true, text: true },
+    const response = await getClient().messages.create({
+      model: SUGGEST_MODEL,
+      max_tokens: 150,
+      system,
+      messages: [{ role: 'user', content: sample }],
     });
 
-    const history = recentMessages
-      .reverse()
-      .filter((m) => m.text)
-      .map((m) => ({
-        role: (m.senderId === creatorId ? 'assistant' : 'user') as 'user' | 'assistant',
-        content: m.text!,
-      }));
-
-    const reply = await generateBotReply({ creatorId, conversationId, fanMessage, history });
-    if (reply) {
-      await sendBotMessage(conversationId, creatorId, reply);
+    const profile = response.content[0]?.type === 'text' ? response.content[0].text.trim() : null;
+    if (profile) {
+      await prisma.creatorBot.upsert({
+        where: { creatorId },
+        create: { creatorId, toneProfile: profile },
+        update: { toneProfile: profile },
+      });
     }
+    return profile;
   } catch (err) {
-    logger.error({ err }, 'triggerBotReply failed');
+    logger.error({ err }, 'updateToneProfile failed');
+    return null;
   }
+}
+
+export async function getMonthlyUsage(creatorId: string, month: string) {
+  // month format: "2026-03"
+  const [year, mon] = month.split('-').map(Number);
+  const from = new Date(year, mon - 1, 1);
+  const to = new Date(year, mon, 1);
+
+  const logs = await prisma.aIUsageLog.findMany({
+    where: { creatorId, createdAt: { gte: from, lt: to } },
+  });
+
+  const totals = logs.reduce(
+    (acc, l) => {
+      acc.inputTokens += l.inputTokens;
+      acc.outputTokens += l.outputTokens;
+      acc.cost += l.cost;
+      if (!acc.byFeature[l.feature]) acc.byFeature[l.feature] = { count: 0, cost: 0 };
+      acc.byFeature[l.feature].count++;
+      acc.byFeature[l.feature].cost += l.cost;
+      return acc;
+    },
+    {
+      inputTokens: 0,
+      outputTokens: 0,
+      cost: 0,
+      byFeature: {} as Record<string, { count: number; cost: number }>,
+    },
+  );
+
+  return totals;
+}
+
+async function logAIUsage(
+  creatorId: string,
+  feature: string,
+  inputTokens: number,
+  outputTokens: number,
+) {
+  // Haiku pricing: $0.25/1M input, $1.25/1M output — approx EUR
+  const cost = (inputTokens * 0.00025 + outputTokens * 0.00125) / 1000;
+  await prisma.aIUsageLog.create({
+    data: { creatorId, feature, inputTokens, outputTokens, cost },
+  });
 }

@@ -70,6 +70,7 @@ import {
   LiveWatch,
   VideoCallScreen,
   PaymentGateway,
+  CreatorAISettings,
 } from './lazyPages';
 
 const queryClient = new QueryClient({
@@ -181,6 +182,7 @@ export default function App() {
                       <Route path="/creator/post/new" element={<CreatePost />} />
                       <Route path="/creator/go-live" element={<GoLive />} />
                       <Route path="/creator/live" element={<LiveBroadcasting />} />
+                      <Route path="/creator/ai-settings" element={<CreatorAISettings />} />
                     </Route>
                   </Route>
                 </Route>

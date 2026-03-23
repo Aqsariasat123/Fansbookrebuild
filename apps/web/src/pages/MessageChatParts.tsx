@@ -1,5 +1,6 @@
 import { TipModal } from '../components/shared/TipModal';
 import { TypingDots } from '../components/chat/ChatBubbles';
+import { SmartReplyBar } from '../components/chat/SmartReplyBar';
 import { api } from '../lib/api';
 import type { ChatMessage } from '../components/chat/ChatBubbles';
 import type React from 'react';
@@ -22,6 +23,30 @@ export function TipOverlay({
 
 export function TypingIndicator({ count }: { count: number }) {
   return count > 0 ? <TypingDots /> : null;
+}
+
+export function CreatorAIBar({
+  isCreator,
+  conversationId,
+  currentText,
+  onSelect,
+  onPolish,
+}: {
+  isCreator: boolean;
+  conversationId: string | undefined;
+  currentText: string;
+  onSelect: (text: string) => void;
+  onPolish: (polished: string) => void;
+}) {
+  if (!isCreator || !conversationId) return null;
+  return (
+    <SmartReplyBar
+      conversationId={conversationId}
+      currentText={currentText}
+      onSelect={onSelect}
+      onPolish={onPolish}
+    />
+  );
 }
 
 export type UnlockResp = { success: boolean; data: { required: boolean; price: number } };

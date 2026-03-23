@@ -18,6 +18,7 @@ import { useCall } from '../hooks/useCall';
 import {
   TipOverlay,
   TypingIndicator,
+  CreatorAIBar,
   applyUnlock,
   execSend,
   execImageSend,
@@ -27,7 +28,10 @@ import {
 
 export default function MessageChat() {
   const { conversationId } = useParams<{ conversationId: string }>();
-  const userId = useAuthStore((s) => s.user?.id);
+  const { id: userId, role: userRole } = useAuthStore((s) => ({
+    id: s.user?.id,
+    role: s.user?.role,
+  }));
   const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [other, setOther] = useState<OtherUser | null>(null);
@@ -157,23 +161,32 @@ export default function MessageChat() {
             }}
           />
         ) : (
-          <ChatInputBar
-            value={newMsg}
-            onChange={(v) => {
-              setNewMsg(v);
-              emitTyping(v.length > 0);
-            }}
-            onSend={() =>
-              execSend(conversationId!, newMsg, sending, setSending, setMessages, setNewMsg)
-            }
-            onFileSelect={(e) => {
-              const f = e.target.files?.[0];
-              f && setPreviewFile(f);
-              e.target.value = '';
-            }}
-            sending={sending}
-            onTip={other ? () => setShowTip(true) : undefined}
-          />
+          <>
+            <CreatorAIBar
+              isCreator={userRole === 'CREATOR'}
+              conversationId={conversationId}
+              currentText={newMsg}
+              onSelect={(text) => setNewMsg(text)}
+              onPolish={(polished) => setNewMsg(polished)}
+            />
+            <ChatInputBar
+              value={newMsg}
+              onChange={(v) => {
+                setNewMsg(v);
+                emitTyping(v.length > 0);
+              }}
+              onSend={() =>
+                execSend(conversationId!, newMsg, sending, setSending, setMessages, setNewMsg)
+              }
+              onFileSelect={(e) => {
+                const f = e.target.files?.[0];
+                f && setPreviewFile(f);
+                e.target.value = '';
+              }}
+              sending={sending}
+              onTip={other ? () => setShowTip(true) : undefined}
+            />
+          </>
         )}
       </div>
       <TipOverlay show={showTip} other={other} onClose={() => setShowTip(false)} />

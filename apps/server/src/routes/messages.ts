@@ -10,7 +10,6 @@ import { emitToUser } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
 import { sendMessageSchema } from '@fansbook/shared';
 import messagesPaidRouter, { checkPaidMessage } from './messages-paid.js';
-import { triggerBotReply } from '../services/botService.js';
 
 const router = Router();
 const msgUploadsDir = path.join(process.cwd(), 'uploads', 'messages');
@@ -120,15 +119,6 @@ router.post(
         req,
       );
       res.status(201).json({ success: true, data: message });
-
-      // Fire-and-forget: trigger bot reply if the recipient is a creator with bot enabled
-      const otherUser = await prisma.user.findUnique({
-        where: { id: otherId },
-        select: { role: true },
-      });
-      if (otherUser?.role === 'CREATOR') {
-        triggerBotReply(conversationId, otherId, text).catch(() => {});
-      }
     } catch (err) {
       next(err);
     }

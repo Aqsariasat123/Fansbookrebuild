@@ -55,7 +55,7 @@ import announcementsRouter from './routes/announcements.js';
 import pushRouter from './routes/push-subscriptions.js';
 import paymentGatewayRouter from './routes/payment-gateway.js';
 import paymentWebhooksRouter from './routes/payment-webhooks.js';
-import creatorBotRouter from './routes/creator-bot.js';
+import creatorAIRouter from './routes/creator-ai.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -146,7 +146,7 @@ app.use('/api/creator/referrals', creatorReferralsRouter);
 app.use('/api/creator/tiers', creatorTiersRouter);
 app.use('/api/creator/bookings', creatorBookingsRouter);
 app.use('/api/creator/dashboard', creatorDashboardRouter);
-app.use('/api/creator/bot', creatorBotRouter);
+app.use('/api/creator/ai', creatorAIRouter);
 app.use('/api/stories', storiesRouter);
 app.use('/api/story-highlights', storyHighlightsRouter);
 app.use('/api/settings', settingsRouter);
