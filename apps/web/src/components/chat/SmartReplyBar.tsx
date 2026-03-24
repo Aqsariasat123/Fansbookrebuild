@@ -8,7 +8,11 @@ interface SmartReplyBarProps {
   onPolish: (polished: string) => void;
 }
 
-type BarState = 'idle' | 'loading' | 'showing' | 'polishing';
+type BarState = 'idle' | 'loading' | 'showing' | 'polishing' | 'empty';
+
+function isDisabled(state: BarState): boolean {
+  return state === 'loading' || state === 'polishing' || state === 'empty';
+}
 
 export function SmartReplyBar({
   conversationId,
@@ -20,7 +24,7 @@ export function SmartReplyBar({
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   async function fetchSuggestions() {
-    if (state === 'loading') return;
+    if (isDisabled(state)) return;
     setState('loading');
     try {
       const { data: res } = await api.post('/creator/ai/suggest', { conversationId });
@@ -28,7 +32,8 @@ export function SmartReplyBar({
         setSuggestions(res.data.suggestions);
         setState('showing');
       } else {
-        setState('idle');
+        setState('empty');
+        setTimeout(() => setState('idle'), 2500);
       }
     } catch {
       setState('idle');
@@ -40,9 +45,7 @@ export function SmartReplyBar({
     setState('polishing');
     try {
       const { data: res } = await api.post('/creator/ai/polish', { text: currentText.trim() });
-      if (res.success && res.data.polished) {
-        onPolish(res.data.polished);
-      }
+      if (res.success && res.data.polished) onPolish(res.data.polished);
     } catch {
       // silent fail
     } finally {
@@ -57,12 +60,10 @@ export function SmartReplyBar({
 
   return (
     <div className="border-t border-muted px-[12px] pt-[10px] pb-[8px] md:px-[17px]">
-      {/* AI toolbar */}
       <div className="flex items-center gap-[8px]">
-        {/* Suggest button — large, prominent */}
         <button
           onClick={fetchSuggestions}
-          disabled={state === 'loading' || state === 'polishing'}
+          disabled={isDisabled(state)}
           className="flex items-center gap-[8px] rounded-[10px] border-2 border-[#2e80c8] bg-[#2e80c8] px-[16px] py-[8px] text-[13px] font-semibold text-white shadow-sm hover:bg-[#2571b3] hover:border-[#2571b3] disabled:opacity-50 transition-all"
         >
           {state === 'loading' ? (
@@ -81,7 +82,6 @@ export function SmartReplyBar({
           {state === 'loading' ? 'Getting suggestions…' : 'Suggest replies'}
         </button>
 
-        {/* Polish button — shows only when text is typed */}
         {currentText.trim().length > 0 && (
           <button
             onClick={handlePolish}
@@ -106,7 +106,12 @@ export function SmartReplyBar({
         )}
       </div>
 
-      {/* Suggestions panel */}
+      {state === 'empty' && (
+        <p className="mt-[8px] text-[12px] text-muted-foreground">
+          No suggestions generated. Try sending a text message first.
+        </p>
+      )}
+
       {state === 'showing' && suggestions.length > 0 && (
         <div className="mt-[10px] rounded-[12px] border border-[#2e80c8]/40 bg-[#2e80c8]/8 p-[12px]">
           <div className="flex items-center justify-between mb-[10px]">

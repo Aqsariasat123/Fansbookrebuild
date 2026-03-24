@@ -87,8 +87,6 @@ export async function generateSuggestions(
     select: { senderId: true, text: true },
   });
 
-  if (messages.length === 0) return [];
-
   const history = messages
     .reverse()
     .filter((m) => m.text)
@@ -97,10 +95,16 @@ export async function generateSuggestions(
       content: m.text!,
     }));
 
+  // If no text history, use a generic opening prompt so AI still generates useful starters
+  const effectiveHistory =
+    history.length > 0
+      ? history
+      : [{ role: 'user' as const, content: 'Hi! I just joined your page.' }];
+
   const system = await buildSuggestContext(creatorId, bot);
 
   try {
-    return await callSuggestLLM(system, history, creatorId);
+    return await callSuggestLLM(system, effectiveHistory, creatorId);
   } catch (err) {
     logger.error({ err }, 'generateSuggestions failed');
     return [];
