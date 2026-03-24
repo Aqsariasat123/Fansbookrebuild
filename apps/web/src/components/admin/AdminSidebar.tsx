@@ -12,6 +12,7 @@ const iconMap: Record<string, string> = {
   content: 'description',
   badges: 'military_tech',
   announcements: 'campaign',
+  ai: 'auto_awesome',
   finance: 'payments',
   masters: 'tune',
   settings: 'settings',

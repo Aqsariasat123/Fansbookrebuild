@@ -16,6 +16,7 @@ import badgesRouter from './admin-badges.js';
 import announcementsRouter from './admin-announcements.js';
 import verificationRouter from './admin-verification.js';
 import healthRouter from './admin-health.js';
+import aiRouter from './admin-ai.js';
 
 const router = Router();
 
@@ -37,5 +38,6 @@ router.use('/badges', badgesRouter);
 router.use('/announcements', announcementsRouter);
 router.use('/verification', verificationRouter);
 router.use('/health', healthRouter);
+router.use('/ai', aiRouter);
 
 export default router;

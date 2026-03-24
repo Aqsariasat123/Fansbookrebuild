@@ -38,3 +38,11 @@ export const auctionQueue = new Queue('auction-close', {
     removeOnFail: 50,
   },
 });
+
+export const toneLearningQueue = new Queue('tone-learning', {
+  connection,
+  defaultJobOptions: {
+    removeOnComplete: 10,
+    removeOnFail: 50,
+  },
+});
