@@ -16,7 +16,7 @@ export function GeneralTab({ form, update, inputCls, textCls }: Omit<Props, 'fil
         <input
           value={form.title || ''}
           onChange={(e) => update('title', e.target.value)}
-          placeholder="Make Money With Fansbook"
+          placeholder="Make Money With Inscrio"
           className={inputCls}
         />
       </div>
@@ -25,7 +25,7 @@ export function GeneralTab({ form, update, inputCls, textCls }: Omit<Props, 'fil
         <input
           value={form.seoTitle || ''}
           onChange={(e) => update('seoTitle', e.target.value)}
-          placeholder="Fansbook.vip"
+          placeholder="Inscrio.vip"
           className={inputCls}
         />
       </div>
@@ -34,7 +34,7 @@ export function GeneralTab({ form, update, inputCls, textCls }: Omit<Props, 'fil
         <textarea
           value={form.seoDesc || ''}
           onChange={(e) => update('seoDesc', e.target.value)}
-          placeholder="Start earning with Fansbook today."
+          placeholder="Start earning with Inscrio today."
           className={textCls}
         />
       </div>
@@ -112,7 +112,7 @@ export function HowItWorkTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <textarea
           value={form.howDesc || ''}
           onChange={(e) => update('howDesc', e.target.value)}
-          placeholder="Learn how Fansbook works for creators."
+          placeholder="Learn how Inscrio works for creators."
           className={textCls}
         />
       </div>

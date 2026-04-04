@@ -61,7 +61,7 @@ export default function AdminProfile() {
             {user?.displayName || 'Admin Fanbook'}
           </p>
           <p className="font-outfit text-[20px] font-normal text-[#5d5d5d]">
-            {user?.email || 'admin@fansbook.com'}
+            {user?.email || 'admin@inscrio.com'}
           </p>
         </div>
         <div className="mx-auto mt-[40px] max-w-[819px]">

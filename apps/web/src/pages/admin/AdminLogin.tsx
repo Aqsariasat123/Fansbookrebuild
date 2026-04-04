@@ -40,7 +40,7 @@ export default function AdminLogin() {
     <div className="flex min-h-screen items-center justify-center bg-[#0e1012] font-outfit">
       <div className="w-full max-w-[420px] rounded-[22px] bg-white p-[32px]">
         <div className="mb-[24px] flex justify-center">
-          <img src="/icons/dashboard/fansbook-logo.png" alt="Fansbook" className="h-[40px]" />
+          <img src="/images/landing/logo.webp" alt="Inscrio" className="h-[40px]" />
         </div>
         <h1 className="mb-[8px] text-center text-[24px] font-semibold text-[#333]">Admin Login</h1>
         <p className="mb-[24px] text-center text-[14px] text-[#666]">

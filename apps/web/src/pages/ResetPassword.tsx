@@ -49,7 +49,7 @@ export default function ResetPassword() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted px-4 font-outfit">
       <div className="w-full max-w-[420px] rounded-[22px] bg-card px-8 py-10 flex flex-col items-center">
-        <img src="/icons/dashboard/fansbook-logo.webp" alt="Fansbook" className="h-10 mb-8" />
+        <img src="/images/landing/logo.webp" alt="Inscrio" className="h-10 mb-8" />
         <h1 className="text-[28px] font-medium text-foreground">Reset Password</h1>
 
         {tokenValid === false && (

@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Fansbook",
+    "appName": "Inscrio",
     "loading": "加载中...",
     "save": "保存",
     "cancel": "取消",
@@ -56,7 +56,7 @@
     "acceptTerms": "我接受服务条款",
     "alreadyHaveAccount": "已有账户？",
     "dontHaveAccount": "没有账户？",
-    "welcomeBack": "欢迎回到FansBook",
+    "welcomeBack": "欢迎回到Inscrio",
     "loginSubtitle": "登录以连接您喜爱的创作者。",
     "emailUsernamePlaceholder": "输入邮箱或用户名...",
     "passwordPlaceholder": "输入密码..."

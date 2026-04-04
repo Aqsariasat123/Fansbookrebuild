@@ -8,7 +8,7 @@ const reviews = [
     name: 'Kayla',
     role: 'Creator',
     img: 1,
-    text: 'Fansbook completely changed the way I connect with my audience. The tipping system and video calls make every interaction feel personal. I doubled my earnings in the first month!',
+    text: 'Inscrio completely changed the way I connect with my audience. The tipping system and video calls make every interaction feel personal. I doubled my earnings in the first month!',
   },
   {
     name: 'Alex zin',
@@ -20,7 +20,7 @@ const reviews = [
     name: 'Sipama',
     role: 'Creator',
     img: 3,
-    text: 'The 90% payout rate is unbeatable. Weekly deposits, amazing support team, and the tools to grow my brand — Fansbook truly puts creators first. Highly recommend!',
+    text: 'The 90% payout rate is unbeatable. Weekly deposits, amazing support team, and the tools to grow my brand — Inscrio truly puts creators first. Highly recommend!',
   },
 ];
 

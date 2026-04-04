@@ -145,7 +145,7 @@ export function ContactUsTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <input
           value={val(form, 'contactEmail')}
           onChange={(e) => update('contactEmail', e.target.value)}
-          placeholder="fanbook@mailinator.com"
+          placeholder="info@inscrio.com"
           className={inputCls}
         />
       </div>
@@ -176,7 +176,7 @@ export function ContactUsTab({ form, update, inputCls, textCls }: Omit<Props, 'f
         <input
           value={form.contactSeoTitle || ''}
           onChange={(e) => update('contactSeoTitle', e.target.value)}
-          placeholder="Fansbook.vip"
+          placeholder="Inscrio.com"
           className={inputCls}
         />
       </div>

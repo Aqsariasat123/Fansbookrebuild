@@ -44,8 +44,8 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         <div className="px-[32px] pt-[20px]">
           <Link to="/feed" onClick={onClose}>
             <img
-              src="/icons/dashboard/fansbook-logo.webp"
-              alt="Fansbook"
+              src="/images/landing/logo.webp"
+              alt="Inscrio"
               className="h-[43px] w-[158px] object-contain"
             />
           </Link>

@@ -26,17 +26,17 @@ export default function Cookies() {
 
           <h3 className="mb-[16px] text-[24px] font-medium">1. Our Commitment to Your Privacy</h3>
           <p className="mb-[32px]">
-            Our Privacy Policy tells you what personally identifiable information Fansbook may
-            collect from you, how Fansbook may process your personally identifiable information, how
+            Our Privacy Policy tells you what personally identifiable information Inscrio may
+            collect from you, how Inscrio may process your personally identifiable information, how
             you can limit our use of your personally identifiable information, and your rights to
-            obtain, modify and/or delete any personally identifiable information Fansbook has
+            obtain, modify and/or delete any personally identifiable information Inscrio has
             collected from you.
           </p>
 
           <h3 className="mb-[16px] text-[24px] font-medium">2. Information We Collect</h3>
           <div className="mb-[32px] space-y-[16px]">
             <p>
-              <strong>2.1 Information you provide Fansbook.</strong> Fansbook collects personal
+              <strong>2.1 Information you provide Inscrio.</strong> Inscrio collects personal
               information when you request information about our services or otherwise voluntarily
               provide such information through our site. Generally, you will have control over the
               amount and type of information you provide to us when using our site.
@@ -55,9 +55,9 @@ export default function Cookies() {
               on our site or to customize marketing and other information we provide to you.
             </p>
             <p>
-              <strong>2.4 Other Automatically-Gathered Information.</strong> Fansbook may
+              <strong>2.4 Other Automatically-Gathered Information.</strong> Inscrio may
               automatically record information when you visit its site, including the URL, IP
-              address, browser type and language, and the date and time of your visit. Fansbook uses
+              address, browser type and language, and the date and time of your visit. Inscrio uses
               this information to analyze trends among its users to help improve its site or
               customize communications and information that you receive from us. If combined with
               other information we know about you from previous visits, the data possibly could be
@@ -68,7 +68,7 @@ export default function Cookies() {
           <h3 className="mb-[16px] text-[24px] font-medium">3. How Information Is Used</h3>
           <div className="mb-[32px] space-y-[16px]">
             <p>
-              When Fansbook uses or processes personal data about you, it does so only as necessary
+              When Inscrio uses or processes personal data about you, it does so only as necessary
               to provide the services you use or otherwise with your consent, to comply with
               applicable law, or to fulfill other legitimate interests of you or us as described in
               this Policy. Through our site, you will be provided with the choice of which types of
@@ -106,7 +106,7 @@ export default function Cookies() {
           <div className="mb-[32px] space-y-[16px]">
             <p>
               <strong>4.1 Access to your personal information.</strong> To obtain a copy of all
-              information Fansbook maintains about you, you may send us a request using the contact
+              information Inscrio maintains about you, you may send us a request using the contact
               information at the end of this Policy or, if available, through a tool on our site.
               After receiving the request, we will tell you when we expect to provide you with the
               information, and whether we require any fee for providing it to you.
@@ -129,8 +129,8 @@ export default function Cookies() {
             5. Retention Period for Personal Data
           </h3>
           <p className="mb-[16px]">
-            Except as otherwise mentioned in this Policy, Fansbook keeps your personally
-            identifiable information only for as long as required:
+            Except as otherwise mentioned in this Policy, Inscrio keeps your personally identifiable
+            information only for as long as required:
           </p>
           <ul className="mb-[32px] list-none space-y-[12px] pl-0">
             {[
@@ -173,7 +173,7 @@ export default function Cookies() {
 
           <h3 className="mb-[16px] text-[24px] font-medium">8. Changes to Our Privacy Policy</h3>
           <p className="mb-[32px]">
-            Fansbook reserves the right to change this privacy policy at any time. If we decide to
+            Inscrio reserves the right to change this privacy policy at any time. If we decide to
             change this Privacy Policy, we will post those changes on the site so our users are
             always aware of what information we collect, use, and disclose. In all cases, your
             continued use of our site after any change to this Privacy Policy will constitute your

@@ -77,7 +77,7 @@ export default function Register() {
           <div className="w-full text-center lg:max-w-[500px]">
             <h1 className="font-medium text-[36px] leading-[1.25] text-foreground lg:text-[48px]">
               <span className="block">Create Your</span>
-              <span className="block whitespace-nowrap">FansBook Account</span>
+              <span className="block whitespace-nowrap">Inscrio Account</span>
             </h1>
             <p className="mt-[14px] text-[12px] font-normal leading-[1.25] text-foreground lg:mt-[27px] lg:text-[16px]">
               Complete your profile to get started and discover top creators.

@@ -22,7 +22,7 @@ export function BasicInfoTab({ onToast }: BasicInfoTabProps) {
   const [lastName, setLastName] = useState('');
   const [location, setLocation] = useState('');
   const [profileType, setProfileType] = useState('');
-  const [email] = useState('info@fansbook.vip');
+  const [email] = useState('info@inscrio.com');
   const [timezone, setTimezone] = useState('');
   const [aboutMe, setAboutMe] = useState('');
   const [saving, setSaving] = useState(false);

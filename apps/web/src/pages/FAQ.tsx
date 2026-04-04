@@ -12,15 +12,15 @@ interface FAQItem {
 
 const defaultFaqs = [
   {
-    q: 'What is FansBook?',
-    a: 'Fansbook is a creator-first social platform that empowers all creators to share, earn and connect with their fans. We are built for creators and optimized for fans.',
+    q: 'What is Inscrio?',
+    a: 'Inscrio is a creator-first social platform that empowers all creators to share, earn and connect with their fans. We are built for creators and optimized for fans.',
   },
   {
-    q: 'Who can create on FansBook?',
-    a: 'Anyone who is 18 years or older can create content on FansBook. We welcome creators from all backgrounds and industries.',
+    q: 'Who can create on Inscrio?',
+    a: 'Anyone who is 18 years or older can create content on Inscrio. We welcome creators from all backgrounds and industries.',
   },
   {
-    q: 'How much can I make on FansBook?',
+    q: 'How much can I make on Inscrio?',
     a: 'Earnings vary based on your content, audience size, and engagement. Creators keep 85% of their earnings with weekly payouts.',
   },
   {
@@ -61,7 +61,7 @@ export default function FAQ() {
             Frequently Asked Questions
           </h1>
           <p className="text-center text-[15px] font-normal text-white md:text-[20px]">
-            Find answers to common questions about FansBook.
+            Find answers to common questions about Inscrio.
           </p>
         </div>
       </div>

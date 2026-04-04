@@ -27,13 +27,13 @@ export default function HowItWorks() {
           {/* Intro heading */}
           <h2 className="mb-[24px] text-[28px] font-medium md:text-[36px]">How It Works</h2>
           <p className="mb-[32px]">
-            FansBook accepts creators from a wide range of genres. The platform empowers you to
-            monetize your content. FansBook is an excellent method for you, as a content creator or
+            Inscrio accepts creators from a wide range of genres. The platform empowers you to
+            monetize your content. Inscrio is an excellent method for you, as a content creator or
             influencer, to generate money from your passions, interests, and abilities, while also
             engaging closely with your fans in an exclusive and unique manner.
           </p>
           <p className="mb-[24px]">
-            You may generate money on FansBook regardless of the amount of your following by using
+            You may generate money on Inscrio regardless of the amount of your following by using
             the site's monetisation capabilities. These are some of them:
           </p>
 
@@ -71,30 +71,30 @@ export default function HowItWorks() {
 
           {/* Content Creation */}
           <h2 className="mb-[24px] text-[28px] font-medium md:text-[36px]">
-            Content creation on FansBook
+            Content creation on Inscrio
           </h2>
           <p className="mb-[48px]">
-            You may share a variety of material on your FansBook page, including 'how to' videos,
+            You may share a variety of material on your Inscrio page, including 'how to' videos,
             behind-the-scenes footage, lessons, masterclasses, live broadcasts, new releases, vlogs,
             and creative projects.
           </p>
 
           {/* Promoting */}
           <h2 className="mb-[24px] text-[28px] font-medium md:text-[36px]">
-            Promoting your FansBook account
+            Promoting your Inscrio account
           </h2>
           <p className="mb-[48px]">
-            There are a variety of strategies to advertise your FansBook account and grow your
-            following on the site. You may advertise your FansBook account on all of your social
-            media networks and internet platforms, and you can team up with other FansBook producers
+            There are a variety of strategies to advertise your Inscrio account and grow your
+            following on the site. You may advertise your Inscrio account on all of your social
+            media networks and internet platforms, and you can team up with other Inscrio producers
             to get the word out about it. Promoting your account is advantageous since it helps you
-            to attract new subscribers as well as bring your existing fans over to FansBook.
+            to attract new subscribers as well as bring your existing fans over to Inscrio.
           </p>
 
           {/* Conclusion highlight box */}
           <div className="rounded-[22px] bg-card px-[20px] py-[24px] md:px-[40px] md:py-[32px]">
             <p className="text-[18px] font-medium leading-[1.7]">
-              Overall, FansBook is a platform with a lot of built-in tools to assist you in
+              Overall, Inscrio is a platform with a lot of built-in tools to assist you in
               presenting your original material in the best possible light — and earning money!
             </p>
           </div>

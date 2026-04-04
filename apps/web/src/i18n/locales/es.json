@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Fansbook",
+    "appName": "Inscrio",
     "loading": "Cargando...",
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -56,7 +56,7 @@
     "acceptTerms": "Acepto los Términos de Servicio",
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "dontHaveAccount": "¿No tienes una cuenta?",
-    "welcomeBack": "Bienvenido de vuelta a FansBook",
+    "welcomeBack": "Bienvenido de vuelta a Inscrio",
     "loginSubtitle": "Inicia sesión para conectar con tus creadores favoritos.",
     "emailUsernamePlaceholder": "Ingresa tu correo o usuario...",
     "passwordPlaceholder": "Ingresa tu contraseña..."

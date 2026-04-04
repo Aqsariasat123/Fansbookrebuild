@@ -78,7 +78,7 @@ export default function Login() {
         <div className="w-full max-w-[336px] flex flex-col items-center rounded-[22px] bg-card px-[22px] py-[21px] lg:max-w-[392px] lg:rounded-none lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none">
           <div className="w-full text-center">
             <h1 className="font-medium text-[36px] leading-[1.25] text-foreground lg:text-[48px]">
-              Welcome Back to FansBook
+              Welcome Back to Inscrio
             </h1>
             <p className="mt-[21px] text-[15px] font-normal leading-[1.25] text-foreground lg:mt-[27px] lg:text-[16px]">
               Log in to connect with your favorite creators and unlock exclusive content.

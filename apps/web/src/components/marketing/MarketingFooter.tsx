@@ -41,9 +41,9 @@ export function MarketingFooter() {
         {/* Logo */}
         <div className="flex justify-center sm:justify-start">
           <img
-            src="/images/landing/footer-logo.webp"
-            alt="Fansbook"
-            className="h-[80px] w-[86px] object-contain lg:h-[109px] lg:w-[118px]"
+            src="/images/landing/logo.webp"
+            alt="Inscrio"
+            className="h-[120px] w-auto object-contain lg:h-[160px] lg:w-auto"
           />
         </div>
 
@@ -79,11 +79,11 @@ export function MarketingFooter() {
             Quick Services
           </h4>
           <a
-            href="mailto:info@fansbook.vip"
+            href="mailto:info@inscrio.com"
             className="mt-[12px] flex items-center gap-[10px] text-[14px] font-normal text-foreground hover:text-primary lg:mt-[16px] lg:text-[16px]"
           >
             <img src="/icons/landing/mail.svg" alt="" className="h-[20px] w-[20px]" />
-            info@fansbook.vip
+            info@inscrio.com
           </a>
         </div>
 
@@ -91,25 +91,17 @@ export function MarketingFooter() {
         <div>
           <h4 className="text-[18px] font-semibold text-foreground lg:text-[20px]">Follow us</h4>
           <div className="mt-[12px] flex gap-[16px] lg:mt-[16px]">
-            <a
-              href="https://www.facebook.com/FansBookVip"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://www.facebook.com/inscrio" target="_blank" rel="noopener noreferrer">
               <img src="/icons/landing/facebook.svg" alt="Facebook" className="h-[25px] w-[25px]" />
             </a>
-            <a
-              href="https://www.instagram.com/fansbook.vip/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://www.instagram.com/inscrio" target="_blank" rel="noopener noreferrer">
               <img
                 src="/icons/landing/instagram.svg"
                 alt="Instagram"
                 className="h-[25px] w-[25px]"
               />
             </a>
-            <a href="https://x.com/FansBook__" target="_blank" rel="noopener noreferrer">
+            <a href="https://x.com/inscrio" target="_blank" rel="noopener noreferrer">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-[25px] w-[25px] fill-foreground"
@@ -126,7 +118,7 @@ export function MarketingFooter() {
       <div className="mx-auto mt-[30px] max-w-[1078px] md:mt-[40px]">
         <div className="h-[1px] w-full bg-foreground/20" />
         <p className="mt-[16px] text-center text-[14px] font-normal text-foreground md:mt-[22px] md:text-[16px]">
-          Copyright 2025@ all rights reserved.
+          Copyright 2026© Inscrio. All rights reserved.
         </p>
       </div>
     </footer>

@@ -19,13 +19,13 @@ function HeroSection() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center px-[20px] pt-[120px] pb-[40px] md:px-[76px] md:pt-[140px] md:pb-[60px] lg:px-[210px]">
         <h1 className="w-full max-w-[864px] text-center font-outfit text-[24px] md:text-[40px] font-medium leading-normal text-white">
-          Make Money on FansBook
+          Make Money on Inscrio
         </h1>
         <p className="mt-[12px] w-full max-w-[864px] text-center font-outfit text-[14px] md:text-[16px] font-medium leading-[1.6] text-white md:mt-[16px]">
-          On FansBook, you can monetize your content creation skills through subscriptions, tips,
-          and paid shoutouts. Creators also benefit from the referral program, where bringing in new
+          On Inscrio, you can monetize your content creation skills through subscriptions, tips, and
+          paid shoutouts. Creators also benefit from the referral program, where bringing in new
           users earns them commissions. The more you engage with your audience and share exclusive
-          content, the greater your earning potential. FansBook simple and transparent system gives
+          content, the greater your earning potential. Inscrio simple and transparent system gives
           you the opportunity to turn your passion into income.
         </p>
       </div>
@@ -93,7 +93,7 @@ function EarnSection() {
   );
 }
 
-/* ─── Why FansBook? ─── */
+/* ─── Why Inscrio? ─── */
 const whyItems = [
   { icon: 'secure_payments', title: 'Secure Payments' },
   { icon: 'global_reach', title: 'Global Reach' },
@@ -108,7 +108,7 @@ function WhySection() {
       <div className="mb-[40px] h-[1px] w-full max-w-[1160px] bg-muted-foreground/30 md:mb-[70px]" />
 
       <p className="font-outfit text-[16px] md:text-[20px] font-medium leading-normal text-foreground">
-        Why FansBook?
+        Why Inscrio?
       </p>
 
       <div className="mt-[30px] grid grid-cols-2 gap-[20px] md:mt-[50px] md:flex md:items-start md:justify-around md:gap-[30px]">

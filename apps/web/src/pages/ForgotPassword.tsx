@@ -25,7 +25,7 @@ export default function ForgotPassword() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted px-4 font-outfit">
       <div className="w-full max-w-[420px] rounded-[22px] bg-card px-8 py-10 flex flex-col items-center">
-        <img src="/icons/dashboard/fansbook-logo.webp" alt="Fansbook" className="h-10 mb-8" />
+        <img src="/images/landing/logo.webp" alt="Inscrio" className="h-10 mb-8" />
         <h1 className="text-[28px] font-medium text-foreground">Forgot Password</h1>
         <p className="mt-2 text-center text-[14px] text-muted-foreground">
           Enter your email to receive a password reset link

@@ -34,14 +34,14 @@ export function AgeVerification({ children }: { children: React.ReactNode }) {
             <div className="bg-[#1e2126] px-[24px] py-[20px] md:px-[32px] md:py-[24px]">
               <img
                 src="/images/landing/logo.webp"
-                alt="Fansbook"
+                alt="Inscrio"
                 className="h-[50px] object-contain md:h-[65px]"
               />
             </div>
             <div className="h-[3px] bg-gradient-to-r from-[#01adf1] to-[#a61651]" />
             <div className="px-[24px] py-[24px] md:px-[32px] md:py-[28px]">
               <p className="text-[15px] leading-[1.5] text-white/90 md:text-[17px]">
-                &quot;FANSBOOK.VIP&quot; contains ADULT CONTENT. BY ENTERING THIS SITE YOU CONSENT
+                &quot;INSCRIO.COM&quot; contains ADULT CONTENT. BY ENTERING THIS SITE YOU CONSENT
                 THAT YOU HAVE REACHED Full 18 years of age at this point.
               </p>
               <div className="mt-[20px] flex flex-col gap-[12px] md:mt-[24px]">

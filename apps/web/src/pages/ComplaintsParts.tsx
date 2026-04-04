@@ -48,12 +48,12 @@ export function FeedbackSection() {
   return (
     <div className="mb-[32px] space-y-[16px]">
       <p>
-        <strong>6.1</strong> Fansbook is committed to resolving your issues at the first point of
+        <strong>6.1</strong> Inscrio is committed to resolving your issues at the first point of
         contact; however, this will not be possible in all circumstances, in which case a more
         formal complaints process will be followed.
       </p>
       <p>
-        <strong>6.2</strong> Fansbook will acknowledge receipt of your complaint within three (3)
+        <strong>6.2</strong> Inscrio will acknowledge receipt of your complaint within three (3)
         business days. Once your complaint has been received, we will undertake an initial review of
         your complaint.
       </p>
@@ -64,7 +64,7 @@ export function FeedbackSection() {
         complaint.
       </p>
       <p>
-        <strong>6.4</strong> Fansbook is committed to resolving your complaint within 7 business
+        <strong>6.4</strong> Inscrio is committed to resolving your complaint within 7 business
         days. Where we have been unable to do so, we will inform you of the reason for the delay and
         specify a date when we will finalize your complaint.
       </p>

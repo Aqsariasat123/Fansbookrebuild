@@ -57,8 +57,8 @@ export function TermsSections() {
           rights to any and all User Content You Post to or through the Service.
         </p>
         <p>
-          <strong>5.2 License Grants to Fansbook and other Users.</strong> BY POSTING USER CONTENT
-          TO OR THROUGH THE SERVICE, YOU HEREBY GRANT TO FANSBOOK AN UNRESTRICTED, PERPETUAL,
+          <strong>5.2 License Grants to Inscrio and other Users.</strong> BY POSTING USER CONTENT TO
+          OR THROUGH THE SERVICE, YOU HEREBY GRANT TO INSCRIO AN UNRESTRICTED, PERPETUAL,
           ASSIGNABLE, SUBLICENSABLE, REVOCABLE, ROYALTY-FREE, FULLY PAID UP LICENSE THROUGHOUT THE
           WORLD TO REPRODUCE, MODIFY, DISTRIBUTE, DISPLAY, PUBLISH, TRANSMIT, COMMUNICATE TO THE
           PUBLIC, MAKE AVAILABLE, BROADCAST, CREATE DERIVATIVE WORKS FROM, PUBLICLY PERFORM
@@ -68,7 +68,7 @@ export function TermsSections() {
         </p>
         <p>
           <strong>5.3 License for Name, Image, Voice, and Likeness.</strong> You further hereby
-          grant Fansbook a royalty-free license to Use your name, image, voice, trademarks, logos,
+          grant Inscrio a royalty-free license to Use your name, image, voice, trademarks, logos,
           monikers, and likeness (and that of any person identifiable in any User Content you posted
           to or through the Service) made available by or on your behalf through the Service in
           conjunction with your User Content. The foregoing license in the immediately preceding
@@ -88,44 +88,44 @@ export function TermsSections() {
 
       <h3 className="mb-[16px] text-[24px] font-medium">6. Use Restrictions</h3>
       <p className="mb-[16px]">
-        Your rights to use the Service and the Fansbook Content are expressly conditioned on the
+        Your rights to use the Service and the Inscrio Content are expressly conditioned on the
         following:
       </p>
       <BulletList
         items={[
           'You may access the Service for your personal entertainment purposes only solely as intended through the provided functionality of the Service and as permitted under this agreement.',
-          "You agree not to copy, reproduce, distribute, publish, display, perform, transmit, stream or broadcast any part of the Service or Fansbook Content without Fansbook's prior written authorization.",
-          'You agree not to bypass, circumvent, damage or otherwise interfere with any security or other features of the Service designed to control the manner in which the Service is used, harvest or mine Fansbook Content from the Service, or otherwise access or use the Service in a manner inconsistent with individual human usage.',
-          'You agree not to use, display, mirror, frame or utilize framing techniques to enclose the Service or the Fansbook Content, or any portion thereof, through any other application or website.',
+          "You agree not to copy, reproduce, distribute, publish, display, perform, transmit, stream or broadcast any part of the Service or Inscrio Content without Inscrio's prior written authorization.",
+          'You agree not to bypass, circumvent, damage or otherwise interfere with any security or other features of the Service designed to control the manner in which the Service is used, harvest or mine Inscrio Content from the Service, or otherwise access or use the Service in a manner inconsistent with individual human usage.',
+          'You agree not to use, display, mirror, frame or utilize framing techniques to enclose the Service or the Inscrio Content, or any portion thereof, through any other application or website.',
           'You agree that you cannot offer sexual services and dates on the site.',
           'You agree that you cannot advertise other platforms. Only use your social media links in your profile settings. Any Creators advertising their own channels will be banned.',
-          'You agree that creators selling their services outside of Fansbook while using the services will be banned.',
+          'You agree that creators selling their services outside of Inscrio while using the services will be banned.',
         ]}
       />
 
       <h3 className="mb-[16px] text-[24px] font-medium">7. Indemnity</h3>
       <div className="mb-[32px] space-y-[16px]">
         <p>
-          <strong>7.1</strong> You agree to indemnify and hold Fansbook, and its officers,
-          directors, employees, agents, successors, and assigns harmless from and against any
-          claims, liabilities, damages, losses, and expenses, including, without limitation,
-          reasonable legal and accounting fees, arising out of or in any way connected to (a) your
-          access, use, or misuse of the Service, or Fansbook Content; (b) your User Content; or (c)
-          your violation of this agreement.
+          <strong>7.1</strong> You agree to indemnify and hold Inscrio, and its officers, directors,
+          employees, agents, successors, and assigns harmless from and against any claims,
+          liabilities, damages, losses, and expenses, including, without limitation, reasonable
+          legal and accounting fees, arising out of or in any way connected to (a) your access, use,
+          or misuse of the Service, or Inscrio Content; (b) your User Content; or (c) your violation
+          of this agreement.
         </p>
         <p>
-          <strong>7.2</strong> Fansbook will use reasonable efforts to notify you of any such claim,
+          <strong>7.2</strong> Inscrio will use reasonable efforts to notify you of any such claim,
           action or proceeding for which it seeks an indemnification from you upon becoming aware of
-          it, but if Fansbook is unable to communicate with you in a timely manner because of an
+          it, but if Inscrio is unable to communicate with you in a timely manner because of an
           inactive e-mail address for you, your indemnification obligation will continue
-          notwithstanding Fansbook&apos;s inability to contact you in a timely manner.
+          notwithstanding Inscrio&apos;s inability to contact you in a timely manner.
         </p>
         <p>
-          <strong>7.3</strong> Fansbook reserves the right to assume the exclusive defense and
+          <strong>7.3</strong> Inscrio reserves the right to assume the exclusive defense and
           control of any matter that is subject to indemnification under this Section. In such case,
-          you agree to cooperate with any reasonable requests to assist Fansbook&apos;s defense of
+          you agree to cooperate with any reasonable requests to assist Inscrio&apos;s defense of
           such matter. You agree not to settle any matter without the prior express written consent
-          of Fansbook.
+          of Inscrio.
         </p>
       </div>
 
@@ -139,7 +139,7 @@ export function TermsSections() {
         </p>
         <p>
           <strong>8.2</strong> If a User seeks a chargeback or dispute from their credit card
-          company, the User&apos;s access to Fansbook may be discontinued or limited. If you believe
+          company, the User&apos;s access to Inscrio may be discontinued or limited. If you believe
           your account has been limited in error, please contact support.
         </p>
       </div>

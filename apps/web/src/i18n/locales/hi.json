@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Fansbook",
+    "appName": "Inscrio",
     "loading": "लोड हो रहा है...",
     "save": "सहेजें",
     "cancel": "रद्द करें",
@@ -56,7 +56,7 @@
     "acceptTerms": "मैं शर्तें स्वीकार करता हूँ",
     "alreadyHaveAccount": "पहले से खाता है?",
     "dontHaveAccount": "खाता नहीं है?",
-    "welcomeBack": "FansBook में वापस स्वागत है",
+    "welcomeBack": "Inscrio में वापस स्वागत है",
     "loginSubtitle": "अपने पसंदीदा क्रिएटर्स से जुड़ने के लिए लॉग इन करें।",
     "emailUsernamePlaceholder": "ईमेल या यूजरनेम दर्ज करें...",
     "passwordPlaceholder": "पासवर्ड दर्ज करें..."

@@ -21,7 +21,7 @@ function renderWithProviders(ui: React.ReactElement) {
 describe('Login page', () => {
   it('renders login heading', () => {
     renderWithProviders(<Login />);
-    expect(screen.getByText('Welcome Back to FansBook')).toBeInTheDocument();
+    expect(screen.getByText('Welcome Back to Inscrio')).toBeInTheDocument();
   });
 
   it('renders login button', () => {

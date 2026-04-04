@@ -26,12 +26,12 @@ export default function Terms() {
           <h2 className="mb-[24px] text-[36px] font-medium">TERMS OF SERVICE</h2>
 
           <p className="mb-[32px]">
-            Fansbook is a social media website service that allows Users to upload photos and videos
+            Inscrio is a social media website service that allows Users to upload photos and videos
             to their profile, setting a subscription price and therefore earning money from any
             paying subscribers (&quot;Service&quot;). These Terms of Service, together with our
-            Privacy Policy (&quot;Terms&quot;), govern your use of Fansbook, including any content,
+            Privacy Policy (&quot;Terms&quot;), govern your use of Inscrio, including any content,
             functionality, and services offered on or through the website. By registering with and
-            using Fansbook, you hereby accept and agree to be bound by and abide by these Terms. If
+            using Inscrio, you hereby accept and agree to be bound by and abide by these Terms. If
             you do not want to agree to these Terms, you must not access or use the website. This
             website is offered and available to users who are 18 years of age or older. By using
             this website, you represent and warrant that you are of legal age to form a binding
@@ -42,15 +42,15 @@ export default function Terms() {
           <h3 className="mb-[16px] text-[24px] font-medium">1. Registration and Eligibility</h3>
           <p className="mb-[32px]">
             To access certain additional features and functionality of the Service, you must
-            register an account with Fansbook. All information provided to Fansbook during
-            registration will be held and used in accordance with Fansbook&apos;s Privacy Policy.
-            You are responsible for maintaining the confidentiality of your log-in credentials in
-            order to use the Service and are fully responsible for all activities that occur through
-            the use of your credentials. You agree to notify Fansbook immediately of any
-            unauthorized use of your log-in credentials or any other breach of security with respect
-            to your account. Fansbook will not be liable for any loss or damage arising from
-            unauthorized use of your credentials prior to you notifying Fansbook of such
-            unauthorized use or loss of your credentials.
+            register an account with Inscrio. All information provided to Inscrio during
+            registration will be held and used in accordance with Inscrio&apos;s Privacy Policy. You
+            are responsible for maintaining the confidentiality of your log-in credentials in order
+            to use the Service and are fully responsible for all activities that occur through the
+            use of your credentials. You agree to notify Inscrio immediately of any unauthorized use
+            of your log-in credentials or any other breach of security with respect to your account.
+            Inscrio will not be liable for any loss or damage arising from unauthorized use of your
+            credentials prior to you notifying Inscrio of such unauthorized use or loss of your
+            credentials.
           </p>
 
           <h3 className="mb-[16px] text-[24px] font-medium">2. Accuracy of Information</h3>
@@ -65,11 +65,11 @@ export default function Terms() {
             <p>
               <strong>3.1</strong> If you are looking to subscribe to other profiles, you will need
               to add a payment card. When adding a payment card, your card information is stored by
-              a payment processor. However, as far as legally possible, Fansbook reserves the right
+              a payment processor. However, as far as legally possible, Inscrio reserves the right
               to change the payment processors it uses at any time and without notice to you.
             </p>
             <p>
-              <strong>3.2</strong> Fansbook does not store any payment card information. If you are
+              <strong>3.2</strong> Inscrio does not store any payment card information. If you are
               looking to earn money from other Users subscribing to your Creator profile, you will
               need to add a bank account and upload a valid form of ID.
             </p>

@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Fansbook",
+    "appName": "Inscrio",
     "loading": "Yükleniyor...",
     "save": "Kaydet",
     "cancel": "İptal",
@@ -56,7 +56,7 @@
     "acceptTerms": "Şartları kabul ediyorum",
     "alreadyHaveAccount": "Zaten hesabın var mı?",
     "dontHaveAccount": "Hesabın yok mu?",
-    "welcomeBack": "FansBook'a Hoş Geldiniz",
+    "welcomeBack": "Inscrio'a Hoş Geldiniz",
     "loginSubtitle": "Favori içerik üreticilerinizle bağlantı kurmak için giriş yapın.",
     "emailUsernamePlaceholder": "E-posta veya kullanıcı adı girin...",
     "passwordPlaceholder": "Şifrenizi girin..."

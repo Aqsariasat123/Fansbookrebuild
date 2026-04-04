@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Fansbook",
+    "appName": "Inscrio",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -56,7 +56,7 @@
     "acceptTerms": "I accept the Terms of Service",
     "alreadyHaveAccount": "Already have an account?",
     "dontHaveAccount": "Don't have an account?",
-    "welcomeBack": "Welcome Back to FansBook",
+    "welcomeBack": "Welcome Back to Inscrio",
     "loginSubtitle": "Log in to connect with your favorite creators and unlock exclusive content.",
     "emailUsernamePlaceholder": "Enter your Email or username...",
     "passwordPlaceholder": "Enter your password..."

@@ -28,18 +28,18 @@ export default function Complaints() {
           <h3 className="mb-[16px] text-[24px] font-medium">1. Objective of the Policy</h3>
           <div className="mb-[32px] space-y-[16px]">
             <p>
-              <strong>1.1</strong> Fansbook seeks to maintain and enhance our reputation of
-              providing you with high quality services. We value complaints as they assist us to
-              improve our services and customer service.
+              <strong>1.1</strong> Inscrio seeks to maintain and enhance our reputation of providing
+              you with high quality services. We value complaints as they assist us to improve our
+              services and customer service.
             </p>
             <p>
-              <strong>1.2</strong> Fansbook is committed to being responsive to the needs and
+              <strong>1.2</strong> Inscrio is committed to being responsive to the needs and
               concerns of our users or potential users and to resolving your complaint as quickly as
               possible.
             </p>
             <p>
               <strong>1.3</strong> This policy has been designed to provide guidance to both our
-              users and customer support on the manner in which Fansbook receives and manages your
+              users and customer support on the manner in which Inscrio receives and manages your
               complaint. We are committed to being consistent, fair and impartial when handling your
               complaint.
             </p>
@@ -59,7 +59,7 @@ export default function Complaints() {
           <p className="mb-[32px]">
             In this policy a complaint means an expression of dissatisfaction by a user relating to
             the services provided and the content available i.e. reporting illegal content or
-            content that violates the Fansbook standards.
+            content that violates the Inscrio standards.
           </p>
 
           <h3 className="mb-[16px] text-[24px] font-medium">3. How a Complaint Is Made</h3>
@@ -83,7 +83,7 @@ export default function Complaints() {
           </h3>
           <div className="mb-[32px] space-y-[16px]">
             <p>
-              <strong>4.1</strong> When Fansbook is investigating your complaint, we will be relying
+              <strong>4.1</strong> When Inscrio is investigating your complaint, we will be relying
               on information provided by you and information we may already be holding. We may need
               to contact you to clarify details or request additional information where necessary.
             </p>

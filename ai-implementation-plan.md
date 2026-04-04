@@ -45,11 +45,11 @@ Feature 4 must REPLACE the existing auto-bot with suggestion flow.
 ```bash
 # Backend
 cd apps/server
-npm install @aws-sdk/client-rekognition @onfido/api stripe @types/stripe
+npm install @aws-sdk/client-rekognition @didit-sdk/node stripe @types/stripe
 
 # Frontend
 cd apps/web
-npm install @onfido/onfido-sdk-ui
+npm install @didit-sdk/web-sdk
 ```
 
 ---
@@ -162,9 +162,9 @@ enum DocumentType {
 model IdentityVerification {
   id                 String             @id @default(cuid())
   userId             String             @unique
-  onfidoApplicantId  String?
-  onfidoCheckId      String?
-  onfidoReportIds    Json?              // array of report IDs
+  diditSessionId  String?
+  diditVerificationId      String?
+  diditReportData    Json?              // array of report IDs
   status             VerificationStatus @default(PENDING)
   documentType       DocumentType?
   submittedAt        DateTime           @default(now())
@@ -172,7 +172,7 @@ model IdentityVerification {
   reviewedByAdminId  String?
   rejectionReason    String?
   retryCount         Int                @default(0)
-  rawResult          Json?              // full Onfido webhook payload
+  rawResult          Json?              // full Didit webhook payload
 
   user       User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   reviewedBy User? @relation("VerificationReviewer", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
@@ -316,8 +316,8 @@ MODERATION_BLOCK_THRESHOLD: z.coerce.number().optional().default(85),  // %
 MODERATION_REVIEW_THRESHOLD: z.coerce.number().optional().default(60), // %
 
 // Feature 1
-ONFIDO_API_TOKEN: z.string().optional().default(''),
-ONFIDO_WEBHOOK_SECRET: z.string().optional().default(''),
+DIDIT_CLIENT_ID: z.string().optional().default(''),
+DIDIT_CLIENT_SECRET: z.string().optional().default(''),
 
 // Feature 3 (Stripe already exists, just add)
 STRIPE_RADAR_ENABLED: z.string().optional().default('false'),
@@ -332,8 +332,8 @@ AWS_SECRET_ACCESS_KEY=...
 AWS_REGION=eu-west-1
 MODERATION_BLOCK_THRESHOLD=85
 MODERATION_REVIEW_THRESHOLD=60
-ONFIDO_API_TOKEN=api_sandbox.xxx
-ONFIDO_WEBHOOK_SECRET=xxx
+DIDIT_CLIENT_ID=your_client_id_here
+DIDIT_CLIENT_SECRET=xxx
 STRIPE_RADAR_ENABLED=true
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 ```
@@ -927,17 +927,21 @@ app.use('/api/creator/moderation', creatorModerationRouter);
 
 # FEATURE 1 — ID & AGE VERIFICATION
 
+> **Provider: Didit** (switched from Onfido — 2026-03-26)
+> **Reason:** 500 free verifications/month + $0.15 after (vs Onfido $1–3). NFC passport chip support included. No minimum contract.
+> **Client Keys needed:** `DIDIT_CLIENT_ID` + `DIDIT_CLIENT_SECRET` from didit.me
+
 **€1,200 | Days 5–11 | Week 1–2**
 
 ---
 
-## F1 — Step 1: Onfido Account Setup (Day 5)
+## F1 — Step 1: Didit Account Setup (Day 5)
 
-1. Sign up: onfido.com → Developer → Create Application
-2. Get `API_TOKEN` (sandbox mode first, live after testing)
-3. Create webhook in Onfido dashboard:
+1. Sign up: didit.me → Create Application → get Client ID + Client Secret
+2. Get `DIDIT_CLIENT_ID` + `DIDIT_CLIENT_SECRET` (sandbox first)
+3. Create webhook in Didit dashboard:
    - URL: `https://fansbookrebuild.byredstone.com/api/verification/webhook`
-   - Events: `check.completed`
+   - Events: `verification.completed` + `verification.declined`
    - Copy webhook secret
 4. Add keys to production `.env`
 
@@ -948,19 +952,22 @@ app.use('/api/creator/moderation', creatorModerationRouter);
 **File: `apps/server/src/services/verificationService.ts`** (new, ~160 lines)
 
 ```ts
-import { Onfido, Region } from '@onfido/api';
+import { DiditClient } from '@didit-sdk/node';
 import { prisma } from '../config/database.js';
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 import { sendEmail } from '../utils/email.js';
 import crypto from 'crypto';
 
-let onfidoClient: Onfido | null = null;
-function getClient(): Onfido {
-  if (!onfidoClient) {
-    onfidoClient = new Onfido({ apiToken: env.ONFIDO_API_TOKEN, region: Region.EU });
+let diditClient: DiditClient | null = null;
+function getClient(): DiditClient {
+  if (!diditClient) {
+    diditClient = new DiditClient({
+      clientId: env.DIDIT_CLIENT_ID,
+      clientSecret: env.DIDIT_CLIENT_SECRET,
+    });
   }
-  return onfidoClient;
+  return diditClient;
 }
 
 export async function createApplicant(
@@ -978,8 +985,8 @@ export async function createApplicant(
 
   await prisma.identityVerification.upsert({
     where: { userId },
-    create: { userId, onfidoApplicantId: applicant.id, status: 'PENDING' },
-    update: { onfidoApplicantId: applicant.id, status: 'PENDING', retryCount: { increment: 0 } },
+    create: { userId, diditSessionId: applicant.id, status: 'PENDING' },
+    update: { diditSessionId: applicant.id, status: 'PENDING', retryCount: { increment: 0 } },
   });
 
   return applicant.id;
@@ -1003,16 +1010,16 @@ export async function createCheck(applicantId: string, userId: string) {
 
   await prisma.identityVerification.update({
     where: { userId },
-    data: { onfidoCheckId: check.id, submittedAt: new Date() },
+    data: { diditVerificationId: check.id, submittedAt: new Date() },
   });
 
   return check.id;
 }
 
-export async function handleOnfidoWebhook(rawBody: Buffer, signature: string, payload: unknown) {
+export async function handleDiditWebhook(rawBody: Buffer, signature: string, payload: unknown) {
   // Verify webhook signature
   const expected = crypto
-    .createHmac('sha256', env.ONFIDO_WEBHOOK_SECRET)
+    .createHmac('sha256', env.DIDIT_CLIENT_SECRET)
     .update(rawBody)
     .digest('hex');
   if (signature !== `sha256=${expected}`) throw new Error('Invalid webhook signature');
@@ -1034,7 +1041,7 @@ export async function handleOnfidoWebhook(rawBody: Buffer, signature: string, pa
   const check = await client.check.find(checkId);
 
   const verification = await prisma.identityVerification.findFirst({
-    where: { onfidoCheckId: checkId },
+    where: { diditVerificationId: checkId },
     include: { user: { select: { id: true, email: true, username: true } } },
   });
   if (!verification) return;
@@ -1101,9 +1108,9 @@ async function sendVerificationResultEmail(email: string, username: string, stat
 // Does: createCheck → return { checkId, message: "Verification in progress" }
 
 // POST /api/verification/webhook
-// NO auth (Onfido calls this directly)
+// NO auth (Didit calls this directly)
 // Headers: X-SHA2-Signature
-// Does: verify signature → handleOnfidoWebhook(rawBody, sig, body)
+// Does: verify signature → handleDiditWebhook(rawBody, sig, body)
 // IMPORTANT: use express.raw() middleware for this route to get raw body for signature verification
 ```
 
@@ -1126,7 +1133,7 @@ app.use('/api/verification', verificationRouter);
 ```
 GET  /api/admin/verifications          → list all, filter by status, paginated
 GET  /api/admin/verifications/stats    → counts per status
-GET  /api/admin/verifications/:id      → single verification details + raw Onfido result
+GET  /api/admin/verifications/:id      → single verification details + raw Didit result
 PATCH /api/admin/verifications/:id/approve  → set APPROVED, update user.verificationStatus
 PATCH /api/admin/verifications/:id/reject   → set REJECTED, body: { reason }, notify user
 PATCH /api/admin/verifications/:id/request-resubmit → reset to allow retry, notify user
@@ -1138,18 +1145,18 @@ PATCH /api/admin/verifications/:id/request-resubmit → reset to allow retry, no
 
 **File: `apps/web/src/pages/VerifyIdentity.tsx`** (new, ~190 lines — split if needed)
 
-Step machine with 4 states: `FORM | ONFIDO_SDK | PENDING | RESULT`
+Step machine with 4 states: `FORM | DIDIT_SDK | PENDING | RESULT`
 
 ```tsx
 // State: FORM
 // UI: Explanation card — "We need to verify your age to continue"
 // Form fields: First Name, Last Name, Date of Birth (date picker)
-// Submit → POST /api/verification/start → get sdkToken → go to ONFIDO_SDK state
+// Submit → POST /api/verification/start → get sdkToken → go to DIDIT_SDK state
 
-// State: ONFIDO_SDK
-// UI: Mount Onfido Web SDK
-import { init } from '@onfido/onfido-sdk-ui';
-// init({ token: sdkToken, containerId: 'onfido-mount', steps: ['document', 'face'], onComplete: () => submitCheck() })
+// State: DIDIT_SDK
+// UI: Mount Didit Web SDK
+import { init } from '@didit-sdk/web-sdk';
+// init({ sessionId: sdkToken, containerId: "didit-mount", steps: ['document', 'face'], onComplete: () => submitCheck() })
 // onComplete → POST /api/verification/submit → go to PENDING state
 
 // State: PENDING
@@ -1180,13 +1187,11 @@ In `apps/server/src/middleware/requireVerified.ts` (new, ~20 lines):
 ```ts
 export function requireVerified(req, res, next) {
   if (req.user?.verificationStatus !== 'APPROVED') {
-    return res
-      .status(403)
-      .json({
-        success: false,
-        message: 'Identity verification required',
-        code: 'VERIFICATION_REQUIRED',
-      });
+    return res.status(403).json({
+      success: false,
+      message: 'Identity verification required',
+      code: 'VERIFICATION_REQUIRED',
+    });
   }
   next();
 }
@@ -1214,7 +1219,7 @@ Tabs:
 2. **Approved** — searchable list
 3. **Rejected** — with rejection reasons
 
-Table columns: User (avatar + username) | Document Type | Submitted At | Status | Onfido Check ID | Actions
+Table columns: User (avatar + username) | Document Type | Submitted At | Status | Didit Session ID | Actions
 
 Actions: Approve | Reject (modal: enter reason) | Request Resubmit
 
@@ -2309,7 +2314,7 @@ sshpass -p 'Jash123qwe,,' ssh root@135.181.162.188 \
 
 - **F3**: Trigger test Stripe card, check FraudEvent in DB, check admin gets email
 - **F2**: Upload a test image with adult content (use AWS test set), verify it's blocked
-- **F1**: Go through Onfido flow in sandbox mode, verify webhook reaches server, check DB status update
+- **F1**: Go through Didit flow in sandbox mode, verify webhook reaches server, check DB status update
 - **F4**: Open creator message thread, click "Suggest replies", verify 3 options appear and NEVER auto-send
 - **F5**: Trigger insight generation manually via API, check creator dashboard card
 - **F6**: Open support widget, send a message, verify AI reply comes back, test escalation

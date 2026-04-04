@@ -116,11 +116,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
       <div className="hidden px-[26px] pt-[26px] pb-[10px] lg:block">
         <div className="flex h-[74px] items-center justify-between rounded-[181px] bg-card pl-[40px] pr-[6px]">
           <Link to="/feed" className="shrink-0">
-            <img
-              src="/icons/dashboard/fansbook-logo.webp"
-              alt="Fansbook"
-              className="h-[44px] w-auto"
-            />
+            <img src="/images/landing/logo.webp" alt="Inscrio" className="h-[44px] w-auto" />
           </Link>
           <div className="flex items-center gap-[60px]">
             <div className="flex items-center gap-[6px]">

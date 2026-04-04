@@ -27,7 +27,7 @@ const features = [
   {
     icon: 'feature_search',
     title: 'New Added',
-    desc: "We're always evolving. Expect regular updates, tools, and exciting features that keep Fansbook ahead of the game.",
+    desc: "We're always evolving. Expect regular updates, tools, and exciting features that keep Inscrio ahead of the game.",
   },
   {
     icon: 'diversity_1',

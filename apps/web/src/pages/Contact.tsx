@@ -44,7 +44,7 @@ export default function Contact() {
         </div>
         <MarketingNav />
         <div className="absolute inset-x-0 top-[100px] px-[20px] md:top-[135px] md:px-0 flex flex-col items-center gap-[14px] text-white">
-          <h1 className="text-center text-[30px] md:text-[48px] font-medium">Contact FansBook</h1>
+          <h1 className="text-center text-[30px] md:text-[48px] font-medium">Contact Inscrio</h1>
           <p className="text-center text-[15px] md:text-[20px] font-normal">
             Got a question or just wanna talk? We&apos;re here for it.
           </p>

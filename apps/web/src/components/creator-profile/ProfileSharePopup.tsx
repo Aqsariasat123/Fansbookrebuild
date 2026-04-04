@@ -32,7 +32,7 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
   const handleShareVia = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: `@${username} on Fansbook`, url: profileUrl });
+        await navigator.share({ title: `@${username} on Inscrio`, url: profileUrl });
       } catch {
         /* cancelled */
       }

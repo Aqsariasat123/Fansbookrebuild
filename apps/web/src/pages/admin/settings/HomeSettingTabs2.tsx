@@ -31,7 +31,7 @@ export function FaqTab({ form, update, inputCls, textCls }: Props) {
         <input
           value={form.faqSeoTitle || ''}
           onChange={(e) => update('faqSeoTitle', e.target.value)}
-          placeholder="Fansbook.vip"
+          placeholder="Inscrio.vip"
           className={inputCls}
         />
       </div>
@@ -67,7 +67,7 @@ export function EmailTab({ form, update, inputCls, textCls }: Props) {
         <input
           value={form.emailCopyright || ''}
           onChange={(e) => update('emailCopyright', e.target.value)}
-          placeholder="© 2026 Fansbook. All rights reserved."
+          placeholder="© 2026 Inscrio. All rights reserved."
           className={inputCls}
         />
       </div>
@@ -94,7 +94,7 @@ export function SeoSettingsTab({ form, update, inputCls, textCls }: Props) {
         <input
           value={form.seoSettingsTitle || ''}
           onChange={(e) => update('seoSettingsTitle', e.target.value)}
-          placeholder="Fansbook.vip"
+          placeholder="Inscrio.vip"
           className={inputCls}
         />
       </div>

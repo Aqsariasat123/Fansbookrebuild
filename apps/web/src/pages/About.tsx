@@ -17,7 +17,7 @@ export default function About() {
         <MarketingNav />
         <div className="absolute inset-x-0 top-[100px] md:top-[135px] flex flex-col items-center gap-[14px] px-[20px] md:px-[76px] text-white">
           <h1 className="w-full text-center text-[30px] md:text-[48px] font-medium">
-            About FansBook
+            About Inscrio
           </h1>
           <p className="w-full text-center text-[15px] md:text-[20px] font-normal">
             A modern platform for fans and creators to connect.
@@ -40,18 +40,18 @@ export default function About() {
           {/* Text block — 470px width, positioned left */}
           <div className="w-full text-center lg:w-[470px] lg:text-left text-[15px] md:text-[16px] font-normal leading-normal text-foreground">
             <p className="mb-[16px]">
-              FansBook is a next-generation fan engagement platform that allows creators to live
+              Inscrio is a next-generation fan engagement platform that allows creators to live
               stream, share exclusive content, and interact with their fans in real time.
             </p>
             <p className="mb-[16px]">
               Our goal is to create a space where creators are empowered and fans feel more
-              connected than ever. FansBook is a next-generation fan engagement platform that allows
+              connected than ever. Inscrio is a next-generation fan engagement platform that allows
               creators to live stream, share exclusive content, and interact with their fans in real
               time.
             </p>
             <p className="mb-[16px]">
               Our goal is to create a space where creators are empowered and fans feel more
-              connected than ever. FansBook.vip is a next-generation fan engagement platform that
+              connected than ever. inscrio.com is a next-generation fan engagement platform that
               allows creators to live stream, share exclusive content, and interact with their fans
               in real time.
             </p>

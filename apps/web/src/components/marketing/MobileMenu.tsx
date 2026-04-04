@@ -33,7 +33,7 @@ export function MobileMenu({ onClose, linkColor }: MobileMenuProps) {
         <div className="flex items-center justify-between px-[24px] pt-[24px] pb-[20px]">
           <img
             src="/images/landing/logo.webp"
-            alt="Fansbook"
+            alt="Inscrio"
             className="h-[36px] w-auto object-contain"
           />
           <button
