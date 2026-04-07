@@ -33,15 +33,16 @@ export async function createVerificationSession(
   }
 
   try {
+    const basicCreds = Buffer.from(`${env.DIDIT_CLIENT_ID}:${env.DIDIT_CLIENT_SECRET}`).toString(
+      'base64',
+    );
     const tokenRes = await fetch('https://apx.didit.me/auth/v2/token/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: env.DIDIT_CLIENT_ID!,
-        client_secret: env.DIDIT_CLIENT_SECRET!,
-        grant_type: 'client_credentials',
-        scope: 'openid',
-      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${basicCreds}`,
+      },
+      body: new URLSearchParams({ grant_type: 'client_credentials' }),
     });
     const tokenBody = (await tokenRes.json()) as Record<string, unknown>;
     logger.info(
