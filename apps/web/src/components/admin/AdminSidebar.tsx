@@ -76,9 +76,9 @@ export function AdminSidebar({ open, onClose }: Props) {
     <>
       <div className="flex items-center justify-between px-[24px] pt-[24px] lg:px-[40px] lg:pt-[40px]">
         <img
-          src="/icons/admin/logo.png"
+          src="/images/landing/logo.webp"
           alt="Inscrio"
-          className="h-[40px] w-[150px] object-contain lg:h-[56px] lg:w-[205px]"
+          className="h-[50px] w-auto object-contain lg:h-[70px]"
         />
         {/* Close button - mobile only */}
         <button onClick={onClose} className="text-white lg:hidden">
