@@ -84,7 +84,10 @@ function verifyWebhookSignature(rawBody: Buffer, signature: string) {
     .createHmac('sha256', env.DIDIT_WEBHOOK_SECRET)
     .update(rawBody)
     .digest('hex');
-  if (signature !== `sha256=${expected}`) throw new Error('Invalid webhook signature');
+  // Didit sends raw hex (no prefix); also accept sha256= prefix for compatibility
+  if (signature !== expected && signature !== `sha256=${expected}`) {
+    throw new Error('Invalid webhook signature');
+  }
 }
 
 function mapDiditStatus(status: string): 'APPROVED' | 'REJECTED' | 'MANUAL_REVIEW' {

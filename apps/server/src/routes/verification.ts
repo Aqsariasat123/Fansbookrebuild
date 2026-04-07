@@ -26,12 +26,10 @@ router.post('/start', authenticate, async (req: Request, res: Response, next: Ne
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     if (message === 'MAX_RETRIES') {
-      res
-        .status(403)
-        .json({
-          success: false,
-          message: 'Maximum verification attempts reached. Contact support.',
-        });
+      res.status(403).json({
+        success: false,
+        message: 'Maximum verification attempts reached. Contact support.',
+      });
       return;
     }
     next(err);
@@ -55,7 +53,10 @@ export default router;
 export async function verificationWebhookHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const signature =
-      (req.headers['x-signature'] as string) || (req.headers['x-sha2-signature'] as string) || '';
+      (req.headers['x-signature-v2'] as string) ||
+      (req.headers['x-signature-simple'] as string) ||
+      (req.headers['x-signature'] as string) ||
+      '';
     await handleDiditWebhook(
       req.body as Buffer,
       signature,
