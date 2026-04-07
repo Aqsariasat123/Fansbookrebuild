@@ -1,15 +1,30 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
+import { useAuthStore } from '../stores/authStore';
 import { SdkStep, PendingStep, ResultStep } from './VerifyIdentitySteps';
 
 type Step = 'FORM' | 'SDK' | 'PENDING' | 'RESULT';
 type VerifyStatus = 'APPROVED' | 'REJECTED' | 'MANUAL_REVIEW' | 'PENDING' | 'UNVERIFIED';
 
+const RESULT_STATUSES: VerifyStatus[] = ['APPROVED', 'REJECTED', 'MANUAL_REVIEW'];
+
 interface FormState {
   firstName: string;
   lastName: string;
   dob: string;
+}
+
+function deriveInitialStep(
+  vstatus: string | undefined | null,
+  done: boolean,
+): { step: Step; status: VerifyStatus } {
+  if (done) return { step: 'PENDING', status: 'PENDING' };
+  if (vstatus === 'APPROVED') return { step: 'RESULT', status: 'APPROVED' };
+  if (vstatus === 'REJECTED') return { step: 'RESULT', status: 'REJECTED' };
+  if (vstatus === 'MANUAL_REVIEW') return { step: 'RESULT', status: 'MANUAL_REVIEW' };
+  if (vstatus === 'PENDING') return { step: 'PENDING', status: 'PENDING' };
+  return { step: 'FORM', status: 'PENDING' };
 }
 
 function FormStep({
@@ -74,62 +89,77 @@ function FormStep({
 
 export default function VerifyIdentity() {
   const [searchParams] = useSearchParams();
-  const [step, setStep] = useState<Step>(searchParams.get('done') === '1' ? 'PENDING' : 'FORM');
+  const authUser = useAuthStore((s) => s.user);
+  const setAuthUser = useAuthStore((s) => s.setUser);
+
+  const isDone = searchParams.get('done') === '1';
+  const derived = deriveInitialStep(authUser?.verificationStatus, isDone);
+
+  const [step, setStep] = useState<Step>(derived.step);
+  const [status, setStatus] = useState<VerifyStatus>(derived.status);
   const [sdkToken, setSdkToken] = useState('');
-  const [status, setStatus] = useState<VerifyStatus>('PENDING');
   const [retryCount, setRetryCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // On mount: check existing status — show result immediately if already approved/rejected
+  // Sync authStore retryCount if showing result
   useEffect(() => {
-    async function checkExisting() {
-      try {
-        const { data: r } = await api.get('/verification/status');
+    if (derived.step !== 'RESULT') return;
+    api
+      .get('/verification/status')
+      .then(({ data: r }) => {
+        if (r.success) setRetryCount(r.data.retryCount ?? 0);
+      })
+      .catch(() => {});
+  }, [derived.step]);
+
+  // If not pre-determined from store, fetch from API on mount
+  useEffect(() => {
+    if (isDone || derived.step !== 'FORM') return;
+    api
+      .get('/verification/status')
+      .then(({ data: r }) => {
         if (!r.success) return;
-        if (
-          r.data.status === 'APPROVED' ||
-          r.data.status === 'REJECTED' ||
-          r.data.status === 'MANUAL_REVIEW'
-        ) {
-          setStatus(r.data.status as VerifyStatus);
+        const s = r.data.status as VerifyStatus;
+        if (RESULT_STATUSES.includes(s)) {
+          setStatus(s);
           setRetryCount(r.data.retryCount ?? 0);
           setStep('RESULT');
-        } else if (r.data.status === 'PENDING') {
+        } else if (s === 'PENDING') {
           setStep('PENDING');
         }
-      } catch {
-        // swallow
-      }
-    }
-    if (searchParams.get('done') !== '1') void checkExisting();
-  }, [searchParams]);
+      })
+      .catch(() => {});
+  }, [isDone, derived.step]);
 
+  // Poll while PENDING
   useEffect(() => {
-    if (step === 'PENDING') {
-      pollRef.current = setInterval(async () => {
-        try {
-          const { data: r } = await api.get('/verification/status');
-          if (r.success && r.data.status !== 'PENDING') {
-            clearInterval(pollRef.current!);
-            setStatus(r.data.status as VerifyStatus);
-            setRetryCount(r.data.retryCount ?? 0);
-            if (r.data.status === 'UNVERIFIED') {
-              setStep('FORM');
-            } else {
-              setStep('RESULT');
-            }
+    if (step !== 'PENDING') return;
+    pollRef.current = setInterval(() => {
+      api
+        .get('/verification/status')
+        .then(({ data: r }) => {
+          if (!r.success || r.data.status === 'PENDING') return;
+          clearInterval(pollRef.current!);
+          const s = r.data.status as VerifyStatus;
+          setStatus(s);
+          setRetryCount(r.data.retryCount ?? 0);
+          // Update authStore so sidebar badge refreshes
+          if (authUser) {
+            setAuthUser({
+              ...authUser,
+              verificationStatus: s === 'MANUAL_REVIEW' ? 'PENDING' : s,
+            });
           }
-        } catch {
-          // swallow poll errors
-        }
-      }, 8000);
-    }
+          setStep(s === 'UNVERIFIED' ? 'FORM' : 'RESULT');
+        })
+        .catch(() => {});
+    }, 8000);
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [step]);
+  }, [step, authUser, setAuthUser]);
 
   async function handleFormSubmit(form: FormState) {
     setLoading(true);
@@ -141,11 +171,7 @@ export default function VerifyIdentity() {
         return;
       }
       setSdkToken(r.data.sdkToken);
-      if (r.data.sdkToken === 'PLACEHOLDER_TOKEN') {
-        setStep('PENDING');
-      } else {
-        setStep('SDK');
-      }
+      setStep(r.data.sdkToken === 'PLACEHOLDER_TOKEN' ? 'PENDING' : 'SDK');
     } catch (err) {
       const msg =
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ??
