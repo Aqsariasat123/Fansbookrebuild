@@ -82,6 +82,30 @@ export default function VerifyIdentity() {
   const [error, setError] = useState('');
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // On mount: check existing status — show result immediately if already approved/rejected
+  useEffect(() => {
+    async function checkExisting() {
+      try {
+        const { data: r } = await api.get('/verification/status');
+        if (!r.success) return;
+        if (
+          r.data.status === 'APPROVED' ||
+          r.data.status === 'REJECTED' ||
+          r.data.status === 'MANUAL_REVIEW'
+        ) {
+          setStatus(r.data.status as VerifyStatus);
+          setRetryCount(r.data.retryCount ?? 0);
+          setStep('RESULT');
+        } else if (r.data.status === 'PENDING') {
+          setStep('PENDING');
+        }
+      } catch {
+        // swallow
+      }
+    }
+    if (searchParams.get('done') !== '1') void checkExisting();
+  }, [searchParams]);
+
   useEffect(() => {
     if (step === 'PENDING') {
       pollRef.current = setInterval(async () => {
