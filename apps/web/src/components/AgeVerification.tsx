@@ -1,11 +1,34 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../stores/authStore';
 
 const STORAGE_KEY = 'age_verified';
 const READABLE_PATHS = ['/privacy', '/terms'];
+const PUBLIC_PATHS = [
+  '/',
+  '/login',
+  '/register',
+  '/creators',
+  '/creators-live',
+  '/make-money',
+  '/how-it-works',
+  '/about',
+  '/contact',
+  '/faq',
+  '/terms',
+  '/privacy',
+  '/cookies',
+  '/complaints',
+  '/verify-identity',
+  '/verify-email',
+  '/forgot-password',
+  '/reset-password',
+];
 
 export function AgeVerification({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const authUser = useAuthStore((s) => s.user);
   const [accepted, setAccepted] = useState(() => localStorage.getItem(STORAGE_KEY) === 'true');
   const [privacyChecked, setPrivacyChecked] = useState(false);
   const [termsChecked, setTermsChecked] = useState(false);
@@ -18,6 +41,22 @@ export function AgeVerification({ children }: { children: React.ReactNode }) {
       document.body.style.overflow = '';
     };
   }, [showPopup]);
+
+  useEffect(() => {
+    if (!accepted || !authUser) return;
+    if (authUser.role === 'ADMIN') return;
+    if (authUser.verificationStatus === 'APPROVED') return;
+    // Only redirect on app routes, not marketing/public pages
+    const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
+    if (isPublic) return;
+    if (authUser.verificationStatus === 'UNVERIFIED') {
+      const accountAge = Date.now() - new Date(authUser.createdAt ?? Date.now()).getTime();
+      const gracePeriodMs = 24 * 60 * 60 * 1000;
+      if (accountAge > gracePeriodMs) {
+        navigate('/verify-identity');
+      }
+    }
+  }, [accepted, authUser, navigate, pathname]);
 
   const handleEnter = () => {
     if (!privacyChecked || !termsChecked) return;

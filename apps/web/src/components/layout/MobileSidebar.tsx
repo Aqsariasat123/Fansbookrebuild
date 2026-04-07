@@ -70,8 +70,26 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
                   }`
                 }
               >
-                <img src={icon} alt="" className="h-[20px] w-[20px]" />
-                {label(labelKey)}
+                <img src={icon} alt="" className="h-[20px] w-[20px]" style={undefined} />
+                <span className="flex-1">{label(labelKey)}</span>
+                {to === '/verify-identity' &&
+                  user?.verificationStatus &&
+                  user.verificationStatus !== 'APPROVED' && (
+                    <span
+                      className={`rounded-full px-[7px] py-[1px] text-[9px] font-semibold ${
+                        user.verificationStatus === 'PENDING' ||
+                        user.verificationStatus === 'MANUAL_REVIEW'
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : user.verificationStatus === 'REJECTED'
+                            ? 'bg-red-500/20 text-red-400'
+                            : 'bg-amber-500/20 text-amber-400'
+                      }`}
+                    >
+                      {user.verificationStatus === 'MANUAL_REVIEW'
+                        ? 'REVIEW'
+                        : user.verificationStatus}
+                    </span>
+                  )}
               </NavLink>
             ))}
           </div>

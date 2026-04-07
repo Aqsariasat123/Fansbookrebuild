@@ -15,6 +15,7 @@ import contentRouter from './admin-content.js';
 import badgesRouter from './admin-badges.js';
 import announcementsRouter from './admin-announcements.js';
 import verificationRouter from './admin-verification.js';
+import verificationsRouter from './admin-verifications.js';
 import healthRouter from './admin-health.js';
 import aiRouter from './admin-ai.js';
 
@@ -37,6 +38,7 @@ router.use('/content', contentRouter);
 router.use('/badges', badgesRouter);
 router.use('/announcements', announcementsRouter);
 router.use('/verification', verificationRouter);
+router.use('/verifications', verificationsRouter);
 router.use('/health', healthRouter);
 router.use('/ai', aiRouter);
 

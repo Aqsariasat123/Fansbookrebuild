@@ -56,6 +56,7 @@ import pushRouter from './routes/push-subscriptions.js';
 import paymentGatewayRouter from './routes/payment-gateway.js';
 import paymentWebhooksRouter from './routes/payment-webhooks.js';
 import creatorAIRouter from './routes/creator-ai.js';
+import verificationRouter, { verificationWebhookHandler } from './routes/verification.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -92,6 +93,13 @@ app.use(
 
 // Cookie parsing (for httpOnly refresh tokens)
 app.use(cookieParser());
+
+// Didit webhook — must be registered before express.json() to receive raw body
+app.post(
+  '/api/verification/webhook',
+  express.raw({ type: 'application/json' }),
+  verificationWebhookHandler,
+);
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
@@ -167,6 +175,7 @@ app.use('/api/announcements', announcementsRouter);
 app.use('/api/push', pushRouter);
 app.use('/api/payments', paymentGatewayRouter);
 app.use('/api/payments/webhook', paymentWebhooksRouter);
+app.use('/api/verification', verificationRouter);
 
 // Error handling
 app.use(errorHandler);

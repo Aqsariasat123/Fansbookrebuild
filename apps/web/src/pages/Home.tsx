@@ -7,6 +7,7 @@ import { PostComposerBar } from '../components/feed/PostComposerBar';
 import { StoriesRow } from '../components/feed/StoriesRow';
 import { EmptyFeedState } from '../components/feed/EmptyFeedState';
 import { AnnouncementBanner } from '../components/feed/AnnouncementBanner';
+import { VerificationBanner } from '../components/shared/VerificationBanner';
 import type { StoryGroup } from '../components/feed/StoryViewer';
 import type { FeedPost } from '../components/feed/FeedPosts';
 
@@ -149,6 +150,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-[16px] md:gap-[22px]">
+      <VerificationBanner />
       <AnnouncementBanner />
       {newPostsAvailable && (
         <button

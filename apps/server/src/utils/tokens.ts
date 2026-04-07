@@ -56,4 +56,5 @@ export const ME_SELECT = {
   notifSettings: true,
   privacySettings: true,
   createdAt: true,
+  verificationStatus: true,
 } as const;

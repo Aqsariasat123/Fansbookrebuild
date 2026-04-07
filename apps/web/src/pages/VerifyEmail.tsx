@@ -120,7 +120,7 @@ export default function VerifyEmail() {
             </h1>
             <p className="mt-2 text-[14px] text-muted-foreground">Your email has been confirmed.</p>
             <button
-              onClick={() => navigate('/feed')}
+              onClick={() => navigate('/verify-identity')}
               className="mt-6 flex h-[49px] w-full items-center justify-center rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] text-[16px] font-medium text-foreground hover:opacity-90"
             >
               Continue to Feed

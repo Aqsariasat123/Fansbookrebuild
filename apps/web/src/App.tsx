@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MainLayout } from './components/layout/MainLayout';
@@ -73,6 +73,8 @@ import {
   CreatorAISettings,
 } from './lazyPages';
 
+const VerifyIdentity = lazy(() => import('./pages/VerifyIdentity'));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -127,6 +129,7 @@ export default function App() {
                 {/* Protected app routes with layout */}
                 <Route element={<ProtectedRoute />}>
                   <Route element={<MainLayout />}>
+                    <Route path="/verify-identity" element={<VerifyIdentity />} />
                     {/* Shared routes (both fan + creator) */}
                     <Route path="/feed" element={<Home />} />
                     <Route path="/post/:id" element={<SinglePost />} />

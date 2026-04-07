@@ -169,6 +169,8 @@ export interface UserPublicProfile {
   followersCount: number;
   followingCount: number;
   postsCount: number;
+  verificationStatus?: string;
+  createdAt?: string;
 }
 
 export interface MediaUploadResult {

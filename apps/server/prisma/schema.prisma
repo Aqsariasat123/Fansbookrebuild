@@ -286,8 +286,10 @@ model User {
   storyReactions       StoryReaction[]
   marketplaceReviews   MarketplaceReview[]   @relation("ReviewBuyer")
   sellerReviews        MarketplaceReview[]   @relation("ReviewSeller")
-  creatorBot           CreatorBot?
-  aiUsageLogs          AIUsageLog[]
+  creatorBot             CreatorBot?
+  aiUsageLogs            AIUsageLog[]
+  identityVerification   IdentityVerification?
+  reviewedVerifications  IdentityVerification[] @relation("VerificationReviewer")
 
   @@index([email])
   @@index([username])
@@ -1154,4 +1156,41 @@ model AIUsageLog {
 
   @@index([creatorId])
   @@index([createdAt])
+}
+
+// ─── Identity Verification (Didit) ─────────────────────
+
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING
+  APPROVED
+  REJECTED
+  MANUAL_REVIEW
+}
+
+enum DocumentType {
+  PASSPORT
+  DRIVING_LICENCE
+  NATIONAL_ID
+}
+
+model IdentityVerification {
+  id                  String             @id @default(cuid())
+  userId              String             @unique
+  diditSessionId      String?
+  diditVerificationId String?
+  diditReportData     Json?
+  status              VerificationStatus @default(PENDING)
+  documentType        DocumentType?
+  submittedAt         DateTime           @default(now())
+  reviewedAt          DateTime?
+  reviewedByAdminId   String?
+  rejectionReason     String?
+  retryCount          Int                @default(0)
+  rawResult           Json?
+
+  user       User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("VerificationReviewer", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
+
+  @@index([status])
 }

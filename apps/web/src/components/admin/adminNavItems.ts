@@ -16,6 +16,7 @@ export const adminNavItems: AdminNavItem[] = [
   { to: '/admin/badges', label: 'Badges', icon: 'badges' },
   { to: '/admin/announcements', label: 'Announcements', icon: 'announcements' },
   { to: '/admin/ai-usage', label: 'AI Usage', icon: 'ai' },
+  { to: '/admin/id-verification', label: 'ID Verification', icon: 'idverification' },
   {
     to: '#finance',
     label: 'Finance',

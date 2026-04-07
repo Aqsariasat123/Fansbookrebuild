@@ -4,6 +4,27 @@ import { useAuthStore } from '../../stores/authStore';
 import { logoutApi } from '../../lib/auth';
 import { fanNavItems, creatorNavItems, fallbackLabels, REVERSE_LANG } from './navItems';
 
+function VerifyBadge({ status }: { status: string }) {
+  if (status === 'APPROVED') {
+    return (
+      <span className="rounded-full bg-green-500/20 px-[8px] py-[2px] text-[10px] font-semibold text-green-400">
+        ✓
+      </span>
+    );
+  }
+  const cls =
+    status === 'PENDING' || status === 'MANUAL_REVIEW'
+      ? 'bg-blue-500/20 text-blue-400'
+      : status === 'REJECTED'
+        ? 'bg-red-500/20 text-red-400'
+        : 'bg-amber-500/20 text-amber-400';
+  return (
+    <span className={`rounded-full px-[8px] py-[2px] text-[10px] font-semibold ${cls}`}>
+      {status === 'MANUAL_REVIEW' ? 'REVIEW' : status}
+    </span>
+  );
+}
+
 export function Sidebar() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -42,8 +63,11 @@ export function Sidebar() {
                   }`
                 }
               >
-                <img src={icon} alt="" className="h-[20px] w-[20px]" />
-                {label(labelKey)}
+                <img src={icon} alt="" className="h-[20px] w-[20px]" style={undefined} />
+                <span className="flex-1">{label(labelKey)}</span>
+                {to === '/verify-identity' && user?.verificationStatus && (
+                  <VerifyBadge status={user.verificationStatus} />
+                )}
               </NavLink>
             ))}
           </div>

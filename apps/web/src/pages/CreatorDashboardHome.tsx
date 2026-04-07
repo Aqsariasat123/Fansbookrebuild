@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
+import { VerificationBanner } from '../components/shared/VerificationBanner';
 
 interface DashStats {
   totalEarnings: number;
@@ -89,6 +90,7 @@ export default function CreatorDashboardHome() {
 
   return (
     <div className="flex flex-col gap-[20px]">
+      <VerificationBanner />
       <p className="text-[20px] text-foreground">Dashboard</p>
 
       {/* Stat Cards */}
