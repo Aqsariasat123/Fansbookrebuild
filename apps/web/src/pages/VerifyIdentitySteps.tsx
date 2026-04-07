@@ -6,25 +6,24 @@ type VerifyStatus = 'APPROVED' | 'REJECTED' | 'MANUAL_REVIEW' | 'PENDING' | 'UNV
 // ── SDK Step ──────────────────────────────────────────────
 export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-[24px] text-center">
-      <p className="text-[14px] text-gray-300">
-        Complete the identity check in the window below. Once finished, click the button.
-      </p>
-      <div
-        className="w-full rounded-[12px] overflow-hidden border border-gray-700"
-        style={{ height: 520 }}
-      >
-        <iframe
-          src={sdkToken}
-          className="w-full h-full"
-          allow="camera; microphone"
-          title="Didit identity verification"
-        />
+    <div className="flex flex-col items-center gap-[24px] text-center py-[12px]">
+      <div className="flex size-[72px] items-center justify-center rounded-full bg-[#01adf1]/10">
+        <span className="material-icons-outlined text-[40px] text-[#01adf1]">open_in_new</span>
+      </div>
+      <div>
+        <h2 className="text-[18px] font-bold text-white mb-[8px]">Complete verification</h2>
+        <p className="text-[14px] text-gray-400 max-w-[360px]">
+          Click below to open the Didit identity check in a new tab. Once finished, come back and
+          click "I've completed the verification".
+        </p>
       </div>
       <button
-        onClick={onDone}
+        onClick={() => window.open(sdkToken, '_blank', 'noopener,noreferrer')}
         className="rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[12px] text-[15px] font-semibold text-white"
       >
+        Open Verification
+      </button>
+      <button onClick={onDone} className="text-[13px] text-gray-400 underline">
         I've completed the verification
       </button>
     </div>

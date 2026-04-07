@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { SdkStep, PendingStep, ResultStep } from './VerifyIdentitySteps';
 
@@ -72,7 +73,8 @@ function FormStep({
 }
 
 export default function VerifyIdentity() {
-  const [step, setStep] = useState<Step>('FORM');
+  const [searchParams] = useSearchParams();
+  const [step, setStep] = useState<Step>(searchParams.get('done') === '1' ? 'PENDING' : 'FORM');
   const [sdkToken, setSdkToken] = useState('');
   const [status, setStatus] = useState<VerifyStatus>('PENDING');
   const [retryCount, setRetryCount] = useState(0);
