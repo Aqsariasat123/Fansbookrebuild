@@ -132,7 +132,7 @@ export async function handleDiditWebhook(rawBody: Buffer, signature: string, pay
   });
 
   const userStatus = newStatus === 'MANUAL_REVIEW' ? 'PENDING' : newStatus;
-  await prisma.user.update({ where: { id: userId }, data: { verificationStatus: userStatus } });
+  await prisma.user.updateMany({ where: { id: userId }, data: { verificationStatus: userStatus } });
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
