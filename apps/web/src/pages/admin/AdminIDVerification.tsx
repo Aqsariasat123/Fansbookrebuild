@@ -31,9 +31,9 @@ function StatCard({
   highlight?: boolean;
 }) {
   return (
-    <div className="rounded-[12px] border border-gray-700 bg-gray-800 p-[20px]">
-      <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-[6px]">{label}</p>
-      <p className={`text-[26px] font-bold ${highlight ? 'text-[#01adf1]' : 'text-white'}`}>
+    <div className="rounded-[12px] border border-gray-200 bg-white p-[20px] shadow-sm">
+      <p className="text-[11px] text-gray-500 uppercase tracking-wide mb-[6px]">{label}</p>
+      <p className={`text-[26px] font-bold ${highlight ? 'text-[#01adf1]' : 'text-gray-900'}`}>
         {value}
       </p>
     </div>
@@ -41,7 +41,7 @@ function StatCard({
 }
 
 function buildStatusFilter(tab: TabKey): string | undefined {
-  if (tab === 'QUEUE') return undefined; // fetched with two statuses via client-side filter
+  if (tab === 'QUEUE') return undefined;
   if (tab === 'APPROVED') return 'APPROVED';
   if (tab === 'REJECTED') return 'REJECTED';
   return undefined;
@@ -74,7 +74,6 @@ export default function AdminIDVerification() {
       const { data: r } = await api.get('/admin/verifications', { params });
       if (r.success) {
         let result = r.data.items as VerificationItem[];
-        // For QUEUE tab, filter both PENDING + MANUAL_REVIEW client-side
         if (tab === 'QUEUE') {
           result = result.filter((i) => i.status === 'PENDING' || i.status === 'MANUAL_REVIEW');
         }
@@ -103,8 +102,8 @@ export default function AdminIDVerification() {
   return (
     <div className="p-[24px] md:p-[32px]">
       <div className="mb-[28px]">
-        <h1 className="text-[22px] font-bold text-white">ID Verification</h1>
-        <p className="text-[13px] text-gray-400 mt-[2px]">
+        <h1 className="text-[22px] font-bold text-gray-900">ID Verification</h1>
+        <p className="text-[13px] text-gray-500 mt-[2px]">
           Review and manage user identity verification requests
         </p>
       </div>
@@ -127,7 +126,7 @@ export default function AdminIDVerification() {
               className={`rounded-full px-[16px] py-[7px] text-[13px] font-medium transition-colors ${
                 tab === t.key
                   ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'
-                  : 'border border-gray-700 text-gray-400 hover:text-white'
+                  : 'border border-gray-300 text-gray-600 hover:text-gray-900'
               }`}
             >
               {t.label}
@@ -139,12 +138,12 @@ export default function AdminIDVerification() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by username or email…"
-          className="rounded-[8px] border border-gray-700 bg-gray-800 px-[12px] py-[7px] text-[13px] text-white outline-none focus:border-[#01adf1] w-[240px]"
+          className="rounded-[8px] border border-gray-300 bg-white px-[12px] py-[7px] text-[13px] text-gray-900 outline-none focus:border-[#01adf1] w-[240px]"
         />
       </div>
 
       {/* Table */}
-      <div className="rounded-[12px] border border-gray-700 overflow-hidden">
+      <div className="rounded-[12px] border border-gray-200 overflow-hidden bg-white">
         <VerificationTable items={items} loading={loading} onRefresh={handleRefresh} />
       </div>
     </div>

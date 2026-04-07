@@ -30,7 +30,7 @@ function MonthPicker({ value, onChange }: { value: string; onChange: (v: string)
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded-[8px] border border-gray-700 bg-gray-800 px-[12px] py-[6px] text-[13px] text-white outline-none"
+      className="rounded-[8px] border border-gray-200 bg-white px-[12px] py-[6px] text-[13px] text-gray-900 outline-none"
     >
       {months.map((m) => (
         <option key={m} value={m}>
@@ -43,9 +43,9 @@ function MonthPicker({ value, onChange }: { value: string; onChange: (v: string)
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-[12px] border border-gray-700 bg-gray-800 p-[20px]">
-      <p className="text-[12px] text-gray-400 uppercase tracking-wide mb-[6px]">{label}</p>
-      <p className="text-[26px] font-bold text-white">{value}</p>
+    <div className="rounded-[12px] border border-gray-200 bg-white p-[20px]">
+      <p className="text-[12px] text-gray-500 uppercase tracking-wide mb-[6px]">{label}</p>
+      <p className="text-[26px] font-bold text-gray-900">{value}</p>
       {sub && <p className="text-[12px] text-gray-500 mt-[2px]">{sub}</p>}
     </div>
   );
@@ -55,9 +55,9 @@ function CreatorTableRow({ row }: { row: CreatorRow }) {
   const rowTokens = row.inputTokens + row.outputTokens;
   const isHigh = row.cost > 5;
   return (
-    <tr className="border-b border-gray-800 hover:bg-gray-800/50">
+    <tr className="border-b border-gray-100 hover:bg-gray-50">
       <td className="px-[20px] py-[12px]">
-        <p className="font-medium text-white text-[13px]">{row.displayName}</p>
+        <p className="font-medium text-gray-900 text-[13px]">{row.displayName}</p>
         <p className="text-gray-500 text-[12px]">@{row.username}</p>
       </td>
       <td className="px-[16px] py-[12px] text-gray-300 text-[13px]">
@@ -86,10 +86,10 @@ function CreatorTableRow({ row }: { row: CreatorRow }) {
 
 function CreatorTable({ data, loading }: { data: UsageData | null; loading: boolean }) {
   return (
-    <div className="rounded-[12px] border border-gray-700 overflow-hidden">
+    <div className="rounded-[12px] border border-gray-200 overflow-hidden">
       <div className="px-[20px] py-[14px] border-b border-gray-700 flex items-center justify-between">
-        <p className="text-[14px] font-semibold text-white">By Creator</p>
-        <p className="text-[12px] text-gray-400">{data?.byCreator.length ?? 0} creators active</p>
+        <p className="text-[14px] font-semibold text-gray-900">By Creator</p>
+        <p className="text-[12px] text-gray-500">{data?.byCreator.length ?? 0} creators active</p>
       </div>
       {loading ? (
         <div className="flex justify-center py-[40px]">
@@ -103,7 +103,7 @@ function CreatorTable({ data, loading }: { data: UsageData | null; loading: bool
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700 text-left text-[13px] text-gray-400">
+              <tr className="border-b border-gray-700 text-left text-[13px] text-gray-500">
                 <th className="px-[20px] py-[10px] font-medium">Creator</th>
                 <th className="px-[16px] py-[10px] font-medium">Suggestions</th>
                 <th className="px-[16px] py-[10px] font-medium">Polishes</th>
@@ -165,8 +165,8 @@ export default function AdminAIUsage() {
     <div className="p-[24px] md:p-[32px]">
       <div className="flex items-center justify-between flex-wrap gap-[12px] mb-[28px]">
         <div>
-          <h1 className="text-[22px] font-bold text-white">AI Usage Dashboard</h1>
-          <p className="text-[13px] text-gray-400 mt-[2px]">
+          <h1 className="text-[22px] font-bold text-gray-900">AI Usage Dashboard</h1>
+          <p className="text-[13px] text-gray-500 mt-[2px]">
             Platform-wide AI feature usage and cost tracking
           </p>
         </div>
