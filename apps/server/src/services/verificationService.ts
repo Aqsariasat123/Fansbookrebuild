@@ -33,18 +33,28 @@ export async function createVerificationSession(
   }
 
   try {
-    const tokenRes = await fetch('https://api.didit.me/v1/oauth/token', {
+    const tokenRes = await fetch('https://apx.didit.me/auth/v2/token/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        client_id: env.DIDIT_CLIENT_ID,
-        client_secret: env.DIDIT_CLIENT_SECRET,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: env.DIDIT_CLIENT_ID!,
+        client_secret: env.DIDIT_CLIENT_SECRET!,
         grant_type: 'client_credentials',
+        scope: 'openid',
       }),
     });
-    const { access_token } = (await tokenRes.json()) as { access_token: string };
+    const tokenBody = (await tokenRes.json()) as Record<string, unknown>;
+    logger.info(
+      { tokenStatus: tokenRes.status, tokenKeys: Object.keys(tokenBody) },
+      'Didit token response',
+    );
+    const access_token = tokenBody.access_token as string;
+    if (!access_token) {
+      logger.error({ tokenBody }, 'Didit token request failed — no access_token');
+      throw new Error('DIDIT_TOKEN_FAILED');
+    }
 
-    const sessionRes = await fetch('https://api.didit.me/v1/session/', {
+    const sessionRes = await fetch('https://apx.didit.me/v1/session/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${access_token}` },
       body: JSON.stringify({
@@ -53,7 +63,9 @@ export async function createVerificationSession(
         features: 'OCR + FACE',
       }),
     });
-    const session = (await sessionRes.json()) as { session_id: string; url: string };
+    const sessionBody = (await sessionRes.json()) as Record<string, unknown>;
+    logger.info({ sessionStatus: sessionRes.status, sessionBody }, 'Didit session response');
+    const session = sessionBody as { session_id: string; url: string };
 
     await prisma.identityVerification.upsert({
       where: { userId },
