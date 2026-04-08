@@ -41,6 +41,7 @@ const AdminVerification = lazy(() => import('./AdminVerification'));
 const AdminHealth = lazy(() => import('./AdminHealth'));
 const AdminAIUsage = lazy(() => import('./AdminAIUsage'));
 const AdminIDVerification = lazy(() => import('./AdminIDVerification'));
+const AdminModeration = lazy(() => import('./AdminModeration'));
 
 export function adminRoutes() {
   return (
@@ -85,6 +86,7 @@ export function adminRoutes() {
             <Route path="/admin/health" element={<AdminHealth />} />
             <Route path="/admin/ai-usage" element={<AdminAIUsage />} />
             <Route path="/admin/id-verification" element={<AdminIDVerification />} />
+            <Route path="/admin/moderation" element={<AdminModeration />} />
           </Route>
         </Route>
       </Route>

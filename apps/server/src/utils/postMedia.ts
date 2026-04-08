@@ -1,5 +1,6 @@
 import { prisma } from '../config/database.js';
 import { embedWatermark } from './imageProcessing.js';
+import { moderateImage } from '../services/rekognitionService.js';
 
 export async function createPostMedia(
   postId: string,
@@ -16,13 +17,17 @@ export async function createPostMedia(
         // watermark failure should not block the upload
       }
     }
-    await prisma.postMedia.create({
+    const media = await prisma.postMedia.create({
       data: {
         postId,
         url: `/api/posts/file/${file.filename}`,
         type: isImage ? 'IMAGE' : 'VIDEO',
         order: i,
+        moderationStatus: isImage ? 'PENDING' : 'SKIPPED',
       },
     });
+    if (isImage) {
+      moderateImage(media.id, file.path).catch(() => {});
+    }
   }
 }

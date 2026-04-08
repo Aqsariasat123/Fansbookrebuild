@@ -18,6 +18,7 @@ import verificationRouter from './admin-verification.js';
 import verificationsRouter from './admin-verifications.js';
 import healthRouter from './admin-health.js';
 import aiRouter from './admin-ai.js';
+import moderationRouter from './admin-moderation.js';
 
 const router = Router();
 
@@ -41,5 +42,6 @@ router.use('/verification', verificationRouter);
 router.use('/verifications', verificationsRouter);
 router.use('/health', healthRouter);
 router.use('/ai', aiRouter);
+router.use('/moderation', moderationRouter);
 
 export default router;
