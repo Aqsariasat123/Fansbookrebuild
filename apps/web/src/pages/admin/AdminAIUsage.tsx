@@ -60,11 +60,11 @@ function CreatorTableRow({ row }: { row: CreatorRow }) {
         <p className="font-medium text-gray-900 text-[13px]">{row.displayName}</p>
         <p className="text-gray-500 text-[12px]">@{row.username}</p>
       </td>
-      <td className="px-[16px] py-[12px] text-gray-300 text-[13px]">
+      <td className="px-[16px] py-[12px] text-gray-700 text-[13px]">
         {row.byFeature.suggest_reply ?? 0}
       </td>
-      <td className="px-[16px] py-[12px] text-gray-300 text-[13px]">{row.byFeature.polish ?? 0}</td>
-      <td className="px-[16px] py-[12px] text-gray-300 text-[13px]">
+      <td className="px-[16px] py-[12px] text-gray-700 text-[13px]">{row.byFeature.polish ?? 0}</td>
+      <td className="px-[16px] py-[12px] text-gray-700 text-[13px]">
         {rowTokens.toLocaleString()}
       </td>
       <td className="px-[16px] py-[12px] text-[13px]">
@@ -87,7 +87,7 @@ function CreatorTableRow({ row }: { row: CreatorRow }) {
 function CreatorTable({ data, loading }: { data: UsageData | null; loading: boolean }) {
   return (
     <div className="rounded-[12px] border border-gray-200 overflow-hidden">
-      <div className="px-[20px] py-[14px] border-b border-gray-700 flex items-center justify-between">
+      <div className="px-[20px] py-[14px] border-b border-gray-200 flex items-center justify-between">
         <p className="text-[14px] font-semibold text-gray-900">By Creator</p>
         <p className="text-[12px] text-gray-500">{data?.byCreator.length ?? 0} creators active</p>
       </div>
@@ -103,7 +103,7 @@ function CreatorTable({ data, loading }: { data: UsageData | null; loading: bool
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700 text-left text-[13px] text-gray-500">
+              <tr className="border-b border-gray-200 text-left text-[13px] text-gray-500">
                 <th className="px-[20px] py-[10px] font-medium">Creator</th>
                 <th className="px-[16px] py-[10px] font-medium">Suggestions</th>
                 <th className="px-[16px] py-[10px] font-medium">Polishes</th>
