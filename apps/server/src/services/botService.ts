@@ -20,12 +20,7 @@ export async function getBotConfig(creatorId: string) {
 
 export async function upsertBotConfig(
   creatorId: string,
-  data: {
-    suggestEnabled?: boolean;
-    polishEnabled?: boolean;
-    persona?: string;
-    greeting?: string;
-  },
+  data: { suggestEnabled?: boolean; polishEnabled?: boolean; persona?: string; greeting?: string },
 ) {
   return prisma.creatorBot.upsert({
     where: { creatorId },
@@ -54,7 +49,10 @@ function parseSuggestions(raw: string): string[] {
   if (m) {
     try {
       const p = JSON.parse(m[0]) as unknown;
-      if (Array.isArray(p)) return (p as string[]).filter(Boolean).slice(0, 3);
+      if (Array.isArray(p))
+        return (p as unknown[])
+          .filter((x): x is string => typeof x === 'string' && x.length > 0)
+          .slice(0, 3);
     } catch {
       /* fall through */
     }
@@ -157,40 +155,38 @@ Return ONLY the polished message text, nothing else.`;
 }
 
 export async function updateToneProfile(creatorId: string): Promise<string | null> {
-  const sentMessages = await prisma.message.findMany({
+  const msgs = await prisma.message.findMany({
     where: { senderId: creatorId, mediaType: 'TEXT', text: { not: null } },
     orderBy: { createdAt: 'desc' },
     take: 50,
     select: { text: true },
   });
-
-  if (sentMessages.length < 10) return null;
-
-  const sample = sentMessages
-    .slice(0, 30)
-    .map((m) => m.text)
-    .join('\n---\n');
-
+  if (msgs.length < 10) return null;
   const system = `Analyze these messages and describe the sender's communication style in 2-3 sentences.
 Focus on: tone (formal/casual), emoji usage, message length, warmth. Be concise.
 This will help an AI assistant match their writing style.`;
-
   try {
     const response = await getClient().messages.create({
       model: SUGGEST_MODEL,
       max_tokens: 150,
       system,
-      messages: [{ role: 'user', content: sample }],
+      messages: [
+        {
+          role: 'user',
+          content: msgs
+            .slice(0, 30)
+            .map((m) => m.text)
+            .join('\n---\n'),
+        },
+      ],
     });
-
     const profile = response.content[0]?.type === 'text' ? response.content[0].text.trim() : null;
-    if (profile) {
+    if (profile)
       await prisma.creatorBot.upsert({
         where: { creatorId },
         create: { creatorId, toneProfile: profile },
         update: { toneProfile: profile },
       });
-    }
     return profile;
   } catch (err) {
     logger.error({ err }, 'updateToneProfile failed');
