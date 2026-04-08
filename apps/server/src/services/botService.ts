@@ -63,8 +63,13 @@ async function callSuggestLLM(
     system,
     messages: history,
   });
-  const text = response.content[0]?.type === 'text' ? response.content[0].text.trim() : '[]';
-  const suggestions = JSON.parse(text) as string[];
+  const raw = response.content[0]?.type === 'text' ? response.content[0].text.trim() : '[]';
+  const suggestions = JSON.parse(
+    raw
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim(),
+  ) as string[];
   await logAIUsage(
     creatorId,
     'suggest_reply',
