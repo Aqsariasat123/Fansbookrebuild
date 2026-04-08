@@ -33,6 +33,7 @@ const envSchema = z.object({
   DIDIT_CLIENT_ID: z.string().optional().default(''),
   DIDIT_CLIENT_SECRET: z.string().optional().default(''),
   DIDIT_WEBHOOK_SECRET: z.string().optional().default(''),
+  DIDIT_WORKFLOW_ID: z.string().optional().default(''),
 });
 
 function loadEnv() {

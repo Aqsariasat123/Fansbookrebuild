@@ -55,13 +55,16 @@ export async function createVerificationSession(
       throw new Error('DIDIT_TOKEN_FAILED');
     }
 
-    const sessionRes = await fetch('https://apx.didit.me/v1/session/', {
+    const workflowId = env.DIDIT_WORKFLOW_ID;
+    const sessionUrl = workflowId
+      ? `https://apx.didit.me/v1/session/${workflowId}/`
+      : 'https://apx.didit.me/v1/session/';
+    const sessionRes = await fetch(sessionUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${access_token}` },
       body: JSON.stringify({
         vendor_data: userId,
         callback: `${env.CLIENT_URL}/verify-identity?done=1`,
-        features: 'OCR + FACE',
       }),
     });
     const sessionBody = (await sessionRes.json()) as Record<string, unknown>;
