@@ -3,11 +3,8 @@ import { prisma } from '../config/database.js';
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 
-// Haiku: fast + cheap for real-time suggestions
 const SUGGEST_MODEL = 'claude-haiku-4-5-20251001';
-// Sonnet: better quality for polish
 const POLISH_MODEL = 'claude-sonnet-4-6';
-
 let anthropic: Anthropic | null = null;
 function getClient(): Anthropic {
   if (!anthropic) {
@@ -78,9 +75,9 @@ async function callSuggestLLM(
     model: SUGGEST_MODEL,
     max_tokens: 250,
     system,
-    messages: history,
+    messages: [...history, { role: 'assistant', content: '[' }],
   });
-  const raw = response.content[0]?.type === 'text' ? response.content[0].text.trim() : '';
+  const raw = '[' + (response.content[0]?.type === 'text' ? response.content[0].text.trim() : '"]');
   await logAIUsage(
     creatorId,
     'suggest_reply',
@@ -111,7 +108,6 @@ export async function generateSuggestions(
       content: m.text!,
     }));
 
-  // If no text history, use a generic opening prompt so AI still generates useful starters
   const effectiveHistory =
     history.length > 0
       ? history
@@ -146,14 +142,13 @@ Return ONLY the polished message text, nothing else.`;
     });
 
     const polished = response.content[0]?.type === 'text' ? response.content[0].text.trim() : null;
-    if (polished) {
+    if (polished)
       await logAIUsage(
         creatorId,
         'polish',
         response.usage.input_tokens,
         response.usage.output_tokens,
       );
-    }
     return polished;
   } catch (err) {
     logger.error({ err }, 'polishMessage failed');
@@ -237,7 +232,5 @@ async function logAIUsage(
   outputTokens: number,
 ) {
   const cost = (inputTokens * 0.00025 + outputTokens * 0.00125) / 1000;
-  await prisma.aIUsageLog.create({
-    data: { creatorId, feature, inputTokens, outputTokens, cost },
-  });
+  await prisma.aIUsageLog.create({ data: { creatorId, feature, inputTokens, outputTokens, cost } });
 }
