@@ -52,6 +52,23 @@ Generate exactly 3 short, natural reply options. Each reply must be under 2 sent
 Return ONLY a JSON array of 3 strings, nothing else. Example: ["Reply 1", "Reply 2", "Reply 3"]`;
 }
 
+function parseSuggestions(raw: string): string[] {
+  const m = raw.match(/\[[\s\S]*?\]/);
+  if (m) {
+    try {
+      const p = JSON.parse(m[0]) as unknown;
+      if (Array.isArray(p)) return (p as string[]).filter(Boolean).slice(0, 3);
+    } catch {
+      /* fall through */
+    }
+  }
+  return raw
+    .split('\n')
+    .map((l) => l.replace(/^[\d.\-*\s]+/, '').trim())
+    .filter((l) => l.length > 3 && l.length < 200)
+    .slice(0, 3);
+}
+
 async function callSuggestLLM(
   system: string,
   history: Array<{ role: 'user' | 'assistant'; content: string }>,
@@ -63,20 +80,14 @@ async function callSuggestLLM(
     system,
     messages: history,
   });
-  const raw = response.content[0]?.type === 'text' ? response.content[0].text.trim() : '[]';
-  const suggestions = JSON.parse(
-    raw
-      .replace(/^```(?:json)?\s*/i, '')
-      .replace(/\s*```$/i, '')
-      .trim(),
-  ) as string[];
+  const raw = response.content[0]?.type === 'text' ? response.content[0].text.trim() : '';
   await logAIUsage(
     creatorId,
     'suggest_reply',
     response.usage.input_tokens,
     response.usage.output_tokens,
   );
-  return Array.isArray(suggestions) ? suggestions.slice(0, 3) : [];
+  return parseSuggestions(raw);
 }
 
 export async function generateSuggestions(
@@ -193,16 +204,14 @@ This will help an AI assistant match their writing style.`;
 }
 
 export async function getMonthlyUsage(creatorId: string, month: string) {
-  // month format: "2026-03"
   const [year, mon] = month.split('-').map(Number);
-  const from = new Date(year, mon - 1, 1);
-  const to = new Date(year, mon, 1);
-
   const logs = await prisma.aIUsageLog.findMany({
-    where: { creatorId, createdAt: { gte: from, lt: to } },
+    where: {
+      creatorId,
+      createdAt: { gte: new Date(year, mon - 1, 1), lt: new Date(year, mon, 1) },
+    },
   });
-
-  const totals = logs.reduce(
+  return logs.reduce(
     (acc, l) => {
       acc.inputTokens += l.inputTokens;
       acc.outputTokens += l.outputTokens;
@@ -219,8 +228,6 @@ export async function getMonthlyUsage(creatorId: string, month: string) {
       byFeature: {} as Record<string, { count: number; cost: number }>,
     },
   );
-
-  return totals;
 }
 
 async function logAIUsage(
@@ -229,7 +236,6 @@ async function logAIUsage(
   inputTokens: number,
   outputTokens: number,
 ) {
-  // Haiku pricing: $0.25/1M input, $1.25/1M output — approx EUR
   const cost = (inputTokens * 0.00025 + outputTokens * 0.00125) / 1000;
   await prisma.aIUsageLog.create({
     data: { creatorId, feature, inputTokens, outputTokens, cost },
