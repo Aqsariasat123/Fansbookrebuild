@@ -64,6 +64,7 @@ function CreatorTableRow({ row }: { row: CreatorRow }) {
         {row.byFeature.suggest_reply ?? 0}
       </td>
       <td className="px-[16px] py-[12px] text-gray-700 text-[13px]">{row.byFeature.polish ?? 0}</td>
+      <td className="px-[16px] py-[12px] text-gray-700 text-[13px]">{row.byFeature.upsell ?? 0}</td>
       <td className="px-[16px] py-[12px] text-gray-700 text-[13px]">
         {rowTokens.toLocaleString()}
       </td>
@@ -107,6 +108,7 @@ function CreatorTable({ data, loading }: { data: UsageData | null; loading: bool
                 <th className="px-[20px] py-[10px] font-medium">Creator</th>
                 <th className="px-[16px] py-[10px] font-medium">Suggestions</th>
                 <th className="px-[16px] py-[10px] font-medium">Polishes</th>
+                <th className="px-[16px] py-[10px] font-medium">Upsells</th>
                 <th className="px-[16px] py-[10px] font-medium">Tokens</th>
                 <th className="px-[16px] py-[10px] font-medium">Cost</th>
                 <th className="px-[16px] py-[10px] font-medium">Last Used</th>
@@ -173,7 +175,7 @@ export default function AdminAIUsage() {
         <MonthPicker value={month} onChange={setMonth} />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-[16px] mb-[28px]">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-[16px] mb-[28px]">
         <StatCard
           label="Total Cost"
           value={`€${totalCost.toFixed(3)}`}
@@ -182,6 +184,11 @@ export default function AdminAIUsage() {
         <StatCard label="Total Tokens" value={totalTokens.toLocaleString()} />
         <StatCard label="Suggestions" value={String(suggestCount)} sub="suggest_reply calls" />
         <StatCard label="Polishes" value={String(polishCount)} sub="polish calls" />
+        <StatCard
+          label="Upsells"
+          value={String(getFeatureCount(data, 'upsell'))}
+          sub="upsell advisor calls"
+        />
       </div>
 
       <CreatorTable data={data} loading={loading} />
