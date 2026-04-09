@@ -5,7 +5,7 @@ import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 
 const MODEL = 'claude-haiku-4-5-20251001';
-const CACHE_HOURS = 6;
+const CACHE_HOURS = 0; // 0 = always regenerate (set to 6 after testing)
 const MAX_SUGGESTIONS = 5;
 
 let client: Anthropic | null = null;
