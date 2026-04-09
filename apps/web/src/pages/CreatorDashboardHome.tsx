@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { VerificationBanner } from '../components/shared/VerificationBanner';
+import UpsellWidget from '../components/creator/UpsellWidget';
 
 interface DashStats {
   totalEarnings: number;
@@ -135,6 +136,9 @@ export default function CreatorDashboardHome() {
         </p>
         <p className="text-[12px] text-muted-foreground">Total views on your stories</p>
       </div>
+
+      {/* AI Revenue Tips Widget */}
+      <UpsellWidget />
     </div>
   );
 }

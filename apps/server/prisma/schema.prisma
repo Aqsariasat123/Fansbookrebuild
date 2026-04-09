@@ -185,111 +185,112 @@ enum BookingStatus {
 // ─── Auth & Users (Phase 0-1) ────────────────────────────
 
 model User {
-  id               String     @id @default(cuid())
-  email            String     @unique
-  username         String     @unique
-  displayName      String
-  passwordHash     String
-  role             UserRole   @default(FAN)
-  status           UserStatus @default(ACTIVE)
-  avatar           String?
-  cover            String?
-  bio              String?
-  location         String?
-  website          String?
-  firstName        String?
-  lastName         String?
-  mobileNumber     String?
-  secondaryEmail   String?
-  gender           String?
-  country          String?
-  category         String?
-  dateOfBirth      DateTime?
-  age              Int?
-  region           String?
-  profileType      String?
-  aboutMe          String?
-  timezone         String?
-  socialLinks      Json       @default("[]")
-  blockedCountries Json       @default("[]")
-  referralCode     String?    @unique
-  bankCountry      String?
-  bankDetails      Json?
-  idDocumentUrl    String?
-  selfieUrl        String?
-  introVideoUrl    String?
-  isVerified       Boolean    @default(false)
-  statusText       String?
-  twoFactorSecret    String?
-  twoFactorEnabled   Boolean    @default(false)
-  backupCodes        String[]   @default([])
-  onboardingStep     Int        @default(0)
-  onboardingCompleted Boolean   @default(false)
-  interests          String[]   @default([])
-  verificationStatus String     @default("UNVERIFIED")
-  emailVerified      Boolean    @default(false)
-  emailVerifyToken   String?
-  passwordResetToken String?
+  id                  String     @id @default(cuid())
+  email               String     @unique
+  username            String     @unique
+  displayName         String
+  passwordHash        String
+  role                UserRole   @default(FAN)
+  status              UserStatus @default(ACTIVE)
+  avatar              String?
+  cover               String?
+  bio                 String?
+  location            String?
+  website             String?
+  firstName           String?
+  lastName            String?
+  mobileNumber        String?
+  secondaryEmail      String?
+  gender              String?
+  country             String?
+  category            String?
+  dateOfBirth         DateTime?
+  age                 Int?
+  region              String?
+  profileType         String?
+  aboutMe             String?
+  timezone            String?
+  socialLinks         Json       @default("[]")
+  blockedCountries    Json       @default("[]")
+  referralCode        String?    @unique
+  bankCountry         String?
+  bankDetails         Json?
+  idDocumentUrl       String?
+  selfieUrl           String?
+  introVideoUrl       String?
+  isVerified          Boolean    @default(false)
+  statusText          String?
+  twoFactorSecret     String?
+  twoFactorEnabled    Boolean    @default(false)
+  backupCodes         String[]   @default([])
+  onboardingStep      Int        @default(0)
+  onboardingCompleted Boolean    @default(false)
+  interests           String[]   @default([])
+  verificationStatus  String     @default("UNVERIFIED")
+  emailVerified       Boolean    @default(false)
+  emailVerifyToken    String?
+  passwordResetToken  String?
   passwordResetExpiry DateTime?
-  notifSettings      Json       @default("{}")
-  privacySettings    Json       @default("{}")
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  notifSettings       Json       @default("{}")
+  privacySettings     Json       @default("{}")
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
 
   // Relations
-  otpCodes             OtpCode[]
-  refreshTokens        RefreshToken[]
-  sessions             Session[]
-  posts                Post[]
-  comments             Comment[]
-  likes                Like[]
-  bookmarks            Bookmark[]
-  followers            Follow[]              @relation("Following")
-  following            Follow[]              @relation("Followers")
-  blockedBy            Block[]               @relation("BlockedUser")
-  blocking             Block[]               @relation("BlockingUser")
-  subscriptionTiers    SubscriptionTier[]
-  subscriptionsAsFan   Subscription[]        @relation("Subscriber")
-  subscriptionsCreator Subscription[]        @relation("SubscriptionCreator")
-  wallet               Wallet?
-  paymentsMade         Payment[]
-  tipsSent             Tip[]                 @relation("TipSender")
-  tipsReceived         Tip[]                 @relation("TipReceiver")
-  withdrawals          Withdrawal[]
-  ppvPurchases         PpvPurchase[]
-  conversations1       Conversation[]        @relation("Participant1")
-  conversations2       Conversation[]        @relation("Participant2")
-  messagesSent         Message[]
-  notifications        Notification[]
-  notificationPrefs    NotificationPreference[]
-  stories              Story[]
-  storyViews           StoryView[]
-  liveSessions         LiveSession[]
-  callsMade            VideoCall[]           @relation("Caller")
-  callsReceived        VideoCall[]           @relation("Callee")
-  listings             MarketplaceListing[]
-  bids                 Bid[]
-  badges               UserBadge[]
-  reports              Report[]              @relation("Reporter")
-  reportedReports      Report[]              @relation("ReportedUser")
-  auditLogs            AuditLog[]
-  supportTickets       SupportTicket[]
-  referralsMade        Referral[]            @relation("Referrer")
-  referralsReceived    Referral[]            @relation("Referred")
-  bookingsAsCreator    Booking[]             @relation("BookingCreator")
-  bookingsAsFan        Booking[]             @relation("BookingFan")
-  commentLikes         CommentLike[]
-  liveChatMessages     LiveChatMessage[] @relation("LiveChatMessages")
-  announcements        Announcement[]
-  pushSubscriptions    PushSubscription[]
-  storyHighlights      StoryHighlight[]
-  storyReactions       StoryReaction[]
-  marketplaceReviews   MarketplaceReview[]   @relation("ReviewBuyer")
-  sellerReviews        MarketplaceReview[]   @relation("ReviewSeller")
-  creatorBot             CreatorBot?
-  aiUsageLogs            AIUsageLog[]
-  identityVerification   IdentityVerification?
-  reviewedVerifications  IdentityVerification[] @relation("VerificationReviewer")
+  otpCodes              OtpCode[]
+  refreshTokens         RefreshToken[]
+  sessions              Session[]
+  posts                 Post[]
+  comments              Comment[]
+  likes                 Like[]
+  bookmarks             Bookmark[]
+  followers             Follow[]                 @relation("Following")
+  following             Follow[]                 @relation("Followers")
+  blockedBy             Block[]                  @relation("BlockedUser")
+  blocking              Block[]                  @relation("BlockingUser")
+  subscriptionTiers     SubscriptionTier[]
+  subscriptionsAsFan    Subscription[]           @relation("Subscriber")
+  subscriptionsCreator  Subscription[]           @relation("SubscriptionCreator")
+  wallet                Wallet?
+  paymentsMade          Payment[]
+  tipsSent              Tip[]                    @relation("TipSender")
+  tipsReceived          Tip[]                    @relation("TipReceiver")
+  withdrawals           Withdrawal[]
+  ppvPurchases          PpvPurchase[]
+  conversations1        Conversation[]           @relation("Participant1")
+  conversations2        Conversation[]           @relation("Participant2")
+  messagesSent          Message[]
+  notifications         Notification[]
+  notificationPrefs     NotificationPreference[]
+  stories               Story[]
+  storyViews            StoryView[]
+  liveSessions          LiveSession[]
+  callsMade             VideoCall[]              @relation("Caller")
+  callsReceived         VideoCall[]              @relation("Callee")
+  listings              MarketplaceListing[]
+  bids                  Bid[]
+  badges                UserBadge[]
+  reports               Report[]                 @relation("Reporter")
+  reportedReports       Report[]                 @relation("ReportedUser")
+  auditLogs             AuditLog[]
+  supportTickets        SupportTicket[]
+  referralsMade         Referral[]               @relation("Referrer")
+  referralsReceived     Referral[]               @relation("Referred")
+  bookingsAsCreator     Booking[]                @relation("BookingCreator")
+  bookingsAsFan         Booking[]                @relation("BookingFan")
+  commentLikes          CommentLike[]
+  liveChatMessages      LiveChatMessage[]        @relation("LiveChatMessages")
+  announcements         Announcement[]
+  pushSubscriptions     PushSubscription[]
+  storyHighlights       StoryHighlight[]
+  storyReactions        StoryReaction[]
+  marketplaceReviews    MarketplaceReview[]      @relation("ReviewBuyer")
+  sellerReviews         MarketplaceReview[]      @relation("ReviewSeller")
+  creatorBot            CreatorBot?
+  aiUsageLogs           AIUsageLog[]
+  upsellSuggestions     UpsellSuggestion[]
+  identityVerification  IdentityVerification?
+  reviewedVerifications IdentityVerification[]   @relation("VerificationReviewer")
 
   @@index([email])
   @@index([username])
@@ -398,16 +399,16 @@ model Post {
 }
 
 model PostMedia {
-  id                String    @id @default(cuid())
-  postId            String
-  url               String
-  type              MediaType
-  order             Int       @default(0)
-  thumbnail         String?
-  moderationStatus  String    @default("PENDING")
-  moderationLabels  Json?
-  moderationScore   Float?
-  createdAt         DateTime  @default(now())
+  id               String    @id @default(cuid())
+  postId           String
+  url              String
+  type             MediaType
+  order            Int       @default(0)
+  thumbnail        String?
+  moderationStatus String    @default("PENDING")
+  moderationLabels Json?
+  moderationScore  Float?
+  createdAt        DateTime  @default(now())
 
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
@@ -498,16 +499,16 @@ model SubscriptionTier {
 }
 
 model Subscription {
-  id          String             @id @default(cuid())
+  id           String             @id @default(cuid())
   subscriberId String
-  tierId      String
-  creatorId   String
-  status      SubscriptionStatus @default(ACTIVE)
-  startDate   DateTime           @default(now())
-  endDate     DateTime?
-  renewalDate DateTime?
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  tierId       String
+  creatorId    String
+  status       SubscriptionStatus @default(ACTIVE)
+  startDate    DateTime           @default(now())
+  endDate      DateTime?
+  renewalDate  DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 
   subscriber User             @relation("Subscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
   tier       SubscriptionTier @relation(fields: [tierId], references: [id])
@@ -724,25 +725,25 @@ model StoryView {
 // ─── Live & Video (Phase 7) ─────────────────────────────
 
 model LiveSession {
-  id          String     @id @default(cuid())
-  creatorId   String
-  title       String
-  streamKey   String     @unique
-  rtmpUrl     String?
-  hlsUrl      String?
-  status      LiveStatus @default(SCHEDULED)
-  viewerCount Int        @default(0)
+  id                String     @id @default(cuid())
+  creatorId         String
+  title             String
+  streamKey         String     @unique
+  rtmpUrl           String?
+  hlsUrl            String?
+  status            LiveStatus @default(SCHEDULED)
+  viewerCount       Int        @default(0)
   scheduledAt       DateTime?
   thumbnail         String?
   description       String?
   category          String?
-  privacy           String   @default("public")
-  startedAt    DateTime?
-  endedAt      DateTime?
+  privacy           String     @default("public")
+  startedAt         DateTime?
+  endedAt           DateTime?
   recordingUrl      String?
-  privateShow       Boolean  @default(false)
-  privateShowTokens Int      @default(0)
-  createdAt         DateTime @default(now())
+  privateShow       Boolean    @default(false)
+  privateShowTokens Int        @default(0)
+  createdAt         DateTime   @default(now())
 
   creator  User              @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   messages LiveChatMessage[]
@@ -766,16 +767,16 @@ model LiveChatMessage {
 }
 
 model VideoCall {
-  id               String     @id @default(cuid())
-  callerId         String
-  calleeId         String
-  vonageSessionId  String?
-  mode             String     @default("video")
-  status           CallStatus @default(RINGING)
-  duration         Int?
-  startedAt        DateTime?
-  endedAt          DateTime?
-  createdAt        DateTime   @default(now())
+  id              String     @id @default(cuid())
+  callerId        String
+  calleeId        String
+  vonageSessionId String?
+  mode            String     @default("video")
+  status          CallStatus @default(RINGING)
+  duration        Int?
+  startedAt       DateTime?
+  endedAt         DateTime?
+  createdAt       DateTime   @default(now())
 
   caller User @relation("Caller", fields: [callerId], references: [id], onDelete: Cascade)
   callee User @relation("Callee", fields: [calleeId], references: [id], onDelete: Cascade)
@@ -801,7 +802,7 @@ model MarketplaceListing {
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 
-  images       String[]        @default([])
+  images String[] @default([])
 
   seller  User                @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   bids    Bid[]
@@ -902,7 +903,7 @@ model Report {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  reporter     User @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reporter     User  @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
   reportedUser User? @relation("ReportedUser", fields: [reportedUserId], references: [id])
 
   @@index([reporterId])
@@ -954,14 +955,14 @@ model SupportTicket {
 // ─── Platform Config (Admin) ────────────────────────────
 
 model PlatformConfig {
-  id               String   @id @default("singleton")
-  commissionRate   Float    @default(20)
-  minWithdrawal    Float    @default(50)
-  maintenanceMode  Boolean  @default(false)
-  maxUploadSizeMb  Int      @default(50)
-  homeSettings     Json     @default("{}")
-  generalSettings  Json     @default("{}")
-  updatedAt        DateTime @updatedAt
+  id              String   @id @default("singleton")
+  commissionRate  Float    @default(20)
+  minWithdrawal   Float    @default(50)
+  maintenanceMode Boolean  @default(false)
+  maxUploadSizeMb Int      @default(50)
+  homeSettings    Json     @default("{}")
+  generalSettings Json     @default("{}")
+  updatedAt       DateTime @updatedAt
 }
 
 // ─── Admin Masters (Phase 9) ───────────────────────────
@@ -993,11 +994,11 @@ model ProfileStatType {
 }
 
 model ProfileStat {
-  id                String          @id @default(cuid())
+  id                String   @id @default(cuid())
   name              String
   profileStatTypeId String
-  status            String          @default("Active")
-  createdAt         DateTime        @default(now())
+  status            String   @default("Active")
+  createdAt         DateTime @default(now())
 
   profileStatType ProfileStatType @relation(fields: [profileStatTypeId], references: [id], onDelete: Cascade)
 
@@ -1065,11 +1066,11 @@ model Announcement {
 // ─── Push Subscriptions (Phase 5) ──────────────────────
 
 model PushSubscription {
-  id       String @id @default(cuid())
-  userId   String
-  endpoint String
-  p256dh   String
-  auth     String
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String
+  p256dh    String
+  auth      String
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1081,12 +1082,12 @@ model PushSubscription {
 // ─── Story Highlights (Phase 6) ────────────────────────
 
 model StoryHighlight {
-  id       String   @id @default(cuid())
-  userId   String
-  name     String
-  coverUrl String?
-  storyIds String[] @default([])
-  order    Int      @default(0)
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  coverUrl  String?
+  storyIds  String[] @default([])
+  order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1098,10 +1099,10 @@ model StoryHighlight {
 // ─── Story Reactions (Phase 6) ─────────────────────────
 
 model StoryReaction {
-  id       String   @id @default(cuid())
-  storyId  String
-  userId   String
-  emoji    String   @default("❤️")
+  id        String   @id @default(cuid())
+  storyId   String
+  userId    String
+  emoji     String   @default("❤️")
   createdAt DateTime @default(now())
 
   story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
@@ -1150,7 +1151,7 @@ model CreatorBot {
 model AIUsageLog {
   id           String   @id @default(cuid())
   creatorId    String
-  feature      String   // suggest_reply | polish | upsell | support
+  feature      String // suggest_reply | polish | upsell | support
   inputTokens  Int      @default(0)
   outputTokens Int      @default(0)
   cost         Float    @default(0)
@@ -1160,6 +1161,26 @@ model AIUsageLog {
 
   @@index([creatorId])
   @@index([createdAt])
+}
+
+// ─── Upsell Advisor (F5) ────────────────────────────────
+
+model UpsellSuggestion {
+  id          String   @id @default(cuid())
+  creatorId   String
+  type        String
+  title       String
+  description String
+  priority    String
+  actionLabel String?
+  actionData  Json?
+  dismissed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  creator User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId])
+  @@index([creatorId, dismissed])
 }
 
 // ─── Identity Verification (Didit) ─────────────────────

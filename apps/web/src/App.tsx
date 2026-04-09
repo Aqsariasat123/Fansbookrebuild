@@ -71,6 +71,7 @@ import {
   VideoCallScreen,
   PaymentGateway,
   CreatorAISettings,
+  UpsellAdvisor,
 } from './lazyPages';
 
 const VerifyIdentity = lazy(() => import('./pages/VerifyIdentity'));
@@ -186,6 +187,7 @@ export default function App() {
                       <Route path="/creator/go-live" element={<GoLive />} />
                       <Route path="/creator/live" element={<LiveBroadcasting />} />
                       <Route path="/creator/ai-settings" element={<CreatorAISettings />} />
+                      <Route path="/creator/upsell" element={<UpsellAdvisor />} />
                     </Route>
                   </Route>
                 </Route>

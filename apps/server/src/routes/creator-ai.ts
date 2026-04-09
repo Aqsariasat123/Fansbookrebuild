@@ -11,6 +11,11 @@ import {
   updateToneProfile,
   getMonthlyUsage,
 } from '../services/botService.js';
+import {
+  getSuggestions as getUpsellSuggestions,
+  dismissSuggestion,
+  generateUpsellSuggestions,
+} from '../services/upsellService.js';
 
 const router = Router();
 router.use(authenticate, requireRole('CREATOR'));
@@ -123,6 +128,37 @@ router.get('/usage', async (req, res, next) => {
     const month = (req.query.month as string) || new Date().toISOString().slice(0, 7);
     const usage = await getMonthlyUsage(req.user!.userId, month);
     res.json({ success: true, data: usage });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── GET /api/creator/ai/upsell ── get upsell suggestions
+router.get('/upsell', async (req, res, next) => {
+  try {
+    const suggestions = await getUpsellSuggestions(req.user!.userId);
+    res.json({ success: true, data: suggestions });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── POST /api/creator/ai/upsell/refresh ── force regenerate
+router.post('/upsell/refresh', async (req, res, next) => {
+  try {
+    await generateUpsellSuggestions(req.user!.userId);
+    const suggestions = await getUpsellSuggestions(req.user!.userId);
+    res.json({ success: true, data: suggestions });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── POST /api/creator/ai/upsell/:id/dismiss ── dismiss one
+router.post('/upsell/:id/dismiss', async (req, res, next) => {
+  try {
+    await dismissSuggestion(req.params.id, req.user!.userId);
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }
