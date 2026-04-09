@@ -110,11 +110,24 @@ function parseSuggestions(raw: string): SuggestionRaw[] {
 }
 
 export async function generateUpsellSuggestions(creatorId: string): Promise<void> {
-  const context = await collectCreatorContext(creatorId);
+  const [context, dismissed] = await Promise.all([
+    collectCreatorContext(creatorId),
+    prisma.upsellSuggestion.findMany({
+      where: { creatorId, dismissed: true },
+      select: { title: true, type: true },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    }),
+  ]);
+
+  const avoidNote =
+    dismissed.length > 0
+      ? `\nDo NOT repeat these already-dismissed suggestions: ${dismissed.map((d) => `"${d.title}"`).join(', ')}. Generate completely different ones.`
+      : '';
 
   const system = `You are a revenue advisor for adult content creators on a subscription platform.
 Analyze the creator's data and return exactly ${MAX_SUGGESTIONS} actionable suggestions to increase their revenue.
-Each suggestion must be specific and immediately actionable.
+Each suggestion must be specific and immediately actionable. Vary the types — do not return 5 of the same type.${avoidNote}
 Return ONLY a JSON array. Each item must have: type (POST_TIMING|FAN_ENGAGEMENT|PPV_OPPORTUNITY|REENGAGEMENT|CONTENT_STRATEGY), title (max 10 words), description (1-2 sentences, specific), priority (HIGH|MEDIUM|LOW), actionLabel (optional short CTA text), actionData (optional object).
 Example: [{"type":"REENGAGEMENT","title":"Re-engage 3 dormant subscribers","description":"3 fans haven't interacted in 14+ days and may unsubscribe soon. A personal message could bring them back.","priority":"HIGH","actionLabel":"Send Message"}]`;
 
@@ -140,7 +153,8 @@ Example: [{"type":"REENGAGEMENT","title":"Re-engage 3 dormant subscribers","desc
     },
   });
 
-  await prisma.upsellSuggestion.deleteMany({ where: { creatorId } });
+  // Only delete non-dismissed — dismissed ones stay so they don't regenerate
+  await prisma.upsellSuggestion.deleteMany({ where: { creatorId, dismissed: false } });
   if (suggestions.length > 0) {
     await prisma.upsellSuggestion.createMany({
       data: suggestions.map((s) => ({
