@@ -5,23 +5,27 @@ type VerifyStatus = 'APPROVED' | 'REJECTED' | 'MANUAL_REVIEW' | 'PENDING' | 'UNV
 
 // ── SDK Step ──────────────────────────────────────────────
 export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => void }) {
+  useEffect(() => {
+    if (sdkToken) window.location.href = sdkToken;
+  }, [sdkToken]);
+
   return (
     <div className="flex flex-col items-center gap-[24px] text-center py-[12px]">
-      <div className="flex size-[72px] items-center justify-center rounded-full bg-[#01adf1]/10">
-        <span className="material-icons-outlined text-[40px] text-[#01adf1]">open_in_new</span>
-      </div>
+      <div className="size-[56px] animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
       <div>
-        <h2 className="text-[18px] font-bold text-white mb-[8px]">Complete verification</h2>
+        <h2 className="text-[18px] font-bold text-white mb-[8px]">Redirecting to Didit…</h2>
         <p className="text-[14px] text-gray-400 max-w-[360px]">
-          Click below to open the Didit identity check in a new tab. Once finished, come back and
-          click "I've completed the verification".
+          You will be redirected to complete your identity verification. Please do not close this
+          tab.
         </p>
       </div>
       <button
-        onClick={() => window.open(sdkToken, '_blank', 'noopener,noreferrer')}
+        onClick={() => {
+          window.location.href = sdkToken;
+        }}
         className="rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[12px] text-[15px] font-semibold text-white"
       >
-        Open Verification
+        Click here if not redirected
       </button>
       <button onClick={onDone} className="text-[13px] text-gray-400 underline">
         I've completed the verification
