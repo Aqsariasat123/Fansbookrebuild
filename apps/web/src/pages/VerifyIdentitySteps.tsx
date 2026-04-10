@@ -80,6 +80,7 @@ export function ResultStep({
   onRetry: () => void;
 }) {
   const navigate = useNavigate();
+  const canRetry = retryCount < 3;
 
   if (status === 'APPROVED') {
     return (
@@ -112,15 +113,14 @@ export function ResultStep({
           We could not verify your identity. Please try again with a clear, well-lit photo of your
           ID document.
         </p>
-        {retryCount < 3 && (
+        {canRetry ? (
           <button
             onClick={onRetry}
             className="rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[12px] text-[15px] font-semibold text-white"
           >
             Try Again
           </button>
-        )}
-        {retryCount >= 3 && (
+        ) : (
           <p className="text-[13px] text-red-400">
             Maximum attempts reached. Please contact support.
           </p>
@@ -139,6 +139,11 @@ export function ResultStep({
       <p className="text-[14px] text-gray-400 max-w-[340px]">
         Your documents are being reviewed by our team. We will email you within 24 hours.
       </p>
+      {canRetry && (
+        <button onClick={onRetry} className="mt-[4px] text-[13px] text-gray-400 underline">
+          Resubmit with different documents
+        </button>
+      )}
     </div>
   );
 }
