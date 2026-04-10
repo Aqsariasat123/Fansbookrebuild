@@ -1,6 +1,7 @@
 import { prisma } from '../config/database.js';
 import { embedWatermark } from './imageProcessing.js';
-import { moderateImage } from '../services/rekognitionService.js';
+import { moderateImage, startVideoModeration } from '../services/rekognitionService.js';
+import { videoModerationQueue } from '../jobs/queue.js';
 
 export async function createPostMedia(
   postId: string,
@@ -23,11 +24,25 @@ export async function createPostMedia(
         url: `/api/posts/file/${file.filename}`,
         type: isImage ? 'IMAGE' : 'VIDEO',
         order: i,
-        moderationStatus: isImage ? 'PENDING' : 'SKIPPED',
+        moderationStatus: 'PENDING',
       },
     });
     if (isImage) {
       moderateImage(media.id, file.path).catch(() => {});
+    } else {
+      startVideoModeration(media.id, file.path)
+        .then((result) => {
+          if (result) {
+            videoModerationQueue
+              .add(
+                'poll',
+                { jobId: result.jobId, postMediaId: media.id, s3TempKey: result.s3Key, attempt: 0 },
+                { delay: 30_000 },
+              )
+              .catch(() => {});
+          }
+        })
+        .catch(() => {});
     }
   }
 }

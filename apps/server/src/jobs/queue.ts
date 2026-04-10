@@ -46,3 +46,11 @@ export const toneLearningQueue = new Queue('tone-learning', {
     removeOnFail: 50,
   },
 });
+
+export const videoModerationQueue = new Queue('video-moderation', {
+  connection,
+  defaultJobOptions: {
+    removeOnComplete: 10,
+    removeOnFail: 50,
+  },
+});
