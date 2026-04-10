@@ -68,6 +68,14 @@ router.post('/register', registerLimiter, validate(registerSchema), async (req, 
     const existingEmail = await prisma.user.findUnique({ where: { email } });
     if (existingEmail) throw new AppError(409, 'Email already taken');
 
+    // Fraud check — run before creating user
+    const { runRegistrationFraudCheck } = await import('../services/ipqsService.js');
+    const clientIp =
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip || '127.0.0.1';
+    const fraudOutcome = await runRegistrationFraudCheck(clientIp, email);
+    if (fraudOutcome === 'BLOCKED')
+      throw new AppError(403, 'Registration not allowed from this location or email.');
+
     const username = await generateUniqueUsername(displayName);
     const role = accountType === 'creator' ? 'CREATOR' : 'FAN';
     const user = await prisma.user.create({
@@ -82,6 +90,14 @@ router.post('/register', registerLimiter, validate(registerSchema), async (req, 
       select: ME_SELECT,
     });
     await prisma.wallet.create({ data: { userId: user.id, balance: 0 } });
+
+    // Link fraud event to new user (best-effort)
+    prisma.fraudEvent
+      .updateMany({
+        where: { userId: null, email, type: 'REGISTRATION' },
+        data: { userId: user.id },
+      })
+      .catch(() => {});
 
     // Send welcome email
     const welcome = welcomeTemplate(username);

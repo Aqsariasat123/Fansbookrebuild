@@ -33,6 +33,8 @@ const envSchema = z.object({
   DIDIT_API_KEY: z.string().optional().default(''),
   DIDIT_WORKFLOW_ID: z.string().optional().default(''),
   DIDIT_WEBHOOK_SECRET: z.string().optional().default(''),
+  // IPQualityScore fraud prevention (optional — checks skipped when missing)
+  IPQS_API_KEY: z.string().optional().default(''),
 });
 
 function loadEnv() {

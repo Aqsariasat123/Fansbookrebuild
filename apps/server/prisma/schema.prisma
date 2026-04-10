@@ -291,6 +291,7 @@ model User {
   upsellSuggestions     UpsellSuggestion[]
   identityVerification  IdentityVerification?
   reviewedVerifications IdentityVerification[]   @relation("VerificationReviewer")
+  fraudEvents           FraudEvent[]
 
   @@index([email])
   @@index([username])
@@ -1218,4 +1219,28 @@ model IdentityVerification {
   reviewedBy User? @relation("VerificationReviewer", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
 
   @@index([status])
+}
+
+// ─── Feature 3: Fraud Prevention ─────────────────────────
+
+model FraudEvent {
+  id         String   @id @default(cuid())
+  userId     String?
+  type       String   // REGISTRATION | PAYMENT
+  ip         String?
+  email      String?
+  ipScore    Int?
+  emailScore Int?
+  isProxy    Boolean?
+  isVpn      Boolean?
+  outcome    String   // BLOCKED | FLAGGED | ALLOWED
+  reason     String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([outcome])
+  @@index([createdAt])
 }
