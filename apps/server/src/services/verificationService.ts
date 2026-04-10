@@ -4,8 +4,10 @@ import { logger } from '../utils/logger.js';
 import { sendEmail } from '../utils/email.js';
 import crypto from 'crypto';
 
+const DIDIT_SESSION_URL = 'https://verification.didit.me/v3/session/';
+
 function isDiditConfigured(): boolean {
-  return Boolean(env.DIDIT_CLIENT_ID && env.DIDIT_CLIENT_SECRET);
+  return Boolean(env.DIDIT_API_KEY && env.DIDIT_WORKFLOW_ID);
 }
 
 export async function createVerificationSession(
@@ -33,42 +35,27 @@ export async function createVerificationSession(
   }
 
   try {
-    const basicCreds = Buffer.from(`${env.DIDIT_CLIENT_ID}:${env.DIDIT_CLIENT_SECRET}`).toString(
-      'base64',
-    );
-    const tokenRes = await fetch('https://apx.didit.me/auth/v2/token/', {
+    const sessionRes = await fetch(DIDIT_SESSION_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${basicCreds}`,
+        'Content-Type': 'application/json',
+        'x-api-key': env.DIDIT_API_KEY,
       },
-      body: new URLSearchParams({ grant_type: 'client_credentials' }),
-    });
-    const tokenBody = (await tokenRes.json()) as Record<string, unknown>;
-    logger.info(
-      { tokenStatus: tokenRes.status, tokenKeys: Object.keys(tokenBody) },
-      'Didit token response',
-    );
-    const access_token = tokenBody.access_token as string;
-    if (!access_token) {
-      logger.error({ tokenBody }, 'Didit token request failed — no access_token');
-      throw new Error('DIDIT_TOKEN_FAILED');
-    }
-
-    const workflowId = env.DIDIT_WORKFLOW_ID;
-    const sessionUrl = workflowId
-      ? `https://apx.didit.me/v1/session/${workflowId}/`
-      : 'https://apx.didit.me/v1/session/';
-    const sessionRes = await fetch(sessionUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${access_token}` },
       body: JSON.stringify({
+        workflow_id: env.DIDIT_WORKFLOW_ID,
         vendor_data: userId,
         callback: `${env.CLIENT_URL}/verify-identity?done=1`,
       }),
     });
+
     const sessionBody = (await sessionRes.json()) as Record<string, unknown>;
     logger.info({ sessionStatus: sessionRes.status, sessionBody }, 'Didit session response');
+
+    if (!sessionRes.ok) {
+      logger.error({ sessionBody }, 'Didit session creation failed');
+      throw new Error('DIDIT_SESSION_FAILED');
+    }
+
     const session = sessionBody as { session_id: string; url: string };
 
     await prisma.identityVerification.upsert({
@@ -100,7 +87,6 @@ function verifyWebhookSignature(rawBody: Buffer, signature: string) {
     .createHmac('sha256', env.DIDIT_WEBHOOK_SECRET)
     .update(rawBody)
     .digest('hex');
-  // Didit sends raw hex (no prefix); also accept sha256= prefix for compatibility
   if (signature !== expected && signature !== `sha256=${expected}`) {
     throw new Error('Invalid webhook signature');
   }

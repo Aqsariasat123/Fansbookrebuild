@@ -30,10 +30,9 @@ const envSchema = z.object({
   MEDIASOUP_MIN_PORT: z.coerce.number().optional().default(40000),
   MEDIASOUP_MAX_PORT: z.coerce.number().optional().default(49999),
   // Didit identity verification (optional — placeholder mode when missing)
-  DIDIT_CLIENT_ID: z.string().optional().default(''),
-  DIDIT_CLIENT_SECRET: z.string().optional().default(''),
-  DIDIT_WEBHOOK_SECRET: z.string().optional().default(''),
+  DIDIT_API_KEY: z.string().optional().default(''),
   DIDIT_WORKFLOW_ID: z.string().optional().default(''),
+  DIDIT_WEBHOOK_SECRET: z.string().optional().default(''),
 });
 
 function loadEnv() {
