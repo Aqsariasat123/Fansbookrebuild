@@ -114,9 +114,9 @@ export default function VerifyIdentity() {
       .catch(() => {});
   }, [derived.step]);
 
-  // If not pre-determined from store, fetch from API on mount
+  // Always fetch real status from API on mount to correct stale authStore
   useEffect(() => {
-    if (isDone || derived.step !== 'FORM') return;
+    if (isDone) return;
     api
       .get('/verification/status')
       .then(({ data: r }) => {
@@ -128,10 +128,12 @@ export default function VerifyIdentity() {
           setStep('RESULT');
         } else if (s === 'PENDING') {
           setStep('PENDING');
+        } else {
+          setStep('FORM');
         }
       })
       .catch(() => {});
-  }, [isDone, derived.step]);
+  }, [isDone]);
 
   // Poll while PENDING
   useEffect(() => {
