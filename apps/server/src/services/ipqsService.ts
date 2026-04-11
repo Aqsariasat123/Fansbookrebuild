@@ -47,13 +47,14 @@ function determineOutcome(
   isVpn: boolean,
   isDisposable: boolean,
 ): { outcome: 'BLOCKED' | 'FLAGGED' | 'ALLOWED'; reason?: string } {
+  // VPN/Proxy always flagged only — never blocked (legitimate users use VPNs)
+  if (isProxy) return { outcome: 'FLAGGED', reason: 'Proxy detected' };
+  if (isVpn) return { outcome: 'FLAGGED', reason: 'VPN detected' };
   if (ipScore >= BLOCK_SCORE)
     return { outcome: 'BLOCKED', reason: `High-risk IP (score: ${ipScore})` };
   if (isDisposable) return { outcome: 'BLOCKED', reason: 'Disposable email address' };
   if (emailScore >= BLOCK_SCORE)
     return { outcome: 'BLOCKED', reason: `High-risk email (score: ${emailScore})` };
-  if (isProxy) return { outcome: 'FLAGGED', reason: 'Proxy detected' };
-  if (isVpn) return { outcome: 'FLAGGED', reason: 'VPN detected' };
   if (ipScore >= FLAG_SCORE || emailScore >= FLAG_SCORE) {
     return {
       outcome: 'FLAGGED',
