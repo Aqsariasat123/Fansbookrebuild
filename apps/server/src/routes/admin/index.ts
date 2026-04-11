@@ -20,6 +20,7 @@ import healthRouter from './admin-health.js';
 import aiRouter from './admin-ai.js';
 import moderationRouter from './admin-moderation.js';
 import fraudRouter from './admin-fraud.js';
+import supportRouter from './admin-support.js';
 
 const router = Router();
 
@@ -45,5 +46,6 @@ router.use('/health', healthRouter);
 router.use('/ai', aiRouter);
 router.use('/moderation', moderationRouter);
 router.use('/fraud', fraudRouter);
+router.use('/support', supportRouter);
 
 export default router;

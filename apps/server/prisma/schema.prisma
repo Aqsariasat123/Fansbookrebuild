@@ -942,15 +942,26 @@ model Faq {
 }
 
 model SupportTicket {
-  id          String   @id @default(cuid())
+  id          String           @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User             @relation(fields: [userId], references: [id])
   title       String
   description String
   photoUrl    String?
-  status      String   @default("OPEN")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      String           @default("OPEN")
+  resolvedAt  DateTime?
+  messages    SupportMessage[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model SupportMessage {
+  id        String         @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket  @relation(fields: [ticketId], references: [id])
+  role      String         // USER | BOT | ADMIN
+  content   String
+  createdAt DateTime       @default(now())
 }
 
 // ─── Platform Config (Admin) ────────────────────────────

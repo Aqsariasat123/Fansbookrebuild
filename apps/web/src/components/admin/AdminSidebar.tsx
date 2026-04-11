@@ -15,6 +15,7 @@ const iconMap: Record<string, string> = {
   ai: 'auto_awesome',
   idverification: 'verified_user',
   fraud: 'gpp_bad',
+  support: 'support_agent',
   finance: 'payments',
   masters: 'tune',
   settings: 'settings',

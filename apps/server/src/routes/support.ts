@@ -5,6 +5,7 @@ import fs from 'fs';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { chatWithBot, getMyTickets, getTicketById } from '../services/supportBotService.js';
 
 const router = Router();
 
@@ -91,6 +92,39 @@ router.get('/photo/:id', (req, res, next) => {
     const match = files.find((f) => f.startsWith(req.params.id));
     if (!match) throw new AppError(404, 'Photo not found');
     res.sendFile(path.join(supportUploadsDir, match));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /chat — AI chatbot (creates/continues a ticket)
+router.post('/chat', authenticate, async (req, res, next) => {
+  try {
+    const { message, ticketId } = req.body;
+    if (!message?.trim()) throw new AppError(400, 'Message is required');
+    const result = await chatWithBot(req.user!.userId, message.trim(), ticketId);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /tickets/my — user's own tickets
+router.get('/tickets/my', authenticate, async (req, res, next) => {
+  try {
+    const tickets = await getMyTickets(req.user!.userId);
+    res.json({ success: true, data: tickets });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /tickets/:id — single ticket with messages
+router.get('/tickets/:id', authenticate, async (req, res, next) => {
+  try {
+    const ticket = await getTicketById(String(req.params.id), req.user!.userId);
+    if (!ticket) throw new AppError(404, 'Ticket not found');
+    res.json({ success: true, data: ticket });
   } catch (err) {
     next(err);
   }

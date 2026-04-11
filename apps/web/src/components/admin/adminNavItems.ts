@@ -19,6 +19,7 @@ export const adminNavItems: AdminNavItem[] = [
   { to: '/admin/moderation', label: 'Moderation', icon: 'report' },
   { to: '/admin/id-verification', label: 'ID Verification', icon: 'idverification' },
   { to: '/admin/fraud', label: 'Fraud Prevention', icon: 'fraud' },
+  { to: '/admin/support', label: 'Support Tickets', icon: 'support' },
   {
     to: '#finance',
     label: 'Finance',
