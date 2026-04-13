@@ -18,6 +18,23 @@ export function SupportChatWidget() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // On mount, restore existing open ticket if any
+  useEffect(() => {
+    api
+      .get('/support/tickets/my')
+      .then(({ data: r }) => {
+        if (r.success && r.data.length > 0) {
+          const latest = r.data[0];
+          if (latest.status !== 'RESOLVED') {
+            setTicketId(latest.id);
+            setMessages(latest.messages);
+            setEscalated(latest.status === 'ESCALATED');
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (!open && messages.length === 0) {
       setMessages([
@@ -33,15 +50,18 @@ export function SupportChatWidget() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // Poll for admin replies every 10s when ticket exists and chat is open
+  // Poll for admin replies every 10s when ticket exists
   useEffect(() => {
-    if (!ticketId || !open) return;
+    if (!ticketId) return;
     pollRef.current = setInterval(async () => {
       try {
         const { data: r } = await api.get(`/support/tickets/${ticketId}`);
         if (r.success) {
           const fetched: SupportMessage[] = r.data.messages;
-          setMessages(fetched);
+          setMessages((prev) => {
+            if (fetched.length > prev.length && !open) setHasNewMessage(true);
+            return fetched;
+          });
         }
       } catch {
         // ignore
