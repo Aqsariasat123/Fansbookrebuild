@@ -1,14 +1,65 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
-import { FraudEvent, FraudStats, FraudTable } from './AdminFraudParts';
+import { type FraudStats, FraudEvent, FraudTable } from './AdminFraudParts';
+import { StatCard } from '../../components/admin/StatCard';
 
-const STAT_CARDS = (s?: FraudStats) => [
-  { label: 'Blocked Today', value: s?.blockedToday ?? 0, color: 'text-red-400' },
-  { label: 'Total Blocked', value: s?.blocked ?? 0, color: 'text-red-400' },
-  { label: 'Total Flagged', value: s?.flagged ?? 0, color: 'text-yellow-400' },
-  { label: 'Total Allowed', value: s?.allowed ?? 0, color: 'text-green-400' },
-];
+const OUTCOME_FILTERS = ['', 'BLOCKED', 'FLAGGED', 'ALLOWED'];
+
+function FraudStatCards({ stats }: { stats?: FraudStats }) {
+  return (
+    <div className="grid grid-cols-2 gap-[16px] sm:grid-cols-4">
+      <StatCard
+        icon="block"
+        label="Blocked Today"
+        value={stats?.blockedToday ?? 0}
+        color="#ef4444"
+      />
+      <StatCard icon="gpp_bad" label="Total Blocked" value={stats?.blocked ?? 0} color="#ef4444" />
+      <StatCard icon="flag" label="Total Flagged" value={stats?.flagged ?? 0} color="#f59e0b" />
+      <StatCard
+        icon="check_circle"
+        label="Total Allowed"
+        value={stats?.allowed ?? 0}
+        color="#10b981"
+      />
+    </div>
+  );
+}
+
+function Pagination({
+  page,
+  totalPages,
+  onPrev,
+  onNext,
+}: {
+  page: number;
+  totalPages: number;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-[12px] justify-end">
+      <button
+        disabled={page === 1}
+        onClick={onPrev}
+        className="rounded-[8px] border border-gray-700 px-[12px] py-[6px] text-[13px] text-gray-300 disabled:opacity-40"
+      >
+        Prev
+      </button>
+      <span className="text-[13px] text-gray-400">
+        Page {page} of {totalPages}
+      </span>
+      <button
+        disabled={page >= totalPages}
+        onClick={onNext}
+        className="rounded-[8px] border border-gray-700 px-[12px] py-[6px] text-[13px] text-gray-300 disabled:opacity-40"
+      >
+        Next
+      </button>
+    </div>
+  );
+}
 
 export default function AdminFraud() {
   const [filter, setFilter] = useState('');
@@ -35,17 +86,10 @@ export default function AdminFraud() {
     <div className="flex flex-col gap-[24px] p-[24px]">
       <h1 className="text-[22px] font-bold text-gray-800">Fraud Prevention</h1>
 
-      <div className="grid grid-cols-2 gap-[16px] sm:grid-cols-4">
-        {STAT_CARDS(stats).map((s) => (
-          <div key={s.label} className="rounded-[12px] border border-gray-800 bg-card p-[20px]">
-            <p className="text-[13px] text-gray-400">{s.label}</p>
-            <p className={`text-[28px] font-bold ${s.color}`}>{s.value}</p>
-          </div>
-        ))}
-      </div>
+      <FraudStatCards stats={stats} />
 
       <div className="flex gap-[8px]">
-        {['', 'BLOCKED', 'FLAGGED', 'ALLOWED'].map((o) => (
+        {OUTCOME_FILTERS.map((o) => (
           <button
             key={o}
             onClick={() => {
@@ -62,25 +106,12 @@ export default function AdminFraud() {
       <FraudTable events={events} isLoading={isLoading} />
 
       {total > 20 && (
-        <div className="flex items-center gap-[12px] justify-end">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="rounded-[8px] border border-gray-700 px-[12px] py-[6px] text-[13px] text-gray-300 disabled:opacity-40"
-          >
-            Prev
-          </button>
-          <span className="text-[13px] text-gray-400">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="rounded-[8px] border border-gray-700 px-[12px] py-[6px] text-[13px] text-gray-300 disabled:opacity-40"
-          >
-            Next
-          </button>
-        </div>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPrev={() => setPage((p) => p - 1)}
+          onNext={() => setPage((p) => p + 1)}
+        />
       )}
     </div>
   );

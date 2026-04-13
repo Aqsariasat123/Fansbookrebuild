@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import { SupportTicket, TicketRow, TicketPanel } from './AdminSupportParts';
+import { StatCard } from '../../components/admin/StatCard';
 
 interface SupportStats {
   open: number;
@@ -10,14 +11,80 @@ interface SupportStats {
   total: number;
 }
 
-const STAT_CARDS = (s?: SupportStats) => [
-  { label: 'Open', value: s?.open ?? 0, color: 'text-blue-400' },
-  { label: 'Escalated', value: s?.escalated ?? 0, color: 'text-yellow-400' },
-  { label: 'Resolved', value: s?.resolved ?? 0, color: 'text-green-400' },
-  { label: 'Total', value: s?.total ?? 0, color: 'text-gray-300' },
-];
-
 const FILTERS = ['', 'OPEN', 'ESCALATED', 'RESOLVED'];
+
+function SupportStatCards({ stats }: { stats?: SupportStats }) {
+  return (
+    <div className="grid grid-cols-2 gap-[16px] sm:grid-cols-4">
+      <StatCard icon="inbox" label="Open" value={stats?.open ?? 0} color="#3b82f6" />
+      <StatCard
+        icon="priority_high"
+        label="Escalated"
+        value={stats?.escalated ?? 0}
+        color="#f59e0b"
+      />
+      <StatCard icon="check_circle" label="Resolved" value={stats?.resolved ?? 0} color="#10b981" />
+      <StatCard
+        icon="confirmation_number"
+        label="Total"
+        value={stats?.total ?? 0}
+        color="#8b5cf6"
+      />
+    </div>
+  );
+}
+
+function TicketTable({
+  tickets,
+  isLoading,
+  selectedId,
+  onSelect,
+}: {
+  tickets: SupportTicket[];
+  isLoading: boolean;
+  selectedId?: string;
+  onSelect: (t: SupportTicket) => void;
+}) {
+  return (
+    <div className="flex-1 rounded-[12px] border border-gray-800 bg-card overflow-hidden">
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-gray-800 text-[13px] text-gray-400">
+            {['Title', 'User', 'Status', 'Updated'].map((h) => (
+              <th key={h} className="px-[16px] py-[12px] text-left font-medium">
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {isLoading && (
+            <tr>
+              <td colSpan={4} className="px-[16px] py-[24px] text-center text-gray-500">
+                Loading…
+              </td>
+            </tr>
+          )}
+          {!isLoading && tickets.length === 0 && (
+            <tr>
+              <td colSpan={4} className="px-[16px] py-[24px] text-center text-gray-500">
+                No tickets found.
+              </td>
+            </tr>
+          )}
+          {tickets.map((t) => (
+            <TicketRow
+              key={t.id}
+              ticket={t}
+              selected={selectedId === t.id}
+              onSelect={() => onSelect(t)}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export default function AdminSupport() {
   const [filter, setFilter] = useState('');
@@ -67,14 +134,7 @@ export default function AdminSupport() {
     <div className="flex flex-col gap-[24px] p-[24px]">
       <h1 className="text-[22px] font-bold text-gray-800">Support Tickets</h1>
 
-      <div className="grid grid-cols-2 gap-[16px] sm:grid-cols-4">
-        {STAT_CARDS(stats).map((s) => (
-          <div key={s.label} className="rounded-[12px] border border-gray-800 bg-card p-[20px]">
-            <p className="text-[13px] text-gray-400">{s.label}</p>
-            <p className={`text-[28px] font-bold ${s.color}`}>{s.value}</p>
-          </div>
-        ))}
-      </div>
+      <SupportStatCards stats={stats} />
 
       <div className="flex gap-[8px]">
         {FILTERS.map((o) => (
@@ -92,44 +152,12 @@ export default function AdminSupport() {
       </div>
 
       <div className="flex gap-[16px]">
-        <div className="flex-1 rounded-[12px] border border-gray-800 bg-card overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-800 text-[13px] text-gray-400">
-                {['Title', 'User', 'Status', 'Updated'].map((h) => (
-                  <th key={h} className="px-[16px] py-[12px] text-left font-medium">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading && (
-                <tr>
-                  <td colSpan={4} className="px-[16px] py-[24px] text-center text-gray-500">
-                    Loading…
-                  </td>
-                </tr>
-              )}
-              {!isLoading && tickets.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-[16px] py-[24px] text-center text-gray-500">
-                    No tickets found.
-                  </td>
-                </tr>
-              )}
-              {tickets.map((t) => (
-                <TicketRow
-                  key={t.id}
-                  ticket={t}
-                  selected={selected?.id === t.id}
-                  onSelect={() => setSelected(t)}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-
+        <TicketTable
+          tickets={tickets}
+          isLoading={isLoading}
+          selectedId={selected?.id}
+          onSelect={setSelected}
+        />
         {selected && (
           <TicketPanel
             ticket={selected}
