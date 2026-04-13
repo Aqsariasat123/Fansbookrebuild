@@ -51,3 +51,11 @@ export function EscalatedBanner() {
     </div>
   );
 }
+
+export function ResolvedBanner() {
+  return (
+    <div className="mx-[12px] rounded-[8px] bg-green-500/10 border border-green-500/30 px-[12px] py-[8px] text-[12px] text-green-400 text-center">
+      This ticket has been resolved. Start a new conversation if you need further help.
+    </div>
+  );
+}

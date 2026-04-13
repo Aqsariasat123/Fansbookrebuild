@@ -4,6 +4,7 @@ import {
   MessageBubble,
   TypingIndicator,
   EscalatedBanner,
+  ResolvedBanner,
   SupportMessage,
 } from './SupportChatWidgetParts';
 
@@ -14,6 +15,7 @@ export function SupportChatWidget() {
   const [loading, setLoading] = useState(false);
   const [ticketId, setTicketId] = useState<string | undefined>();
   const [escalated, setEscalated] = useState(false);
+  const [resolved, setResolved] = useState(false);
   const [hasNewMessage, setHasNewMessage] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -58,6 +60,10 @@ export function SupportChatWidget() {
         const { data: r } = await api.get(`/support/tickets/${ticketId}`);
         if (r.success) {
           const fetched: SupportMessage[] = r.data.messages;
+          if (r.data.status === 'RESOLVED') {
+            setResolved(true);
+            if (pollRef.current) clearInterval(pollRef.current);
+          }
           setMessages((prev) => {
             if (fetched.length > prev.length && !open) setHasNewMessage(true);
             return fetched;
@@ -131,25 +137,28 @@ export function SupportChatWidget() {
             <div ref={bottomRef} />
           </div>
 
-          {escalated && <EscalatedBanner />}
+          {escalated && !resolved && <EscalatedBanner />}
+          {resolved && <ResolvedBanner />}
 
           {/* Input */}
-          <div className="border-t border-gray-700 px-[12px] py-[10px] flex gap-[8px]">
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-              placeholder="Type a message…"
-              className="flex-1 rounded-[8px] bg-[#2a2a2a] px-[12px] py-[8px] text-[13px] text-white placeholder-gray-500 outline-none"
-            />
-            <button
-              onClick={sendMessage}
-              disabled={!input.trim() || loading}
-              className="rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[12px] py-[8px] text-white disabled:opacity-40"
-            >
-              <span className="material-icons-outlined text-[18px]">send</span>
-            </button>
-          </div>
+          {!resolved && (
+            <div className="border-t border-gray-700 px-[12px] py-[10px] flex gap-[8px]">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                placeholder="Type a message…"
+                className="flex-1 rounded-[8px] bg-[#2a2a2a] px-[12px] py-[8px] text-[13px] text-white placeholder-gray-500 outline-none"
+              />
+              <button
+                onClick={sendMessage}
+                disabled={!input.trim() || loading}
+                className="rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[12px] py-[8px] text-white disabled:opacity-40"
+              >
+                <span className="material-icons-outlined text-[18px]">send</span>
+              </button>
+            </div>
+          )}
         </div>
       )}
 
