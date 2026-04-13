@@ -65,7 +65,7 @@ export default function AdminSupport() {
 
   return (
     <div className="flex flex-col gap-[24px] p-[24px]">
-      <h1 className="text-[22px] font-bold text-white">Support Tickets</h1>
+      <h1 className="text-[22px] font-bold text-gray-800">Support Tickets</h1>
 
       <div className="grid grid-cols-2 gap-[16px] sm:grid-cols-4">
         {STAT_CARDS(stats).map((s) => (
