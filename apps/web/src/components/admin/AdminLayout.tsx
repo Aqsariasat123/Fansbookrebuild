@@ -8,14 +8,14 @@ export function AdminLayout() {
 
   useEffect(() => {
     const prev = document.body.style.backgroundColor;
-    document.body.style.backgroundColor = '#ddd';
+    document.body.style.backgroundColor = '#15191c';
     return () => {
       document.body.style.backgroundColor = prev;
     };
   }, []);
 
   return (
-    <div className="flex min-h-screen w-full bg-[#ddd] font-outfit">
+    <div className="flex min-h-screen w-full bg-[#15191c] font-outfit">
       <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex flex-1 flex-col">
         <AdminHeader onMenuToggle={() => setSidebarOpen(true)} />
