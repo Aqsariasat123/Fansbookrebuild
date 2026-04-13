@@ -1,5 +1,5 @@
-import { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Suspense } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MainLayout } from './components/layout/MainLayout';
 import { adminRoutes } from './pages/admin/AdminRoutes';
@@ -74,7 +74,7 @@ import {
   UpsellAdvisor,
 } from './lazyPages';
 
-const VerifyIdentity = lazy(() => import('./pages/VerifyIdentity'));
+// const VerifyIdentity = lazy(() => import('./pages/VerifyIdentity')); // re-enable before launch
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -130,7 +130,8 @@ export default function App() {
                 {/* Protected app routes with layout */}
                 <Route element={<ProtectedRoute />}>
                   <Route element={<MainLayout />}>
-                    <Route path="/verify-identity" element={<VerifyIdentity />} />
+                    {/* ID verify disabled for testing — re-enable before launch */}
+                    <Route path="/verify-identity" element={<Navigate to="/feed" replace />} />
                     {/* Shared routes (both fan + creator) */}
                     <Route path="/feed" element={<Home />} />
                     <Route path="/post/:id" element={<SinglePost />} />
