@@ -11,6 +11,7 @@ export const adminNavItems: AdminNavItem[] = [
   { to: '/admin/bookings', label: 'Booking', icon: 'booking' },
   { to: '/admin/earnings', label: 'Earnings', icon: 'earnings' },
   { to: '/admin/reports', label: 'Report', icon: 'report' },
+  { to: '/admin/support', label: 'Support Tickets', icon: 'support' },
   { to: '/admin/audit-log', label: 'Audit Log', icon: 'audit' },
   { to: '/admin/content', label: 'Content', icon: 'content' },
   { to: '/admin/badges', label: 'Badges', icon: 'badges' },
@@ -19,7 +20,6 @@ export const adminNavItems: AdminNavItem[] = [
   { to: '/admin/moderation', label: 'Moderation', icon: 'report' },
   { to: '/admin/id-verification', label: 'ID Verification', icon: 'idverification' },
   { to: '/admin/fraud', label: 'Fraud Prevention', icon: 'fraud' },
-  { to: '/admin/support', label: 'Support Tickets', icon: 'support' },
   {
     to: '#finance',
     label: 'Finance',
