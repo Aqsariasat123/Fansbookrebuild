@@ -46,10 +46,10 @@ function TicketTable({
   onSelect: (t: SupportTicket) => void;
 }) {
   return (
-    <div className="flex-1 rounded-[12px] border border-gray-800 bg-card overflow-hidden">
+    <div className="flex-1 rounded-[12px] border border-gray-200 bg-white overflow-hidden shadow-sm">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-gray-800 text-[13px] text-gray-400">
+          <tr className="border-b border-gray-200 bg-gray-50 text-[13px] text-gray-500">
             {['Title', 'User', 'Status', 'Updated'].map((h) => (
               <th key={h} className="px-[16px] py-[12px] text-left font-medium">
                 {h}
@@ -60,14 +60,14 @@ function TicketTable({
         <tbody>
           {isLoading && (
             <tr>
-              <td colSpan={4} className="px-[16px] py-[24px] text-center text-gray-500">
+              <td colSpan={4} className="px-[16px] py-[24px] text-center text-gray-400">
                 Loading…
               </td>
             </tr>
           )}
           {!isLoading && tickets.length === 0 && (
             <tr>
-              <td colSpan={4} className="px-[16px] py-[24px] text-center text-gray-500">
+              <td colSpan={4} className="px-[16px] py-[24px] text-center text-gray-400">
                 No tickets found.
               </td>
             </tr>

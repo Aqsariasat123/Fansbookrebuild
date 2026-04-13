@@ -17,9 +17,9 @@ export interface SupportTicket {
 }
 
 export const STATUS_BADGE: Record<string, string> = {
-  OPEN: 'bg-blue-500/20 text-blue-400',
-  ESCALATED: 'bg-yellow-500/20 text-yellow-400',
-  RESOLVED: 'bg-green-500/20 text-green-400',
+  OPEN: 'bg-blue-100 text-blue-600',
+  ESCALATED: 'bg-yellow-100 text-yellow-700',
+  RESOLVED: 'bg-green-100 text-green-600',
 };
 
 export function TicketRow({
@@ -34,10 +34,12 @@ export function TicketRow({
   return (
     <tr
       onClick={onSelect}
-      className={`border-b border-gray-800/50 cursor-pointer text-[13px] ${selected ? 'bg-gray-800/60' : 'hover:bg-gray-800/30'}`}
+      className={`border-b border-gray-100 cursor-pointer text-[13px] ${selected ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
     >
-      <td className="px-[16px] py-[12px] text-white max-w-[200px] truncate">{ticket.title}</td>
-      <td className="px-[16px] py-[12px] text-gray-300">
+      <td className="px-[16px] py-[12px] text-gray-900 font-medium max-w-[200px] truncate">
+        {ticket.title}
+      </td>
+      <td className="px-[16px] py-[12px] text-gray-600">
         {ticket.user ? `@${ticket.user.username}` : '—'}
       </td>
       <td className="px-[16px] py-[12px]">
