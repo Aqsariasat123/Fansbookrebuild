@@ -49,13 +49,14 @@ export function AgeVerification({ children }: { children: React.ReactNode }) {
     // Only redirect on app routes, not marketing/public pages
     const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
     if (isPublic) return;
-    if (authUser.verificationStatus === 'UNVERIFIED') {
-      const accountAge = Date.now() - new Date(authUser.createdAt ?? Date.now()).getTime();
-      const gracePeriodMs = 24 * 60 * 60 * 1000;
-      if (accountAge > gracePeriodMs) {
-        navigate('/verify-identity');
-      }
-    }
+    // ID verification redirect disabled for testing — re-enable before launch
+    // if (authUser.verificationStatus === 'UNVERIFIED') {
+    //   const accountAge = Date.now() - new Date(authUser.createdAt ?? Date.now()).getTime();
+    //   const gracePeriodMs = 24 * 60 * 60 * 1000;
+    //   if (accountAge > gracePeriodMs) {
+    //     navigate('/verify-identity');
+    //   }
+    // }
   }, [accepted, authUser, navigate, pathname]);
 
   const handleEnter = () => {
