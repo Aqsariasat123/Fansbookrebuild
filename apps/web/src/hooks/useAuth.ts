@@ -31,7 +31,7 @@ export function useAuth() {
     }) => {
       const res = await registerApi(payload);
       setUser(res.data.user as never);
-      navigate('/verify-email', { state: { userId: res.data.user.id, email: payload.email } });
+      navigate('/feed'); // email verify skipped — re-enable before launch
     },
     [navigate, setUser],
   );

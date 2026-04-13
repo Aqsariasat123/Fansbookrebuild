@@ -11,7 +11,7 @@ import { loginLimiter, registerLimiter } from '../middleware/rateLimit.js';
 import { generateAndStoreTokens, ME_SELECT, REFRESH_EXPIRY_MS } from '../utils/tokens.js';
 import { sendEmail } from '../utils/email.js';
 import { welcomeTemplate } from '../utils/email-templates.js';
-import { generateOtp, sendOtpEmail } from '../utils/otp.js';
+// import { generateOtp, sendOtpEmail } from '../utils/otp.js'; // re-enable before launch
 import { logActivity } from '../utils/audit.js';
 import { setRefreshCookie, clearRefreshCookie } from '../utils/cookies.js';
 
@@ -86,6 +86,7 @@ router.post('/register', registerLimiter, validate(registerSchema), async (req, 
         passwordHash: await bcrypt.hash(password, 12),
         role,
         avatar: null,
+        emailVerified: true,
       },
       select: ME_SELECT,
     });
@@ -103,9 +104,7 @@ router.post('/register', registerLimiter, validate(registerSchema), async (req, 
     const welcome = welcomeTemplate(username);
     sendEmail(email, welcome.subject, welcome.html);
 
-    // Generate and send OTP for email verification
-    await generateOtp(user.id, 'EMAIL_VERIFY');
-    await sendOtpEmail(user.id);
+    // Email verification skipped — auto-verified on registration (re-enable before launch)
 
     const tokens = await generateAndStoreTokens(user.id, user.role);
     logActivity(user.id, 'REGISTER', 'User', user.id, { username, email, role }, req);
