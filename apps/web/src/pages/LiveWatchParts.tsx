@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { api } from '../lib/api';
 
 type NavState = { creatorName?: string; creatorAvatar?: string } | null;
@@ -45,6 +46,7 @@ export function VideoPanel({
   onPrivateCall,
   creatorName,
   viewerCount,
+  pinnedItemCard,
 }: {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   loading: boolean;
@@ -53,6 +55,7 @@ export function VideoPanel({
   onPrivateCall: boolean;
   creatorName: string;
   viewerCount: number;
+  pinnedItemCard?: ReactNode;
 }) {
   const fmt = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
   return (
@@ -87,7 +90,42 @@ export function VideoPanel({
             </p>
           </div>
         )}
+        {pinnedItemCard && (
+          <div className="absolute bottom-0 left-0 right-0 z-20">{pinnedItemCard}</div>
+        )}
       </div>
+    </div>
+  );
+}
+
+export function PinnedItemCard({
+  item,
+  onBuy,
+}: {
+  item: { id: string; title: string; price: number | null; image: string | null };
+  onBuy: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-[12px] bg-black/80 backdrop-blur-sm px-[16px] py-[12px]">
+      {item.image ? (
+        <img
+          src={item.image}
+          alt={item.title}
+          className="h-[44px] w-[44px] rounded-[8px] object-cover shrink-0"
+        />
+      ) : (
+        <div className="h-[44px] w-[44px] rounded-[8px] bg-gray-700 shrink-0" />
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-[12px] font-semibold text-white truncate">{item.title}</p>
+        <p className="text-[11px] text-[#01adf1] font-bold">${item.price?.toFixed(2) ?? '0.00'}</p>
+      </div>
+      <button
+        onClick={onBuy}
+        className="shrink-0 rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[14px] py-[8px] text-[12px] font-semibold text-white"
+      >
+        Buy Now
+      </button>
     </div>
   );
 }

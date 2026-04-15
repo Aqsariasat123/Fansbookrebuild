@@ -744,10 +744,12 @@ model LiveSession {
   recordingUrl      String?
   privateShow       Boolean    @default(false)
   privateShowTokens Int        @default(0)
+  pinnedItemId      String?
   createdAt         DateTime   @default(now())
 
-  creator  User              @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  messages LiveChatMessage[]
+  creator    User                @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  messages   LiveChatMessage[]
+  pinnedItem MarketplaceListing? @relation(fields: [pinnedItemId], references: [id], onDelete: SetNull)
 
   @@index([creatorId])
   @@index([status])
@@ -805,9 +807,10 @@ model MarketplaceListing {
 
   images String[] @default([])
 
-  seller  User                @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  bids    Bid[]
-  reviews MarketplaceReview[]
+  seller       User                @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  bids         Bid[]
+  reviews      MarketplaceReview[]
+  liveSessions LiveSession[]
 
   @@index([sellerId])
   @@index([status])

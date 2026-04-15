@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useLiveStore } from '../stores/liveStore';
-import { useLiveStream } from '../hooks/useLiveStream';
 import { useLivePrivate } from '../hooks/useLivePrivate';
+import { useLiveWatchStream } from '../hooks/useLiveWatchStream';
 import { LiveChatPanel } from '../components/live/LiveChatPanel';
 import { useAuthStore } from '../stores/authStore';
 import { getSocket } from '../lib/socket';
@@ -10,32 +10,30 @@ import { api } from '../lib/api';
 import {
   VideoPanel,
   GoPrivateControls,
-  attachHls,
+  PinnedItemCard,
   initLiveState,
   type SessionInfo,
   type PrivateStatus,
 } from './LiveWatchParts';
+import { InStreamPurchaseModal, type PinnedItem } from '../components/live/InStreamPurchaseModal';
 
 export default function LiveWatch() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   const { state } = useLocation();
-  const videoRef = useRef<HTMLVideoElement>(null);
   const userId = useAuthStore((s) => s.user?.id);
   const isLive = useLiveStore((s) => s.isLive);
   const viewerCount = useLiveStore((s) => s.viewerCount);
   const creatorOnPrivateCall = useLiveStore((s) => s.creatorOnPrivateCall);
-  const { joinLive, consumeTrack, leaveLive, sendChat } = useLiveStream();
   const { requestPrivate } = useLivePrivate();
+  const { videoRef, loading, isHls, error, sendChat, leaveLive } = useLiveWatchStream(sessionId);
 
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isHls, setIsHls] = useState(false);
-  const hlsRef = useRef<{ destroy: () => void } | null>(null);
   const [session, setSession] = useState<SessionInfo | null>(null);
   const [creatorAvatar, setCreatorAvatar] = useState<string | null>(initLiveState(state).avatar);
   const [creatorName, setCreatorName] = useState<string>(initLiveState(state).name);
   const [privateStatus, setPrivateStatus] = useState<PrivateStatus>('idle');
+  const [pinnedItem, setPinnedItem] = useState<PinnedItem | null>(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -75,38 +73,22 @@ export default function LiveWatch() {
 
   useEffect(() => {
     if (!sessionId) return;
-    let mounted = true;
-    (async () => {
-      try {
-        await joinLive(sessionId, videoRef.current);
-        const { data: prodData } = await api.get(`/live/${sessionId}/producers`);
-        for (const p of prodData.data ?? [])
-          await consumeTrack(sessionId, p.producerId, videoRef.current);
-        if (mounted) setLoading(false);
-      } catch {
-        if (!mounted) return;
-        try {
-          const hls = await attachHls(sessionId, videoRef);
-          hlsRef.current = hls;
-          if (mounted) {
-            setIsHls(true);
-            setLoading(false);
-          }
-        } catch {
-          if (mounted) {
-            setError('Stream not available or ended.');
-            setLoading(false);
-          }
-        }
-      }
-    })();
+    api
+      .get(`/live/${sessionId}/pinned-item`)
+      .then(({ data }) => {
+        if (data.success && data.data) setPinnedItem(data.data);
+      })
+      .catch(() => {});
+    const socket = getSocket();
+    if (!socket) return;
+    const onPinned = (d: { item: PinnedItem }) => setPinnedItem(d.item);
+    const onUnpinned = () => setPinnedItem(null);
+    socket.on('live:item-pinned', onPinned);
+    socket.on('live:item-unpinned', onUnpinned);
     return () => {
-      mounted = false;
-      leaveLive();
-      hlsRef.current?.destroy();
-      hlsRef.current = null;
+      socket.off('live:item-pinned', onPinned);
+      socket.off('live:item-unpinned', onUnpinned);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   const showGoPrivate = !!(session?.privateShow && session.creatorId !== userId);
@@ -153,6 +135,11 @@ export default function LiveWatch() {
           onPrivateCall={creatorOnPrivateCall}
           creatorName={creatorName}
           viewerCount={viewerCount}
+          pinnedItemCard={
+            pinnedItem ? (
+              <PinnedItemCard item={pinnedItem} onBuy={() => setShowPurchaseModal(true)} />
+            ) : undefined
+          }
         />
         <LiveChatPanel
           onSend={sendChat}
@@ -172,6 +159,9 @@ export default function LiveWatch() {
           }
         />
       </div>
+      {showPurchaseModal && pinnedItem && (
+        <InStreamPurchaseModal item={pinnedItem} onClose={() => setShowPurchaseModal(false)} />
+      )}
     </div>
   );
 }

@@ -3,11 +3,9 @@ import { prisma } from './database.js';
 import { logger } from '../utils/logger.js';
 import { sessionTransports, sessionProducers } from '../routes/live.js';
 import type { DtlsParameters, MediaKind, RtpParameters } from 'mediasoup/types';
+import { registerShoppingHandlers } from './live-shopping-handlers.js';
 
-// sessionId -> Set<userId> — tracks unique viewers to prevent refresh inflation
 const sessionViewers = new Map<string, Set<string>>();
-
-// sessionId -> boolean — tracks whether creator is currently on a private call
 export const sessionOnPrivateCall = new Map<string, boolean>();
 
 async function broadcastViewerCount(io: Server, sessionId: string) {
@@ -47,7 +45,6 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
   });
 
   socket.on('disconnect', () => {
-    // Remove user from all sessions they were watching
     for (const [sessionId, viewers] of sessionViewers) {
       if (viewers.has(userId)) {
         viewers.delete(userId);
@@ -117,7 +114,6 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
     },
   );
 
-  // ─── Private Show: fan requests private call ─────────
   socket.on('live:private-request', async (data: { sessionId: string }) => {
     try {
       const session = await prisma.liveSession.findUnique({
@@ -140,16 +136,13 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
     }
   });
 
-  // Creator accepts private request
   socket.on('live:private-accept', async (data: { sessionId: string; fanId: string }) => {
     try {
       const session = await prisma.liveSession.findUnique({
         where: { id: data.sessionId },
         select: { creator: { select: { displayName: true } } },
       });
-      // Tell fan: creator will call them now
       io.to(`user:${data.fanId}`).emit('live:private-accepted', { sessionId: data.sessionId });
-      // Track and notify all viewers "on private call"
       sessionOnPrivateCall.set(data.sessionId, true);
       io.to(`live:${data.sessionId}`).emit('live:on-private-call', {
         creatorName: session?.creator.displayName ?? 'Creator',
@@ -159,16 +152,16 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
     }
   });
 
-  // Creator declines private request
   socket.on('live:private-decline', (data: { fanId: string }) => {
     io.to(`user:${data.fanId}`).emit('live:private-declined', {});
   });
 
-  // Private call ended — notify viewers
   socket.on('live:private-ended', (data: { sessionId: string }) => {
     sessionOnPrivateCall.delete(data.sessionId);
     io.to(`live:${data.sessionId}`).emit('live:private-call-ended', {});
   });
+
+  registerShoppingHandlers(io, socket, userId);
 
   socket.on(
     'live:produce',

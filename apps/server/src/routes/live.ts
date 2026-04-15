@@ -13,6 +13,7 @@ import liveStreamRouter from './live-stream.js';
 import liveExtrasRouter from './live-extras.js';
 import liveScheduleRouter from './live-schedule.js';
 import liveBrowseRouter from './live-browse.js';
+import liveShoppingRouter from './live-shopping.js';
 
 const router = Router();
 
@@ -143,6 +144,7 @@ router.post('/start', authenticate, requireRole('CREATOR'), async (req, res, nex
 router.use('/schedule', liveScheduleRouter);
 router.use('/', liveBrowseRouter);
 router.use('/', liveExtrasRouter);
+router.use('/', liveShoppingRouter);
 
 // Mount streaming sub-routes (transport, produce, consume, end, chat, router-capabilities)
 router.use('/', liveStreamRouter);
