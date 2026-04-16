@@ -76,7 +76,15 @@ export default function LiveWatch() {
     api
       .get(`/live/${sessionId}/pinned-item`)
       .then(({ data }) => {
-        if (data.success && data.data) setPinnedItem(data.data);
+        if (data.success && data.data) {
+          const d = data.data;
+          setPinnedItem({
+            id: d.id,
+            title: d.title,
+            price: d.price,
+            image: d.images?.[0] ?? d.image ?? null,
+          });
+        }
       })
       .catch(() => {});
     const socket = getSocket();
