@@ -30,7 +30,7 @@ export const fanNavItems: NavItem[] = [
     icon: '/icons/dashboard/notifications.svg',
     labelKey: 'nav.notifications',
   },
-  // { to: '/verify-identity', icon: '/icons/dashboard/verified.svg', labelKey: 'nav.verifyIdentity' }, // re-enable before launch
+  { to: '/verify-identity', icon: '/icons/dashboard/verified.svg', labelKey: 'nav.verifyIdentity' },
   { to: '/settings', icon: '/icons/dashboard/settings.svg', labelKey: 'nav.settings' },
   { to: '/help-support', icon: '/icons/dashboard/help-center.svg', labelKey: 'nav.helpSupport' },
   { to: '/become-creator', icon: '/icons/dashboard/add-circle.svg', labelKey: 'nav.becomeCreator' },
@@ -89,7 +89,7 @@ export const creatorNavItems: NavItem[] = [
     icon: '/icons/dashboard/notifications.svg',
     labelKey: 'nav.notifications',
   },
-  // { to: '/verify-identity', icon: '/icons/dashboard/verified.svg', labelKey: 'nav.verifyIdentity' }, // re-enable before launch
+  { to: '/verify-identity', icon: '/icons/dashboard/verified.svg', labelKey: 'nav.verifyIdentity' },
   { to: '/settings', icon: '/icons/dashboard/settings.svg', labelKey: 'nav.settings' },
   { to: '/help-support', icon: '/icons/dashboard/help-center.svg', labelKey: 'nav.helpSupport' },
 ];
