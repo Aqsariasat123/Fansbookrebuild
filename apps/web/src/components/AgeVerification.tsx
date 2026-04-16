@@ -33,7 +33,8 @@ export function AgeVerification({ children }: { children: React.ReactNode }) {
   const [privacyChecked, setPrivacyChecked] = useState(false);
   const [termsChecked, setTermsChecked] = useState(false);
 
-  const showPopup = !accepted && !READABLE_PATHS.includes(pathname);
+  // Disabled for testing — re-enable before launch
+  const showPopup = false && !accepted && !READABLE_PATHS.includes(pathname);
 
   useEffect(() => {
     document.body.style.overflow = showPopup ? 'hidden' : '';
