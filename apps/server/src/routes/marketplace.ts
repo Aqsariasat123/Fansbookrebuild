@@ -205,6 +205,24 @@ router.post('/:id/buy', authenticate, async (req, res, next) => {
       prisma.marketplaceListing.update({ where: { id: listingId }, data: { status: 'SOLD' } }),
     ]);
 
+    // Auto-unpin from any live session that had this item pinned
+    const pinnedSession = await prisma.liveSession.findFirst({
+      where: { pinnedItemId: listingId, status: 'LIVE' },
+      select: { id: true },
+    });
+    if (pinnedSession) {
+      await prisma.liveSession.update({
+        where: { id: pinnedSession.id },
+        data: { pinnedItemId: null },
+      });
+      try {
+        const { getIO } = await import('../config/socket.js');
+        getIO().to(`live:${pinnedSession.id}`).emit('live:item-unpinned', {});
+      } catch {
+        /* socket not critical */
+      }
+    }
+
     res.json({ success: true, message: 'Purchase complete!' });
   } catch (err) {
     next(err);
