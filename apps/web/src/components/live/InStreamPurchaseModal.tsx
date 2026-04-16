@@ -22,7 +22,7 @@ export function InStreamPurchaseModal({ item, onClose }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.post(`/marketplace/${item.id}/purchase`);
+      const { data } = await api.post(`/marketplace/${item.id}/buy`);
       if (data.success) {
         setDone(true);
       } else {
