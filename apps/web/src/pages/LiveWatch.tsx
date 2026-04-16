@@ -168,7 +168,11 @@ export default function LiveWatch() {
         />
       </div>
       {showPurchaseModal && pinnedItem && (
-        <InStreamPurchaseModal item={pinnedItem} onClose={() => setShowPurchaseModal(false)} />
+        <InStreamPurchaseModal
+          item={pinnedItem}
+          onClose={() => setShowPurchaseModal(false)}
+          onSuccess={() => setPinnedItem(null)}
+        />
       )}
     </div>
   );

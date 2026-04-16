@@ -11,9 +11,10 @@ export interface PinnedItem {
 interface Props {
   item: PinnedItem;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-export function InStreamPurchaseModal({ item, onClose }: Props) {
+export function InStreamPurchaseModal({ item, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +26,7 @@ export function InStreamPurchaseModal({ item, onClose }: Props) {
       const { data } = await api.post(`/marketplace/${item.id}/buy`);
       if (data.success) {
         setDone(true);
+        onSuccess?.();
       } else {
         setError(data.error ?? 'Purchase failed');
       }
