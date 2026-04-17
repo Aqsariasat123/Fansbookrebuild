@@ -22,6 +22,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1000.0",
     "@fansbook/shared": "*",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
     "@prisma/client": "^6.5.0",
     "@sentry/node": "^10.40.0",
     "@socket.io/redis-adapter": "^8.3.0",
