@@ -77,6 +77,7 @@ import {
 const VerifyIdentity = lazy(() => import('./pages/VerifyIdentity'));
 const MyPurchases = lazy(() => import('./pages/MyPurchases'));
 const MySales = lazy(() => import('./pages/creator/MySales'));
+const AIClips = lazy(() => import('./pages/creator/AIClips'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -192,6 +193,7 @@ export default function App() {
                       <Route path="/creator/ai-settings" element={<CreatorAISettings />} />
                       <Route path="/creator/upsell" element={<UpsellAdvisor />} />
                       <Route path="/creator/sales" element={<MySales />} />
+                      <Route path="/creator/ai-clips" element={<AIClips />} />
                     </Route>
                   </Route>
                 </Route>

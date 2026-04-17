@@ -62,3 +62,13 @@ export const escrowQueue = new Queue('escrow-release', {
     removeOnFail: 100,
   },
 });
+
+export const aiClipsQueue = new Queue('ai-clips', {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: { type: 'exponential', delay: 5000 },
+    removeOnComplete: 50,
+    removeOnFail: 100,
+  },
+});

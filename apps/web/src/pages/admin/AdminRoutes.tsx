@@ -45,6 +45,7 @@ const AdminModeration = lazy(() => import('./AdminModeration'));
 const AdminFraud = lazy(() => import('./AdminFraud'));
 const AdminSupport = lazy(() => import('./AdminSupport'));
 const AdminEscrow = lazy(() => import('./AdminEscrow'));
+const AdminAIClips = lazy(() => import('./AdminAIClips'));
 
 export function adminRoutes() {
   return (
@@ -93,6 +94,7 @@ export function adminRoutes() {
             <Route path="/admin/fraud" element={<AdminFraud />} />
             <Route path="/admin/support" element={<AdminSupport />} />
             <Route path="/admin/escrow" element={<AdminEscrow />} />
+            <Route path="/admin/ai-clips" element={<AdminAIClips />} />
           </Route>
         </Route>
       </Route>

@@ -85,6 +85,11 @@ export const creatorNavItems: NavItem[] = [
     icon: '/icons/dashboard/ai-assistant.svg',
     labelKey: 'nav.aiAssistant',
   },
+  {
+    to: '/creator/ai-clips',
+    icon: '/icons/dashboard/video-progress.svg',
+    labelKey: 'nav.aiClips',
+  },
   { to: '/marketplace', icon: '/icons/dashboard/wallet-card.svg', labelKey: 'nav.marketplace' },
   {
     to: '/notifications',
@@ -124,6 +129,7 @@ export const fallbackLabels: Record<string, string> = {
   'nav.goLive': 'Go Live',
   'nav.aiChatbot': 'AI Chatbot',
   'nav.aiAssistant': 'AI Assistant',
+  'nav.aiClips': 'AI Viral Clips',
   'nav.verifyIdentity': 'Verify Identity',
   'nav.english': 'English',
   'nav.logout': 'Logout',

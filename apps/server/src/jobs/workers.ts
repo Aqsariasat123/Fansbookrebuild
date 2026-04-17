@@ -4,6 +4,7 @@ import { startAuctionCloseWorker } from './auction-close-worker.js';
 import { startToneLearningWorker } from './tone-learning-worker.js';
 import { startVideoModerationWorker } from './video-moderation-worker.js';
 import { startEscrowReleaseWorker } from './escrow-release-worker.js';
+import { startAIClipsWorker } from './ai-clips-worker.js';
 import { logger } from '../utils/logger.js';
 
 export function startWorkers() {
@@ -13,7 +14,8 @@ export function startWorkers() {
   startToneLearningWorker();
   startVideoModerationWorker();
   startEscrowReleaseWorker();
+  startAIClipsWorker();
   logger.info(
-    'BullMQ workers started (email, story-expiry, auction-close, tone-learning, video-moderation, escrow-release)',
+    'BullMQ workers started (email, story-expiry, auction-close, tone-learning, video-moderation, escrow-release, ai-clips)',
   );
 }
