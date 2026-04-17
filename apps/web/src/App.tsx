@@ -75,6 +75,8 @@ import {
 } from './lazyPages';
 
 const VerifyIdentity = lazy(() => import('./pages/VerifyIdentity'));
+const MyPurchases = lazy(() => import('./pages/MyPurchases'));
+const MySales = lazy(() => import('./pages/creator/MySales'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -168,6 +170,7 @@ export default function App() {
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/profile/edit" element={<ProfileEdit />} />
                       <Route path="/wallet" element={<Wallet />} />
+                      <Route path="/purchases" element={<MyPurchases />} />
                       <Route path="/followers" element={<Followers />} />
                       <Route path="/subscription" element={<Subscriptions />} />
                     </Route>
@@ -188,6 +191,7 @@ export default function App() {
                       <Route path="/creator/live" element={<LiveBroadcasting />} />
                       <Route path="/creator/ai-settings" element={<CreatorAISettings />} />
                       <Route path="/creator/upsell" element={<UpsellAdvisor />} />
+                      <Route path="/creator/sales" element={<MySales />} />
                     </Route>
                   </Route>
                 </Route>

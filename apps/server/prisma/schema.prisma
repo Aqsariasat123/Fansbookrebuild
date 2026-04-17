@@ -58,6 +58,18 @@ enum TransactionType {
   BID_RELEASE
   MARKETPLACE_PURCHASE
   MARKETPLACE_EARNING
+  ESCROW_HOLD
+  ESCROW_RELEASE
+  ESCROW_REFUND
+}
+
+enum PurchaseStatus {
+  HELD
+  DELIVERED
+  CONFIRMED
+  DISPUTED
+  RELEASED
+  REFUNDED
 }
 
 enum TransactionStatus {
@@ -292,6 +304,8 @@ model User {
   identityVerification  IdentityVerification?
   reviewedVerifications IdentityVerification[]   @relation("VerificationReviewer")
   fraudEvents           FraudEvent[]
+  purchasesAsBuyer      MarketplacePurchase[]    @relation("PurchaseBuyer")
+  purchasesAsSeller     MarketplacePurchase[]    @relation("PurchaseSeller")
 
   @@index([email])
   @@index([username])
@@ -807,10 +821,11 @@ model MarketplaceListing {
 
   images String[] @default([])
 
-  seller       User                @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  seller       User                  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   bids         Bid[]
   reviews      MarketplaceReview[]
   liveSessions LiveSession[]
+  purchases    MarketplacePurchase[]
 
   @@index([sellerId])
   @@index([status])
@@ -829,6 +844,31 @@ model Bid {
 
   @@index([listingId])
   @@index([bidderId])
+}
+
+model MarketplacePurchase {
+  id            String         @id @default(cuid())
+  listingId     String
+  buyerId       String
+  sellerId      String
+  amount        Float
+  status        PurchaseStatus @default(HELD)
+  disputeReason String?
+  adminNote     String?
+  deliveredAt   DateTime?
+  confirmedAt   DateTime?
+  resolvedAt    DateTime?
+  autoReleaseAt DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  listing MarketplaceListing @relation(fields: [listingId], references: [id])
+  buyer   User               @relation("PurchaseBuyer", fields: [buyerId], references: [id])
+  seller  User               @relation("PurchaseSeller", fields: [sellerId], references: [id])
+
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
 }
 
 model Badge {

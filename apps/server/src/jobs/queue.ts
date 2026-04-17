@@ -54,3 +54,11 @@ export const videoModerationQueue = new Queue('video-moderation', {
     removeOnFail: 50,
   },
 });
+
+export const escrowQueue = new Queue('escrow-release', {
+  connection,
+  defaultJobOptions: {
+    removeOnComplete: 50,
+    removeOnFail: 100,
+  },
+});

@@ -6,6 +6,7 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { requireRole } from '../middleware/requireRole.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { escrowQueue } from '../jobs/queue.js';
 import bidsRouter from './marketplace-bids.js';
 
 const router = Router();
@@ -170,37 +171,43 @@ router.post('/:id/buy', authenticate, async (req, res, next) => {
     if (!listing) throw new AppError(404, 'Listing not found');
     if (listing.sellerId === userId) throw new AppError(400, 'Cannot buy your own listing');
 
-    const price = listing.price!;
+    const price = listing.price ?? 0;
     let wallet = await prisma.wallet.findUnique({ where: { userId } });
     // Balance check disabled for testing — re-enable before launch
     if (!wallet) wallet = await prisma.wallet.create({ data: { userId, balance: 0 } });
 
-    const sellerWallet = await prisma.wallet.findUnique({ where: { userId: listing.sellerId } });
-    if (!sellerWallet) throw new AppError(500, 'Seller wallet not found');
+    // Hold funds in escrow — auto-release after 48hrs if buyer doesn't act
+    const AUTO_RELEASE_MS = 48 * 60 * 60 * 1000;
+    const autoReleaseAt = new Date(Date.now() + AUTO_RELEASE_MS);
 
-    await prisma.$transaction([
-      prisma.wallet.update({ where: { id: wallet.id }, data: { balance: { decrement: price } } }),
+    const [purchase] = await prisma.$transaction([
+      prisma.marketplacePurchase.create({
+        data: {
+          listingId,
+          buyerId: userId,
+          sellerId: listing.sellerId,
+          amount: price,
+          status: 'HELD',
+          autoReleaseAt,
+        },
+      }),
       prisma.wallet.update({
-        where: { id: sellerWallet.id },
-        data: { balance: { increment: price }, totalEarned: { increment: price } },
+        where: { id: wallet.id },
+        data: { balance: { decrement: price } },
       }),
       prisma.transaction.create({
         data: {
           walletId: wallet.id,
-          type: 'MARKETPLACE_PURCHASE',
+          type: 'ESCROW_HOLD',
           amount: price,
-          description: `Purchase: ${listing.title}`,
-        },
-      }),
-      prisma.transaction.create({
-        data: {
-          walletId: sellerWallet.id,
-          type: 'MARKETPLACE_EARNING',
-          amount: price,
-          description: `Sale: ${listing.title}`,
+          description: `Escrow: ${listing.title}`,
+          status: 'PENDING',
         },
       }),
     ]);
+
+    // Schedule auto-release job
+    await escrowQueue.add('auto-release', { purchaseId: purchase.id }, { delay: AUTO_RELEASE_MS });
 
     // Auto-unpin from any live session that had this item pinned
     const pinnedSession = await prisma.liveSession.findFirst({

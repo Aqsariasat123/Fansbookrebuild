@@ -12,6 +12,7 @@ export const fanNavItems: NavItem[] = [
   { to: '/profile', icon: '/icons/dashboard/person.svg', labelKey: 'nav.myProfile' },
   { to: '/messages', icon: '/icons/dashboard/chat.svg', labelKey: 'nav.messages' },
   { to: '/wallet', icon: '/icons/dashboard/account-balance-wallet.svg', labelKey: 'nav.myWallet' },
+  { to: '/purchases', icon: '/icons/dashboard/pending.svg', labelKey: 'nav.myPurchases' },
   { to: '/followers', icon: '/icons/dashboard/person-heart.svg', labelKey: 'nav.myFollowersModel' },
   {
     to: '/subscription',
@@ -67,6 +68,7 @@ export const creatorNavItems: NavItem[] = [
     icon: '/icons/dashboard/account-balance-wallet.svg',
     labelKey: 'nav.myEarning',
   },
+  { to: '/creator/sales', icon: '/icons/dashboard/pending.svg', labelKey: 'nav.mySales' },
   {
     to: '/creator/referrals',
     icon: '/icons/dashboard/person-heart.svg',
@@ -112,6 +114,8 @@ export const fallbackLabels: Record<string, string> = {
   'nav.live': 'Live',
   'nav.becomeCreator': 'Become Creator',
   'nav.myEarning': 'My Earning',
+  'nav.mySales': 'My Sales',
+  'nav.myPurchases': 'My Purchases',
   'nav.myReferrals': 'My Referrals',
   'nav.myBookings': 'My Bookings',
   'nav.dashboard': 'Dashboard',

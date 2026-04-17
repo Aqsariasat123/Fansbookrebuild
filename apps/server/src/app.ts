@@ -57,6 +57,8 @@ import paymentGatewayRouter from './routes/payment-gateway.js';
 import paymentWebhooksRouter from './routes/payment-webhooks.js';
 import creatorAIRouter from './routes/creator-ai.js';
 import verificationRouter, { verificationWebhookHandler } from './routes/verification.js';
+import purchasesRouter from './routes/purchases.js';
+import salesRouter from './routes/sales.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -166,6 +168,8 @@ app.use('/api/auth', becomeCreatorRouter);
 app.use('/api/auth/2fa', twoFactorRouter);
 app.use('/api/marketplace', marketplaceRouter);
 app.use('/api/marketplace-reviews', marketplaceReviewsRouter);
+app.use('/api/purchases', purchasesRouter);
+app.use('/api/sales', salesRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/badges', badgesRouter);
 app.use('/api/uploads', uploadsRouter);

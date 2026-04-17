@@ -21,6 +21,7 @@ import aiRouter from './admin-ai.js';
 import moderationRouter from './admin-moderation.js';
 import fraudRouter from './admin-fraud.js';
 import supportRouter from './admin-support.js';
+import escrowRouter from './admin-escrow.js';
 
 const router = Router();
 
@@ -47,5 +48,6 @@ router.use('/ai', aiRouter);
 router.use('/moderation', moderationRouter);
 router.use('/fraud', fraudRouter);
 router.use('/support', supportRouter);
+router.use('/escrow', escrowRouter);
 
 export default router;
