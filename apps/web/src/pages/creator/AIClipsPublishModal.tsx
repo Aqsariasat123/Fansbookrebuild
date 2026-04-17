@@ -3,6 +3,44 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import type { AIClip } from './AIClipsParts';
 
+export function ClipThumbnail({
+  thumbnailPath,
+  duration,
+}: {
+  thumbnailPath: string | null;
+  duration: number;
+}) {
+  const [imgError, setImgError] = useState(false);
+  const showImg = thumbnailPath && !imgError;
+  return (
+    <div className="relative h-[140px] w-full bg-muted flex items-center justify-center">
+      {showImg ? (
+        <img
+          src={thumbnailPath!}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          className="text-muted-foreground"
+        >
+          <polygon points="5,3 19,12 5,21" />
+        </svg>
+      )}
+      <span className="absolute bottom-[6px] right-[6px] rounded-[4px] bg-black/70 px-[6px] py-[2px] text-[11px] text-white z-10">
+        {duration}s
+      </span>
+    </div>
+  );
+}
+
 export function PublishModal({ clip, onClose }: { clip: AIClip; onClose: () => void }) {
   const [caption, setCaption] = useState(clip.title);
   const [isPaid, setIsPaid] = useState(false);

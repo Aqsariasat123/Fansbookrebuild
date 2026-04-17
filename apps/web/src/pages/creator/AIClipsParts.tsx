@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
-import { PublishModal } from './AIClipsPublishModal';
+import { PublishModal, ClipThumbnail } from './AIClipsPublishModal';
 
 export type ClipJobStatus = 'QUEUED' | 'EXTRACTING' | 'ANALYZING' | 'CUTTING' | 'DONE' | 'FAILED';
 
@@ -39,14 +39,13 @@ const STATUS_STEPS: Record<ClipJobStatus, { label: string; step: number }> = {
 
 export function StatusBar({ status, error }: { status: ClipJobStatus; error: string | null }) {
   const s = STATUS_STEPS[status];
-  if (status === 'FAILED') {
+  if (status === 'FAILED')
     return (
       <div className="rounded-[10px] border border-red-500/30 bg-red-500/10 p-[12px]">
         <p className="text-[13px] font-medium text-red-400">Processing failed</p>
         {error && <p className="text-[11px] text-red-400/80 mt-[2px]">{error}</p>}
       </div>
     );
-  }
   if (status === 'DONE') return null;
   const steps = ['Queued', 'Extracting', 'Analyzing', 'Cutting'];
   return (
@@ -77,39 +76,16 @@ export function ClipCard({ clip }: { clip: AIClip }) {
   const duration = Math.round(clip.endSec - clip.startSec);
   return (
     <div className="rounded-[12px] border border-border bg-card overflow-hidden">
-      <div className="relative">
-        {clip.thumbnailPath ? (
-          <img
-            src={clip.thumbnailPath}
-            alt={clip.title}
-            className="h-[140px] w-full object-cover"
-          />
-        ) : (
-          <div className="h-[140px] w-full bg-muted flex items-center justify-center">
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="text-muted-foreground"
-            >
-              <polygon points="5,3 19,12 5,21" />
-            </svg>
-          </div>
-        )}
-        <span className="absolute bottom-[6px] right-[6px] rounded-[4px] bg-black/70 px-[6px] py-[2px] text-[11px] text-white">
-          {duration}s
-        </span>
-        <span
-          className={`absolute top-[6px] left-[6px] rounded-[4px] px-[6px] py-[2px] text-[10px] font-semibold ${clip.score === 'HIGH' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-black'}`}
-        >
-          {clip.score}
-        </span>
-      </div>
+      <ClipThumbnail thumbnailPath={clip.thumbnailPath} duration={duration} />
       <div className="p-[12px]">
-        <p className="text-[13px] font-semibold text-foreground line-clamp-2">{clip.title}</p>
+        <div className="flex items-start gap-[6px] mb-[4px]">
+          <span
+            className={`mt-[1px] shrink-0 rounded-[4px] px-[6px] py-[2px] text-[10px] font-semibold ${clip.score === 'HIGH' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-black'}`}
+          >
+            {clip.score}
+          </span>
+          <p className="text-[13px] font-semibold text-foreground line-clamp-2">{clip.title}</p>
+        </div>
         {clip.reason && (
           <p className="text-[11px] text-muted-foreground mt-[4px] line-clamp-2">{clip.reason}</p>
         )}
