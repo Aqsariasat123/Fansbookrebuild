@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
-import { PublishModal, ClipThumbnail } from './AIClipsPublishModal';
+import { PublishModal, ClipThumbnail, StatusBar } from './AIClipsPublishModal';
 
 export type ClipJobStatus = 'QUEUED' | 'EXTRACTING' | 'ANALYZING' | 'CUTTING' | 'DONE' | 'FAILED';
+export { StatusBar };
 
 export interface AIClip {
   id: string;
@@ -28,46 +29,35 @@ export interface AIClipJob {
   clips: AIClip[];
 }
 
-const STATUS_STEPS: Record<ClipJobStatus, { label: string; step: number }> = {
-  QUEUED: { label: 'Queued', step: 0 },
-  EXTRACTING: { label: 'Extracting frames…', step: 1 },
-  ANALYZING: { label: 'AI analyzing moments…', step: 2 },
-  CUTTING: { label: 'Cutting clips…', step: 3 },
-  DONE: { label: 'Clips ready', step: 4 },
-  FAILED: { label: 'Failed', step: -1 },
+const STATUS_LABELS: Record<ClipJobStatus, string> = {
+  QUEUED: 'Queued',
+  EXTRACTING: 'Extracting frames…',
+  ANALYZING: 'AI analyzing moments…',
+  CUTTING: 'Cutting clips…',
+  DONE: 'Clips ready',
+  FAILED: 'Failed',
 };
 
-export function StatusBar({ status, error }: { status: ClipJobStatus; error: string | null }) {
-  const s = STATUS_STEPS[status];
-  if (status === 'FAILED')
-    return (
-      <div className="rounded-[10px] border border-red-500/30 bg-red-500/10 p-[12px]">
-        <p className="text-[13px] font-medium text-red-400">Processing failed</p>
-        {error && <p className="text-[11px] text-red-400/80 mt-[2px]">{error}</p>}
-      </div>
-    );
-  if (status === 'DONE') return null;
-  const steps = ['Queued', 'Extracting', 'Analyzing', 'Cutting'];
-  return (
-    <div className="rounded-[10px] border border-border bg-card p-[14px]">
-      <div className="flex items-center justify-between mb-[10px]">
-        <p className="text-[13px] font-medium text-foreground">{s.label}</p>
-        <div className="size-[16px] animate-spin rounded-full border-2 border-[#01adf1] border-t-transparent" />
-      </div>
-      <div className="flex gap-[4px]">
-        {steps.map((step, i) => (
-          <div
-            key={step}
-            className={`h-[4px] flex-1 rounded-full transition-colors ${i < s.step ? 'bg-[#01adf1]' : i === s.step - 1 ? 'bg-[#01adf1]/60' : 'bg-muted'}`}
-          />
-        ))}
-      </div>
-    </div>
-  );
+async function downloadClip(filePath: string, title: string): Promise<boolean> {
+  try {
+    const res = await fetch(filePath);
+    if (!res.ok) return false;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title}.mp4`;
+    a.click();
+    URL.revokeObjectURL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function ClipCard({ clip }: { clip: AIClip }) {
   const [showPublish, setShowPublish] = useState(false);
+  const [downloadErr, setDownloadErr] = useState(false);
   const qc = useQueryClient();
   const deleteMut = useMutation({
     mutationFn: () => api.delete(`/creator/clips/${clip.id}`),
@@ -101,9 +91,12 @@ export function ClipCard({ clip }: { clip: AIClip }) {
             >
               Publish
             </button>
-            <a
-              href={clip.filePath}
-              download
+            <button
+              onClick={async () => {
+                setDownloadErr(false);
+                const ok = await downloadClip(clip.filePath, clip.title);
+                if (!ok) setDownloadErr(true);
+              }}
               className="flex items-center justify-center rounded-[6px] border border-border px-[10px] py-[7px]"
             >
               <svg
@@ -116,7 +109,7 @@ export function ClipCard({ clip }: { clip: AIClip }) {
               >
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
               </svg>
-            </a>
+            </button>
             <button
               onClick={() => deleteMut.mutate()}
               disabled={deleteMut.isPending}
@@ -136,6 +129,9 @@ export function ClipCard({ clip }: { clip: AIClip }) {
             </button>
           </div>
         )}
+        {downloadErr && (
+          <p className="mt-[6px] text-[11px] text-red-400">File not available on server</p>
+        )}
       </div>
       {showPublish && <PublishModal clip={clip} onClose={() => setShowPublish(false)} />}
     </div>
@@ -151,7 +147,7 @@ export function JobHistoryRow({
   isExpanded: boolean;
   onToggle: () => void;
 }) {
-  const s = STATUS_STEPS[job.status];
+  const label = STATUS_LABELS[job.status];
   const statusColor =
     job.status === 'DONE'
       ? 'bg-green-500/20 text-green-400'
@@ -174,7 +170,7 @@ export function JobHistoryRow({
           <span
             className={`rounded-[20px] px-[8px] py-[2px] text-[10px] font-medium ${statusColor}`}
           >
-            {s.label}
+            {label}
           </span>
           <svg
             width="14"

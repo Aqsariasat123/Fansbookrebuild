@@ -1,7 +1,45 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
-import type { AIClip } from './AIClipsParts';
+import type { AIClip, ClipJobStatus } from './AIClipsParts';
+
+const STATUS_STEPS: Record<ClipJobStatus, { label: string; step: number }> = {
+  QUEUED: { label: 'Queued', step: 0 },
+  EXTRACTING: { label: 'Extracting frames…', step: 1 },
+  ANALYZING: { label: 'AI analyzing moments…', step: 2 },
+  CUTTING: { label: 'Cutting clips…', step: 3 },
+  DONE: { label: 'Clips ready', step: 4 },
+  FAILED: { label: 'Failed', step: -1 },
+};
+
+export function StatusBar({ status, error }: { status: ClipJobStatus; error: string | null }) {
+  const s = STATUS_STEPS[status];
+  if (status === 'FAILED')
+    return (
+      <div className="rounded-[10px] border border-red-500/30 bg-red-500/10 p-[12px]">
+        <p className="text-[13px] font-medium text-red-400">Processing failed</p>
+        {error && <p className="text-[11px] text-red-400/80 mt-[2px]">{error}</p>}
+      </div>
+    );
+  if (status === 'DONE') return null;
+  const steps = ['Queued', 'Extracting', 'Analyzing', 'Cutting'];
+  return (
+    <div className="rounded-[10px] border border-border bg-card p-[14px]">
+      <div className="flex items-center justify-between mb-[10px]">
+        <p className="text-[13px] font-medium text-foreground">{s.label}</p>
+        <div className="size-[16px] animate-spin rounded-full border-2 border-[#01adf1] border-t-transparent" />
+      </div>
+      <div className="flex gap-[4px]">
+        {steps.map((step, i) => (
+          <div
+            key={step}
+            className={`h-[4px] flex-1 rounded-full transition-colors ${i < s.step ? 'bg-[#01adf1]' : i === s.step - 1 ? 'bg-[#01adf1]/60' : 'bg-muted'}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function ClipThumbnail({
   thumbnailPath,

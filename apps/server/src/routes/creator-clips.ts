@@ -143,14 +143,14 @@ router.delete('/:clipId', authenticate, async (req, res, next) => {
 // GET /api/creator/clips/file/:filename — serve clip video file
 router.get('/file/:filename', (req, res) => {
   const filePath = path.join(CLIPS_DIR, req.params.filename as string);
-  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Not found' });
+  if (!fs.existsSync(filePath)) return res.sendStatus(404);
   res.sendFile(filePath);
 });
 
 // GET /api/creator/clips/thumb/:filename — serve thumbnail
 router.get('/thumb/:filename', (req, res) => {
   const filePath = path.join(THUMBS_DIR, req.params.filename as string);
-  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Not found' });
+  if (!fs.existsSync(filePath)) return res.sendStatus(404);
   res.sendFile(filePath);
 });
 
