@@ -5,29 +5,47 @@ type VerifyStatus = 'APPROVED' | 'REJECTED' | 'MANUAL_REVIEW' | 'PENDING' | 'UNV
 
 // ── SDK Step ──────────────────────────────────────────────
 export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => void }) {
-  useEffect(() => {
-    if (sdkToken) window.location.href = sdkToken;
-  }, [sdkToken]);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+
+  // Detect when Didit redirects back to our callback URL inside the iframe
+  const handleIframeLoad = (e: React.SyntheticEvent<HTMLIFrameElement>) => {
+    setIframeLoaded(true);
+    try {
+      const url = (e.target as HTMLIFrameElement).contentWindow?.location?.href ?? '';
+      if (url.includes('/verify-identity') && url.includes('done=1')) {
+        onDone();
+      }
+    } catch {
+      // Cross-origin access blocked — normal while on didit.me domain
+      // onDone is triggered by the user clicking "I've completed"
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center gap-[24px] text-center py-[12px]">
-      <div className="size-[56px] animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
-      <div>
-        <h2 className="text-[18px] font-bold text-white mb-[8px]">Redirecting to Didit…</h2>
-        <p className="text-[14px] text-gray-400 max-w-[360px]">
-          You will be redirected to complete your identity verification. Please do not close this
-          tab.
-        </p>
-      </div>
-      <button
-        onClick={() => {
-          window.location.href = sdkToken;
-        }}
-        className="rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[12px] text-[15px] font-semibold text-white"
+    <div className="flex flex-col gap-[16px]">
+      <div
+        className="relative overflow-hidden rounded-[12px] border border-gray-700 bg-gray-900"
+        style={{ height: '560px' }}
       >
-        Click here if not redirected
-      </button>
-      <button onClick={onDone} className="text-[13px] text-gray-400 underline">
+        {!iframeLoaded && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-[12px]">
+            <div className="size-[40px] animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+            <p className="text-[13px] text-gray-400">Loading verification…</p>
+          </div>
+        )}
+        <iframe
+          src={sdkToken}
+          allow="camera; microphone; accelerometer; gyroscope"
+          onLoad={handleIframeLoad}
+          className="h-full w-full border-0"
+          title="Didit Identity Verification"
+        />
+      </div>
+      <p className="text-center text-[12px] text-gray-500">Completed? Click below to continue.</p>
+      <button
+        onClick={onDone}
+        className="rounded-full border border-[#01adf1] px-[32px] py-[10px] text-[14px] font-medium text-[#01adf1] hover:bg-[#01adf1]/10"
+      >
         I've completed the verification
       </button>
     </div>
