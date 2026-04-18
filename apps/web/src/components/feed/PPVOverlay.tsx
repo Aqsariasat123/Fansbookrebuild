@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
+import { formatMoney } from '../../lib/currency';
 
 interface PPVOverlayProps {
   postId: string;
@@ -51,7 +52,7 @@ export function PPVOverlay({ postId, price, thumbnailUrl, onUnlocked }: PPVOverl
         </svg>
         <p className="text-[14px] font-medium text-white md:text-[18px]">Premium Content</p>
         <p className="text-[12px] text-white/70 md:text-[14px]">
-          Unlock this post for ${price.toFixed(2)}
+          Unlock this post for {formatMoney(price)}
         </p>
 
         {!confirming ? (
@@ -59,7 +60,7 @@ export function PPVOverlay({ postId, price, thumbnailUrl, onUnlocked }: PPVOverl
             onClick={() => setConfirming(true)}
             className="mt-[4px] rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[24px] py-[8px] text-[13px] font-medium text-white md:px-[32px] md:py-[10px] md:text-[15px]"
           >
-            Unlock for ${price.toFixed(2)}
+            Unlock for {formatMoney(price)}
           </button>
         ) : (
           <div className="flex flex-col items-center gap-[8px]">

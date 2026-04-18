@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
+import { formatMoneyCompact } from '../lib/currency';
 import { VerificationBanner } from '../components/shared/VerificationBanner';
 import UpsellWidget from '../components/creator/UpsellWidget';
 
@@ -56,7 +57,7 @@ const STAT_ICONS: Record<string, React.ReactNode> = {
 };
 
 const STAT_CARDS = [
-  { key: 'totalEarnings', label: 'Total Earnings', prefix: '$' },
+  { key: 'totalEarnings', label: 'Total Earnings', prefix: '' },
   { key: 'totalSubscribers', label: 'Subscribers', prefix: '' },
   { key: 'totalPosts', label: 'Total Posts', prefix: '' },
   { key: 'totalFollowers', label: 'Followers', prefix: '' },
@@ -100,8 +101,11 @@ export default function CreatorDashboardHome() {
           <div key={card.key} className="rounded-[16px] bg-card p-[16px] md:p-[20px]">
             {STAT_ICONS[card.key]}
             <p className="mt-2 text-[22px] font-semibold text-foreground md:text-[28px]">
-              {card.prefix}
-              {stats ? formatNum(stats[card.key]) : '0'}
+              {card.key === 'totalEarnings'
+                ? stats
+                  ? formatMoneyCompact(stats[card.key])
+                  : '€0'
+                : `${card.prefix}${stats ? formatNum(stats[card.key]) : '0'}`}
             </p>
             <p className="text-[12px] text-muted-foreground md:text-[14px]">{card.label}</p>
           </div>

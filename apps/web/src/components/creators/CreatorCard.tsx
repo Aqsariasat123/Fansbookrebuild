@@ -28,9 +28,11 @@ function getCategoryIcon(category: string | null | undefined): string {
   return CATEGORY_ICONS[category] || 'palette';
 }
 
+import { formatMoney } from '../../lib/currency';
+
 function formatPrice(price: number | null): string {
   if (price === null) return 'Free';
-  return `$${price.toFixed(2)}`;
+  return formatMoney(price);
 }
 
 export function CreatorCard({ creator }: { creator: CreatorCardType }) {

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
+import { formatMoney } from '../../lib/currency';
 
 type PurchaseStatus = 'HELD' | 'DELIVERED' | 'CONFIRMED' | 'DISPUTED' | 'RELEASED' | 'REFUNDED';
 
@@ -37,8 +38,8 @@ const STATUS_CONFIG: Record<PurchaseStatus, { label: string; color: string }> = 
 };
 
 const STATS = [
-  { key: 'totalEarned', label: 'Total Earned', prefix: '$', color: 'text-green-400' },
-  { key: 'pendingEscrow', label: 'In Escrow', prefix: '$', color: 'text-blue-400' },
+  { key: 'totalEarned', label: 'Total Earned', prefix: '€', color: 'text-green-400' },
+  { key: 'pendingEscrow', label: 'In Escrow', prefix: '€', color: 'text-blue-400' },
   { key: 'total', label: 'Total Sales', prefix: '', color: 'text-foreground' },
 ] as const;
 
@@ -68,7 +69,7 @@ function SaleCard({
         <div className="flex-1 min-w-0">
           <p className="text-[14px] font-semibold text-foreground truncate">{s.listing.title}</p>
           <p className="text-[12px] text-muted-foreground">Buyer: @{s.buyer.username}</p>
-          <p className="text-[15px] font-bold text-[#01adf1] mt-[2px]">${s.amount.toFixed(2)}</p>
+          <p className="text-[15px] font-bold text-[#01adf1] mt-[2px]">{formatMoney(s.amount)}</p>
         </div>
         <span
           className={`shrink-0 rounded-[20px] border px-[10px] py-[3px] text-[11px] font-medium ${sc.color}`}

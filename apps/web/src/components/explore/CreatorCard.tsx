@@ -6,9 +6,11 @@ function formatFollowers(count: number): string {
   return String(count);
 }
 
+import { formatMoney } from '../../lib/currency';
+
 function formatPrice(price: number | null): string {
   if (price === null || price === 0) return 'Free';
-  return `$${price.toFixed(2)}/mo`;
+  return `${formatMoney(price)}/mo`;
 }
 
 export function CreatorCard({ creator }: { creator: CreatorCardType }) {

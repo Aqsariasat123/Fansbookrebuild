@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { TipModal } from '../shared/TipModal';
+import { formatMoney } from '../../lib/currency';
 
 interface Tier {
   id: string;
@@ -67,7 +68,7 @@ export function SubscriptionSidebar({
                 onClick={() => onSubscribe(tier.id)}
                 className="w-full rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[10px] text-[13px] font-medium text-white transition-opacity hover:opacity-90"
               >
-                Subscribe For {tier.price === 0 ? 'free' : tier.price.toFixed(2)}
+                Subscribe For {tier.price === 0 ? 'free' : formatMoney(tier.price)}
               </button>
             ))}
           </div>

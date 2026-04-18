@@ -7,8 +7,10 @@ export interface Withdrawal {
   processedAt: string | null;
 }
 
+import { formatMoney } from '../../lib/currency';
+
 function formatAmount(amount: number): string {
-  return `$${amount.toFixed(2)}`;
+  return formatMoney(amount);
 }
 
 function formatDate(dateStr: string | null): string {

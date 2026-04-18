@@ -1,3 +1,5 @@
+import { formatMoney } from '../../lib/currency';
+
 function fmtNum(n: number) {
   return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -19,7 +21,7 @@ export function BalanceCard({ balance, pending, eurEquivalent, onWithdraw }: Bal
       <p className="mt-[4px] text-[14px] text-muted-foreground">~{fmtNum(eurEquivalent)} EUR</p>
       {pending > 0 && (
         <p className="mt-[8px] text-[14px] font-medium text-yellow-400">
-          ${pending.toFixed(2)} pending
+          {formatMoney(pending)} pending
         </p>
       )}
       <button

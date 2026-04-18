@@ -1,3 +1,5 @@
+import { formatMoney } from '../../lib/currency';
+
 interface Tier {
   id: string;
   name: string;
@@ -30,7 +32,7 @@ export function TierCard({ tier, onEdit, onDelete }: TierCardProps) {
           </span>
         </div>
         <p className="text-[22px] font-bold text-primary">
-          ${tier.price.toFixed(2)}
+          {formatMoney(tier.price)}
           <span className="text-[12px] font-normal text-muted-foreground">/month</span>
         </p>
       </div>

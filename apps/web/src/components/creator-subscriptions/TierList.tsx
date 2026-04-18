@@ -1,3 +1,5 @@
+import { formatMoney } from '../../lib/currency';
+
 interface Tier {
   id: string;
   name: string;
@@ -50,7 +52,7 @@ export function TierMobileCards({
             </div>
           </div>
           <p className="mt-[4px] text-[20px] font-semibold text-[#01adf1]">
-            ${t.price.toFixed(2)}/mo
+            {formatMoney(t.price)}/mo
           </p>
           {t.description && (
             <p className="mt-[4px] text-[12px] text-muted-foreground">{t.description}</p>
@@ -125,7 +127,7 @@ export function TierDesktopTable({
               </td>
               <td className="px-[14px] py-[12px] text-[14px] text-foreground">{t.name}</td>
               <td className="px-[14px] py-[12px] text-[14px] font-medium text-[#01adf1]">
-                ${t.price.toFixed(2)}
+                {formatMoney(t.price)}
               </td>
               <td className="max-w-[200px] px-[14px] py-[12px] text-[13px] text-muted-foreground">
                 {t.description || '-'}

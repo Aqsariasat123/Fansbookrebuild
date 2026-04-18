@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
+import { formatMoney } from '../../lib/currency';
 
 export interface PinnedItem {
   id: string;
@@ -57,7 +58,7 @@ export function InStreamPurchaseModal({ item, onClose, onSuccess }: Props) {
           <div className="flex-1 min-w-0">
             <p className="text-[14px] font-semibold text-white truncate">{item.title}</p>
             <p className="text-[18px] font-bold text-[#01adf1] mt-[2px]">
-              ${item.price?.toFixed(2) ?? '0.00'}
+              {formatMoney(item.price ?? 0)}
             </p>
           </div>
           <button onClick={onClose} className="text-gray-500 hover:text-white shrink-0">
@@ -88,7 +89,7 @@ export function InStreamPurchaseModal({ item, onClose, onSuccess }: Props) {
               disabled={loading}
               className="w-full rounded-[10px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-[14px] font-semibold text-white disabled:opacity-50"
             >
-              {loading ? 'Processing…' : `Buy Now — $${item.price?.toFixed(2) ?? '0.00'}`}
+              {loading ? 'Processing…' : `Buy Now — ${formatMoney(item.price ?? 0)}`}
             </button>
           </>
         )}

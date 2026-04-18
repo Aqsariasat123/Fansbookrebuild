@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { formatMoney } from '../../lib/currency';
 
 interface Tier {
   id: string;
@@ -101,7 +102,7 @@ export function SubscriptionModal({ tiers, loading, onClose, onSubscribe }: Prop
               <div className="flex shrink-0 flex-col items-center gap-[12px] md:items-end">
                 <div className="text-center md:text-right">
                   <p className="text-[20px] font-bold text-foreground">
-                    {tier.price === 0 ? 'Free' : `$${tier.price.toFixed(2)} / month`}
+                    {tier.price === 0 ? 'Free' : `${formatMoney(tier.price)} / month`}
                   </p>
                   {tier.price > 0 && (
                     <p className="text-[12px] text-muted-foreground">(excl. VAT)</p>

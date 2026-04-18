@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { getSocket } from '../../lib/socket';
+import { formatMoney } from '../../lib/currency';
 
 interface Listing {
   id: string;
@@ -101,7 +102,7 @@ export function InStreamShopPanel({ sessionId, pinnedItemId, onPinChange }: Prop
             )}
             <div className="flex-1 min-w-0">
               <p className="text-[12px] font-medium text-foreground truncate">{l.title}</p>
-              <p className="text-[11px] text-muted-foreground">${l.price?.toFixed(2) ?? '0.00'}</p>
+              <p className="text-[11px] text-muted-foreground">{formatMoney(l.price ?? 0)}</p>
             </div>
             {pinnedItemId === l.id ? (
               <span className="text-[11px] text-green-400 font-medium">Pinned</span>
