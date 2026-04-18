@@ -1,48 +1,23 @@
-const features = [
+const GROUPS = [
   {
-    icon: 'volunteer_activism',
-    title: 'Tipping System',
-    desc: 'Empower your fans to support you instantly during streams or posts with direct tips — every moment can turn into earnings.',
+    category: 'Earnings',
+    features: ['Subscriptions', 'PPV', 'Tipping', 'Marketplace (Auctions/Direct)', 'Crowdfunding'],
   },
   {
-    icon: 'video_chat',
-    title: 'One-to-One Video Streaming',
-    desc: 'Connect privately with your fans through high-quality, real-time video sessions — exclusive, personal, and fully secure.',
+    category: 'Streaming',
+    features: ['Public Live', '1-to-1 Private', 'Extended Time Options', 'In-Stream Shopping'],
   },
   {
-    icon: 'sell',
-    title: 'Personal Market',
-    desc: 'Sell your custom content, merch, or fan exclusives directly from your profile. Your space, your rules, your earnings.',
+    category: 'AI Tools',
+    features: ['Smart-Pricing', 'Upsell Advisor', 'Viral Clip Gen', 'Content Moderation'],
   },
   {
-    icon: 'duo',
-    title: 'Welcome Video',
-    desc: 'Make a killer first impression with a short intro video. Greet visitors and turn them into loyal followers.',
+    category: 'Security',
+    features: ['AI ID/Age Verification', 'Fraud Prevention', 'Escrow', 'Watermarking'],
   },
   {
-    icon: 'support_agent',
-    title: 'Great Customer Service',
-    desc: 'Have questions or issues? Our support team is fast, friendly, and always ready to help — 24/7.',
-  },
-  {
-    icon: 'feature_search',
-    title: 'New Added',
-    desc: "We're always evolving. Expect regular updates, tools, and exciting features that keep Inscrio ahead of the game.",
-  },
-  {
-    icon: 'diversity_1',
-    title: 'Public Video Streaming',
-    desc: 'Go live for the world — interact, grow your fanbase, and share your moments with a wider audience in real-time.',
-  },
-  {
-    icon: 'vpn_lock',
-    title: 'IP Block',
-    desc: 'Stay in control by blocking unwanted regions. Your privacy and content safety are always a priority.',
-  },
-  {
-    icon: 'chat',
-    title: 'Full Feature Chat',
-    desc: 'From emojis to media sharing — enjoy smooth, modern messaging with all the features creators need to stay connected.',
+    category: 'Engagement',
+    features: ['Stories', 'Chat w/ File Sharing', 'Leaderboards', 'Subscriber Badges'],
   },
 ];
 
@@ -57,30 +32,25 @@ export function FeaturesSection() {
         </p>
       </div>
 
-      <div className="mx-auto mt-[32px] grid max-w-[1128px] grid-cols-1 gap-[20px] sm:grid-cols-2 md:mt-[60px] md:gap-[30px] lg:grid-cols-3">
-        {features.map((f) => (
-          <div key={f.title} className="rounded-[22px] border border-border bg-card">
-            <div
-              className="flex h-[90px] w-[110px] items-center justify-center shadow-[2px_2px_15.7px_rgba(93,93,93,0.25)] md:h-[131px] md:w-[153px]"
-              style={{
-                borderRadius: '22px 0 50px 0',
-                background: 'hsl(var(--card))',
-              }}
-            >
-              <img
-                src={`/icons/landing/${f.icon}.svg`}
-                alt=""
-                className="h-[50px] w-[50px] md:h-[70px] md:w-[70px]"
-              />
-            </div>
-            <div className="px-[20px] pb-[28px] md:px-[30px] md:pb-[40px]">
-              <h3 className="mt-[12px] text-[18px] font-medium text-foreground md:mt-[16px] md:text-[22px]">
-                {f.title}
-              </h3>
-              <p className="mt-[8px] text-[14px] font-normal leading-[1.5] text-foreground md:mt-[12px] md:text-[16px]">
-                {f.desc}
-              </p>
-            </div>
+      <div className="mx-auto mt-[40px] max-w-[760px] overflow-hidden rounded-[20px] border border-border md:mt-[60px]">
+        {/* Header row */}
+        <div className="grid grid-cols-[160px_1fr] bg-[#1e2126] px-[24px] py-[16px] md:grid-cols-[200px_1fr] md:px-[36px] md:py-[20px]">
+          <span className="text-[14px] font-bold text-white md:text-[16px]">Category</span>
+          <span className="text-[14px] font-bold text-white md:text-[16px]">Features</span>
+        </div>
+
+        {/* Data rows */}
+        {GROUPS.map((g, i) => (
+          <div
+            key={g.category}
+            className={`grid grid-cols-[160px_1fr] items-start px-[24px] py-[20px] md:grid-cols-[200px_1fr] md:px-[36px] md:py-[28px] ${i < GROUPS.length - 1 ? 'border-b border-border' : ''}`}
+          >
+            <span className="text-[15px] font-bold text-foreground md:text-[17px]">
+              {g.category}
+            </span>
+            <span className="text-[14px] leading-[1.7] text-foreground md:text-[16px]">
+              {g.features.join(', ')}
+            </span>
           </div>
         ))}
       </div>
