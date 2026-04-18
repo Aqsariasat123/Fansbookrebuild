@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MarketingNav } from '../components/marketing/MarketingNav';
 import { CTASection, MarketingFooter } from '../components/marketing/MarketingFooter';
+import { ContactAIChat } from '../components/marketing/ContactAIChat';
 import { api } from '../lib/api';
 
 const WHITE = 'brightness(0) invert(1)';
@@ -147,6 +148,9 @@ export default function Contact() {
       {/* CTA + Footer — same as landing page */}
       <CTASection />
       <MarketingFooter />
+
+      {/* AI Support Chat */}
+      <ContactAIChat />
     </div>
   );
 }
