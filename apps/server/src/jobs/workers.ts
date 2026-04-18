@@ -7,14 +7,14 @@ import { startEscrowReleaseWorker } from './escrow-release-worker.js';
 import { startAIClipsWorker } from './ai-clips-worker.js';
 import { logger } from '../utils/logger.js';
 
-export function startWorkers() {
+export async function startWorkers() {
   startEmailWorker();
   startStoryExpiryWorker();
   startAuctionCloseWorker();
   startToneLearningWorker();
   startVideoModerationWorker();
   startEscrowReleaseWorker();
-  startAIClipsWorker();
+  await startAIClipsWorker();
   logger.info(
     'BullMQ workers started (email, story-expiry, auction-close, tone-learning, video-moderation, escrow-release, ai-clips)',
   );

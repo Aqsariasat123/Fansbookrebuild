@@ -131,7 +131,16 @@ Rules:
   return JSON.parse(cleaned) as ClipMoment[];
 }
 
-export function startAIClipsWorker() {
+export async function startAIClipsWorker() {
+  // Mark any jobs left in-progress from a previous crashed/restarted worker
+  await prisma.aIClipJob.updateMany({
+    where: { status: { in: ['EXTRACTING', 'ANALYZING', 'CUTTING'] as never[] } },
+    data: {
+      status: 'FAILED' as never,
+      errorMessage: 'Processing interrupted — please re-upload your video',
+    },
+  });
+
   const worker = new Worker(
     'ai-clips',
     async (job) => {

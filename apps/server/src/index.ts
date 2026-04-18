@@ -24,7 +24,7 @@ async function main() {
       await connectRedis();
       const io = initSocketIO(server);
       setNotifyIO(io);
-      startWorkers();
+      await startWorkers();
     } catch (err) {
       logger.warn({ err }, 'Redis unavailable — running without Socket.IO');
     }
