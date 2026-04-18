@@ -74,7 +74,7 @@ function EarnSection() {
         Earn in Multiple Ways
       </p>
 
-      <div className="mt-[30px] grid grid-cols-2 gap-x-[16px] gap-y-[30px] md:mt-[50px] md:grid-cols-3 md:gap-y-[40px]">
+      <div className="mt-[30px] grid grid-cols-2 gap-x-[16px] gap-y-[30px] md:mt-[50px] md:grid-cols-6 md:gap-x-[24px] md:gap-y-[40px]">
         {earnItems.map((item) => (
           <div key={item.title} className="flex flex-col items-center">
             <img
@@ -111,7 +111,7 @@ function WhySection() {
         Why Inscrio?
       </p>
 
-      <div className="mt-[30px] grid grid-cols-2 gap-[20px] md:mt-[50px] md:flex md:items-start md:justify-around md:gap-[30px]">
+      <div className="mt-[30px] grid grid-cols-2 gap-[20px] md:mt-[50px] md:grid-cols-4 md:gap-x-[24px]">
         {whyItems.map((item) => (
           <div key={item.title} className="flex flex-col items-center">
             <img
@@ -147,7 +147,7 @@ function HowToStartSection() {
         How to start
       </p>
 
-      <div className="mt-[30px] grid grid-cols-2 gap-[20px] md:mt-[50px] md:flex md:items-start md:justify-around md:gap-[30px]">
+      <div className="mt-[30px] grid grid-cols-2 gap-[20px] md:mt-[50px] md:grid-cols-4 md:gap-x-[24px]">
         {howItems.map((item) => (
           <div key={item.title} className="flex flex-col items-center">
             <img
