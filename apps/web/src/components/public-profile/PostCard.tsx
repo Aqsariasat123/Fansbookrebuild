@@ -11,7 +11,7 @@ export interface PublicPost {
   shareCount?: number;
   isLiked?: boolean;
   createdAt: string;
-  media: { id: string; url: string; type: string }[];
+  media: { id: string; url: string; type: string; thumbnail?: string | null }[];
   author?: { displayName: string; username: string; avatar: string | null; isVerified: boolean };
 }
 
@@ -129,6 +129,7 @@ interface PostCardProps {
 export function PostCard({ post, isSubscribed }: PostCardProps) {
   const isLocked = !isSubscribed && post.visibility !== 'PUBLIC' && post.visibility !== 'FREE';
   const images = post.media.filter((m) => m.type === 'IMAGE');
+  const videos = post.media.filter((m) => m.type === 'VIDEO');
 
   return (
     <div className="rounded-[22px] bg-card px-[9px] py-[6px] md:px-[20px] md:py-[16px]">
@@ -139,6 +140,19 @@ export function PostCard({ post, isSubscribed }: PostCardProps) {
         <p className="mb-[12px] whitespace-pre-wrap text-[10px] font-normal leading-normal text-foreground md:text-[14px] md:leading-[1.6]">
           {post.text}
         </p>
+      )}
+      {videos.length > 0 && (
+        <div className="mb-[12px] flex flex-col gap-[8px]">
+          {videos.map((v) => (
+            <video
+              key={v.id}
+              src={v.url}
+              poster={v.thumbnail ?? undefined}
+              controls
+              className="w-full rounded-[12px] bg-black max-h-[400px]"
+            />
+          ))}
+        </div>
       )}
       <PostMediaDisplay images={images} isLocked={isLocked} username={post.author?.username} />
       <PostActions

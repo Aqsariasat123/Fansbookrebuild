@@ -33,7 +33,9 @@ function FeedGridView({ posts }: { posts: PublicPost[] }) {
         >
           {post.media[0] ? (
             <img
-              src={post.media[0].url}
+              src={
+                post.media[0].type === 'VIDEO' ? (post.media[0].thumbnail ?? '') : post.media[0].url
+              }
               alt=""
               className="size-full object-cover transition-transform group-hover:scale-105"
             />
