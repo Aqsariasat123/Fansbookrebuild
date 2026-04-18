@@ -49,16 +49,23 @@ export function ClipThumbnail({
   duration: number;
 }) {
   const [imgError, setImgError] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const showImg = thumbnailPath && !imgError;
   return (
     <div className="relative h-[140px] w-full bg-muted flex items-center justify-center">
       {showImg ? (
-        <img
-          src={thumbnailPath!}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-          onError={() => setImgError(true)}
-        />
+        <>
+          <img
+            src={thumbnailPath!}
+            alt=""
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={() => setImgLoaded(true)}
+            onError={() => setImgError(true)}
+          />
+          {!imgLoaded && (
+            <div className="size-[16px] animate-spin rounded-full border-2 border-[#01adf1] border-t-transparent" />
+          )}
+        </>
       ) : (
         <svg
           width="32"

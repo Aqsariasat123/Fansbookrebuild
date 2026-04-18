@@ -68,7 +68,7 @@ export function UploadArea({ onUploaded }: { onUploaded: (jobId: string) => void
         <input
           ref={fileRef}
           type="file"
-          accept="video/*"
+          accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv,video/webm,video/mpeg,video/*"
           className="hidden"
           onChange={(e) => {
             const f = e.target.files?.[0];
