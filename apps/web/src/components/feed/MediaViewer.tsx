@@ -118,63 +118,63 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
             {username && <ImageWatermark username={username} />}
           </div>
         ) : (
-          <div style={{ position: 'relative', display: 'inline-block' }}>
+          <div style={{ display: 'grid', maxHeight: '90vh', maxWidth: '90vw' }}>
             <img
               key={item.id}
               src={item.url}
               alt=""
-              className="block max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+              style={{
+                gridArea: '1/1',
+                display: 'block',
+                maxHeight: '90vh',
+                maxWidth: '90vw',
+                borderRadius: 8,
+                objectFit: 'contain',
+              }}
               draggable={false}
               onContextMenu={(e) => e.preventDefault()}
-            />
-            {/* bottom gradient to blend image shadow into black background */}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: 60,
-                background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)',
-                borderRadius: '0 0 8px 8px',
-                pointerEvents: 'none',
-              }}
             />
             {username && (
               <div
                 style={{
-                  position: 'absolute',
-                  bottom: 10,
-                  right: 10,
+                  gridArea: '1/1',
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 6,
-                  backgroundColor: 'rgba(0,0,0,0.55)',
-                  padding: '6px 12px',
+                  alignItems: 'flex-end',
+                  justifyContent: 'flex-end',
+                  padding: 10,
                   pointerEvents: 'none',
                   userSelect: 'none',
-                  width: 'max-content',
-                  maxWidth: 300,
                 }}
               >
-                <img
-                  src="/images/landing/logo.webp"
-                  alt=""
-                  style={{ height: 18, opacity: 0.9, flexShrink: 0 }}
-                />
-                <span
+                <div
                   style={{
-                    fontFamily: 'Outfit, sans-serif',
-                    fontSize: 13,
-                    color: 'rgba(255,255,255,0.9)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 6,
+                    backgroundColor: 'rgba(0,0,0,0.55)',
+                    padding: '6px 12px',
                   }}
                 >
-                  inscrio.com/u/{username}
-                </span>
+                  <img
+                    src="/images/landing/logo.webp"
+                    alt=""
+                    style={{ height: 18, opacity: 0.9, flexShrink: 0 }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: 'Outfit, sans-serif',
+                      fontSize: 13,
+                      color: 'rgba(255,255,255,0.9)',
+                      maxWidth: 200,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    inscrio.com/u/{username}
+                  </span>
+                </div>
               </div>
             )}
           </div>
