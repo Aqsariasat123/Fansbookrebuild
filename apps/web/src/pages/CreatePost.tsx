@@ -2,7 +2,12 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
-import { AuthorRow, VisibilityDropdown } from '../components/create-post/CreatePostParts';
+import {
+  AuthorRow,
+  VisibilityDropdown,
+  HashtagPanel,
+  MediaUploadArea,
+} from '../components/create-post/CreatePostParts';
 import type { Visibility } from '../components/create-post/CreatePostParts';
 
 export default function CreatePost() {
@@ -13,6 +18,8 @@ export default function CreatePost() {
   const [ppvPrice, setPpvPrice] = useState('');
   const [isPinned, setIsPinned] = useState(false);
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [showTags, setShowTags] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
@@ -21,8 +28,10 @@ export default function CreatePost() {
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
-    const newImgs = files.map((f) => ({ file: f, preview: URL.createObjectURL(f) }));
-    setImages((prev) => [...prev, ...newImgs]);
+    setImages((prev) => [
+      ...prev,
+      ...files.map((f) => ({ file: f, preview: URL.createObjectURL(f) })),
+    ]);
   }
 
   function removeImage(idx: number) {
@@ -37,8 +46,10 @@ export default function CreatePost() {
     setSubmitting(true);
     setError('');
     try {
+      const hashtagStr = tags.map((t) => `#${t}`).join(' ');
+      const fullText = [text.trim(), hashtagStr].filter(Boolean).join('\n\n');
       const fd = new FormData();
-      fd.append('text', text.trim());
+      fd.append('text', fullText);
       fd.append('visibility', visibility);
       if (showPpv && ppvPrice) fd.append('ppvPrice', ppvPrice);
       if (isPinned) fd.append('isPinned', 'true');
@@ -72,7 +83,14 @@ export default function CreatePost() {
           <AuthorRow user={user} />
           <div className="flex items-center gap-[16px]">
             <VisibilityDropdown value={visibility} onChange={setVisibility} />
-            <button onClick={() => fileRef.current?.click()}>
+            {/* Hashtag toggle */}
+            <button
+              onClick={() => setShowTags((s) => !s)}
+              title="Add hashtags"
+              className={
+                showTags ? 'text-[#01adf1]' : 'text-muted-foreground hover:text-foreground'
+              }
+            >
               <svg
                 width="24"
                 height="24"
@@ -85,7 +103,10 @@ export default function CreatePost() {
                 <line x1="7" y1="7" x2="7.01" y2="7" />
               </svg>
             </button>
-            <button onClick={() => navigate(-1)}>
+            <button
+              onClick={() => navigate(-1)}
+              className="text-muted-foreground hover:text-foreground"
+            >
               <svg
                 width="24"
                 height="24"
@@ -107,7 +128,14 @@ export default function CreatePost() {
           className="mt-[16px] min-h-[50px] w-full resize-none bg-transparent text-[14px] text-foreground placeholder-muted-foreground outline-none"
         />
 
-        {/* PPV Price + Pin toggles */}
+        {showTags && (
+          <HashtagPanel
+            tags={tags}
+            onAdd={(t) => setTags((prev) => [...prev, t])}
+            onRemove={(t) => setTags((prev) => prev.filter((x) => x !== t))}
+          />
+        )}
+
         <div className="mt-[12px] flex flex-wrap items-center gap-[16px]">
           {showPpv && (
             <div className="flex items-center gap-[8px]">
@@ -135,70 +163,11 @@ export default function CreatePost() {
           </label>
         </div>
 
-        {/* Image previews */}
-        {images.length > 0 && (
-          <div className="mt-[16px] grid grid-cols-2 gap-[8px] md:grid-cols-3">
-            {images.map((img, i) => {
-              const isVideo = img.file.type.startsWith('video/');
-              return (
-                <div key={i} className="relative aspect-square overflow-hidden rounded-[12px]">
-                  {isVideo ? (
-                    <video src={img.preview} className="size-full object-cover" muted />
-                  ) : (
-                    <img src={img.preview} alt="" className="size-full object-cover" />
-                  )}
-                  <button
-                    onClick={() => removeImage(i)}
-                    className="absolute right-[6px] top-[6px] flex size-[24px] items-center justify-center rounded-full bg-black/60 text-white"
-                  >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                    >
-                      <path d="M18 6L6 18M6 6l12 12" />
-                    </svg>
-                  </button>
-                  {isVideo && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="flex size-[40px] items-center justify-center rounded-full bg-black/50">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {images.length === 0 && (
-          <div
-            onClick={() => fileRef.current?.click()}
-            className="mt-[16px] flex h-[300px] cursor-pointer items-center justify-center rounded-[16px] border-2 border-dashed border-border bg-muted transition-colors hover:border-border"
-          >
-            <div className="flex flex-col items-center gap-[12px]">
-              <svg
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <path d="M21 15l-5-5L5 21" />
-              </svg>
-              <p className="text-[14px] text-muted-foreground">Click to add photos or videos</p>
-            </div>
-          </div>
-        )}
+        <MediaUploadArea
+          images={images}
+          onRemove={removeImage}
+          onPickFiles={() => fileRef.current?.click()}
+        />
 
         <input
           ref={fileRef}
