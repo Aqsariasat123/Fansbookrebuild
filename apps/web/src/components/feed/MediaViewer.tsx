@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { ImageWatermark } from '../shared/ImageWatermark';
 
 interface MediaItem {
   id: string;
@@ -114,18 +115,7 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
               playsInline
               className="h-full w-full rounded-none object-contain md:rounded-xl"
             />
-            {username && (
-              <div className="pointer-events-none absolute bottom-[50px] right-[10px] flex select-none items-center gap-[8px] rounded-[6px] bg-black/55 px-[12px] py-[6px]">
-                <img
-                  src="/images/landing/logo.webp"
-                  alt=""
-                  className="h-[18px] w-auto opacity-90"
-                />
-                <span className="font-outfit text-[13px] text-white/90">
-                  inscrio.com/u/{username}
-                </span>
-              </div>
-            )}
+            {username && <ImageWatermark username={username} />}
           </div>
         ) : (
           <div className="relative">
@@ -137,18 +127,7 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
               draggable={false}
               onContextMenu={(e) => e.preventDefault()}
             />
-            {username && (
-              <div className="pointer-events-none absolute bottom-[10px] right-[10px] flex select-none items-center gap-[8px] rounded-[6px] bg-black/55 px-[12px] py-[6px]">
-                <img
-                  src="/images/landing/logo.webp"
-                  alt=""
-                  className="h-[18px] w-auto opacity-90"
-                />
-                <span className="font-outfit text-[13px] text-white/90">
-                  inscrio.com/u/{username}
-                </span>
-              </div>
-            )}
+            {username && <ImageWatermark username={username} />}
           </div>
         )}
       </div>
