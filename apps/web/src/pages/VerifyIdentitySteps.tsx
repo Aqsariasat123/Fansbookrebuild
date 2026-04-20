@@ -3,11 +3,22 @@ import { useNavigate } from 'react-router-dom';
 
 type VerifyStatus = 'APPROVED' | 'REJECTED' | 'MANUAL_REVIEW' | 'PENDING' | 'UNVERIFIED';
 
+function isDiditDoneEvent(event: MessageEvent): boolean {
+  if (!event.origin.includes('didit')) return false;
+  const data = event.data as Record<string, unknown> | null;
+  if (!data) return false;
+  const type = ((data.type as string) ?? '').toLowerCase();
+  const status = ((data.status as string) ?? '').toLowerCase();
+  const typeMatch = type.includes('complete') || type.includes('done') || type.includes('finish');
+  const statusMatch = status === 'success' || status === 'approved';
+  return typeMatch || statusMatch;
+}
+
 // ── SDK Step ──────────────────────────────────────────────
 export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => void }) {
   const [iframeLoaded, setIframeLoaded] = useState(false);
 
-  // Detect when Didit redirects back to our callback URL inside the iframe
+  // Detect when Didit redirects the iframe back to our callback URL (same-origin, readable)
   const handleIframeLoad = (e: React.SyntheticEvent<HTMLIFrameElement>) => {
     setIframeLoaded(true);
     try {
@@ -17,9 +28,17 @@ export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => 
       }
     } catch {
       // Cross-origin access blocked — normal while on didit.me domain
-      // onDone is triggered by the user clicking "I've completed"
     }
   };
+
+  // Didit SDK sends a postMessage to the parent window when verification completes
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      if (isDiditDoneEvent(event)) onDone();
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [onDone]);
 
   return (
     <div className="flex flex-col gap-[16px]">
@@ -43,19 +62,12 @@ export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => 
           title="Didit Identity Verification"
         />
       </div>
-      <p className="text-center text-[12px] text-gray-500">Completed? Click below to continue.</p>
-      <button
-        onClick={onDone}
-        className="rounded-full border border-[#01adf1] px-[32px] py-[10px] text-[14px] font-medium text-[#01adf1] hover:bg-[#01adf1]/10"
-      >
-        I've completed the verification
-      </button>
     </div>
   );
 }
 
 // ── Pending Step ──────────────────────────────────────────
-export function PendingStep() {
+export function PendingStep({ onRestart }: { onRestart?: () => void }) {
   const navigate = useNavigate();
   const [showContinue, setShowContinue] = useState(false);
 
@@ -80,11 +92,18 @@ export function PendingStep() {
           Continue to Dashboard
         </button>
       )}
-      {!showContinue && (
-        <button onClick={() => navigate('/feed')} className="text-[13px] text-gray-500 underline">
-          Skip for now
-        </button>
-      )}
+      <div className="flex flex-col items-center gap-[8px]">
+        {!showContinue && (
+          <button onClick={() => navigate('/feed')} className="text-[13px] text-gray-500 underline">
+            Skip for now
+          </button>
+        )}
+        {onRestart && (
+          <button onClick={onRestart} className="text-[12px] text-gray-600 underline">
+            Restart verification
+          </button>
+        )}
+      </div>
     </div>
   );
 }

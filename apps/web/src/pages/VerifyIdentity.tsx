@@ -135,9 +135,9 @@ export default function VerifyIdentity() {
       .catch(() => {});
   }, [isDone]);
 
-  // Poll while PENDING
+  // Poll while PENDING or SDK (handles webhook-based completion on both steps)
   useEffect(() => {
-    if (step !== 'PENDING') return;
+    if (step !== 'PENDING' && step !== 'SDK') return;
     pollRef.current = setInterval(() => {
       api
         .get('/verification/status')
@@ -196,7 +196,14 @@ export default function VerifyIdentity() {
           <FormStep onSubmit={handleFormSubmit} loading={loading} error={error} />
         )}
         {step === 'SDK' && <SdkStep sdkToken={sdkToken} onDone={() => setStep('PENDING')} />}
-        {step === 'PENDING' && <PendingStep />}
+        {step === 'PENDING' && (
+          <PendingStep
+            onRestart={() => {
+              setStep('FORM');
+              setError('');
+            }}
+          />
+        )}
         {step === 'RESULT' && (
           <ResultStep
             status={status}

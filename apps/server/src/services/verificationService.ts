@@ -17,6 +17,7 @@ export async function createVerificationSession(
   _dob: string,
 ) {
   const existing = await prisma.identityVerification.findUnique({ where: { userId } });
+  // Didit allows 3 retries — retryCount tracks attempts (0-indexed: 0,1,2 = 3 total)
   if (existing && existing.retryCount >= 3) {
     throw new Error('MAX_RETRIES');
   }
