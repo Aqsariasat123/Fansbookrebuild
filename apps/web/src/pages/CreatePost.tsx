@@ -24,7 +24,7 @@ export default function CreatePost() {
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const showPpv = visibility === 'SUBSCRIBERS' || visibility === 'TIER_SPECIFIC';
+  const showPpv = visibility === 'PPV';
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
@@ -50,8 +50,9 @@ export default function CreatePost() {
       const fullText = [text.trim(), hashtagStr].filter(Boolean).join('\n\n');
       const fd = new FormData();
       fd.append('text', fullText);
-      fd.append('visibility', visibility);
-      if (showPpv && ppvPrice) fd.append('ppvPrice', ppvPrice);
+      // PPV maps to PUBLIC visibility on the backend (visible/blurred to all) + ppvPrice gate
+      fd.append('visibility', visibility === 'PPV' ? 'PUBLIC' : visibility);
+      if (visibility === 'PPV' && ppvPrice) fd.append('ppvPrice', ppvPrice);
       if (isPinned) fd.append('isPinned', 'true');
       images.forEach((img) => fd.append('media', img.file));
       await api.post('/posts', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -82,7 +83,13 @@ export default function CreatePost() {
         <div className="flex items-start justify-between">
           <AuthorRow user={user} />
           <div className="flex items-center gap-[16px]">
-            <VisibilityDropdown value={visibility} onChange={setVisibility} />
+            <VisibilityDropdown
+              value={visibility}
+              onChange={(v) => {
+                setVisibility(v);
+                if (v !== 'PPV') setPpvPrice('');
+              }}
+            />
             {/* Hashtag toggle */}
             <button
               onClick={() => setShowTags((s) => !s)}
