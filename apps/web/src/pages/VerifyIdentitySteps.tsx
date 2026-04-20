@@ -25,7 +25,7 @@ export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => 
     <div className="flex flex-col gap-[16px]">
       <div
         className="relative overflow-hidden rounded-[12px] border border-gray-700 bg-gray-900"
-        style={{ height: '560px' }}
+        style={{ height: '720px' }}
       >
         {!iframeLoaded && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-[12px]">
@@ -37,7 +37,9 @@ export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => 
           src={sdkToken}
           allow="camera; microphone; accelerometer; gyroscope"
           onLoad={handleIframeLoad}
+          scrolling="no"
           className="h-full w-full border-0"
+          style={{ overflow: 'hidden' }}
           title="Didit Identity Verification"
         />
       </div>
