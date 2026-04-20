@@ -68,7 +68,7 @@ export interface PostsQueryParams {
 }
 
 export function buildPostsWhere(params: PostsQueryParams): Record<string, unknown> {
-  const where: Record<string, unknown> = { authorId: params.creatorId };
+  const where: Record<string, unknown> = { authorId: params.creatorId, deletedAt: null };
 
   if (!params.isSubscriber) {
     where.visibility = 'PUBLIC';

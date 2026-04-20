@@ -118,12 +118,12 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
             {username && <ImageWatermark username={username} />}
           </div>
         ) : (
-          <div className="relative">
+          <div className="relative inline-block">
             <img
               key={item.id}
               src={item.url}
               alt=""
-              className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+              className="block max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
               draggable={false}
               onContextMenu={(e) => e.preventDefault()}
             />

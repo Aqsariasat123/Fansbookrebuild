@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { PostActions } from '../feed/PostActions';
 import { MediaViewer } from '../feed/MediaViewer';
-import { VideoThumbnail } from '../feed/VideoThumbnail';
-import { ImageGrid } from './ImageGrid';
 import { PostMenu } from './PostMenu';
-import { ImageWatermark } from '../shared/ImageWatermark';
+import { ConfirmDeleteModal } from './ConfirmDeleteModal';
+import { timeAgo, PinIndicator, AuthorAvatar, PostCardMedia } from './PostCardParts';
 
 const IMG = '/icons/dashboard';
 
@@ -36,76 +35,6 @@ export interface CreatorPost {
   author?: PostAuthor;
 }
 
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const h = Math.floor(diff / 3600000);
-  if (h < 1) return 'Just now';
-  if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
-}
-
-function PinIndicator({ isPinned }: { isPinned?: boolean }) {
-  if (!isPinned) return null;
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="rotate-45 text-muted-foreground md:size-[20px]"
-    >
-      <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97l.03 7 1 1 1-1 .03-7H19v-2c-1.66 0-3-1.34-3-3z" />
-    </svg>
-  );
-}
-
-function AuthorAvatar({ author }: { author: PostAuthor }) {
-  if (author.avatar) {
-    return <img src={author.avatar} alt="" className="h-full w-full object-cover" />;
-  }
-  return (
-    <div className="flex h-full w-full items-center justify-center text-[14px] text-primary">
-      {author.displayName[0]}
-    </div>
-  );
-}
-
-function VideoCard({
-  media,
-  onClick,
-  username,
-}: {
-  media: PostMedia;
-  onClick: () => void;
-  username?: string;
-}) {
-  return (
-    <div
-      className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[16px]"
-      onClick={onClick}
-    >
-      <VideoThumbnail
-        src={media.url}
-        fallback={media.thumbnail || undefined}
-        className="h-full w-full object-cover"
-      />
-      <div className="absolute inset-0 flex items-center justify-center bg-[rgba(21,25,28,0.55)]">
-        <div className="flex items-center gap-[8px] rounded-[50px] bg-muted/90 py-[6px] pl-[6px] pr-[16px]">
-          <svg viewBox="0 0 24 24" fill="currentColor" className="size-[28px] md:size-[36px]">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-          <span className="text-[14px] text-foreground md:text-[16px]">Play</span>
-        </div>
-      </div>
-      {username && <ImageWatermark username={username} />}
-    </div>
-  );
-}
-
 interface PostCardProps {
   post: CreatorPost;
   onMenuAction?: (postId: string, action: string) => void;
@@ -115,21 +44,30 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const { author } = post;
   const authorUsername = author ? author.username : '';
   const images = post.media.filter((m) => m.type === 'IMAGE');
   const video = post.media.find((m) => m.type === 'VIDEO');
-  const hasImages = images.length > 0;
-  const hasVideoOnly = !!video && !hasImages;
+  const hasVideoOnly = !!video && images.length === 0;
 
-  const openViewer = (index: number) => {
-    setViewerIndex(index);
-    setViewerOpen(true);
+  const handleMenuAction = (action: string) => {
+    if (action === 'remove') setConfirmDelete(true);
+    else onMenuAction?.(post.id, action);
   };
 
   return (
     <div className="rounded-[11px] bg-card p-[12px] md:rounded-[22px] md:p-[20px]">
+      {confirmDelete && (
+        <ConfirmDeleteModal
+          onConfirm={() => {
+            setConfirmDelete(false);
+            onMenuAction?.(post.id, 'remove');
+          }}
+          onCancel={() => setConfirmDelete(false)}
+        />
+      )}
       {author && (
         <div className="mb-[10px] flex items-start justify-between md:mb-[14px]">
           <div className="flex items-center gap-[10px]">
@@ -168,7 +106,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
             <PostMenu
               open={menuOpen}
               onClose={() => setMenuOpen(false)}
-              onAction={(a) => onMenuAction?.(post.id, a)}
+              onAction={handleMenuAction}
               isPinned={post.isPinned}
             />
           </div>
@@ -181,17 +119,14 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
         </p>
       )}
 
-      {hasImages && (
-        <div className="mb-[14px] md:mb-[18px]">
-          <ImageGrid media={post.media} onImageClick={openViewer} username={authorUsername} />
-        </div>
-      )}
-
-      {hasVideoOnly && (
-        <div className="mb-[14px] md:mb-[18px]">
-          <VideoCard media={video} onClick={() => openViewer(0)} username={authorUsername} />
-        </div>
-      )}
+      <PostCardMedia
+        post={post}
+        authorUsername={authorUsername}
+        onImageClick={(i) => {
+          setViewerIndex(i);
+          setViewerOpen(true);
+        }}
+      />
 
       <PostActions
         postId={post.id}
@@ -203,7 +138,7 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
 
       {viewerOpen && (
         <MediaViewer
-          media={hasVideoOnly ? [video] : images}
+          media={hasVideoOnly && video ? [video] : images}
           initialIndex={viewerIndex}
           onClose={() => setViewerOpen(false)}
           username={authorUsername}
