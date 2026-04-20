@@ -85,6 +85,7 @@ export default function CreatorAnalytics() {
               label: d.month,
               value: d.count || 0,
             }))}
+            gradient
           />
           <TopPostsList posts={data?.topPosts || []} />
         </>

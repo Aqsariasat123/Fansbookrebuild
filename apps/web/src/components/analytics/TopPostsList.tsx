@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 interface TopPost {
   id: string;
   text: string | null;
@@ -14,9 +16,10 @@ export function TopPostsList({ posts }: { posts: TopPost[] }) {
       ) : (
         <div className="flex flex-col gap-[10px]">
           {posts.map((post, i) => (
-            <div
+            <Link
               key={post.id}
-              className="flex items-center gap-[12px] rounded-[12px] bg-muted p-[12px]"
+              to={`/posts/${post.id}`}
+              className="flex items-center gap-[12px] rounded-[12px] bg-muted p-[12px] hover:bg-muted/70 transition-colors"
             >
               <span className="text-[14px] font-medium text-muted-foreground">#{i + 1}</span>
               <p className="flex-1 truncate text-[14px] text-foreground">
@@ -26,7 +29,7 @@ export function TopPostsList({ posts }: { posts: TopPost[] }) {
                 <span>{post.likeCount} likes</span>
                 <span>{post.commentCount} comments</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
