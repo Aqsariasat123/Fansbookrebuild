@@ -118,7 +118,7 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
             {username && <ImageWatermark username={username} />}
           </div>
         ) : (
-          <div className="relative inline-block">
+          <div style={{ position: 'relative', display: 'inline-block' }}>
             <img
               key={item.id}
               src={item.url}
@@ -127,7 +127,43 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
               draggable={false}
               onContextMenu={(e) => e.preventDefault()}
             />
-            {username && <ImageWatermark username={username} />}
+            {username && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 10,
+                  right: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 6,
+                  backgroundColor: 'rgba(0,0,0,0.55)',
+                  padding: '6px 12px',
+                  pointerEvents: 'none',
+                  userSelect: 'none',
+                  width: 'max-content',
+                  maxWidth: 300,
+                }}
+              >
+                <img
+                  src="/images/landing/logo.webp"
+                  alt=""
+                  style={{ height: 18, opacity: 0.9, flexShrink: 0 }}
+                />
+                <span
+                  style={{
+                    fontFamily: 'Outfit, sans-serif',
+                    fontSize: 13,
+                    color: 'rgba(255,255,255,0.9)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  inscrio.com/u/{username}
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
