@@ -97,15 +97,11 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
       )}
 
       {/* Media - full screen for video */}
-      <div
-        className={
-          item.type === 'VIDEO'
-            ? 'h-full w-full max-w-[100vw] md:h-[95vh] md:w-[85vw] md:max-w-[1200px]'
-            : 'max-h-[90vh] max-w-[90vw]'
-        }
-        onClick={(e) => e.stopPropagation()}
-      >
-        {item.type === 'VIDEO' ? (
+      {item.type === 'VIDEO' ? (
+        <div
+          className="h-full w-full max-w-[100vw] md:h-[95vh] md:w-[85vw] md:max-w-[1200px]"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="relative h-full w-full">
             <video
               key={item.id}
@@ -117,69 +113,72 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
             />
             {username && <ImageWatermark username={username} />}
           </div>
-        ) : (
-          <div style={{ display: 'grid', maxHeight: '90vh', maxWidth: '90vw' }}>
-            <img
-              key={item.id}
-              src={item.url}
-              alt=""
+        </div>
+      ) : (
+        <div
+          style={{ display: 'inline-grid', maxHeight: '90vh', maxWidth: '90vw' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <img
+            key={item.id}
+            src={item.url}
+            alt=""
+            style={{
+              gridArea: '1/1',
+              display: 'block',
+              maxHeight: '90vh',
+              maxWidth: '90vw',
+              borderRadius: 8,
+              objectFit: 'contain',
+            }}
+            draggable={false}
+            onContextMenu={(e) => e.preventDefault()}
+          />
+          {username && (
+            <div
               style={{
                 gridArea: '1/1',
-                display: 'block',
-                maxHeight: '90vh',
-                maxWidth: '90vw',
-                borderRadius: 8,
-                objectFit: 'contain',
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'flex-end',
+                padding: 10,
+                pointerEvents: 'none',
+                userSelect: 'none',
               }}
-              draggable={false}
-              onContextMenu={(e) => e.preventDefault()}
-            />
-            {username && (
+            >
               <div
                 style={{
-                  gridArea: '1/1',
                   display: 'flex',
-                  alignItems: 'flex-end',
-                  justifyContent: 'flex-end',
-                  padding: 10,
-                  pointerEvents: 'none',
-                  userSelect: 'none',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 6,
+                  backgroundColor: 'rgba(0,0,0,0.55)',
+                  padding: '6px 12px',
                 }}
               >
-                <div
+                <img
+                  src="/images/landing/logo.webp"
+                  alt=""
+                  style={{ height: 18, opacity: 0.9, flexShrink: 0 }}
+                />
+                <span
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    borderRadius: 6,
-                    backgroundColor: 'rgba(0,0,0,0.55)',
-                    padding: '6px 12px',
+                    fontFamily: 'Outfit, sans-serif',
+                    fontSize: 13,
+                    color: 'rgba(255,255,255,0.9)',
+                    maxWidth: 200,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
                   }}
                 >
-                  <img
-                    src="/images/landing/logo.webp"
-                    alt=""
-                    style={{ height: 18, opacity: 0.9, flexShrink: 0 }}
-                  />
-                  <span
-                    style={{
-                      fontFamily: 'Outfit, sans-serif',
-                      fontSize: 13,
-                      color: 'rgba(255,255,255,0.9)',
-                      maxWidth: 200,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    inscrio.com/u/{username}
-                  </span>
-                </div>
+                  inscrio.com/u/{username}
+                </span>
               </div>
-            )}
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Next */}
       {hasNext && (
