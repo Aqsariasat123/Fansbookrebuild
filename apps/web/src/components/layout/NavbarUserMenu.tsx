@@ -3,6 +3,25 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { logoutApi } from '../../lib/auth';
 
+function UserAvatar({
+  user,
+}: {
+  user: { avatar?: string | null; firstName?: string | null; displayName?: string | null } | null;
+}) {
+  if (user?.avatar) {
+    return <img src={user.avatar} alt="" className="h-full w-full object-cover" />;
+  }
+  return (
+    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[14px] lg:text-[16px] font-medium text-white">
+      {(user?.firstName || user?.displayName || 'U').charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+function getProfilePath(role?: string): string {
+  return role === 'CREATOR' ? '/creator/profile' : '/profile';
+}
+
 function getDisplayName(
   user: { firstName?: string | null; lastName?: string | null; displayName?: string | null } | null,
 ): string {
@@ -50,13 +69,7 @@ export function NavbarUserMenu() {
           </p>
         </div>
         <div className="h-[34px] w-[34px] lg:h-[44px] lg:w-[44px] shrink-0 overflow-hidden rounded-full">
-          {user?.avatar ? (
-            <img src={user.avatar} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[14px] lg:text-[16px] font-medium text-white">
-              {(user?.firstName || user?.displayName || 'U').charAt(0).toUpperCase()}
-            </div>
-          )}
+          <UserAvatar user={user} />
         </div>
         <img
           src="/icons/dashboard/arrow-drop-down.svg"
@@ -69,7 +82,7 @@ export function NavbarUserMenu() {
       {dropdownOpen && (
         <div className="absolute right-0 top-full mt-[4px] w-[101px] rounded-[10px] bg-card py-[10px] shadow-[0px_-5px_20px_0px_rgba(0,0,0,0.1)]">
           <Link
-            to="/profile"
+            to={getProfilePath(user?.role)}
             onClick={() => setDropdownOpen(false)}
             className="block px-[15px] py-[4px] text-[16px] text-foreground hover:bg-black/5"
           >
