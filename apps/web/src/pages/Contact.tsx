@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MarketingNav } from '../components/marketing/MarketingNav';
-import { CTASection, MarketingFooter } from '../components/marketing/MarketingFooter';
+import { MarketingFooter } from '../components/marketing/MarketingFooter';
 import { ContactForm } from '../components/marketing/ContactForm';
 import { api } from '../lib/api';
 
@@ -182,7 +182,6 @@ export default function Contact() {
         </div>
       )}
 
-      <CTASection />
       <MarketingFooter />
     </div>
   );
