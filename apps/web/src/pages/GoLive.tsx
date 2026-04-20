@@ -2,6 +2,47 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLiveStream } from '../hooks/useLiveStream';
 
+function isGoLiveReady(
+  agreed: boolean,
+  live: boolean,
+  busy: boolean,
+  pvt: boolean,
+  pvtTokens: string,
+  ext: boolean,
+  extTokens: string,
+): boolean {
+  if (!agreed || !live || busy) return false;
+  if (pvt && !pvtTokens.trim()) return false;
+  if (ext && !extTokens.trim()) return false;
+  return true;
+}
+
+function Checkbox({ checked }: { checked: boolean }) {
+  return (
+    <div className="pointer-events-none shrink-0">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        {checked ? (
+          <>
+            <rect x="3" y="3" width="18" height="18" rx="2" fill="#01adf1" />
+            <path
+              d="M9 12l2 2 4-4"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </>
+        ) : (
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+        )}
+      </svg>
+    </div>
+  );
+}
+
+const PRICE_INPUT_CLASS =
+  'w-full rounded-[8px] border border-foreground bg-transparent px-[12px] py-[8px] text-[14px] text-foreground placeholder-muted-foreground outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden';
+
 export default function GoLive() {
   const navigate = useNavigate();
   const { startBroadcast } = useLiveStream();
@@ -13,10 +54,10 @@ export default function GoLive() {
   const [privateShow, setPrivateShow] = useState(false);
   const [privateShowTokens, setPrivateShowTokens] = useState('');
   const [streamExt, setStreamExt] = useState(false);
+  const [streamExtTokens, setStreamExtTokens] = useState('');
   const [previewing, setPreviewing] = useState(false);
   const [starting, setStarting] = useState(false);
 
-  // Attach stream to video element once it renders
   useEffect(() => {
     if (!previewing || !streamRef.current) return;
     const video = videoRef.current;
@@ -53,25 +94,14 @@ export default function GoLive() {
     }
   };
 
-  const Checkbox = ({ checked }: { checked: boolean }) => (
-    <div className="pointer-events-none shrink-0">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        {checked ? (
-          <>
-            <rect x="3" y="3" width="18" height="18" rx="2" fill="#01adf1" />
-            <path
-              d="M9 12l2 2 4-4"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </>
-        ) : (
-          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
-        )}
-      </svg>
-    </div>
+  const ready = isGoLiveReady(
+    policyAgreed,
+    previewing,
+    starting,
+    privateShow,
+    privateShowTokens,
+    streamExt,
+    streamExtTokens,
   );
 
   return (
@@ -109,8 +139,6 @@ export default function GoLive() {
             </div>
           </>
         )}
-
-        {/* Policy checkbox */}
         <div
           className="flex cursor-pointer items-center gap-[10px]"
           onClick={() => setPolicyAgreed(!policyAgreed)}
@@ -134,38 +162,52 @@ export default function GoLive() {
         />
       </div>
 
-      {/* Checkboxes */}
-      <div className="flex flex-wrap items-center gap-[16px] md:gap-[32px]">
-        <div
-          className="flex cursor-pointer items-center gap-[10px]"
-          onClick={() => setPrivateShow(!privateShow)}
-        >
-          <Checkbox checked={privateShow} />
-          <span className="text-[14px] text-foreground">Available for the private show</span>
+      {/* Options */}
+      <div className="grid grid-cols-1 gap-[14px] md:grid-cols-2">
+        <div className="flex flex-col gap-[10px] rounded-[12px] border border-border p-[16px]">
+          <div
+            className="flex cursor-pointer items-center gap-[10px]"
+            onClick={() => setPrivateShow(!privateShow)}
+          >
+            <Checkbox checked={privateShow} />
+            <span className="text-[14px] text-foreground">Available for the private show</span>
+          </div>
+          {privateShow && (
+            <input
+              type="number"
+              min="1"
+              value={privateShowTokens}
+              onChange={(e) => setPrivateShowTokens(e.target.value)}
+              placeholder="Tokens required"
+              className={PRICE_INPUT_CLASS}
+            />
+          )}
         </div>
-        {privateShow && (
-          <input
-            type="number"
-            min="1"
-            value={privateShowTokens}
-            onChange={(e) => setPrivateShowTokens(e.target.value)}
-            placeholder="Tokens required"
-            className="w-[160px] rounded-[8px] border border-foreground bg-transparent px-[12px] py-[8px] text-[14px] text-foreground placeholder-muted-foreground outline-none"
-          />
-        )}
-        <div
-          className="flex cursor-pointer items-center gap-[10px]"
-          onClick={() => setStreamExt(!streamExt)}
-        >
-          <Checkbox checked={streamExt} />
-          <span className="text-[14px] text-foreground">Stream Extension</span>
+        <div className="flex flex-col gap-[10px] rounded-[12px] border border-border p-[16px]">
+          <div
+            className="flex cursor-pointer items-center gap-[10px]"
+            onClick={() => setStreamExt(!streamExt)}
+          >
+            <Checkbox checked={streamExt} />
+            <span className="text-[14px] text-foreground">Stream Extension</span>
+          </div>
+          {streamExt && (
+            <input
+              type="number"
+              min="1"
+              value={streamExtTokens}
+              onChange={(e) => setStreamExtTokens(e.target.value)}
+              placeholder="Tokens required"
+              className={PRICE_INPUT_CLASS}
+            />
+          )}
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-col items-center gap-[12px] md:flex-row md:justify-center md:gap-[20px]">
         <button
-          disabled={!policyAgreed || !previewing || starting}
+          disabled={!ready}
           onClick={handleGoLive}
           className="w-full rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[14px] text-[16px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 md:w-[240px]"
         >
