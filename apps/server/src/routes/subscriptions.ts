@@ -126,6 +126,7 @@ router.post('/', authenticate, validate(subscribeSchema), async (req, res, next)
           type: 'SUBSCRIPTION',
           amount: creatorAmount,
           description: `Subscription from fan (${tier.name}) — ${FEES.PLATFORM_FEE_PERCENT}% fee applied`,
+          referenceId: userId,
           status: 'COMPLETED',
         },
       }),

@@ -68,6 +68,7 @@ router.post('/:id/ppv-unlock', authenticate, async (req, res, next) => {
           type: 'PPV_EARNING',
           amount: creatorAmt,
           description: `PPV earning: post ${postId} (${FEES.PLATFORM_FEE_PERCENT}% fee)`,
+          referenceId: userId,
           status: 'COMPLETED',
         },
       }),

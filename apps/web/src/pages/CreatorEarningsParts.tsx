@@ -1,10 +1,35 @@
+import { Link } from 'react-router-dom';
+
 export interface EarningItem {
   id: string;
-  date: string;
-  username: string;
-  totalCoins: number;
-  receivedVia: string;
+  createdAt: string;
+  amount: number;
+  type: string;
+  source: string;
+  description: string | null;
   status: string;
+  fromUser: { id: string; username: string; displayName: string } | null;
+}
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('en-GB');
+}
+
+function formatTime(iso: string) {
+  const d = new Date(iso);
+  return isNaN(d.getTime())
+    ? ''
+    : d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
+function UserCell({ fromUser }: { fromUser: EarningItem['fromUser'] }) {
+  if (!fromUser) return <span className="text-muted-foreground">—</span>;
+  return (
+    <Link to={`/profile/${fromUser.username}`} className="text-[#01adf1] hover:underline">
+      {fromUser.displayName}
+    </Link>
+  );
 }
 
 export function EarningsMobileCards({ items }: { items: EarningItem[] }) {
@@ -13,11 +38,11 @@ export function EarningsMobileCards({ items }: { items: EarningItem[] }) {
       {items.map((item) => (
         <div key={item.id} className="rounded-[16px] bg-card p-[16px]">
           {[
-            { label: 'Date', value: new Date(item.date).toLocaleDateString('en-GB') },
-            { label: 'Username', value: item.username || 'John Doe' },
-            { label: 'Total Coins', value: String(item.totalCoins || 100) },
-            { label: 'Received Via', value: item.receivedVia || 'PayPal' },
-            { label: 'Status', value: item.status || 'Paid' },
+            { label: 'Date', value: formatDate(item.createdAt) },
+            { label: 'Time', value: formatTime(item.createdAt) },
+            { label: 'Source', value: item.source },
+            { label: 'Amount', value: `$${item.amount.toFixed(2)}` },
+            { label: 'Status', value: item.status },
           ].map((r, i, arr) => (
             <div
               key={r.label}
@@ -27,13 +52,17 @@ export function EarningsMobileCards({ items }: { items: EarningItem[] }) {
               <span className="text-[13px] text-foreground">{r.value}</span>
             </div>
           ))}
+          <div className="flex items-center justify-between py-[8px] border-t border-border">
+            <span className="text-[12px] text-muted-foreground">From</span>
+            <UserCell fromUser={item.fromUser} />
+          </div>
         </div>
       ))}
     </>
   );
 }
 
-const COLS = ['Date & Time', 'Username', 'Total Coins', 'Coins Received Via', 'Payment Status'];
+const COLS = ['Date & Time', 'From', 'Source', 'Amount', 'Payment Status'];
 
 export function EarningsTable({ items, loading }: { items: EarningItem[]; loading: boolean }) {
   return (
@@ -67,27 +96,20 @@ export function EarningsTable({ items, loading }: { items: EarningItem[]; loadin
           items.map((item) => (
             <tr key={item.id} className="border-b border-muted last:border-0">
               <td className="px-[16px] py-[14px] text-[14px] text-foreground">
-                {new Date(item.date).toLocaleDateString('en-GB')}
+                {formatDate(item.createdAt)}
                 <br />
                 <span className="text-[12px] text-muted-foreground">
-                  {new Date(item.date).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {formatTime(item.createdAt)}
                 </span>
               </td>
-              <td className="px-[16px] py-[14px] text-[14px] text-foreground">
-                {item.username || 'John Doe'}
+              <td className="px-[16px] py-[14px] text-[14px]">
+                <UserCell fromUser={item.fromUser} />
               </td>
+              <td className="px-[16px] py-[14px] text-[14px] text-foreground">{item.source}</td>
               <td className="px-[16px] py-[14px] text-[14px] text-foreground">
-                {item.totalCoins || 100}
+                ${item.amount.toFixed(2)}
               </td>
-              <td className="px-[16px] py-[14px] text-[14px] text-foreground">
-                {item.receivedVia || 'PayPal'}
-              </td>
-              <td className="px-[16px] py-[14px] text-[14px] text-foreground">
-                {item.status || 'Paid'}
-              </td>
+              <td className="px-[16px] py-[14px] text-[14px] text-foreground">{item.status}</td>
             </tr>
           ))
         )}

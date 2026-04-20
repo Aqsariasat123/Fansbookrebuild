@@ -3,15 +3,7 @@ import { api } from '../lib/api';
 import { EarningsMobileCards, EarningsTable } from './CreatorEarningsParts';
 import type { EarningItem } from './CreatorEarningsParts';
 
-const CATEGORIES = [
-  'All',
-  'Chat',
-  'One-to-one call',
-  'Tip',
-  'Referral',
-  'Subscription',
-  'Post Purchased',
-];
+const CATEGORIES = ['All', 'Tips', 'Subscriptions', 'PPV / Post Purchase'];
 
 export default function CreatorEarnings() {
   const [items, setItems] = useState<EarningItem[]>([]);

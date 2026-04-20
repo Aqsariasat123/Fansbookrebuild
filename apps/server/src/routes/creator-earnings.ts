@@ -6,10 +6,19 @@ import { AppError } from '../middleware/errorHandler.js';
 
 const router = Router();
 
-// All routes require auth + CREATOR role
 router.use(authenticate, requireRole('CREATOR'));
 
 const EARNING_TYPES = ['TIP_RECEIVED', 'SUBSCRIPTION', 'PPV_EARNING'] as const;
+
+// Map frontend category labels → DB types
+const CATEGORY_MAP: Record<string, string> = {
+  Tips: 'TIP_RECEIVED',
+  Subscriptions: 'SUBSCRIPTION',
+  'PPV / Post Purchase': 'PPV_EARNING',
+  TIP_RECEIVED: 'TIP_RECEIVED',
+  SUBSCRIPTION: 'SUBSCRIPTION',
+  PPV_EARNING: 'PPV_EARNING',
+};
 
 interface EarningsQuery {
   category?: string;
@@ -37,13 +46,12 @@ function parseDateFilter(startDate?: string, endDate?: string) {
 
 function buildEarningsFilter(walletId: string, query: EarningsQuery): Record<string, unknown> {
   const { category, search, startDate, endDate } = query;
-  const isValidCategory =
-    category &&
-    category !== 'All' &&
-    EARNING_TYPES.includes(category as (typeof EARNING_TYPES)[number]);
+  const mappedType = category && category !== 'All' ? CATEGORY_MAP[category] : undefined;
+  const isValidType =
+    mappedType && EARNING_TYPES.includes(mappedType as (typeof EARNING_TYPES)[number]);
   const where: Record<string, unknown> = {
     walletId,
-    type: isValidCategory ? category : { in: [...EARNING_TYPES] },
+    type: isValidType ? mappedType : { in: [...EARNING_TYPES] },
   };
   if (search && search.trim()) {
     where.description = { contains: search.trim(), mode: 'insensitive' };
@@ -53,6 +61,12 @@ function buildEarningsFilter(walletId: string, query: EarningsQuery): Record<str
   return where;
 }
 
+const SOURCE_LABELS: Record<string, string> = {
+  TIP_RECEIVED: 'Tips',
+  SUBSCRIPTION: 'Subscriptions',
+  PPV_EARNING: 'PPV / Post Purchase',
+};
+
 // ─── GET /api/creator/earnings ── paginated earnings ────────
 router.get('/', async (req, res, next) => {
   try {
@@ -61,13 +75,9 @@ router.get('/', async (req, res, next) => {
     const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20));
     const skip = (page - 1) * limit;
 
-    // Find wallet first
     const wallet = await prisma.wallet.findUnique({ where: { userId } });
     if (!wallet) {
-      return res.json({
-        success: true,
-        data: { items: [], total: 0, page, limit },
-      });
+      return res.json({ success: true, data: { items: [], total: 0, page, limit } });
     }
 
     const where = buildEarningsFilter(wallet.id, {
@@ -77,7 +87,7 @@ router.get('/', async (req, res, next) => {
       endDate: req.query.endDate as string | undefined,
     });
 
-    const [items, total] = await Promise.all([
+    const [transactions, total] = await Promise.all([
       prisma.transaction.findMany({
         where,
         orderBy: { createdAt: 'desc' },
@@ -96,10 +106,30 @@ router.get('/', async (req, res, next) => {
       prisma.transaction.count({ where }),
     ]);
 
-    res.json({
-      success: true,
-      data: { items, total, page, limit },
-    });
+    // Batch-lookup senders via referenceId (user ID stored at transaction creation)
+    const senderIds = [
+      ...new Set(transactions.map((t) => t.referenceId).filter(Boolean)),
+    ] as string[];
+    const senders = senderIds.length
+      ? await prisma.user.findMany({
+          where: { id: { in: senderIds } },
+          select: { id: true, username: true, displayName: true },
+        })
+      : [];
+    const senderMap = Object.fromEntries(senders.map((u) => [u.id, u]));
+
+    const items = transactions.map((t) => ({
+      id: t.id,
+      createdAt: t.createdAt,
+      amount: t.amount,
+      type: t.type,
+      source: SOURCE_LABELS[t.type] ?? t.type,
+      description: t.description,
+      status: t.status,
+      fromUser: t.referenceId ? (senderMap[t.referenceId] ?? null) : null,
+    }));
+
+    res.json({ success: true, data: { items, total, page, limit } });
   } catch (err) {
     next(err);
   }

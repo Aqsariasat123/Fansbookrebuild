@@ -90,6 +90,7 @@ router.post('/', authenticate, async (req: Request, res, next) => {
           type: 'TIP_RECEIVED',
           amount: creatorAmount,
           description: `${message || 'Direct tip received'} (${FEES.PLATFORM_FEE_PERCENT}% fee applied)`,
+          referenceId: userId,
           status: 'COMPLETED',
         },
       }),
