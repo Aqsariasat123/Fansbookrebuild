@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-type VerifyStatus = 'APPROVED' | 'REJECTED' | 'MANUAL_REVIEW' | 'PENDING' | 'UNVERIFIED';
+import type { VerifyStatus } from './VerifyIdentityFormStep';
 
 function isDiditDoneEvent(event: MessageEvent): boolean {
   if (!event.origin.includes('didit')) return false;
