@@ -118,7 +118,7 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
             {username && <ImageWatermark username={username} />}
           </div>
         ) : (
-          <div className="relative w-fit">
+          <div className="relative">
             <img
               key={item.id}
               src={item.url}
