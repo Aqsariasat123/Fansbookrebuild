@@ -17,8 +17,15 @@ export function startStoryExpiryWorker() {
   const worker = new Worker(
     'story-expiry',
     async (_job: Job) => {
+      // Collect all story IDs pinned in highlights — these should never expire
+      const highlights = await prisma.storyHighlight.findMany({ select: { storyIds: true } });
+      const pinnedIds = [...new Set(highlights.flatMap((h) => h.storyIds))];
+
       const result = await prisma.story.deleteMany({
-        where: { expiresAt: { lt: new Date() } },
+        where: {
+          expiresAt: { lt: new Date() },
+          ...(pinnedIds.length ? { id: { notIn: pinnedIds } } : {}),
+        },
       });
       if (result.count > 0) {
         logger.info({ count: result.count }, 'Expired stories cleaned up');

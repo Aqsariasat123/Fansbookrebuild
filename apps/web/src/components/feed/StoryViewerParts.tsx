@@ -14,7 +14,7 @@ export function ProgressBars({
         return (
           <div key={i} className="h-[3px] flex-1 overflow-hidden rounded-full bg-card/30">
             <div
-              className="h-full rounded-full bg-card transition-none"
+              className="h-full rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] transition-none"
               style={{ width: `${width}%` }}
             />
           </div>

@@ -45,7 +45,7 @@ export function StoriesRow({ groups, isCreator, onRefetch }: StoriesRowProps) {
                 />
               </div>
             </div>
-            <p className="w-[52px] truncate text-center text-[12px] font-normal text-foreground md:w-[91px] md:text-[16px]">
+            <p className="w-[60px] text-center text-[11px] font-normal leading-tight text-foreground md:w-[133px] md:text-[14px]">
               {group.displayName}
             </p>
           </div>
