@@ -30,6 +30,8 @@ router.get('/:username/posts', async (req, res, next) => {
 
     const where = buildPostsWhere({ creatorId: creator.id, isSubscriber, tab });
 
+    const isOwner = viewerUserId === creator.id;
+
     const [posts, total] = await Promise.all([
       prisma.post.findMany({
         where,
@@ -57,24 +59,35 @@ router.get('/:username/posts', async (req, res, next) => {
                 },
               }
             : {}),
+          ...(isOwner ? { _count: { select: { ppvPurchases: true } } } : {}),
         },
       }),
       prisma.post.count({ where }),
     ]);
 
-    const items = posts.map((post) => ({
-      id: post.id,
-      text: post.text,
-      visibility: post.visibility,
-      isPinned: post.isPinned,
-      likeCount: post.likeCount,
-      commentCount: post.commentCount,
-      shareCount: 15,
-      isLiked: 'likes' in post ? (post.likes as { id: string }[]).length > 0 : false,
-      createdAt: post.createdAt,
-      author: post.author,
-      media: post.media,
-    }));
+    const items = posts.map((post) => {
+      const ppvSoldCount =
+        isOwner && '_count' in post
+          ? (post._count as { ppvPurchases: number }).ppvPurchases
+          : undefined;
+      return {
+        id: post.id,
+        text: post.text,
+        visibility: post.visibility,
+        ppvPrice: isOwner ? post.ppvPrice : undefined,
+        ppvSoldCount,
+        ppvRevenue:
+          ppvSoldCount !== undefined && post.ppvPrice ? ppvSoldCount * post.ppvPrice : undefined,
+        isPinned: post.isPinned,
+        likeCount: post.likeCount,
+        commentCount: post.commentCount,
+        shareCount: 15,
+        isLiked: 'likes' in post ? (post.likes as { id: string }[]).length > 0 : false,
+        createdAt: post.createdAt,
+        author: post.author,
+        media: post.media,
+      };
+    });
 
     res.json({
       success: true,

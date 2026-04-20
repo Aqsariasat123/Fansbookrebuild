@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import { PostActions } from '../feed/PostActions';
 import { MediaViewer } from '../feed/MediaViewer';
-import { PostMenu } from './PostMenu';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
-import { timeAgo, PinIndicator, AuthorAvatar, PostCardMedia } from './PostCardParts';
-
-const IMG = '/icons/dashboard';
+import { PostCardHeader, PostCardMedia, PostOwnerBadges } from './PostCardParts';
 
 export interface PostMedia {
   id: string;
@@ -25,6 +22,10 @@ export interface PostAuthor {
 export interface CreatorPost {
   id: string;
   text: string | null;
+  visibility?: string;
+  ppvPrice?: number | null;
+  ppvSoldCount?: number;
+  ppvRevenue?: number;
   likeCount: number;
   commentCount: number;
   shareCount: number;
@@ -37,20 +38,24 @@ export interface CreatorPost {
 
 interface PostCardProps {
   post: CreatorPost;
+  isOwner?: boolean;
   onMenuAction?: (postId: string, action: string) => void;
 }
 
-export function PostCard({ post, onMenuAction }: PostCardProps) {
+function resolveViewerMedia(media: PostMedia[]): PostMedia[] {
+  const imgs = media.filter((m) => m.type === 'IMAGE');
+  const vid = media.find((m) => m.type === 'VIDEO');
+  if (vid && imgs.length === 0) return [vid];
+  return imgs;
+}
+
+export function PostCard({ post, isOwner = false, onMenuAction }: PostCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const { author } = post;
-  const authorUsername = author ? author.username : '';
-  const images = post.media.filter((m) => m.type === 'IMAGE');
-  const video = post.media.find((m) => m.type === 'VIDEO');
-  const hasVideoOnly = !!video && images.length === 0;
+  const authorUsername = post.author?.username ?? '';
 
   const handleMenuAction = (action: string) => {
     if (action === 'remove') setConfirmDelete(true);
@@ -68,50 +73,13 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
           onCancel={() => setConfirmDelete(false)}
         />
       )}
-      {author && (
-        <div className="mb-[10px] flex items-start justify-between md:mb-[14px]">
-          <div className="flex items-center gap-[10px]">
-            <div className="size-[36px] overflow-hidden rounded-full bg-primary/30 md:size-[42px]">
-              <AuthorAvatar author={author} />
-            </div>
-            <div>
-              <div className="flex items-center gap-[4px]">
-                <span className="text-[14px] font-medium text-foreground md:text-[16px]">
-                  {author.displayName}
-                </span>
-                {author.isVerified && (
-                  <img src={`${IMG}/verified.svg`} alt="" className="size-[14px] md:size-[16px]" />
-                )}
-              </div>
-              <span className="text-[11px] text-muted-foreground md:text-[13px]">
-                @{author.username}
-              </span>
-            </div>
-          </div>
-          <div className="relative flex items-center gap-[8px]">
-            <PinIndicator isPinned={post.isPinned} />
-            <span className="text-[11px] text-muted-foreground md:text-[13px]">
-              {timeAgo(post.createdAt)}
-            </span>
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="flex size-[26px] items-center justify-center rounded-full hover:bg-muted"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="5" r="2" />
-                <circle cx="12" cy="12" r="2" />
-                <circle cx="12" cy="19" r="2" />
-              </svg>
-            </button>
-            <PostMenu
-              open={menuOpen}
-              onClose={() => setMenuOpen(false)}
-              onAction={handleMenuAction}
-              isPinned={post.isPinned}
-            />
-          </div>
-        </div>
-      )}
+      <PostCardHeader
+        post={post}
+        menuOpen={menuOpen}
+        onMenuToggle={() => setMenuOpen(!menuOpen)}
+        onMenuClose={() => setMenuOpen(false)}
+        onAction={handleMenuAction}
+      />
 
       {post.text && (
         <p className="mb-[12px] whitespace-pre-wrap text-[13px] leading-[1.6] text-foreground md:mb-[16px] md:text-[15px]">
@@ -128,17 +96,19 @@ export function PostCard({ post, onMenuAction }: PostCardProps) {
         }}
       />
 
+      {isOwner && <PostOwnerBadges post={post} />}
       <PostActions
         postId={post.id}
         likeCount={post.likeCount}
         commentCount={post.commentCount}
         shareCount={post.shareCount}
         isLiked={post.isLiked}
+        isOwner={isOwner}
       />
 
       {viewerOpen && (
         <MediaViewer
-          media={hasVideoOnly && video ? [video] : images}
+          media={resolveViewerMedia(post.media)}
           initialIndex={viewerIndex}
           onClose={() => setViewerOpen(false)}
           username={authorUsername}

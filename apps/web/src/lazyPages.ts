@@ -55,6 +55,7 @@ export const CreatorSubscriptionTiers = lazy(() => import('./pages/CreatorSubscr
 export const CreatorBookings = lazy(() => import('./pages/CreatorBookings'));
 export const CreatorPublicProfile = lazy(() => import('./pages/CreatorPublicProfile'));
 export const CreatePost = lazy(() => import('./pages/CreatePost'));
+export const EditPost = lazy(() => import('./pages/EditPost'));
 export const GoLive = lazy(() => import('./pages/GoLive'));
 export const LiveBroadcasting = lazy(() => import('./pages/LiveBroadcasting'));
 export const CreatorDashboardHome = lazy(() => import('./pages/CreatorDashboardHome'));

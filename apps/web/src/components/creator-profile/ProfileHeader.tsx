@@ -72,7 +72,7 @@ export function ProfileHeader({
           </div>
         )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-        <div className="absolute bottom-[12px] right-[12px] flex gap-[8px]">
+        <div className="absolute right-[12px] top-[12px] z-20 flex gap-[8px]">
           <CoverIcon d={CAMERA_D} onClick={() => coverRef.current?.click()} />
           <CoverIcon d={EDIT_D} onClick={() => navigate('/creator/profile/edit')} />
           <CoverIcon d={SHARE_D} onClick={() => setShowShare(true)} />
@@ -87,9 +87,9 @@ export function ProfileHeader({
       </div>
 
       <div>
-        {/* Avatar */}
-        <div className="relative z-10 -mt-[60px] flex justify-center md:-mt-[88px] md:justify-start">
-          <div className="relative size-[130px] rounded-full border-4 border-muted bg-muted md:size-[176px]">
+        {/* Avatar — wrapper is pointer-events-none so its transparent area doesn't block cover buttons */}
+        <div className="pointer-events-none relative z-10 -mt-[60px] flex justify-center md:-mt-[88px] md:justify-start">
+          <div className="pointer-events-auto relative size-[130px] rounded-full border-4 border-muted bg-muted md:size-[176px]">
             {avatar ? (
               <img src={avatar} alt="" className="size-full rounded-full object-cover" />
             ) : (
@@ -109,18 +109,8 @@ export function ProfileHeader({
               disabled={uploadingAvatar}
               className="absolute bottom-[2px] right-[2px] flex size-[30px] items-center justify-center rounded-full bg-primary text-white hover:opacity-80 md:size-[36px]"
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d={CAMERA_D} />
-                <circle cx="12" cy="13" r="4" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 5h-3.17L15 3H9L7.17 5H4C2.9 5 2 5.9 2 7v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
               </svg>
             </button>
             <input

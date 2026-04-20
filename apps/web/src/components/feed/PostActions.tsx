@@ -12,6 +12,7 @@ interface PostActionsProps {
   shareCount: number;
   isLiked: boolean;
   authorName?: string;
+  isOwner?: boolean;
 }
 
 export function PostActions({
@@ -21,6 +22,7 @@ export function PostActions({
   shareCount,
   isLiked,
   authorName = 'Creator',
+  isOwner = false,
 }: PostActionsProps) {
   const [liked, setLiked] = useState(isLiked);
   const [likes, setLikes] = useState(likeCount);
@@ -114,19 +116,21 @@ export function PostActions({
             </span>
           </button>
         </div>
-        <div className="flex items-center gap-[12px] md:gap-[20px]">
-          <button
-            onClick={() => setShowTip(true)}
-            className="flex items-center gap-[5px] text-foreground hover:opacity-80 md:gap-[10px]"
-          >
-            <img
-              src={`${IMG}/volunteer-activism.svg`}
-              alt=""
-              className="size-[12px] md:size-[20px]"
-            />
-            <span className="text-[10px] font-normal md:text-[16px]">Tip</span>
-          </button>
-        </div>
+        {!isOwner && (
+          <div className="flex items-center gap-[12px] md:gap-[20px]">
+            <button
+              onClick={() => setShowTip(true)}
+              className="flex items-center gap-[5px] text-foreground hover:opacity-80 md:gap-[10px]"
+            >
+              <img
+                src={`${IMG}/volunteer-activism.svg`}
+                alt=""
+                className="size-[12px] md:size-[20px]"
+              />
+              <span className="text-[10px] font-normal md:text-[16px]">Tip</span>
+            </button>
+          </div>
+        )}
       </div>
       {showComments && (
         <CommentsSection postId={postId} onCountChange={(d) => setComments((c) => c + d)} />

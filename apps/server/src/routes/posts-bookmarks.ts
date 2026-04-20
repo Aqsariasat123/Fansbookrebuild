@@ -62,6 +62,7 @@ router.get('/:id', authenticate, async (req, res, next) => {
         id: post.id,
         text: post.text,
         visibility: post.visibility,
+        ppvPrice: post.ppvPrice,
         isPinned: post.isPinned,
         likeCount: post.likeCount,
         commentCount: post.commentCount,

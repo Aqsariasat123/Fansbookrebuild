@@ -82,6 +82,72 @@ export function resolveStats(p: CreatorProfile | null) {
   };
 }
 
+interface ScheduledSession {
+  id: string;
+  title: string;
+  scheduledAt: string;
+}
+
+export function GoLiveSidebar({
+  onGoLive,
+  onSchedule,
+  scheduled,
+  onDeleteScheduled,
+}: {
+  onGoLive: () => void;
+  onSchedule: () => void;
+  scheduled: ScheduledSession[];
+  onDeleteScheduled: (id: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-[12px]">
+      <button
+        onClick={onGoLive}
+        className="w-full rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-[15px] font-medium text-white"
+      >
+        Go Live
+      </button>
+      <button
+        onClick={onSchedule}
+        className="w-full rounded-[8px] border border-border py-[12px] text-[15px] font-medium text-foreground hover:border-foreground transition-colors"
+      >
+        Schedule Live
+      </button>
+      {scheduled.length > 0 && (
+        <div className="mt-[4px] flex flex-col gap-[8px]">
+          <p className="text-[12px] font-medium text-muted-foreground uppercase tracking-wide">
+            Scheduled Lives
+          </p>
+          {scheduled.map((s) => (
+            <div
+              key={s.id}
+              className="flex items-start justify-between rounded-[10px] border border-border bg-card px-[12px] py-[10px]"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-[13px] font-medium text-foreground">{s.title}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  {new Date(s.scheduledAt).toLocaleString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </p>
+              </div>
+              <button
+                onClick={() => onDeleteScheduled(s.id)}
+                className="ml-[8px] shrink-0 rounded-[6px] border border-red-500/40 px-[8px] py-[4px] text-[11px] text-red-500 hover:bg-red-500/10"
+              >
+                Delete
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ComposeBar({
   text,
   onChange,

@@ -110,6 +110,25 @@ router.post(
   },
 );
 
+function buildPostUpdate(body: Record<string, unknown>): Record<string, unknown> {
+  const data: Record<string, unknown> = {};
+  if (body.text !== undefined) {
+    if (typeof body.text !== 'string' || (body.text as string).trim().length === 0)
+      throw new AppError(400, 'Text cannot be empty');
+    data.text = (body.text as string).trim();
+  }
+  if (body.visibility !== undefined) {
+    if (!['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'].includes(body.visibility as string))
+      throw new AppError(400, 'Invalid visibility value');
+    data.visibility = body.visibility;
+  }
+  if (body.ppvPrice !== undefined) {
+    const price = parseFloat(body.ppvPrice as string);
+    data.ppvPrice = isNaN(price) || price <= 0 ? null : price;
+  }
+  return data;
+}
+
 // ─── PUT /api/posts/:id ── edit post (owner only) ──────────
 router.put('/:id', authenticate, async (req, res, next) => {
   try {
@@ -126,22 +145,7 @@ router.put('/:id', authenticate, async (req, res, next) => {
       throw new AppError(403, 'Posts can only be edited within 24 hours of creation');
     }
 
-    const updateData: Record<string, unknown> = {};
-
-    if (req.body.text !== undefined) {
-      if (typeof req.body.text !== 'string' || req.body.text.trim().length === 0) {
-        throw new AppError(400, 'Text cannot be empty');
-      }
-      updateData.text = req.body.text.trim();
-    }
-
-    if (req.body.visibility !== undefined) {
-      const validVisibilities = ['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'];
-      if (!validVisibilities.includes(req.body.visibility)) {
-        throw new AppError(400, 'Invalid visibility value');
-      }
-      updateData.visibility = req.body.visibility;
-    }
+    const updateData = buildPostUpdate(req.body as Record<string, unknown>);
 
     const updated = await prisma.post.update({
       where: { id: postId },

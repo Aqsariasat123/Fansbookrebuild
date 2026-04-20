@@ -63,6 +63,7 @@ import {
   CreatorBookings,
   CreatorPublicProfile,
   CreatePost,
+  EditPost,
   GoLive,
   LiveBroadcasting,
   CreatorDashboardHome,
@@ -188,6 +189,7 @@ export default function App() {
                       <Route path="/creator/subscriptions" element={<CreatorSubscriptionTiers />} />
                       <Route path="/creator/bookings" element={<CreatorBookings />} />
                       <Route path="/creator/post/new" element={<CreatePost />} />
+                      <Route path="/creator/post/edit/:id" element={<EditPost />} />
                       <Route path="/creator/go-live" element={<GoLive />} />
                       <Route path="/creator/live" element={<LiveBroadcasting />} />
                       <Route path="/creator/ai-settings" element={<CreatorAISettings />} />

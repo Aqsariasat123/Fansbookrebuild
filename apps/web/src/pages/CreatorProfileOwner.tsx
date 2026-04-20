@@ -9,7 +9,13 @@ import { PostCard } from '../components/creator-profile/PostCard';
 import type { CreatorPost } from '../components/creator-profile/PostCard';
 import { ScheduleLiveModal } from '../components/creator-profile/ScheduleLiveModal';
 import { useUpcomingLives } from '../hooks/useLive';
-import { filterPosts, resolveBasic, resolveStats, ComposeBar } from './CreatorProfileOwnerParts';
+import {
+  filterPosts,
+  resolveBasic,
+  resolveStats,
+  ComposeBar,
+  GoLiveSidebar,
+} from './CreatorProfileOwnerParts';
 import type { CreatorProfile } from './CreatorProfileOwnerParts';
 
 export default function CreatorProfileOwner() {
@@ -82,28 +88,33 @@ export default function CreatorProfileOwner() {
     [refetchUpcoming],
   );
 
-  const handleMenuAction = useCallback(async (postId: string, action: string) => {
-    try {
-      if (action === 'remove') {
-        await api.delete(`/posts/${postId}`);
-        setPosts((prev) => prev.filter((p) => p.id !== postId));
-      } else if (action === 'pin') {
-        await api.patch(`/posts/${postId}/pin`, { isPinned: true });
-        setPosts((prev) => {
-          const updated = prev.map((p) => ({ ...p, isPinned: p.id === postId }));
-          return [...updated].sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
-        });
-      } else if (action === 'unpin') {
-        await api.patch(`/posts/${postId}/pin`, { isPinned: false });
-        setPosts((prev) => {
-          const updated = prev.map((p) => (p.id === postId ? { ...p, isPinned: false } : p));
-          return [...updated].sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
-        });
+  const handleMenuAction = useCallback(
+    async (postId: string, action: string) => {
+      try {
+        if (action === 'edit') {
+          navigate(`/creator/post/edit/${postId}`);
+        } else if (action === 'remove') {
+          await api.delete(`/posts/${postId}`);
+          setPosts((prev) => prev.filter((p) => p.id !== postId));
+        } else if (action === 'pin') {
+          await api.patch(`/posts/${postId}/pin`, { isPinned: true });
+          setPosts((prev) => {
+            const updated = prev.map((p) => ({ ...p, isPinned: p.id === postId }));
+            return [...updated].sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
+          });
+        } else if (action === 'unpin') {
+          await api.patch(`/posts/${postId}/pin`, { isPinned: false });
+          setPosts((prev) => {
+            const updated = prev.map((p) => (p.id === postId ? { ...p, isPinned: false } : p));
+            return [...updated].sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
+          });
+        }
+      } catch {
+        /* ignore */
       }
-    } catch {
-      /* ignore */
-    }
-  }, []);
+    },
+    [navigate],
+  );
 
   if (loading)
     return (
@@ -130,60 +141,14 @@ export default function CreatorProfileOwner() {
         onCoverUpload={(f) => handleUpload('cover', f)}
       />
 
-      <div className="mt-[20px]">
+      <div className="mt-[20px] flex flex-col gap-[20px] md:flex-row md:items-start md:gap-[24px]">
+        {/* Main column */}
         <div className="min-w-0 flex-1">
-          {/* Go Live buttons */}
-          <div className="mb-[16px] flex gap-[16px]">
-            <button
-              onClick={() => navigate('/creator/go-live')}
-              className="flex-1 rounded-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[14px] text-[16px] font-medium text-white"
-            >
-              Go Live
-            </button>
-            <button
-              onClick={() => setShowSchedule(true)}
-              className="flex-1 rounded-[8px] border border-foreground py-[14px] text-[16px] font-medium text-foreground"
-            >
-              Schedule Live
-            </button>
-          </div>
-
-          {myScheduled.length > 0 && (
-            <div className="mb-[16px] flex flex-col gap-[8px]">
-              <p className="text-[13px] font-medium text-muted-foreground">Your Scheduled Lives</p>
-              {myScheduled.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between rounded-[10px] border border-border bg-card px-[14px] py-[10px]"
-                >
-                  <div>
-                    <p className="text-[14px] font-medium text-foreground">{s.title}</p>
-                    <p className="text-[12px] text-muted-foreground">
-                      {new Date(s.scheduledAt).toLocaleString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleDeleteScheduled(s.id)}
-                    className="rounded-[6px] border border-red-500/40 px-[10px] py-[6px] text-[12px] text-red-500 hover:bg-red-500/10"
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
           <ComposeBar
             text={composeText}
             onChange={setComposeText}
             onNewPost={() => navigate('/creator/post/new')}
           />
-
           <div className="mt-[20px]">
             <div className="rounded-[22px] bg-card">
               <ContentTabs activeTab={activeTab} onTabChange={setActiveTab} />
@@ -195,11 +160,21 @@ export default function CreatorProfileOwner() {
                 </p>
               ) : (
                 filtered.map((post) => (
-                  <PostCard key={post.id} post={post} onMenuAction={handleMenuAction} />
+                  <PostCard key={post.id} post={post} onMenuAction={handleMenuAction} isOwner />
                 ))
               )}
             </div>
           </div>
+        </div>
+
+        {/* Right sidebar */}
+        <div className="w-full md:w-[240px] md:shrink-0">
+          <GoLiveSidebar
+            onGoLive={() => navigate('/creator/go-live')}
+            onSchedule={() => setShowSchedule(true)}
+            scheduled={myScheduled}
+            onDeleteScheduled={handleDeleteScheduled}
+          />
         </div>
       </div>
 

@@ -1,7 +1,102 @@
 import { VideoThumbnail } from '../feed/VideoThumbnail';
 import { ImageWatermark } from '../shared/ImageWatermark';
 import { ImageGrid } from './ImageGrid';
+import { PostMenu } from './PostMenu';
 import type { PostMedia, PostAuthor, CreatorPost } from './PostCard';
+
+const IMG = '/icons/dashboard';
+
+export function PostCardHeader({
+  post,
+  menuOpen,
+  onMenuToggle,
+  onMenuClose,
+  onAction,
+}: {
+  post: CreatorPost;
+  menuOpen: boolean;
+  onMenuToggle: () => void;
+  onMenuClose: () => void;
+  onAction: (action: string) => void;
+}) {
+  const { author, isPinned, createdAt } = post;
+  if (!author) return null;
+  return (
+    <div className="mb-[10px] flex items-start justify-between md:mb-[14px]">
+      <div className="flex items-center gap-[10px]">
+        <div className="size-[36px] overflow-hidden rounded-full bg-primary/30 md:size-[42px]">
+          <AuthorAvatar author={author} />
+        </div>
+        <div>
+          <div className="flex items-center gap-[4px]">
+            <span className="text-[14px] font-medium text-foreground md:text-[16px]">
+              {author.displayName}
+            </span>
+            {author.isVerified && (
+              <img src={`${IMG}/verified.svg`} alt="" className="size-[14px] md:size-[16px]" />
+            )}
+          </div>
+          <span className="text-[11px] text-muted-foreground md:text-[13px]">
+            @{author.username}
+          </span>
+        </div>
+      </div>
+      <div className="relative flex items-center gap-[8px]">
+        <PinIndicator isPinned={isPinned} />
+        <span className="text-[11px] text-muted-foreground md:text-[13px]">
+          {timeAgo(createdAt)}
+        </span>
+        <button
+          type="button"
+          onClick={onMenuToggle}
+          className="flex size-[26px] items-center justify-center rounded-full hover:bg-muted"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="5" r="2" />
+            <circle cx="12" cy="12" r="2" />
+            <circle cx="12" cy="19" r="2" />
+          </svg>
+        </button>
+        <PostMenu open={menuOpen} onClose={onMenuClose} onAction={onAction} isPinned={isPinned} />
+      </div>
+    </div>
+  );
+}
+
+const VIS_LABELS: Record<string, string> = {
+  PUBLIC: 'Public',
+  SUBSCRIBERS: 'Followers',
+  TIER_SPECIFIC: 'Subscribers',
+};
+
+function visLabel(post: CreatorPost): string {
+  if (post.ppvPrice && post.ppvPrice > 0) return 'Pay Per View';
+  return VIS_LABELS[post.visibility ?? 'PUBLIC'] ?? 'Public';
+}
+
+export function PostOwnerBadges({ post }: { post: CreatorPost }) {
+  const isPpv = !!(post.ppvPrice && post.ppvPrice > 0);
+  return (
+    <div className="mb-[10px] flex flex-wrap items-center gap-[8px] md:mb-[12px]">
+      <span className="rounded-full border border-border px-[10px] py-[3px] text-[11px] text-muted-foreground md:text-[12px]">
+        {visLabel(post)}
+      </span>
+      {isPpv && (
+        <>
+          <span className="rounded-full bg-muted px-[10px] py-[3px] text-[11px] text-muted-foreground md:text-[12px]">
+            ${post.ppvPrice!.toFixed(2)} / unlock
+          </span>
+          <span className="rounded-full bg-muted px-[10px] py-[3px] text-[11px] text-muted-foreground md:text-[12px]">
+            {post.ppvSoldCount ?? 0} sold
+          </span>
+          <span className="rounded-full bg-muted px-[10px] py-[3px] text-[11px] text-muted-foreground md:text-[12px]">
+            ${(post.ppvRevenue ?? 0).toFixed(2)} earned
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
 
 export function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();

@@ -7,8 +7,9 @@ export function formatCount(n: number): string {
 export function CoverIcon({ d, onClick }: { d: string; onClick: () => void }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className="flex size-[32px] items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors"
+      className="flex size-[32px] items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
     >
       <svg
         width="16"
