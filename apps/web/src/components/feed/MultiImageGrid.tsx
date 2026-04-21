@@ -17,48 +17,68 @@ export function MultiImageGrid({
   onClickImage: (idx: number) => void;
   username?: string;
 }) {
-  const extraCount = images.length > 2 ? images.length - 2 : 0;
+  const total = images.length;
 
-  return (
-    <div className="flex w-full gap-[11px] md:gap-[20px]">
+  // Single image — full width, taller
+  if (total === 1) {
+    return (
       <div
-        className="relative h-[160px] w-[60%] shrink-0 cursor-pointer overflow-hidden rounded-[22px] md:h-[356px] md:w-[518px]"
+        className="relative w-full cursor-pointer overflow-hidden rounded-[16px] aspect-[16/9]"
         onClick={() => onClickImage(0)}
       >
         <img src={images[0]?.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
         {username && <ImageWatermark username={username} />}
       </div>
-      <div className="flex flex-1 flex-col gap-[10px] md:gap-[20px]">
-        <div
-          className="relative h-[75px] cursor-pointer overflow-hidden rounded-[22px] md:h-[168px]"
-          onClick={() => onClickImage(1)}
-        >
-          <img
-            src={images[1]?.url}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        </div>
-        {extraCount > 0 && (
+    );
+  }
+
+  // Two images — side by side
+  if (total === 2) {
+    return (
+      <div className="grid grid-cols-2 gap-[8px]">
+        {images.map((img, i) => (
           <div
-            className="relative h-[75px] cursor-pointer overflow-hidden rounded-[22px] md:h-[168px]"
-            onClick={() => onClickImage(2)}
+            key={img.id}
+            className="relative aspect-square cursor-pointer overflow-hidden rounded-[16px]"
+            onClick={() => onClickImage(i)}
+          >
+            <img src={img.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            {i === 0 && username && <ImageWatermark username={username} />}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // 3+ images — 3-column grid, max 6 shown, overflow badge on last
+  const maxVisible = 6;
+  const visible = images.slice(0, maxVisible);
+  const overflow = total > maxVisible ? total - maxVisible : 0;
+
+  return (
+    <div className="grid grid-cols-3 gap-[8px]">
+      {visible.map((img, i) => {
+        const isLast = i === visible.length - 1 && overflow > 0;
+        return (
+          <div
+            key={img.id}
+            className="relative aspect-square cursor-pointer overflow-hidden rounded-[16px]"
+            onClick={() => onClickImage(i)}
           >
             <img
-              src={images[2]?.url}
+              src={img.url}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover blur-sm"
+              className={`absolute inset-0 h-full w-full object-cover${isLast ? ' blur-sm' : ''}`}
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <p className="text-center text-[12px] font-normal text-foreground md:text-[20px]">
-                +{String(extraCount).padStart(2, '0')}
-                <br />
-                More
-              </p>
-            </div>
+            {i === 0 && username && <ImageWatermark username={username} />}
+            {isLast && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                <p className="text-[18px] font-semibold text-white">+{overflow}</p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        );
+      })}
     </div>
   );
 }
