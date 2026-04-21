@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
+import { InlineSupportChat } from '../components/help/InlineSupportChat';
 import { ReportForm } from '../components/help/ReportForm';
 
 interface FaqItem {
@@ -38,7 +39,7 @@ export default function HelpSupport() {
     api
       .get('/support/faqs')
       .then(({ data: r }) => {
-        if (r.success) setFaqs(r.data);
+        if (r.success) setFaqs(r.data as FaqItem[]);
       })
       .catch(() => {})
       .finally(() => setLoadingFaqs(false));
@@ -53,7 +54,7 @@ export default function HelpSupport() {
       <p className="text-[20px] text-foreground">Help &amp; Support</p>
 
       <div className="flex flex-col rounded-[22px] bg-card px-[20px] py-[20px]">
-        {/* ── FAQ's Section ── */}
+        {/* FAQs */}
         <div className="flex flex-col gap-[16px]">
           <p className="text-[16px] text-foreground">FAQ&apos;s</p>
 
@@ -86,11 +87,27 @@ export default function HelpSupport() {
           )}
         </div>
 
-        {/* Divider */}
         <div className="bg-muted h-px w-full my-[20px]" />
 
-        {/* ── Report a Problem Section ── */}
-        <ReportForm />
+        {/* Inline AI Support Chat */}
+        <div className="flex flex-col gap-[12px]">
+          <p className="text-[16px] text-foreground">Support Assistant</p>
+          <p className="text-[12px] text-muted-foreground -mt-[4px]">
+            Chat with our AI assistant — it can answer most questions instantly.
+          </p>
+          <InlineSupportChat />
+        </div>
+
+        <div className="bg-muted h-px w-full my-[20px]" />
+
+        {/* Email fallback */}
+        <div className="flex flex-col gap-[4px]">
+          <p className="text-[16px] text-foreground">Still need help?</p>
+          <p className="text-[12px] text-muted-foreground mb-[12px]">
+            Couldn&apos;t find the answer above? Send us a message and we&apos;ll get back to you.
+          </p>
+          <ReportForm />
+        </div>
       </div>
     </div>
   );

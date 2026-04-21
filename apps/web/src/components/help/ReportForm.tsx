@@ -73,7 +73,7 @@ export function ReportForm() {
 
   return (
     <div className="flex flex-col gap-[16px]">
-      <p className="text-[16px] text-foreground">Report a Problem</p>
+      <p className="text-[16px] text-foreground">Contact Us</p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-[16px]">
         {/* Issue Title */}
