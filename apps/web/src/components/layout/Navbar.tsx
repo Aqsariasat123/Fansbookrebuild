@@ -6,6 +6,8 @@ import { NotificationDropdown } from './NotificationDropdown';
 import { MessagesDropdown } from './MessagesDropdown';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { useMessageStore } from '../../stores/messageStore';
+import { useAuthStore } from '../../stores/authStore';
+import { useSidebarBadges } from '../../hooks/useSidebarBadges';
 
 function BellIcon({ className }: { className?: string }) {
   return (
@@ -40,7 +42,7 @@ function NotifBadge() {
   const count = useNotificationStore((s) => s.unreadCount);
   if (count <= 0) return null;
   return (
-    <span className="absolute -top-[2px] -right-[2px] flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[10px] font-bold px-[4px]">
+    <span className="absolute -right-[2px] -top-[2px] flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-[4px] text-[10px] font-bold text-white">
       {count > 99 ? '99+' : count}
     </span>
   );
@@ -50,7 +52,7 @@ function MsgBadge() {
   const count = useMessageStore((s) => s.unreadCount);
   if (count <= 0) return null;
   return (
-    <span className="absolute -top-[2px] -right-[2px] flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[10px] font-bold px-[4px]">
+    <span className="absolute -right-[2px] -top-[2px] flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-[4px] text-[10px] font-bold text-white">
       {count > 99 ? '99+' : count}
     </span>
   );
@@ -59,7 +61,6 @@ function MsgBadge() {
 function BellButton() {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
-
   return (
     <div className="relative">
       <button
@@ -78,7 +79,6 @@ function BellButton() {
 function MsgButton() {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
-
   return (
     <div className="relative">
       <button
@@ -97,6 +97,22 @@ function MsgButton() {
   );
 }
 
+function WalletButton() {
+  const user = useAuthStore((s) => s.user);
+  const { wallet } = useSidebarBadges();
+  const walletPath = user?.role === 'CREATOR' ? '/creator/wallet' : '/wallet';
+  const display = wallet >= 1000 ? `${(wallet / 1000).toFixed(1)}k` : String(wallet);
+  return (
+    <Link
+      to={walletPath}
+      className="flex items-center gap-[6px] rounded-full bg-muted px-[14px] py-[8px] text-[13px] font-semibold text-foreground hover:bg-muted-foreground/20 transition-colors"
+    >
+      <span className="text-[16px]">🪙</span>
+      <span>{display}</span>
+    </Link>
+  );
+}
+
 export function Navbar({ onMenuToggle }: NavbarProps) {
   return (
     <header className="sticky top-0 z-50 bg-muted">
@@ -106,6 +122,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
           <img src="/icons/dashboard/menu.svg" alt="" className="size-[30px]" />
         </button>
         <div className="flex items-center gap-[6px]">
+          <WalletButton />
           <BellButton />
           <MsgButton />
           <NavbarUserMenu />
@@ -118,11 +135,12 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
           <Link to="/feed" className="shrink-0">
             <img src="/images/landing/logo.webp" alt="Inscrio" className="h-[44px] w-auto" />
           </Link>
-          <div className="flex items-center gap-[60px]">
+          <div className="flex items-center gap-[20px]">
+            <NavbarSearch />
             <div className="flex items-center gap-[6px]">
-              <NavbarSearch />
               <BellButton />
               <MsgButton />
+              <WalletButton />
             </div>
             <NavbarUserMenu />
           </div>
