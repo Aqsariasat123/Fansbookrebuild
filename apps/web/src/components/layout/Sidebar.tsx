@@ -1,7 +1,9 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/authStore';
+import { useMessageStore } from '../../stores/messageStore';
 import { logoutApi } from '../../lib/auth';
+import { useSidebarBadges } from '../../hooks/useSidebarBadges';
 import { fanNavItems, creatorNavItems, fallbackLabels, REVERSE_LANG } from './navItems';
 
 function VerifyBadge({ status }: { status: string }) {
@@ -25,12 +27,33 @@ function VerifyBadge({ status }: { status: string }) {
   );
 }
 
+function NavPill({ value }: { value: number | string }) {
+  if (!value || value === 0) return null;
+  return (
+    <span className="ml-auto min-w-[22px] rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[6px] py-[2px] text-center text-[10px] font-bold text-white">
+      {typeof value === 'number' && value > 999 ? '999+' : value}
+    </span>
+  );
+}
+
+function WalletPill({ balance }: { balance: number }) {
+  if (!balance) return null;
+  const display = balance >= 1000 ? `${(balance / 1000).toFixed(1)}k` : String(balance);
+  return (
+    <span className="ml-auto rounded-full bg-yellow-400/20 px-[7px] py-[2px] text-[10px] font-bold text-yellow-400">
+      🪙 {display}
+    </span>
+  );
+}
+
 export function Sidebar() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const currentLangName = REVERSE_LANG[i18n.language] || 'English';
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
+  const unreadMessages = useMessageStore((s) => s.unreadCount);
+  const badges = useSidebarBadges();
   const navItems = user?.role === 'CREATOR' ? creatorNavItems : fanNavItems;
 
   function label(key: string) {
@@ -48,9 +71,18 @@ export function Sidebar() {
     navigate('/login');
   }
 
+  function getPill(to: string) {
+    if (to === '/messages') return <NavPill value={unreadMessages} />;
+    if (to === '/wallet' || to === '/creator/wallet') return <WalletPill balance={badges.wallet} />;
+    if (to === '/creator/sales') return <NavPill value={badges.sales} />;
+    if (to === '/creator/referrals') return <NavPill value={badges.referrals} />;
+    if (to === '/creator/subscriptions') return <NavPill value={badges.subscriptions} />;
+    return null;
+  }
+
   return (
     <aside className="hidden shrink-0 lg:block">
-      <nav className="sticky top-[122px] max-h-[calc(100vh-140px)] overflow-y-auto rounded-[22px] bg-card p-[32px] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
+      <nav className="sidebar-nav sticky top-[110px] max-h-[calc(100vh-130px)] overflow-y-auto rounded-[22px] bg-card p-[32px]">
         <div className="flex flex-col gap-[55px]">
           <div className="flex flex-col gap-[32px]">
             {navItems.map(({ to, icon, labelKey }) => (
@@ -65,8 +97,10 @@ export function Sidebar() {
               >
                 <img src={icon} alt="" className="h-[20px] w-[20px]" style={undefined} />
                 <span className="flex-1">{label(labelKey)}</span>
-                {to === '/verify-identity' && user?.verificationStatus && (
+                {to === '/verify-identity' && user?.verificationStatus ? (
                   <VerifyBadge status={user.verificationStatus} />
+                ) : (
+                  getPill(to)
                 )}
               </NavLink>
             ))}

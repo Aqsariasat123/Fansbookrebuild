@@ -60,6 +60,7 @@ import verificationRouter, { verificationWebhookHandler } from './routes/verific
 import purchasesRouter from './routes/purchases.js';
 import salesRouter from './routes/sales.js';
 import creatorClipsRouter from './routes/creator-clips.js';
+import sidebarBadgesRouter from './routes/sidebar-badges.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -172,6 +173,7 @@ app.use('/api/marketplace', marketplaceRouter);
 app.use('/api/marketplace-reviews', marketplaceReviewsRouter);
 app.use('/api/purchases', purchasesRouter);
 app.use('/api/sales', salesRouter);
+app.use('/api/sidebar-badges', sidebarBadgesRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/badges', badgesRouter);
 app.use('/api/uploads', uploadsRouter);
