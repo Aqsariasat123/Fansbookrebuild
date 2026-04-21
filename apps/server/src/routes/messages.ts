@@ -8,6 +8,7 @@ import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { emitToUser } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
+import { sendAutoReplyIfOffline } from '../services/botService.js';
 import { sendMessageSchema } from '@fansbook/shared';
 import messagesPaidRouter, { checkPaidMessage } from './messages-paid.js';
 
@@ -119,6 +120,9 @@ router.post(
         req,
       );
       res.status(201).json({ success: true, data: message });
+
+      // Auto-reply: best-effort, fires after response
+      void sendAutoReplyIfOffline(otherId, userId, conversationId, emitToUser).catch(() => {});
     } catch (err) {
       next(err);
     }
