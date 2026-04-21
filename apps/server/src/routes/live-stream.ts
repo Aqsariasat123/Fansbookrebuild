@@ -43,6 +43,14 @@ router.post('/:id/produce', authenticate, requireRole('CREATOR'), async (req, re
     const producer = await transport.produce({ kind, rtpParameters });
     if (!sessionProducers.has(id)) sessionProducers.set(id, []);
     sessionProducers.get(id)!.push(producer);
+    // Notify viewers already in the room so they can consume immediately (race-condition fix)
+    try {
+      getIO()
+        .to(`live:${id}`)
+        .emit('live:new-producer', { sessionId: id, producerId: producer.id, kind });
+    } catch {
+      /* socket may not be available */
+    }
     res.json({ success: true, data: { producerId: producer.id } });
   } catch (err) {
     next(err);

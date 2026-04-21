@@ -9,6 +9,7 @@ import { createWebRtcTransport, getTransportOptions } from '../config/mediasoup.
 import type { Producer, Consumer, WebRtcTransport } from 'mediasoup/types';
 import { logger } from '../utils/logger.js';
 import { getIO } from '../config/socket.js';
+import { createNotification } from '../utils/notify.js';
 import liveStreamRouter from './live-stream.js';
 import liveExtrasRouter from './live-extras.js';
 import liveScheduleRouter from './live-schedule.js';
@@ -132,6 +133,40 @@ router.post('/start', authenticate, requireRole('CREATOR'), async (req, res, nex
     } catch {
       /* Socket.IO not available */
     }
+
+    // Notify followers + active subscribers in background (fire-and-forget)
+    void (async () => {
+      try {
+        const [followers, subs, creator] = await Promise.all([
+          prisma.follow.findMany({ where: { followingId: userId }, select: { followerId: true } }),
+          prisma.subscription.findMany({
+            where: { creatorId: userId, status: 'ACTIVE' },
+            select: { subscriberId: true },
+          }),
+          prisma.user.findUnique({ where: { id: userId }, select: { displayName: true } }),
+        ]);
+        const toNotify = new Set([
+          ...followers.map((f) => f.followerId),
+          ...subs.map((s) => s.subscriberId),
+        ]);
+        const message = `${creator?.displayName ?? 'A creator'} is live now!`;
+        await Promise.allSettled(
+          [...toNotify].map((toUserId) =>
+            createNotification({
+              userId: toUserId,
+              type: 'LIVE',
+              actorId: userId,
+              entityId: session.id,
+              entityType: 'LIVE_SESSION',
+              message,
+            }),
+          ),
+        );
+      } catch (err) {
+        logger.error({ err }, 'Failed to send live notifications');
+      }
+    })();
+
     res.json({
       success: true,
       data: { sessionId: session.id, transportOptions: getTransportOptions(transport) },

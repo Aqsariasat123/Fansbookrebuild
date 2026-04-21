@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api';
 import { attachHls } from '../pages/LiveWatchParts';
 import { useLiveStream } from './useLiveStream';
+import { getSocket } from '../lib/socket';
 
 export function useLiveWatchStream(sessionId: string | undefined) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -46,6 +47,20 @@ export function useLiveWatchStream(sessionId: string | undefined) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
+
+  // Listen for new producers added after we joined (race-condition fix)
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket || !sessionId) return;
+    const onNewProducer = async (data: { sessionId: string; producerId: string }) => {
+      if (data.sessionId !== sessionId) return;
+      await consumeTrack(sessionId, data.producerId, videoRef.current);
+    };
+    socket.on('live:new-producer', onNewProducer);
+    return () => {
+      socket.off('live:new-producer', onNewProducer);
+    };
+  }, [sessionId, consumeTrack]);
 
   return { videoRef, loading, isHls, error, sendChat, leaveLive };
 }

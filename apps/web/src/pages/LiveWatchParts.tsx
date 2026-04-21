@@ -59,8 +59,8 @@ export function VideoPanel({
 }) {
   const fmt = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
   return (
-    <div className="overflow-hidden rounded-[16px] border border-[#e91e8c]">
-      <div className="flex items-center justify-between bg-[#e91e8c] px-[20px] py-[10px]">
+    <div className="overflow-hidden rounded-[16px] border border-[#a61651]/40">
+      <div className="flex items-center justify-between bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[20px] py-[10px]">
         <div className="flex items-center gap-[8px]">
           <p className="text-[16px] font-semibold text-white">Live Stream</p>
           {isHls && (
@@ -74,10 +74,10 @@ export function VideoPanel({
       <div className="relative bg-[#0a0c0e]">
         {loading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e91e8c] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
           </div>
         )}
-        <video ref={videoRef} autoPlay playsInline className="aspect-video w-full object-cover" />
+        <video ref={videoRef} autoPlay playsInline className="aspect-video w-full object-contain" />
         {!isLive && !loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/80">
             <p className="text-[16px] text-white">Stream has ended</p>
