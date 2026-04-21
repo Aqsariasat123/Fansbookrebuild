@@ -5,6 +5,8 @@ import { MediaViewer } from './MediaViewer';
 import { MultiImageGrid } from './MultiImageGrid';
 import { PPVOverlay } from './PPVOverlay';
 import { ImageWatermark } from '../shared/ImageWatermark';
+import { FeedPostMenu } from './FeedPostMenu';
+import { useAuthStore } from '../../stores/authStore';
 
 const IMG = '/icons/dashboard';
 
@@ -46,7 +48,15 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-export function PostHeader({ post }: { post: FeedPost }) {
+export function PostHeader({
+  post,
+  isOwner = false,
+  onDelete,
+}: {
+  post: FeedPost;
+  isOwner?: boolean;
+  onDelete?: () => void;
+}) {
   return (
     <div className="flex w-full items-start justify-between gap-[10px] md:gap-[25px]">
       <div className="flex flex-1 flex-col gap-[6px] md:gap-[14px]">
@@ -63,20 +73,22 @@ export function PostHeader({ post }: { post: FeedPost }) {
               </div>
             )}
           </div>
-          <div className="flex items-center gap-[2px]">
-            <div className="whitespace-pre-wrap text-[0px] font-normal text-foreground">
-              <p className="mb-0 text-[12px] md:text-[16px]">{post.author.displayName}</p>
-              <p className="text-[8px] text-muted-foreground md:text-[12px]">
-                @{post.author.username}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-[3px]">
+              <p className="text-[12px] font-normal text-foreground md:text-[16px]">
+                {post.author.displayName}
               </p>
+              {post.author.isVerified && (
+                <img
+                  src={`${IMG}/verified.svg`}
+                  alt="Verified"
+                  className="size-[12px] md:size-[16px]"
+                />
+              )}
             </div>
-            {post.author.isVerified && (
-              <img
-                src={`${IMG}/verified.svg`}
-                alt="Verified"
-                className="size-[12px] md:size-[16px]"
-              />
-            )}
+            <p className="text-[8px] text-muted-foreground md:text-[12px]">
+              @{post.author.username}
+            </p>
           </div>
         </Link>
         <p className="whitespace-pre-wrap text-[10px] font-normal leading-normal text-foreground md:text-[16px]">
@@ -87,15 +99,23 @@ export function PostHeader({ post }: { post: FeedPost }) {
         <span className="text-[8px] font-normal text-muted-foreground md:text-[16px]">
           {timeAgo(post.createdAt)}
         </span>
-        <div className="flex size-[11px] items-center justify-center md:size-[24px]">
-          <img src={`${IMG}/pending.svg`} alt="" className="size-full rotate-90" />
-        </div>
+        <FeedPostMenu postId={post.id} isOwner={isOwner} onDelete={onDelete} />
       </div>
     </div>
   );
 }
 
-export function ImagePost({ post, onRefresh }: { post: FeedPost; onRefresh?: () => void }) {
+export function ImagePost({
+  post,
+  onRefresh,
+  onDelete,
+}: {
+  post: FeedPost;
+  onRefresh?: () => void;
+  onDelete?: (id: string) => void;
+}) {
+  const userId = useAuthStore((s) => s.user?.id);
+  const isOwner = userId === post.author.id;
   const images = post.media.filter((m) => m.type === 'IMAGE');
   const [viewerIdx, setViewerIdx] = useState<number | null>(null);
   const isPpv = !!post.ppvPrice && !post.isPpvUnlocked;
@@ -103,7 +123,11 @@ export function ImagePost({ post, onRefresh }: { post: FeedPost; onRefresh?: () 
   return (
     <div className="rounded-[11px] bg-card px-[9px] py-[6px] md:rounded-[22px] md:px-[20px] md:py-[13px]">
       <div className="flex w-full flex-col gap-[11px] md:gap-[25px]">
-        <PostHeader post={post} />
+        <PostHeader
+          post={post}
+          isOwner={isOwner}
+          onDelete={onDelete ? () => onDelete(post.id) : undefined}
+        />
         <div className="flex w-full flex-col gap-[11px] md:gap-[20px]">
           {isPpv ? (
             <PPVOverlay
@@ -143,6 +167,7 @@ export function ImagePost({ post, onRefresh }: { post: FeedPost; onRefresh?: () 
             shareCount={post.shareCount}
             isLiked={post.isLiked ?? false}
             authorName={post.author.displayName}
+            isOwner={isOwner}
           />
         </div>
       </div>

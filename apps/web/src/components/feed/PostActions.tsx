@@ -27,6 +27,7 @@ export function PostActions({
   const [liked, setLiked] = useState(isLiked);
   const [likes, setLikes] = useState(likeCount);
   const [comments, setComments] = useState(commentCount);
+  const [shares, setShares] = useState(shareCount);
   const [showComments, setShowComments] = useState(false);
   const [showTip, setShowTip] = useState(false);
 
@@ -50,25 +51,23 @@ export function PostActions({
 
   const handleShare = async () => {
     const url = `${window.location.origin}/post/${postId}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'Check this post', url });
-      } catch {
-        /* user cancelled */
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(url);
-      } catch {
-        const ta = document.createElement('textarea');
-        ta.value = url;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-      }
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    setShares((s) => s + 1);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    try {
+      await api.post(`/posts/${postId}/share`);
+    } catch {
+      /* silent */
     }
   };
 
@@ -93,9 +92,7 @@ export function PostActions({
                   : undefined
               }
             />
-            <span
-              className={`text-[10px] font-normal md:text-[16px] ${liked ? 'text-red-500' : 'text-foreground'}`}
-            >
+            <span className="text-[10px] font-normal text-foreground md:text-[16px]">
               {likes} Likes
             </span>
           </button>
@@ -112,7 +109,7 @@ export function PostActions({
           >
             <img src={`${IMG}/share.svg`} alt="" className="size-[12px] md:size-[20px]" />
             <span className="text-[10px] font-normal md:text-[16px]">
-              {copied ? 'Copied!' : `${shareCount} Share`}
+              {copied ? 'Copied!' : `${shares} Shares`}
             </span>
           </button>
         </div>

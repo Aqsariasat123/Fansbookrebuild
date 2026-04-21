@@ -6,6 +6,7 @@ import { PostActions } from './PostActions';
 import { PostHeader } from './FeedPosts';
 import type { FeedPost } from './FeedPosts';
 import { ImageWatermark } from '../shared/ImageWatermark';
+import { useAuthStore } from '../../stores/authStore';
 
 interface Media {
   id: string;
@@ -75,14 +76,28 @@ function VideoContent({
   ) : null;
 }
 
-export function VideoPost({ post, onRefresh }: { post: FeedPost; onRefresh?: () => void }) {
+export function VideoPost({
+  post,
+  onRefresh,
+  onDelete,
+}: {
+  post: FeedPost;
+  onRefresh?: () => void;
+  onDelete?: (id: string) => void;
+}) {
+  const userId = useAuthStore((s) => s.user?.id);
+  const isOwner = userId === post.author.id;
   const video = post.media.find((m) => m.type === 'VIDEO');
   const [showViewer, setShowViewer] = useState(false);
 
   return (
     <div className="relative rounded-[11px] bg-card md:rounded-[22px]">
       <div className="flex items-start justify-between gap-[10px] px-[9px] pt-[6px] md:gap-[25px] md:px-[20px] md:pt-[13px]">
-        <PostHeader post={post} />
+        <PostHeader
+          post={post}
+          isOwner={isOwner}
+          onDelete={onDelete ? () => onDelete(post.id) : undefined}
+        />
       </div>
       <div className="mx-[9px] mt-[11px] md:mx-[20px] md:mt-[25px]">
         <VideoContent
@@ -100,6 +115,7 @@ export function VideoPost({ post, onRefresh }: { post: FeedPost; onRefresh?: () 
           shareCount={post.shareCount}
           isLiked={post.isLiked ?? false}
           authorName={post.author.displayName}
+          isOwner={isOwner}
         />
       </div>
       {showViewer && video && (

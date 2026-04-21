@@ -49,7 +49,7 @@ describe('PostActions component', () => {
     renderWithProviders(
       <PostActions postId="p1" likeCount={10} commentCount={5} shareCount={3} isLiked={false} />,
     );
-    expect(screen.getByText('3 Share')).toBeInTheDocument();
+    expect(screen.getByText('3 Shares')).toBeInTheDocument();
   });
 
   it('should render tip button', () => {

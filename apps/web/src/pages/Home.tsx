@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { ImagePost, VideoPost } from '../components/feed/FeedPosts';
@@ -8,6 +7,7 @@ import { StoriesRow } from '../components/feed/StoriesRow';
 import { EmptyFeedState } from '../components/feed/EmptyFeedState';
 import { AnnouncementBanner } from '../components/feed/AnnouncementBanner';
 import { VerificationBanner } from '../components/shared/VerificationBanner';
+import { PopularModels } from '../components/feed/PopularModels';
 import type { StoryGroup } from '../components/feed/StoryViewer';
 import type { FeedPost } from '../components/feed/FeedPosts';
 
@@ -16,7 +16,6 @@ interface Author {
   username: string;
   displayName: string;
   avatar: string | null;
-  isVerified?: boolean;
 }
 
 function parseFeedResponse(res: { data: { data: { posts?: FeedPost[]; nextCursor?: string } } }) {
@@ -166,11 +165,19 @@ export default function Home() {
       )}
       {posts.length === 0 && <EmptyFeedState suggestedCreators={suggested} />}
       {imagePosts.map((post) => (
-        <ImagePost key={post.id} post={post} />
+        <ImagePost
+          key={post.id}
+          post={post}
+          onDelete={(id) => setPosts((prev) => prev.filter((p) => p.id !== id))}
+        />
       ))}
       {models.length > 0 && <PopularModels models={models} />}
       {videoPosts.map((post) => (
-        <VideoPost key={post.id} post={post} />
+        <VideoPost
+          key={post.id}
+          post={post}
+          onDelete={(id) => setPosts((prev) => prev.filter((p) => p.id !== id))}
+        />
       ))}
       <div ref={sentinelRef} className="h-1" />
       {loadingMore && (
@@ -178,39 +185,6 @@ export default function Home() {
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
         </div>
       )}
-    </div>
-  );
-}
-
-function PopularModels({ models }: { models: Author[] }) {
-  return (
-    <div className="flex flex-col gap-[8px] md:gap-[17px]">
-      <div className="flex items-center justify-between text-[12px] font-medium text-foreground md:text-[16px]">
-        <p>Most Popular Models</p>
-        <Link to="/explore" className="cursor-pointer underline decoration-solid">
-          View all
-        </Link>
-      </div>
-      <div className="flex items-start gap-[21px] overflow-x-auto scrollbar-hide md:gap-[42px]">
-        {models.map((m) => (
-          <Link
-            key={m.id}
-            to={`/u/${m.username}`}
-            className="flex w-[35px] shrink-0 flex-col items-center gap-[4px] hover:opacity-80 md:w-[89px] md:gap-[10px]"
-          >
-            <div className="relative h-[35px] w-full overflow-hidden rounded-full md:h-[89px]">
-              <img
-                src={m.avatar || ''}
-                alt=""
-                className="absolute inset-0 size-full object-cover"
-              />
-            </div>
-            <p className="w-full whitespace-pre-wrap text-center text-[10px] font-medium text-foreground md:text-[16px]">
-              {m.displayName}
-            </p>
-          </Link>
-        ))}
-      </div>
     </div>
   );
 }
