@@ -68,6 +68,36 @@ function AllClipsTable({
   );
 }
 
+function AllClipsTab() {
+  const qc = useQueryClient();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const { data: allData } = useQuery({
+    queryKey: ['admin-clips-all'],
+    queryFn: () => api.get('/admin/clips/all').then((r) => r.data.data),
+  });
+  const deleteMut = useMutation({
+    mutationFn: (clipId: string) => api.delete(`/admin/clips/${clipId}`),
+    onSuccess: () => {
+      setDeleteError(null);
+      qc.invalidateQueries({ queryKey: ['admin-clips-all'] });
+      qc.invalidateQueries({ queryKey: ['admin-clips-stats'] });
+      qc.invalidateQueries({ queryKey: ['admin-clips-creators'] });
+    },
+    onError: () => setDeleteError('Failed to delete clip. Please try again.'),
+  });
+  const clips: AdminClip[] = allData?.clips ?? [];
+  return (
+    <>
+      {deleteError && <p className="text-[12px] text-red-400">{deleteError}</p>}
+      <AllClipsTable
+        clips={clips}
+        onDelete={(id) => deleteMut.mutate(id)}
+        deleting={deleteMut.isPending}
+      />
+    </>
+  );
+}
+
 const TABS: { key: Tab; label: string }[] = [
   { key: 'queue', label: 'Processing Queue' },
   { key: 'creators', label: 'By Creator' },
@@ -76,11 +106,11 @@ const TABS: { key: Tab; label: string }[] = [
 
 export default function AdminAIClips() {
   const [tab, setTab] = useState<Tab>('queue');
-  const qc = useQueryClient();
 
   const { data: stats } = useQuery<ClipStats>({
     queryKey: ['admin-clips-stats'],
     queryFn: () => api.get('/admin/clips/stats').then((r) => r.data.data),
+    refetchInterval: 5000,
   });
 
   const { data: queueData = [] } = useQuery({
@@ -95,22 +125,6 @@ export default function AdminAIClips() {
     queryFn: () => api.get('/admin/clips/creators').then((r) => r.data.data),
     enabled: tab === 'creators',
   });
-
-  const { data: allData } = useQuery({
-    queryKey: ['admin-clips-all'],
-    queryFn: () => api.get('/admin/clips/all').then((r) => r.data.data),
-    enabled: tab === 'all',
-  });
-
-  const deleteMut = useMutation({
-    mutationFn: (clipId: string) => api.delete(`/admin/clips/${clipId}`),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin-clips-all'] });
-      qc.invalidateQueries({ queryKey: ['admin-clips-stats'] });
-    },
-  });
-
-  const clips: AdminClip[] = allData?.clips ?? [];
 
   return (
     <div className="flex flex-col gap-[20px]">
@@ -137,13 +151,7 @@ export default function AdminAIClips() {
 
       {tab === 'queue' && <QueueTable jobs={queueData} />}
       {tab === 'creators' && <CreatorTable rows={creatorsData} />}
-      {tab === 'all' && (
-        <AllClipsTable
-          clips={clips}
-          onDelete={(id) => deleteMut.mutate(id)}
-          deleting={deleteMut.isPending}
-        />
-      )}
+      {tab === 'all' && <AllClipsTab />}
     </div>
   );
 }

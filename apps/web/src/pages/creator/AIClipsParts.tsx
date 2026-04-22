@@ -40,10 +40,10 @@ const STATUS_LABELS: Record<ClipJobStatus, string> = {
 
 async function downloadClip(filePath: string, title: string): Promise<boolean> {
   try {
-    const res = await fetch(filePath);
-    if (!res.ok) return false;
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
+    // Strip /api prefix — axios baseURL already includes it
+    const endpoint = filePath.replace(/^\/api/, '');
+    const res = await api.get(endpoint, { responseType: 'blob' });
+    const url = URL.createObjectURL(res.data as Blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `${title}.mp4`;
@@ -87,17 +87,19 @@ export function ClipCard({ clip }: { clip: AIClip }) {
           <div className="mt-[10px] flex gap-[6px]">
             <button
               onClick={() => setShowPublish(true)}
-              className="flex-1 rounded-[6px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[7px] text-[11px] font-semibold text-white"
+              disabled={deleteMut.isPending}
+              className="flex-1 rounded-[6px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[7px] text-[11px] font-semibold text-white disabled:opacity-50"
             >
               Publish
             </button>
             <button
+              disabled={deleteMut.isPending}
               onClick={async () => {
                 setDownloadErr(false);
                 const ok = await downloadClip(clip.filePath, clip.title);
                 if (!ok) setDownloadErr(true);
               }}
-              className="flex items-center justify-center rounded-[6px] border border-border px-[10px] py-[7px]"
+              className="flex items-center justify-center rounded-[6px] border border-border px-[10px] py-[7px] disabled:opacity-50"
             >
               <svg
                 width="14"
@@ -185,13 +187,21 @@ export function JobHistoryRow({
           </svg>
         </div>
       </button>
-      {isExpanded && job.clips.length > 0 && (
+      {isExpanded && (
         <div className="border-t border-border p-[14px]">
-          <div className="grid grid-cols-2 gap-[10px] md:grid-cols-3">
-            {job.clips.map((c) => (
-              <ClipCard key={c.id} clip={c} />
-            ))}
-          </div>
+          {job.clips.length === 0 ? (
+            <p className="text-[12px] text-muted-foreground">
+              {job.status === 'FAILED'
+                ? 'Processing failed — no clips were generated.'
+                : 'No clips generated.'}
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-[10px] md:grid-cols-3">
+              {job.clips.map((c) => (
+                <ClipCard key={c.id} clip={c} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

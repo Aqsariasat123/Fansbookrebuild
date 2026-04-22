@@ -128,9 +128,7 @@ router.delete('/:clipId', authenticate, async (req, res, next) => {
     const clip = await prisma.aIClip.findUnique({ where: { id: req.params.clipId as string } });
     if (!clip || clip.userId !== userId) throw new AppError(404, 'Clip not found');
 
-    // Delete files
-    const absPath = clip.filePath.replace('/api/creator/clips/file/', '');
-    const full = path.join(CLIPS_DIR, absPath);
+    const full = path.join(CLIPS_DIR, path.basename(clip.filePath));
     if (fs.existsSync(full)) fs.unlinkSync(full);
 
     await prisma.aIClip.delete({ where: { id: clip.id } });

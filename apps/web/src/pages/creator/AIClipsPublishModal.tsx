@@ -33,7 +33,7 @@ export function StatusBar({ status, error }: { status: ClipJobStatus; error: str
         {steps.map((step, i) => (
           <div
             key={step}
-            className={`h-[4px] flex-1 rounded-full transition-colors ${i < s.step ? 'bg-[#01adf1]' : i === s.step - 1 ? 'bg-[#01adf1]/60' : 'bg-muted'}`}
+            className={`h-[4px] flex-1 rounded-full transition-colors ${i < s.step ? 'bg-[#01adf1]' : i === s.step ? 'bg-[#01adf1]/60' : 'bg-muted'}`}
           />
         ))}
       </div>
@@ -136,6 +136,7 @@ export function PublishModal({ clip, onClose }: { clip: AIClip; onClose: () => v
             <input
               type="number"
               min="0.99"
+              max="999"
               step="0.01"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
