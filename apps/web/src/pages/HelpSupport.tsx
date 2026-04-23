@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/api';
 import { InlineSupportChat } from '../components/help/InlineSupportChat';
 import { ReportForm } from '../components/help/ReportForm';
@@ -34,6 +34,8 @@ export default function HelpSupport() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [loadingFaqs, setLoadingFaqs] = useState(true);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const contactRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     api
@@ -101,12 +103,36 @@ export default function HelpSupport() {
         <div className="bg-muted h-px w-full my-[20px]" />
 
         {/* Email fallback */}
-        <div className="flex flex-col gap-[4px]">
-          <p className="text-[16px] text-foreground">Still need help?</p>
-          <p className="text-[12px] text-muted-foreground mb-[12px]">
-            Couldn&apos;t find the answer above? Send us a message and we&apos;ll get back to you.
-          </p>
-          <ReportForm />
+        <div ref={contactRef} className="flex flex-col gap-[4px]">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[16px] text-foreground">Still need help?</p>
+              <p className="text-[12px] text-muted-foreground mt-[2px]">
+                Couldn&apos;t find the answer above? Send us a message and we&apos;ll get back to
+                you.
+              </p>
+            </div>
+            {/* Toggle button — only shown on mobile */}
+            <button
+              onClick={() => {
+                setShowContactForm((v) => !v);
+                if (!showContactForm) {
+                  setTimeout(
+                    () =>
+                      contactRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+                    50,
+                  );
+                }
+              }}
+              className="ml-[12px] shrink-0 md:hidden rounded-[8px] border border-border px-[12px] py-[6px] text-[12px] text-foreground"
+            >
+              {showContactForm ? 'Hide' : 'Contact Us'}
+            </button>
+          </div>
+          {/* Always visible on desktop, toggle on mobile */}
+          <div className={`mt-[12px] ${showContactForm ? 'block' : 'hidden md:block'}`}>
+            <ReportForm />
+          </div>
         </div>
       </div>
     </div>

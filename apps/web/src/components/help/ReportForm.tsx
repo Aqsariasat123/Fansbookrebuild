@@ -78,7 +78,7 @@ export function ReportForm() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-[16px]">
         {/* Issue Title */}
         <div className="flex flex-col gap-[8px]">
-          <label className="text-[18px] text-muted-foreground capitalize">Issue Title</label>
+          <label className="text-[14px] font-medium text-foreground capitalize">Issue Title</label>
           <div className="border border-[rgba(93,93,93,0.34)] rounded-[8px] h-[48px] w-full px-[16px] flex items-center">
             <input
               type="text"
@@ -92,7 +92,7 @@ export function ReportForm() {
 
         {/* Description */}
         <div className="flex flex-col gap-[8px]">
-          <label className="text-[18px] text-muted-foreground capitalize">Description</label>
+          <label className="text-[14px] font-medium text-foreground capitalize">Description</label>
           <div className="border border-[rgba(93,93,93,0.34)] rounded-[8px] h-[129px] w-full px-[16px] py-[12px]">
             <textarea
               placeholder="Enter Description..."

@@ -15,7 +15,7 @@ export function InlineSupportChat() {
   const [ticketId, setTicketId] = useState<string | undefined>();
   const [escalated, setEscalated] = useState(false);
   const [resolved, setResolved] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const greeting = "Hi! I'm the Inscrio support assistant. How can I help you today?";
@@ -39,7 +39,9 @@ export function InlineSupportChat() {
   }, []);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
   }, [messages, loading]);
 
   useEffect(() => {
@@ -105,12 +107,14 @@ export function InlineSupportChat() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-[12px] py-[12px] flex flex-col gap-[10px] bg-card">
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto px-[12px] py-[12px] flex flex-col gap-[10px] bg-card"
+      >
         {messages.map((msg, i) => (
           <MessageBubble key={i} msg={msg} />
         ))}
         {loading && <TypingIndicator />}
-        <div ref={bottomRef} />
       </div>
 
       {escalated && !resolved && <EscalatedBanner />}
