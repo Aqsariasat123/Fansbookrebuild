@@ -61,6 +61,7 @@ import purchasesRouter from './routes/purchases.js';
 import salesRouter from './routes/sales.js';
 import creatorClipsRouter from './routes/creator-clips.js';
 import sidebarBadgesRouter from './routes/sidebar-badges.js';
+import makeMoneyRouter from './routes/make-money.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -185,6 +186,7 @@ app.use('/api/push', pushRouter);
 app.use('/api/payments', paymentGatewayRouter);
 app.use('/api/payments/webhook', paymentWebhooksRouter);
 app.use('/api/verification', verificationRouter);
+app.use('/api/make-money', makeMoneyRouter);
 
 // Error handling
 app.use(errorHandler);

@@ -1,43 +1,109 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from '../../../lib/api';
-import { GeneralTab, SectionTab, HowItWorkTab } from './MakeMoneySettingTabs';
+import { GeneralTab, ItemsTab, type CmsItem } from './MakeMoneySettingTabs';
 
-const TABS = [
-  'GENERAL',
-  'GENERATE INCOME SECTION',
-  'FEATURE SECTION',
-  'HOW IT WORK SECTION',
-] as const;
+interface ItemsState {
+  earn: CmsItem[];
+  why: CmsItem[];
+  how: CmsItem[];
+}
+
+const DEFAULT_EARN: CmsItem[] = [
+  {
+    id: '1',
+    title: 'Subscriptions',
+    desc: 'Charge fans monthly for exclusive content.',
+    iconName: 'subscriptions',
+  },
+  {
+    id: '2',
+    title: 'Tips & Donations',
+    desc: 'Receive instant tips on your posts.',
+    iconName: 'tips',
+  },
+  { id: '3', title: 'Pay-Per-View (PPV)', desc: 'Lock premium photos & videos.', iconName: 'ppv' },
+  {
+    id: '4',
+    title: 'Bookings',
+    desc: 'Offer shout outs, video calls, or private content.',
+    iconName: 'bookings',
+  },
+  {
+    id: '5',
+    title: 'Referrals',
+    desc: 'Invite creators & earn commission.',
+    iconName: 'referrals',
+  },
+  { id: '6', title: 'Live Streaming', desc: 'Go live, earn from coins & gifts.', iconName: 'live' },
+];
+const DEFAULT_WHY: CmsItem[] = [
+  { id: '1', title: 'Secure Payments', iconName: 'secure_payments' },
+  { id: '2', title: 'Global Reach', iconName: 'global_reach' },
+  { id: '3', title: 'Flexible Withdrawals', iconName: 'flexible_withdrawals' },
+  { id: '4', title: 'Security & Privacy', iconName: 'security_privacy' },
+];
+const DEFAULT_HOW: CmsItem[] = [
+  { id: '1', title: 'Create Account', iconName: 'create_account' },
+  { id: '2', title: 'Upload Content', iconName: 'upload_content' },
+  { id: '3', title: 'Set Price', iconName: 'set_price' },
+  { id: '4', title: 'Earn & Withdraw', iconName: 'earn_withdraw' },
+];
+
+const TABS = ['GENERAL', 'EARN IN MULTIPLE WAYS', 'WHY INSCRIO?', 'HOW TO START'] as const;
+type Tab = (typeof TABS)[number];
+
+const inputCls =
+  'w-full rounded-[6px] border border-[#ddd] bg-white px-[12px] py-[10px] font-outfit text-[16px] text-black outline-none';
+const textCls = `${inputCls} min-h-[80px] resize-y`;
 
 export default function MakeMoneySetting() {
-  const [tab, setTab] = useState<string>(TABS[0]);
-  const [form, setForm] = useState<Record<string, string>>({});
+  const [tab, setTab] = useState<Tab>('GENERAL');
+  const [generalForm, setGeneralForm] = useState<Record<string, string>>({});
+  const [items, setItems] = useState<ItemsState>({
+    earn: DEFAULT_EARN,
+    why: DEFAULT_WHY,
+    how: DEFAULT_HOW,
+  });
   const [loading, setLoading] = useState(true);
-  const original = useRef<Record<string, string>>({});
+  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   useEffect(() => {
-    api
-      .get('/admin/settings/home')
-      .then(({ data: r }) => {
-        const d = r.data?.makeMoney || {};
-        setForm(d);
-        original.current = d;
+    Promise.all([
+      api.get('/admin/settings/home').then(({ data: r }) => r.data?.makeMoney ?? {}),
+      api.get('/admin/settings/make-money').then(({ data: r }) => r.data),
+    ])
+      .then(([general, cmsData]) => {
+        setGeneralForm(general as Record<string, string>);
+        if (cmsData) {
+          setItems({
+            earn: (cmsData as ItemsState).earn?.length
+              ? (cmsData as ItemsState).earn
+              : DEFAULT_EARN,
+            why: (cmsData as ItemsState).why?.length ? (cmsData as ItemsState).why : DEFAULT_WHY,
+            how: (cmsData as ItemsState).how?.length ? (cmsData as ItemsState).how : DEFAULT_HOW,
+          });
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  const update = (key: string, val: string) => setForm((p) => ({ ...p, [key]: val }));
-  const handleSave = async () => {
-    await api.put('/admin/settings/home', { makeMoney: form });
-  };
+  const updateGeneral = (key: string, val: string) => setGeneralForm((p) => ({ ...p, [key]: val }));
 
-  const inputCls =
-    'w-full rounded-[6px] border border-[#ddd] bg-white px-[12px] py-[10px] font-outfit text-[16px] text-black outline-none';
-  const textCls = `${inputCls} min-h-[80px] resize-y`;
-  const fileCls =
-    'w-full rounded-[6px] border border-[#ddd] bg-white px-[12px] py-[10px] font-outfit text-[16px] text-[#5d5d5d]';
-  const tabProps = { form, update, inputCls, textCls, fileCls };
+  const handleSave = async () => {
+    setStatus('saving');
+    try {
+      await Promise.all([
+        api.put('/admin/settings/home', { makeMoney: generalForm }),
+        api.put('/admin/settings/make-money', items),
+      ]);
+      setStatus('saved');
+      setTimeout(() => setStatus('idle'), 3000);
+    } catch {
+      setStatus('error');
+      setTimeout(() => setStatus('idle'), 3000);
+    }
+  };
 
   if (loading)
     return (
@@ -52,7 +118,7 @@ export default function MakeMoneySetting() {
         Settings {'>'} Make Money
       </p>
       <div className="rounded-[22px] bg-[#f8f8f8] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-        <div className="flex overflow-x-auto rounded-t-[22px] bg-[#01adf1]">
+        <div className="flex overflow-x-auto rounded-t-[22px] bg-gradient-to-r from-[#01adf1] to-[#a61651]">
           {TABS.map((t) => (
             <button
               key={t}
@@ -64,23 +130,52 @@ export default function MakeMoneySetting() {
           ))}
         </div>
         <div className="p-[32px]">
-          {tab === 'GENERAL' && <GeneralTab {...tabProps} />}
-          {(tab === 'GENERATE INCOME SECTION' || tab === 'FEATURE SECTION') && (
-            <SectionTab {...tabProps} tab={tab} />
+          {tab === 'GENERAL' && (
+            <GeneralTab
+              form={generalForm}
+              update={updateGeneral}
+              inputCls={inputCls}
+              textCls={textCls}
+            />
           )}
-          {tab === 'HOW IT WORK SECTION' && <HowItWorkTab {...tabProps} />}
+          {tab === 'EARN IN MULTIPLE WAYS' && (
+            <ItemsTab
+              items={items.earn}
+              showDesc
+              onChange={(earn) => setItems((p) => ({ ...p, earn }))}
+            />
+          )}
+          {tab === 'WHY INSCRIO?' && (
+            <ItemsTab
+              items={items.why}
+              showDesc={false}
+              onChange={(why) => setItems((p) => ({ ...p, why }))}
+            />
+          )}
+          {tab === 'HOW TO START' && (
+            <ItemsTab
+              items={items.how}
+              showDesc={false}
+              onChange={(how) => setItems((p) => ({ ...p, how }))}
+            />
+          )}
+          {status === 'saved' && (
+            <p className="mt-[12px] text-center font-outfit text-[14px] text-green-600">
+              Saved successfully.
+            </p>
+          )}
+          {status === 'error' && (
+            <p className="mt-[12px] text-center font-outfit text-[14px] text-red-600">
+              Save failed. Please try again.
+            </p>
+          )}
           <div className="mt-[24px] flex justify-center gap-[16px]">
             <button
               onClick={handleSave}
-              className="rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[48px] py-[12px] font-outfit text-[16px] text-white"
+              disabled={status === 'saving'}
+              className="rounded-[80px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[48px] py-[12px] font-outfit text-[16px] text-white disabled:opacity-60"
             >
-              Update
-            </button>
-            <button
-              onClick={() => setForm({ ...original.current })}
-              className="rounded-[80px] border border-[#15191c] px-[48px] py-[12px] font-outfit text-[16px] text-[#15191c]"
-            >
-              Cancel
+              {status === 'saving' ? 'Saving…' : 'Update'}
             </button>
           </div>
         </div>

@@ -102,4 +102,30 @@ router.put('/general', async (req, res, next) => {
   }
 });
 
+// ─── GET /api/admin/settings/make-money ── returns make-money items ─
+router.get('/make-money', async (_req, res, next) => {
+  try {
+    const config = await getOrCreateConfig();
+    const settings = (config.homeSettings as Record<string, unknown>) ?? {};
+    res.json({ success: true, data: settings.makeMoneyItems ?? null });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── PUT /api/admin/settings/make-money ── saves make-money items ───
+router.put('/make-money', async (req, res, next) => {
+  try {
+    const config = await getOrCreateConfig();
+    const existing = (config.homeSettings as Record<string, unknown>) ?? {};
+    await prisma.platformConfig.update({
+      where: { id: SINGLETON_ID },
+      data: { homeSettings: { ...existing, makeMoneyItems: req.body } },
+    });
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

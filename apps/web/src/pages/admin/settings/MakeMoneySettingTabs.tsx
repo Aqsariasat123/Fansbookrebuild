@@ -1,12 +1,35 @@
-interface Props {
+export interface CmsItem {
+  id: string;
+  title: string;
+  desc?: string;
+  iconName: string;
+}
+
+const ICON_NAMES = [
+  'bookings',
+  'create_account',
+  'earn_withdraw',
+  'flexible_withdrawals',
+  'global_reach',
+  'live',
+  'ppv',
+  'referrals',
+  'secure_payments',
+  'security_privacy',
+  'set_price',
+  'subscriptions',
+  'tips',
+  'upload_content',
+] as const;
+
+interface GeneralTabProps {
   form: Record<string, string>;
   update: (key: string, val: string) => void;
   inputCls: string;
   textCls: string;
-  fileCls: string;
 }
 
-export function GeneralTab({ form, update, inputCls, textCls }: Omit<Props, 'fileCls'>) {
+export function GeneralTab({ form, update, inputCls, textCls }: GeneralTabProps) {
   return (
     <div className="flex max-w-[500px] flex-col gap-[16px]">
       <div>
@@ -42,102 +65,93 @@ export function GeneralTab({ form, update, inputCls, textCls }: Omit<Props, 'fil
   );
 }
 
-export function SectionTab({ form, update, inputCls, fileCls, tab }: Props & { tab: string }) {
-  const sections = Array.from({ length: 9 }, (_, i) => i + 1);
-  const isIncome = tab === 'GENERATE INCOME SECTION';
-  return (
-    <div className="flex max-w-[500px] flex-col gap-[16px]">
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">
-          {isIncome ? 'Generate Income Title' : 'Feature Title'}
-        </label>
-        <input
-          value={form[`${tab}_title`] || ''}
-          onChange={(e) => update(`${tab}_title`, e.target.value)}
-          placeholder={isIncome ? 'Enter generate income title' : 'Enter feature title'}
-          className={inputCls}
-        />
-      </div>
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">
-          {isIncome ? 'Generate Income Description' : 'Feature Description'}
-        </label>
-        <textarea
-          value={form[`${tab}_desc`] || ''}
-          onChange={(e) => update(`${tab}_desc`, e.target.value)}
-          placeholder={isIncome ? 'Enter generate income description' : 'Enter feature description'}
-          className={`${inputCls} min-h-[80px] resize-y`}
-        />
-      </div>
-      {sections.map((n) => (
-        <div key={n}>
-          <label className="mb-[4px] block font-outfit text-[14px] text-black">
-            Section {n} Title
-          </label>
-          <input
-            value={form[`${tab}_s${n}_title`] || ''}
-            onChange={(e) => update(`${tab}_s${n}_title`, e.target.value)}
-            placeholder={`Enter section ${n} title`}
-            className={inputCls}
-          />
-          <label className="mb-[4px] mt-[8px] block font-outfit text-[14px] text-black">
-            Section {n} Image (Recommended Size 100x100 Px)
-          </label>
-          <input type="file" className={fileCls} />
-        </div>
-      ))}
-    </div>
-  );
+interface ItemsTabProps {
+  items: CmsItem[];
+  showDesc: boolean;
+  onChange: (items: CmsItem[]) => void;
 }
 
-export function HowItWorkTab({ form, update, inputCls, textCls }: Omit<Props, 'fileCls'>) {
-  const sections = Array.from({ length: 12 }, (_, i) => i + 1);
+export function ItemsTab({ items, showDesc, onChange }: ItemsTabProps) {
+  const move = (index: number, dir: -1 | 1) => {
+    const next = [...items];
+    const swap = index + dir;
+    if (swap < 0 || swap >= next.length) return;
+    [next[index], next[swap]] = [next[swap], next[index]];
+    onChange(next);
+  };
+
+  const update = (index: number, field: keyof CmsItem, value: string) => {
+    const next = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    onChange(next);
+  };
+
+  const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
+
+  const add = () =>
+    onChange([...items, { id: Date.now().toString(), title: '', iconName: 'subscriptions' }]);
+
+  const inputCls =
+    'rounded-[6px] border border-[#ddd] bg-white px-[10px] py-[8px] font-outfit text-[14px] text-black outline-none';
+  const btnCls =
+    'rounded-[6px] border border-[#ddd] px-[8px] py-[6px] font-outfit text-[13px] text-black hover:bg-gray-100';
+
   return (
-    <div className="flex max-w-[500px] flex-col gap-[16px]">
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">
-          How It Works Title
-        </label>
-        <input
-          value={form.howTitle || ''}
-          onChange={(e) => update('howTitle', e.target.value)}
-          placeholder="How It Works"
-          className={inputCls}
-        />
-      </div>
-      <div>
-        <label className="mb-[4px] block font-outfit text-[14px] text-black">
-          How It Works Description
-        </label>
-        <textarea
-          value={form.howDesc || ''}
-          onChange={(e) => update('howDesc', e.target.value)}
-          placeholder="Learn how Inscrio works for creators."
-          className={textCls}
-        />
-      </div>
-      {sections.map((n) => (
-        <div key={n}>
-          <label className="mb-[4px] block font-outfit text-[14px] text-black">
-            Section {n} Title
-          </label>
+    <div className="flex flex-col gap-[12px]">
+      {items.map((item, i) => (
+        <div
+          key={item.id}
+          className="flex flex-wrap items-center gap-[8px] rounded-[8px] border border-[#ddd] bg-white p-[12px]"
+        >
+          <img
+            src={`/icons/make-money/${item.iconName}.svg`}
+            alt=""
+            className="h-[36px] w-[36px] shrink-0"
+          />
           <input
-            value={form[`how_s${n}_title`] || ''}
-            onChange={(e) => update(`how_s${n}_title`, e.target.value)}
-            placeholder={`Enter section ${n} title`}
-            className={inputCls}
+            value={item.title}
+            onChange={(e) => update(i, 'title', e.target.value)}
+            placeholder="Title"
+            className={`${inputCls} min-w-[140px] flex-1`}
           />
-          <label className="mb-[4px] mt-[8px] block font-outfit text-[14px] text-black">
-            Section {n} Description
-          </label>
-          <textarea
-            value={form[`how_s${n}_desc`] || ''}
-            onChange={(e) => update(`how_s${n}_desc`, e.target.value)}
-            placeholder={`Enter section ${n} description`}
-            className={textCls}
-          />
+          {showDesc && (
+            <input
+              value={item.desc ?? ''}
+              onChange={(e) => update(i, 'desc', e.target.value)}
+              placeholder="Description"
+              className={`${inputCls} min-w-[180px] flex-[2]`}
+            />
+          )}
+          <select
+            value={item.iconName}
+            onChange={(e) => update(i, 'iconName', e.target.value)}
+            className={`${inputCls} min-w-[150px]`}
+          >
+            {ICON_NAMES.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+          <button onClick={() => move(i, -1)} disabled={i === 0} className={btnCls}>
+            ↑
+          </button>
+          <button onClick={() => move(i, 1)} disabled={i === items.length - 1} className={btnCls}>
+            ↓
+          </button>
+          <button
+            onClick={() => remove(i)}
+            className={`${btnCls} border-red-300 text-red-600 hover:bg-red-50`}
+          >
+            Delete
+          </button>
         </div>
       ))}
+      <button
+        onClick={add}
+        className="mt-[4px] self-start rounded-[8px] border border-[#01adf1] px-[20px] py-[10px] font-outfit text-[14px] text-[#01adf1] hover:bg-[#01adf1]/10"
+      >
+        + Add Item
+      </button>
     </div>
   );
 }
