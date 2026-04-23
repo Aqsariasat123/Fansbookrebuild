@@ -1,12 +1,16 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { showToast } from '../shared/NotificationToast';
 
 interface ProfileSharePopupProps {
   username: string;
+  pos: { top: number; right: number };
   onClose: () => void;
 }
 
-export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps) {
+export function ProfileSharePopup({ username, pos, onClose }: ProfileSharePopupProps) {
   const popupRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -26,13 +30,17 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
   const profileUrl = `${window.location.origin}/u/${username}`;
 
   const handleShareMessage = () => {
-    window.location.href = `/messages?share=${encodeURIComponent(profileUrl)}`;
+    navigator.clipboard.writeText(profileUrl).catch(() => {});
+    showToast('Profile link copied — paste it in your message');
+    navigate('/messages');
+    onClose();
   };
 
   const handleShareVia = async () => {
     if (navigator.share) {
       try {
         await navigator.share({ title: `@${username} on Inscrio`, url: profileUrl });
+        onClose();
       } catch {
         /* cancelled */
       }
@@ -47,25 +55,29 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
         document.execCommand('copy');
         document.body.removeChild(ta);
       }
+      showToast('Profile link copied!');
+      onClose();
     }
-    onClose();
   };
 
   const handleReferEarn = () => {
-    window.location.href = '/creator/referrals';
+    navigate('/creator/referrals');
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 md:items-center">
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
         ref={popupRef}
-        className="w-full max-w-[226px] rounded-[22px] bg-card px-[25px] pb-[25px] pt-[16px] md:max-w-[280px]"
+        style={{ top: pos.top, right: pos.right }}
+        className="fixed z-50 w-[226px] rounded-[16px] bg-card px-[20px] pb-[20px] pt-[16px] shadow-xl border border-border"
       >
-        {/* Drag handle */}
-        <div className="mx-auto mb-[20px] h-[2px] w-[60px] rounded-full bg-muted" />
-
-        <div className="flex flex-col gap-[28px]">
-          <button onClick={handleShareMessage} className="flex items-center gap-[12px] text-left">
+        <div className="flex flex-col gap-[24px]">
+          <button
+            onClick={handleShareMessage}
+            className="flex items-center gap-[12px] text-left hover:opacity-70 transition-opacity"
+          >
             <svg
               width="18"
               height="18"
@@ -79,10 +91,13 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
               <line x1="22" y1="2" x2="11" y2="13" />
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>
-            <span className="text-[12px] text-muted-foreground">Share profile via message</span>
+            <span className="text-[13px] text-foreground">Share profile via message</span>
           </button>
 
-          <button onClick={handleShareVia} className="flex items-center gap-[12px] text-left">
+          <button
+            onClick={handleShareVia}
+            className="flex items-center gap-[12px] text-left hover:opacity-70 transition-opacity"
+          >
             <svg
               width="18"
               height="18"
@@ -99,10 +114,13 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
             </svg>
-            <span className="text-[12px] text-muted-foreground">Share profile via...</span>
+            <span className="text-[13px] text-foreground">Share profile via…</span>
           </button>
 
-          <button onClick={handleReferEarn} className="flex items-center gap-[12px] text-left">
+          <button
+            onClick={handleReferEarn}
+            className="flex items-center gap-[12px] text-left hover:opacity-70 transition-opacity"
+          >
             <svg
               width="18"
               height="18"
@@ -115,10 +133,10 @@ export function ProfileSharePopup({ username, onClose }: ProfileSharePopupProps)
             >
               <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
             </svg>
-            <span className="text-[12px] text-muted-foreground">Refer & Earn</span>
+            <span className="text-[13px] text-foreground">Refer &amp; Earn</span>
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -4,11 +4,20 @@ export function formatCount(n: number): string {
   return String(n);
 }
 
-export function CoverIcon({ d, onClick }: { d: string; onClick: () => void }) {
+export function CoverIcon({
+  children,
+  onClick,
+  title,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  title: string;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
+      title={title}
       className="flex size-[32px] items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
     >
       <svg
@@ -21,7 +30,7 @@ export function CoverIcon({ d, onClick }: { d: string; onClick: () => void }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <path d={d} />
+        {children}
       </svg>
     </button>
   );

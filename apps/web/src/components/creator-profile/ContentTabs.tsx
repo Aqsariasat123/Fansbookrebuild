@@ -22,13 +22,14 @@ export function ContentTabs({ activeTab, onTabChange }: ContentTabsProps) {
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`flex flex-1 items-center justify-center py-[12px] text-[13px] font-medium transition-colors md:py-[16px] md:text-[15px] ${
-              active
-                ? 'border-b-[3px] border-[#e91e8c] text-[#e91e8c]'
-                : 'text-muted-foreground hover:text-foreground'
+            className={`relative flex flex-1 items-center justify-center py-[12px] text-[13px] font-medium transition-colors md:py-[16px] md:text-[15px] ${
+              active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {t.label}
+            {active && (
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#01adf1] to-[#a61651]" />
+            )}
           </button>
         );
       })}

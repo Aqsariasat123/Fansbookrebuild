@@ -8,14 +8,7 @@ import type { ContentTab } from '../components/creator-profile/ContentTabs';
 import { PostCard } from '../components/creator-profile/PostCard';
 import type { CreatorPost } from '../components/creator-profile/PostCard';
 import { ScheduleLiveModal } from '../components/creator-profile/ScheduleLiveModal';
-import { useUpcomingLives } from '../hooks/useLive';
-import {
-  filterPosts,
-  resolveBasic,
-  resolveStats,
-  ComposeBar,
-  GoLiveSidebar,
-} from './CreatorProfileOwnerParts';
+import { filterPosts, resolveBasic, resolveStats, ActionButtons } from './CreatorProfileOwnerParts';
 import type { CreatorProfile } from './CreatorProfileOwnerParts';
 
 export default function CreatorProfileOwner() {
@@ -29,9 +22,6 @@ export default function CreatorProfileOwner() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
-  const [composeText, setComposeText] = useState('');
-  const { data: allUpcoming, refetch: refetchUpcoming } = useUpcomingLives();
-  const myScheduled = allUpcoming?.filter((s) => s.creatorId === user?.id) ?? [];
 
   useEffect(() => {
     if (!user?.username) return;
@@ -74,18 +64,6 @@ export default function CreatorProfileOwner() {
       }
     },
     [user, setUser],
-  );
-
-  const handleDeleteScheduled = useCallback(
-    async (sessionId: string) => {
-      try {
-        await api.delete(`/live/schedule/${sessionId}`);
-        refetchUpcoming();
-      } catch {
-        /* ignore */
-      }
-    },
-    [refetchUpcoming],
   );
 
   const handleMenuAction = useCallback(
@@ -141,40 +119,25 @@ export default function CreatorProfileOwner() {
         onCoverUpload={(f) => handleUpload('cover', f)}
       />
 
-      <div className="mt-[20px] flex flex-col gap-[20px] md:flex-row md:items-start md:gap-[24px]">
-        {/* Main column */}
-        <div className="min-w-0 flex-1">
-          <ComposeBar
-            text={composeText}
-            onChange={setComposeText}
-            onNewPost={() => navigate('/creator/post/new')}
-          />
-          <div className="mt-[20px]">
-            <div className="rounded-[22px] bg-card">
-              <ContentTabs activeTab={activeTab} onTabChange={setActiveTab} />
-            </div>
-            <div className="mt-[12px] flex flex-col gap-[12px] md:mt-[16px] md:gap-[16px]">
-              {filtered.length === 0 ? (
-                <p className="py-[40px] text-center text-[14px] text-muted-foreground">
-                  {emptyMsg}
-                </p>
-              ) : (
-                filtered.map((post) => (
-                  <PostCard key={post.id} post={post} onMenuAction={handleMenuAction} isOwner />
-                ))
-              )}
-            </div>
+      <div className="mt-[20px]">
+        <ActionButtons
+          onAddPost={() => navigate('/creator/post/new')}
+          onGoLive={() => navigate('/creator/go-live')}
+          onSchedule={() => setShowSchedule(true)}
+        />
+        <div className="mt-[20px]">
+          <div className="rounded-[22px] bg-card">
+            <ContentTabs activeTab={activeTab} onTabChange={setActiveTab} />
           </div>
-        </div>
-
-        {/* Right sidebar */}
-        <div className="w-full md:w-[240px] md:shrink-0">
-          <GoLiveSidebar
-            onGoLive={() => navigate('/creator/go-live')}
-            onSchedule={() => setShowSchedule(true)}
-            scheduled={myScheduled}
-            onDeleteScheduled={handleDeleteScheduled}
-          />
+          <div className="mt-[12px] flex flex-col gap-[12px] md:mt-[16px] md:gap-[16px]">
+            {filtered.length === 0 ? (
+              <p className="py-[40px] text-center text-[14px] text-muted-foreground">{emptyMsg}</p>
+            ) : (
+              filtered.map((post) => (
+                <PostCard key={post.id} post={post} onMenuAction={handleMenuAction} isOwner />
+              ))
+            )}
+          </div>
         </div>
       </div>
 
