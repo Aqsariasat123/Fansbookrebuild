@@ -19,7 +19,7 @@ export default function CreatePost() {
   const [isPinned, setIsPinned] = useState(false);
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
   const [tags, setTags] = useState<string[]>([]);
-  const [showTags, setShowTags] = useState(false);
+  const [showTags, setShowTags] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);

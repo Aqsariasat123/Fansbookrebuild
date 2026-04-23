@@ -1,5 +1,24 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+
+function renderWithHashtags(text: string) {
+  return text.split(/(#\w+)/g).map((part, i) => {
+    if (part.startsWith('#')) {
+      const tag = part.slice(1);
+      return (
+        <Link
+          key={i}
+          to={`/hashtag/${tag}`}
+          className="text-[#01adf1] hover:underline"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {part}
+        </Link>
+      );
+    }
+    return part;
+  });
+}
 import { PostActions } from './PostActions';
 import { MediaViewer } from './MediaViewer';
 import { MultiImageGrid } from './MultiImageGrid';
@@ -92,7 +111,7 @@ export function PostHeader({
           </div>
         </Link>
         <p className="whitespace-pre-wrap text-[10px] font-normal leading-normal text-foreground md:text-[16px]">
-          {post.text}
+          {post.text ? renderWithHashtags(post.text) : null}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-[8px] md:gap-[18px]">
