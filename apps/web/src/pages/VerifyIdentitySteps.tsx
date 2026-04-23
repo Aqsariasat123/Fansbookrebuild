@@ -41,6 +41,26 @@ export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => 
 
   return (
     <div className="flex flex-col gap-[16px]">
+      <div className="rounded-[10px] border border-gray-700 bg-gray-900/50 p-[16px]">
+        <p className="text-[13px] font-semibold text-white mb-[10px]">
+          How to complete verification:
+        </p>
+        <ol className="flex flex-col gap-[8px]">
+          {[
+            'A QR code will appear in the frame below',
+            'Open your mobile phone camera and scan the QR code',
+            'Complete the identity verification steps on your mobile phone',
+            'This page will update automatically once you are verified',
+          ].map((step, i) => (
+            <li key={i} className="flex items-start gap-[10px]">
+              <span className="flex size-[20px] shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#01adf1] to-[#a61651] text-[11px] font-bold text-white">
+                {i + 1}
+              </span>
+              <span className="text-[12px] text-gray-400 leading-[20px]">{step}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
       <div
         className="relative overflow-hidden rounded-[12px] border border-gray-700 bg-gray-900"
         style={{ height: '720px' }}
@@ -67,11 +87,10 @@ export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => 
 
 // ── Pending Step ──────────────────────────────────────────
 export function PendingStep({ onRestart }: { onRestart?: () => void }) {
-  const navigate = useNavigate();
-  const [showContinue, setShowContinue] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setShowContinue(true), 20000);
+    const t = setTimeout(() => setTimedOut(true), 120000);
     return () => clearTimeout(t);
   }, []);
 
@@ -80,29 +99,20 @@ export function PendingStep({ onRestart }: { onRestart?: () => void }) {
       <div className="size-[56px] animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
       <h2 className="text-[20px] font-bold text-white">Verifying your identity</h2>
       <p className="text-[14px] text-gray-400 max-w-[340px]">
-        Your documents have been submitted. Our team will review and approve within 24 hours. We'll
-        email you when done.
+        Waiting for confirmation from Didit. This page will update automatically once your
+        verification is complete.
       </p>
-      {showContinue && (
-        <button
-          onClick={() => navigate('/feed')}
-          className="rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[12px] text-[15px] font-semibold text-white"
-        >
-          Continue to Dashboard
+      {timedOut ? (
+        <p className="text-[13px] text-gray-500 max-w-[300px]">
+          This is taking longer than expected. You can close this page — we'll email you when your
+          verification is complete.
+        </p>
+      ) : null}
+      {onRestart && (
+        <button onClick={onRestart} className="text-[12px] text-gray-600 underline mt-[4px]">
+          Restart verification
         </button>
       )}
-      <div className="flex flex-col items-center gap-[8px]">
-        {!showContinue && (
-          <button onClick={() => navigate('/feed')} className="text-[13px] text-gray-500 underline">
-            Skip for now
-          </button>
-        )}
-        {onRestart && (
-          <button onClick={onRestart} className="text-[12px] text-gray-600 underline">
-            Restart verification
-          </button>
-        )}
-      </div>
     </div>
   );
 }

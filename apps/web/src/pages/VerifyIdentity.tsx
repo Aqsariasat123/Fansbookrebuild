@@ -73,26 +73,29 @@ export default function VerifyIdentity() {
   // Poll while PENDING or SDK (handles webhook-based completion on both steps)
   useEffect(() => {
     if (step !== 'PENDING' && step !== 'SDK') return;
-    pollRef.current = setInterval(() => {
-      api
-        .get('/verification/status')
-        .then(({ data: r }) => {
-          if (!r.success || r.data.status === 'PENDING') return;
-          clearInterval(pollRef.current!);
-          const s = r.data.status as VerifyStatus;
-          setStatus(s);
-          setRetryCount(r.data.retryCount ?? 0);
-          // Update authStore so sidebar badge refreshes
-          if (authUser) {
-            setAuthUser({
-              ...authUser,
-              verificationStatus: s === 'MANUAL_REVIEW' ? 'PENDING' : s,
-            });
-          }
-          setStep(s === 'UNVERIFIED' ? 'FORM' : 'RESULT');
-        })
-        .catch(() => {});
-    }, 8000);
+    pollRef.current = setInterval(
+      () => {
+        api
+          .get('/verification/status')
+          .then(({ data: r }) => {
+            if (!r.success || r.data.status === 'PENDING') return;
+            clearInterval(pollRef.current!);
+            const s = r.data.status as VerifyStatus;
+            setStatus(s);
+            setRetryCount(r.data.retryCount ?? 0);
+            // Update authStore so sidebar badge refreshes
+            if (authUser) {
+              setAuthUser({
+                ...authUser,
+                verificationStatus: s === 'MANUAL_REVIEW' ? 'PENDING' : s,
+              });
+            }
+            setStep(s === 'UNVERIFIED' ? 'FORM' : 'RESULT');
+          })
+          .catch(() => {});
+      },
+      step === 'SDK' ? 3000 : 8000,
+    );
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
