@@ -50,7 +50,7 @@ export async function embedWatermark(filePath: string, username: string): Promis
 
   const fontSize = Math.max(13, Math.round(width * 0.022));
   const padding = Math.round(fontSize * 0.65);
-  const label = `FB FANSBOOK  ·  fansbook.vip/u/${username}`;
+  const label = `INSCRIO  ·  inscrio.com/u/${username}`;
   const approxCharWidth = fontSize * 0.55;
   const boxW = Math.round(label.length * approxCharWidth + padding * 2 + 4);
   const boxH = fontSize + padding * 2;

@@ -42,7 +42,7 @@ async function main() {
       continue;
     }
 
-    const username = row.post?.author?.username ?? 'fansbook';
+    const username = row.post?.author?.username ?? 'inscrio';
     try {
       await embedWatermark(filePath, username);
       console.log(`  ✓ ${filename} (@${username})`);

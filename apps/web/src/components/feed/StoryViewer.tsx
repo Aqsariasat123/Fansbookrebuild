@@ -154,7 +154,7 @@ export function StoryViewer({ groups, initialGroupIndex, onClose, onRefetch }: S
           )}
           {heartAnim && <HeartOverlay />}
           <div className="pointer-events-none absolute bottom-[80px] right-[12px] z-10 rounded-[4px] bg-black/50 px-[8px] py-[3px]">
-            <span className="text-[11px] text-white/80">fansbook.vip/u/{group.username}</span>
+            <span className="text-[11px] text-white/80">inscrio.com/u/{group.username}</span>
           </div>
         </div>
         <div className="absolute inset-0 z-10 flex">

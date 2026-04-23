@@ -20,7 +20,7 @@ export function StoriesRow({ groups, isCreator, onRefetch }: StoriesRowProps) {
         {groups.map((group, idx) => (
           <div
             key={group.authorId}
-            className="flex shrink-0 cursor-pointer flex-col items-center gap-[6px]"
+            className="group flex shrink-0 cursor-pointer flex-col items-center gap-[6px]"
             onClick={() => setViewerIndex(idx)}
           >
             <div className="relative size-[52px] overflow-hidden rounded-full md:h-[186px] md:w-[133px] md:rounded-[16px]">
@@ -36,13 +36,18 @@ export function StoriesRow({ groups, isCreator, onRefetch }: StoriesRowProps) {
                   className="absolute inset-0 h-full w-full max-w-none object-cover"
                 />
               )}
-              <div className="absolute inset-0 hidden rounded-[16px] bg-gradient-to-b from-[rgba(14,16,18,0)] from-[44%] to-[rgba(14,16,18,0.88)] to-[80%] md:block" />
-              <div className="absolute bottom-[30px] left-1/2 hidden -translate-x-1/2 md:block">
-                <img
-                  src={group.avatar || ''}
-                  alt=""
-                  className="size-[42px] rounded-full object-cover"
-                />
+              {/* Hover overlay — gradient + avatar + name, desktop only */}
+              <div className="absolute inset-0 hidden flex-col items-center justify-end rounded-[16px] bg-gradient-to-b from-transparent to-black/80 pb-[10px] opacity-0 transition-opacity duration-200 group-hover:opacity-100 md:flex">
+                {group.avatar && (
+                  <img
+                    src={group.avatar}
+                    alt=""
+                    className="mb-[4px] size-[36px] rounded-full object-cover ring-2 ring-white/40"
+                  />
+                )}
+                <span className="max-w-[110px] truncate px-1 text-center text-[11px] font-medium text-white">
+                  {group.displayName}
+                </span>
               </div>
             </div>
             <p className="w-[60px] text-center text-[11px] font-normal leading-tight text-foreground md:w-[133px] md:text-[14px]">
