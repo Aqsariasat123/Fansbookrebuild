@@ -1,30 +1,45 @@
 import sharp from 'sharp';
 
-// Encodes 24 ASCII chars (CUID) into the least-significant bit of the R-channel
-// of the first 192 pixels (24 chars × 8 bits). Operates on the raw pixel buffer.
-// Only works reliably on lossless formats (WebP/PNG) — JPEG re-compression destroys it.
+// Magic prefix "WM" written before the userId so we can distinguish a real
+// watermark from random pixel noise in non-watermarked images.
+// Layout: 2-char magic "WM" + 24-char CUID = 26 chars = 208 bits = 208 pixels.
 
+const MAGIC = 'WM';
 const CUID_LEN = 24;
-const BITS = CUID_LEN * 8; // 192
+const PAYLOAD = MAGIC + '\0'.repeat(CUID_LEN); // 26 chars
+const BITS = PAYLOAD.length * 8; // 208
+
+function encodeString(s: string, data: Buffer, ch: number): void {
+  for (let bit = 0; bit < s.length * 8; bit++) {
+    const charIdx = Math.floor(bit / 8);
+    const bitPos = 7 - (bit % 8);
+    const bitVal = (s.charCodeAt(charIdx) >> bitPos) & 1;
+    data[bit * ch] = (data[bit * ch]! & 0xfe) | bitVal;
+  }
+}
+
+function decodeString(data: Buffer, ch: number, len: number): string {
+  let result = '';
+  for (let c = 0; c < len; c++) {
+    let code = 0;
+    for (let b = 0; b < 8; b++) {
+      code = (code << 1) | (data[(c * 8 + b) * ch]! & 1);
+    }
+    if (code === 0) break;
+    result += String.fromCharCode(code);
+  }
+  return result;
+}
 
 export async function encodeUserIdIntoImage(inputBuffer: Buffer, userId: string): Promise<Buffer> {
-  const id = userId.padEnd(CUID_LEN, '\0').slice(0, CUID_LEN);
+  const payload = MAGIC + userId.padEnd(CUID_LEN, '\0').slice(0, CUID_LEN);
   const image = sharp(inputBuffer);
   const { width = 0, height = 0 } = await image.metadata();
-
-  if (width * height < BITS) return inputBuffer; // image too small — skip silently
+  if (width * height < BITS) return inputBuffer;
 
   const { data, info } = await image.raw().toBuffer({ resolveWithObject: true });
   const ch = info.channels;
-
-  for (let bit = 0; bit < BITS; bit++) {
-    const charIdx = Math.floor(bit / 8);
-    const bitPos = 7 - (bit % 8);
-    const charCode = id.charCodeAt(charIdx);
-    const bitVal = (charCode >> bitPos) & 1;
-    const pixelOffset = bit * ch; // R channel of pixel `bit`
-    data[pixelOffset] = (data[pixelOffset]! & 0xfe) | bitVal;
-  }
+  encodeString(payload, data, ch);
 
   return sharp(data, {
     raw: { width: info.width, height: info.height, channels: ch as 1 | 2 | 3 | 4 },
@@ -41,20 +56,11 @@ export async function decodeUserIdFromImage(inputBuffer: Buffer): Promise<string
 
     const { data, info } = await image.raw().toBuffer({ resolveWithObject: true });
     const ch = info.channels;
-    let result = '';
+    const decoded = decodeString(data, ch, MAGIC.length + CUID_LEN);
 
-    for (let c = 0; c < CUID_LEN; c++) {
-      let charCode = 0;
-      for (let b = 0; b < 8; b++) {
-        const bit = c * 8 + b;
-        const pixelOffset = bit * ch;
-        charCode = (charCode << 1) | (data[pixelOffset]! & 1);
-      }
-      if (charCode === 0) break;
-      result += String.fromCharCode(charCode);
-    }
-
-    return result.length > 0 ? result : null;
+    if (!decoded.startsWith(MAGIC)) return null;
+    const userId = decoded.slice(MAGIC.length);
+    return userId.length > 0 ? userId : null;
   } catch {
     return null;
   }

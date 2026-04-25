@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { PostActions } from '../feed/PostActions';
 import { PostMediaDisplay } from './PostMediaDisplay';
+import { VideoWatermarkCanvas } from '../feed/VideoWatermarkCanvas';
 
 export interface PublicPost {
   id: string;
@@ -144,13 +145,15 @@ export function PostCard({ post, isSubscribed }: PostCardProps) {
       {videos.length > 0 && (
         <div className="mb-[12px] flex flex-col gap-[8px]">
           {videos.map((v) => (
-            <video
-              key={v.id}
-              src={v.url}
-              poster={v.thumbnail ?? undefined}
-              controls
-              className="w-full rounded-[12px] bg-black max-h-[400px]"
-            />
+            <div key={v.id} className="relative">
+              <video
+                src={v.url}
+                poster={v.thumbnail ?? undefined}
+                controls
+                className="w-full rounded-[12px] bg-black max-h-[400px]"
+              />
+              <VideoWatermarkCanvas />
+            </div>
           ))}
         </div>
       )}
