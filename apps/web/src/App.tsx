@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ScrollToTop } from './components/ScrollToTop';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MainLayout } from './components/layout/MainLayout';
 import { adminRoutes } from './pages/admin/AdminRoutes';
@@ -101,6 +102,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ScrollToTop />
         <AgeVerification>
           <AuthBootstrap>
             <NotificationToastContainer />
@@ -167,8 +169,6 @@ export default function App() {
                     {/* Fan-only routes */}
                     <Route element={<RoleRoute allowedRoles={['FAN', 'ADMIN']} />}>
                       <Route path="/become-creator" element={<BecomeCreator />} />
-                    </Route>
-                    <Route element={<RoleRoute allowedRoles={['FAN', 'ADMIN']} />}>
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/profile/edit" element={<ProfileEdit />} />
                       <Route path="/wallet" element={<Wallet />} />
