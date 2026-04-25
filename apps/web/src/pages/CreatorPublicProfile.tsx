@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useCreatorLiveSync } from '../hooks/useLive';
 import { useAuthStore } from '../stores/authStore';
@@ -7,7 +7,7 @@ import { SubscriptionModal } from '../components/public-profile/SubscriptionModa
 import { ProfileTabBar } from '../components/public-profile/ProfileTabBar';
 import { ProfileSidebar } from '../components/public-profile/ProfileSidebar';
 import { ProfileTabContent } from '../components/public-profile/ProfileTabContent';
-import { ProfileActions } from '../components/public-profile/ProfileActions';
+import { ProfileCoverArea } from '../components/public-profile/ProfileCoverArea';
 import { SubscriptionSidebar } from '../components/public-profile/SubscriptionSidebar';
 import type { ContentTab } from '../components/public-profile/ProfileTabBar';
 import type { PublicPost } from '../components/public-profile/PostCard';
@@ -15,7 +15,6 @@ import type { ProfileData } from '../components/public-profile/types';
 
 export default function CreatorPublicProfile() {
   const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
   const currentUser = useAuthStore((s) => s.user);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [posts, setPosts] = useState<PublicPost[]>([]);
@@ -30,15 +29,6 @@ export default function CreatorPublicProfile() {
 
   useCreatorLiveSync(profile, setLiveSessionId);
 
-  const checkSubscription = useCallback(async (creatorId: string) => {
-    try {
-      const { data: r } = await api.get(`/subscriptions/check/${creatorId}`);
-      if (r.success) setProfile((p) => (p ? { ...p, isSubscribed: r.data.isSubscribed } : p));
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
   useEffect(() => {
     if (!username) return;
     setLoading(true);
@@ -51,7 +41,13 @@ export default function CreatorPublicProfile() {
         if (pRes.data.success) {
           const pd = pRes.data.data;
           setProfile(pd);
-          checkSubscription(pd.id);
+          api
+            .get(`/subscriptions/check/${pd.id}`)
+            .then(({ data: r }) => {
+              if (r.success)
+                setProfile((p) => (p ? { ...p, isSubscribed: r.data.isSubscribed } : p));
+            })
+            .catch(() => {});
           const liveSess = (liveRes.data.data ?? []).find(
             (s: { creatorId: string }) => s.creatorId === pd.id,
           );
@@ -71,7 +67,7 @@ export default function CreatorPublicProfile() {
           setNotFound(true);
       })
       .finally(() => setLoading(false));
-  }, [username, checkSubscription]);
+  }, [username]);
 
   async function handleFollow() {
     if (!profile) return;
@@ -133,45 +129,28 @@ export default function CreatorPublicProfile() {
 
   return (
     <div>
-      {/* Cover image */}
-      <div className="relative h-[180px] w-full overflow-hidden rounded-t-[22px] md:h-[240px]">
-        {profile.cover ? (
-          <img src={profile.cover} alt="" className="absolute inset-0 size-full object-cover" />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-r from-[#01adf1]/40 to-[#a61651]/40" />
-        )}
-        {liveSessionId && (
-          <div className="absolute left-[12px] top-[12px]">
-            <button
-              onClick={() =>
-                navigate(`/live/${liveSessionId}`, {
-                  state: { creatorName: profile.displayName, creatorAvatar: profile.avatar },
-                })
-              }
-              className="flex items-center gap-[8px] rounded-[8px] bg-red-600 px-[14px] py-[8px] text-[13px] font-semibold text-white shadow-lg"
-            >
-              <span className="size-[8px] animate-pulse rounded-full bg-white" />
-              LIVE · Join Now
-            </button>
-          </div>
-        )}
-        {!isOwnProfile && (
-          <div className="absolute right-[12px] top-[12px]">
-            <ProfileActions
-              username={profile.username}
-              isFollowing={profile.isFollowing}
-              isSubscribed={profile.isSubscribed}
-              followLoading={followLoading}
-              onFollow={handleFollow}
-              onSubscribe={() => setShowSubscribeModal(true)}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Profile info card — avatar overlaps the cover */}
+      <ProfileCoverArea
+        cover={profile.cover}
+        liveSessionId={liveSessionId}
+        creatorName={profile.displayName}
+        creatorAvatar={profile.avatar}
+        isOwnProfile={isOwnProfile}
+        username={profile.username}
+        isFollowing={profile.isFollowing}
+        isSubscribed={profile.isSubscribed}
+        followLoading={followLoading}
+        onFollow={handleFollow}
+        onSubscribe={() => setShowSubscribeModal(true)}
+      />
       <div className="-mt-[40px] md:-mt-[52px]">
-        <ProfileSidebar profile={profile} amazonLink={amazonLink} />
+        <ProfileSidebar
+          profile={profile}
+          amazonLink={amazonLink}
+          isOwnProfile={isOwnProfile}
+          followLoading={followLoading}
+          onFollow={handleFollow}
+          onSubscribe={() => setShowSubscribeModal(true)}
+        />
       </div>
 
       {/* Tabs + Content + Sidebar */}

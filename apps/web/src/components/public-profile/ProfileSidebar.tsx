@@ -1,3 +1,6 @@
+import { ProfileActionButtons } from './ProfileActionButtons';
+import { ProfileStats } from './ProfileStats';
+
 const DEFAULT_HASHTAGS = [
   '#Streaming',
   '#Enjoy',
@@ -8,12 +11,6 @@ const DEFAULT_HASHTAGS = [
   '#Live',
   '#Posting',
 ];
-
-function formatCount(n: number): string {
-  if (n >= 1000000) return `${(n / 1000000).toFixed(2)}M`;
-  if (n >= 1000) return `${(n / 1000).toFixed(2)}K`;
-  return String(n);
-}
 
 export interface SidebarProfileData {
   id: string;
@@ -35,14 +32,29 @@ export interface SidebarProfileData {
 interface Props {
   profile: SidebarProfileData;
   amazonLink?: string | null;
+  isOwnProfile?: boolean;
+  followLoading?: boolean;
+  onFollow?: () => void;
+  onSubscribe?: () => void;
 }
 
-export function ProfileSidebar({ profile, amazonLink }: Props) {
-  const hashtags = profile.hashtags?.length ? profile.hashtags : DEFAULT_HASHTAGS;
+function getHashtags(tags?: string[]): string[] {
+  return tags && tags.length > 0 ? tags : DEFAULT_HASHTAGS;
+}
+
+export function ProfileSidebar({
+  profile,
+  amazonLink,
+  isOwnProfile,
+  followLoading = false,
+  onFollow,
+  onSubscribe,
+}: Props) {
+  const hashtags = getHashtags(profile.hashtags);
+  const showActions = !isOwnProfile && onFollow != null && onSubscribe != null;
 
   return (
     <div className="relative rounded-[22px] bg-card px-[20px] pb-[24px] pt-[56px] md:pl-[144px] md:pt-[24px]">
-      {/* Avatar — overlaps cover above */}
       <div className="absolute -top-[40px] left-[20px] size-[80px] overflow-hidden rounded-full border-4 border-card bg-muted md:-top-[52px] md:size-[106px]">
         {profile.avatar ? (
           <img src={profile.avatar} alt="" className="size-full object-cover" />
@@ -54,7 +66,6 @@ export function ProfileSidebar({ profile, amazonLink }: Props) {
       </div>
 
       <div className="flex flex-col gap-[16px] md:flex-row md:gap-[32px]">
-        {/* Left: name, username, stats, hashtags */}
         <div className="flex-1">
           <div className="flex items-center gap-[6px]">
             <span className="text-[18px] font-bold text-foreground md:text-[20px]">
@@ -66,20 +77,22 @@ export function ProfileSidebar({ profile, amazonLink }: Props) {
           </div>
           <p className="text-[13px] text-muted-foreground">@{profile.username}</p>
 
-          <div className="mt-[12px] flex select-none flex-wrap gap-x-[20px] gap-y-[8px] md:gap-x-[28px]">
-            {[
-              { val: profile.followingCount, label: 'Following' },
-              { val: profile.followersCount, label: 'Followers' },
-              { val: profile.likesCount ?? 0, label: 'Likes' },
-              { val: profile.imagesCount ?? 0, label: 'Images' },
-              { val: profile.videosCount ?? 0, label: 'Videos' },
-            ].map(({ val, label }) => (
-              <div key={label}>
-                <p className="text-[15px] font-semibold text-foreground">{formatCount(val)}</p>
-                <p className="text-[11px] text-muted-foreground">{label}</p>
-              </div>
-            ))}
-          </div>
+          {showActions && (
+            <ProfileActionButtons
+              profile={profile}
+              followLoading={followLoading}
+              onFollow={onFollow!}
+              onSubscribe={onSubscribe!}
+            />
+          )}
+
+          <ProfileStats
+            followingCount={profile.followingCount}
+            followersCount={profile.followersCount}
+            likesCount={profile.likesCount}
+            imagesCount={profile.imagesCount}
+            videosCount={profile.videosCount}
+          />
 
           <div className="mt-[12px] flex flex-wrap gap-[6px]">
             {hashtags.slice(0, 6).map((tag) => (
@@ -93,7 +106,6 @@ export function ProfileSidebar({ profile, amazonLink }: Props) {
           </div>
         </div>
 
-        {/* Right: bio */}
         {profile.bio && (
           <div className="md:w-[44%]">
             <p className="text-[13px] leading-[1.7] text-muted-foreground">{profile.bio}</p>
@@ -101,7 +113,6 @@ export function ProfileSidebar({ profile, amazonLink }: Props) {
         )}
       </div>
 
-      {/* Amazon 'a' circle — bottom-right */}
       {amazonLink && (
         <a
           href={amazonLink}
