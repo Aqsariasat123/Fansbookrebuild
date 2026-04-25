@@ -23,6 +23,7 @@ import fraudRouter from './admin-fraud.js';
 import supportRouter from './admin-support.js';
 import escrowRouter from './admin-escrow.js';
 import clipsRouter from './admin-clips.js';
+import liveAuctionsRouter from './admin-live-auctions.js';
 
 const router = Router();
 
@@ -51,5 +52,6 @@ router.use('/fraud', fraudRouter);
 router.use('/support', supportRouter);
 router.use('/escrow', escrowRouter);
 router.use('/clips', clipsRouter);
+router.use('/live-auctions', liveAuctionsRouter);
 
 export default router;

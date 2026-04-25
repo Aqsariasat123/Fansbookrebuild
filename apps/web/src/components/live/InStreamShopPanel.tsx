@@ -1,13 +1,22 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import { getSocket } from '../../lib/socket';
-import { formatMoney } from '../../lib/currency';
+import { ListingCard, AuctionStatusBar } from './AuctionListingCard';
 
 interface Listing {
   id: string;
   title: string;
   price: number | null;
   images: string[];
+}
+
+interface ActiveAuction {
+  id: string;
+  listingId: string;
+  startingBid: number;
+  currentBid: number | null;
+  endsAt: string;
+  itemTitle: string;
 }
 
 interface Props {
@@ -20,6 +29,11 @@ export function InStreamShopPanel({ sessionId, pinnedItemId, onPinChange }: Prop
   const [listings, setListings] = useState<Listing[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
+  const [auctionItem, setAuctionItem] = useState<string | null>(null);
+  const [startingBid, setStartingBid] = useState('1');
+  const [duration, setDuration] = useState(60);
+  const [activeAuction, setActiveAuction] = useState<ActiveAuction | null>(null);
+  const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
     api
@@ -30,20 +44,84 @@ export function InStreamShopPanel({ sessionId, pinnedItemId, onPinChange }: Prop
       .catch(() => {});
   }, [sessionId]);
 
+  useEffect(() => {
+    if (!activeAuction) return;
+    const endsAt = activeAuction.endsAt;
+    const tick = setInterval(() => {
+      setTimeLeft(Math.max(0, Math.round((new Date(endsAt).getTime() - Date.now()) / 1000)));
+    }, 500);
+    return () => clearInterval(tick);
+  }, [activeAuction]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+    const onStarted = (d: {
+      auction: { id: string; startingBid: number; currentBid: number | null; endsAt: string };
+      item: { id: string; title: string };
+    }) => {
+      setActiveAuction({
+        id: d.auction.id,
+        listingId: d.item.id,
+        startingBid: d.auction.startingBid,
+        currentBid: d.auction.currentBid,
+        endsAt: d.auction.endsAt,
+        itemTitle: d.item.title,
+      });
+      setAuctionItem(null);
+    };
+    const onUpdate = (d: { auctionId: string; amount: number; endsAt: string }) => {
+      setActiveAuction((prev) =>
+        prev && prev.id === d.auctionId
+          ? { ...prev, currentBid: d.amount, endsAt: d.endsAt }
+          : prev,
+      );
+    };
+    const onEnded = () => {
+      setActiveAuction(null);
+      setTimeLeft(0);
+    };
+    const onCancelled = () => {
+      setActiveAuction(null);
+      setTimeLeft(0);
+    };
+    socket.on('live:auction-started', onStarted);
+    socket.on('live:auction-update', onUpdate);
+    socket.on('live:auction-ended', onEnded);
+    socket.on('live:auction-cancelled', onCancelled);
+    return () => {
+      socket.off('live:auction-started', onStarted);
+      socket.off('live:auction-update', onUpdate);
+      socket.off('live:auction-ended', onEnded);
+      socket.off('live:auction-cancelled', onCancelled);
+    };
+  }, []);
+
   function handlePin(id: string) {
     setLoading(true);
-    const socket = getSocket();
-    socket?.emit('live:pin-item', { sessionId, itemId: id });
+    getSocket()?.emit('live:pin-item', { sessionId, itemId: id });
     onPinChange(id);
     setLoading(false);
   }
-
   function handleUnpin() {
     setLoading(true);
-    const socket = getSocket();
-    socket?.emit('live:unpin-item', { sessionId });
+    getSocket()?.emit('live:unpin-item', { sessionId });
     onPinChange(null);
     setLoading(false);
+  }
+  function handleStartAuction(listingId: string) {
+    const bid = parseFloat(startingBid);
+    if (isNaN(bid) || bid < 1) return;
+    getSocket()?.emit('live:auction-start', {
+      sessionId,
+      listingId,
+      startingBid: bid,
+      durationSec: duration,
+    });
+  }
+  function handleCancelAuction() {
+    if (!activeAuction) return;
+    getSocket()?.emit('live:auction-cancel', { sessionId, auctionId: activeAuction.id });
   }
 
   const filtered = listings.filter((l) => l.title.toLowerCase().includes(search.toLowerCase()));
@@ -52,20 +130,30 @@ export function InStreamShopPanel({ sessionId, pinnedItemId, onPinChange }: Prop
     <div className="rounded-[12px] border border-border bg-card p-[16px] flex flex-col gap-[12px]">
       <div className="flex items-center justify-between">
         <p className="text-[14px] font-semibold text-foreground">In-Stream Shopping</p>
-        {pinnedItemId && (
+        {pinnedItemId && !activeAuction && (
           <button
             onClick={handleUnpin}
             disabled={loading}
             className="text-[12px] text-red-400 hover:text-red-300"
           >
-            Unpin Item
+            Unpin
           </button>
         )}
       </div>
 
-      {pinnedItemId && (
+      {activeAuction && (
+        <AuctionStatusBar
+          itemTitle={activeAuction.itemTitle}
+          timeLeft={timeLeft}
+          currentBid={activeAuction.currentBid}
+          startingBid={activeAuction.startingBid}
+          onCancel={handleCancelAuction}
+        />
+      )}
+
+      {!activeAuction && pinnedItemId && (
         <div className="rounded-[8px] bg-green-500/10 border border-green-500/30 px-[12px] py-[8px] text-[12px] text-green-400">
-          Item pinned — viewers can see it and purchase now.
+          Item pinned — viewers can purchase now.
         </div>
       )}
 
@@ -76,46 +164,29 @@ export function InStreamShopPanel({ sessionId, pinnedItemId, onPinChange }: Prop
         className="rounded-[8px] border border-border bg-background px-[12px] py-[8px] text-[13px] text-foreground placeholder-muted-foreground outline-none"
       />
 
-      <div className="flex flex-col gap-[8px] max-h-[240px] overflow-y-auto">
+      <div className="flex flex-col gap-[8px] max-h-[300px] overflow-y-auto">
         {filtered.length === 0 && (
           <p className="text-[12px] text-muted-foreground text-center py-[16px]">
             No active listings found.
           </p>
         )}
         {filtered.map((l) => (
-          <div
+          <ListingCard
             key={l.id}
-            className={`flex items-center gap-[10px] rounded-[8px] border p-[10px] ${
-              pinnedItemId === l.id
-                ? 'border-green-500/50 bg-green-500/10'
-                : 'border-border bg-background'
-            }`}
-          >
-            {l.images[0] ? (
-              <img
-                src={l.images[0]}
-                alt={l.title}
-                className="h-[40px] w-[40px] rounded-[6px] object-cover shrink-0"
-              />
-            ) : (
-              <div className="h-[40px] w-[40px] rounded-[6px] bg-muted shrink-0" />
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-medium text-foreground truncate">{l.title}</p>
-              <p className="text-[11px] text-muted-foreground">{formatMoney(l.price ?? 0)}</p>
-            </div>
-            {pinnedItemId === l.id ? (
-              <span className="text-[11px] text-green-400 font-medium">Pinned</span>
-            ) : (
-              <button
-                onClick={() => handlePin(l.id)}
-                disabled={loading}
-                className="rounded-[6px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[10px] py-[4px] text-[11px] font-medium text-white disabled:opacity-50"
-              >
-                Pin
-              </button>
-            )}
-          </div>
+            l={l}
+            isAuctionLive={!!activeAuction && activeAuction.listingId === l.id}
+            isPinned={pinnedItemId === l.id}
+            isSetup={auctionItem === l.id && !activeAuction}
+            hasActiveAuction={!!activeAuction}
+            startingBid={startingBid}
+            duration={duration}
+            loading={loading}
+            onPin={() => handlePin(l.id)}
+            onToggleAuction={() => setAuctionItem(auctionItem === l.id ? null : l.id)}
+            onStartAuction={() => handleStartAuction(l.id)}
+            onBidChange={setStartingBid}
+            onDuration={setDuration}
+          />
         ))}
       </div>
     </div>

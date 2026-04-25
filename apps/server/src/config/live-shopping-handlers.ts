@@ -1,6 +1,7 @@
 import type { Server, Socket } from 'socket.io';
 import { prisma } from './database.js';
 import { logger } from '../utils/logger.js';
+import { registerAuctionHandlers } from './live-auction-handlers.js';
 
 export function registerShoppingHandlers(io: Server, socket: Socket, userId: string) {
   socket.on('live:pin-item', async (data: { sessionId: string; itemId: string }) => {
@@ -43,4 +44,6 @@ export function registerShoppingHandlers(io: Server, socket: Socket, userId: str
       logger.error({ err }, 'Error in live:unpin-item');
     }
   });
+
+  registerAuctionHandlers(io, socket, userId);
 }

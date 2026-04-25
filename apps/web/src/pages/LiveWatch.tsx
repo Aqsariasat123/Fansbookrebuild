@@ -16,6 +16,7 @@ import {
   type PrivateStatus,
 } from './LiveWatchParts';
 import { InStreamPurchaseModal, type PinnedItem } from '../components/live/InStreamPurchaseModal';
+import { LiveAuctionPanel } from '../components/live/LiveAuctionPanel';
 
 export default function LiveWatch() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -174,6 +175,7 @@ export default function LiveWatch() {
           onSuccess={() => setPinnedItem(null)}
         />
       )}
+      <LiveAuctionPanel sessionId={sessionId!} userId={userId} />
     </div>
   );
 }
