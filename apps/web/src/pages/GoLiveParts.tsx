@@ -53,7 +53,9 @@ export function CameraPreview({
   onPolicyToggle: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center gap-[16px] rounded-[22px] bg-card px-[20px] py-[32px]">
+    <div
+      className={`flex flex-col items-center gap-[16px] rounded-[22px] bg-card px-[20px] ${previewing ? 'py-[16px]' : 'py-[32px]'}`}
+    >
       {!previewing ? (
         <>
           <p className="text-[20px] font-semibold text-foreground">Start Your Broadcasting Now</p>
@@ -77,7 +79,7 @@ export function CameraPreview({
               autoPlay
               playsInline
               muted
-              className="aspect-video w-full -scale-x-100 object-cover"
+              className="max-h-[38vh] w-full -scale-x-100 object-cover"
             />
             <div className="absolute left-[12px] top-[12px] rounded-[4px] bg-black/60 px-[10px] py-[4px] text-[12px] text-white">
               Preview

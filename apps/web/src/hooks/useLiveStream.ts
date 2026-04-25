@@ -47,11 +47,14 @@ export function useLiveStream() {
       title: string,
       videoEl: HTMLVideoElement | null,
       opts?: { privateShow?: boolean; privateShowTokens?: number },
+      existingStream?: MediaStream,
     ) => {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
-        audio: true,
-      });
+      const stream =
+        existingStream ??
+        (await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
+          audio: true,
+        }));
       liveState.localStream = stream;
       if (videoEl) {
         videoEl.srcObject = stream;

@@ -56,12 +56,18 @@ export default function GoLive() {
   const handleGoLive = async () => {
     setStarting(true);
     try {
-      streamRef.current?.getTracks().forEach((t) => t.stop());
+      // Transfer ownership of preview stream to startBroadcast — avoids camera re-init black flash
+      const previewStream = streamRef.current ?? undefined;
       streamRef.current = null;
-      const sessionId = await startBroadcast(title || 'Live Session', videoRef.current, {
-        privateShow,
-        privateShowTokens: privateShow ? parseInt(privateShowTokens || '0', 10) : 0,
-      });
+      const sessionId = await startBroadcast(
+        title || 'Live Session',
+        null, // GoLive's video element is about to unmount; LiveBroadcasting attaches its own ref
+        {
+          privateShow,
+          privateShowTokens: privateShow ? parseInt(privateShowTokens || '0', 10) : 0,
+        },
+        previewStream,
+      );
       navigate(`/creator/live?session=${sessionId}`);
     } catch {
       setStarting(false);
