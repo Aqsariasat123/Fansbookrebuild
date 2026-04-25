@@ -101,11 +101,7 @@ app.use(
 app.use(cookieParser());
 
 // Didit webhook — must be registered before express.json() to receive raw body
-app.post(
-  '/api/verification/webhook',
-  express.raw({ type: 'application/json' }),
-  verificationWebhookHandler,
-);
+app.post('/api/verification/webhook', express.raw({ type: '*/*' }), verificationWebhookHandler);
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
