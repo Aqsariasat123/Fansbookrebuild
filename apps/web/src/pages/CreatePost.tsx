@@ -25,10 +25,14 @@ export default function CreatePost() {
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
-    setImages((prev) => [
-      ...prev,
-      ...files.map((f) => ({ file: f, preview: URL.createObjectURL(f) })),
-    ]);
+    setImages((prev) => {
+      const slots = Math.max(0, 10 - prev.length);
+      return [
+        ...prev,
+        ...files.slice(0, slots).map((f) => ({ file: f, preview: URL.createObjectURL(f) })),
+      ];
+    });
+    e.target.value = '';
   }
 
   function removeImage(idx: number) {
