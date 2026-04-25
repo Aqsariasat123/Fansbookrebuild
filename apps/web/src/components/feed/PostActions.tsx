@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { api } from '../../lib/api';
 import { CommentsSection } from './CommentsSection';
 import { TipModal } from './TipModal';
@@ -47,15 +47,27 @@ export function PostActions({
     }
   };
 
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
+  const shareRef = useRef<HTMLDivElement>(null);
 
-  const handleShare = async () => {
-    const url = `${window.location.origin}/post/${postId}`;
+  useEffect(() => {
+    if (!showShareMenu) return;
+    const handler = (e: MouseEvent) => {
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) setShowShareMenu(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showShareMenu]);
+
+  const postUrl = `${window.location.origin}/post/${postId}`;
+
+  const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(postUrl);
     } catch {
       const ta = document.createElement('textarea');
-      ta.value = url;
+      ta.value = postUrl;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand('copy');
@@ -63,12 +75,9 @@ export function PostActions({
     }
     setShares((s) => s + 1);
     setCopied(true);
+    setShowShareMenu(false);
     setTimeout(() => setCopied(false), 2000);
-    try {
-      await api.post(`/posts/${postId}/share`);
-    } catch {
-      /* silent */
-    }
+    api.post(`/posts/${postId}/share`).catch(() => {});
   };
 
   return (
@@ -103,15 +112,54 @@ export function PostActions({
             <img src={`${IMG}/mode-comment.svg`} alt="" className="size-[12px] md:size-[20px]" />
             <span className="text-[10px] font-normal md:text-[16px]">{comments} Comments</span>
           </button>
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-[5px] text-foreground hover:opacity-80 md:gap-[10px]"
-          >
-            <img src={`${IMG}/share.svg`} alt="" className="size-[12px] md:size-[20px]" />
-            <span className="text-[10px] font-normal md:text-[16px]">
-              {copied ? 'Copied!' : `${shares} Shares`}
-            </span>
-          </button>
+          <div ref={shareRef} className="relative">
+            <button
+              onClick={() => setShowShareMenu((o) => !o)}
+              className="flex items-center gap-[5px] text-foreground hover:opacity-80 md:gap-[10px]"
+            >
+              <img src={`${IMG}/share.svg`} alt="" className="size-[12px] md:size-[20px]" />
+              <span className="text-[10px] font-normal md:text-[16px]">
+                {copied ? 'Copied!' : `${shares} Shares`}
+              </span>
+            </button>
+            {showShareMenu && (
+              <div className="absolute bottom-full left-0 z-50 mb-[6px] min-w-[160px] rounded-[10px] border border-border bg-card py-[4px] shadow-lg">
+                <button
+                  onClick={copyLink}
+                  className="w-full px-[14px] py-[8px] text-left text-[13px] text-foreground hover:bg-muted"
+                >
+                  Copy link
+                </button>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setShowShareMenu(false)}
+                  className="block px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
+                >
+                  Share on X
+                </a>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setShowShareMenu(false)}
+                  className="block px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
+                >
+                  Share on Facebook
+                </a>
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(postUrl)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setShowShareMenu(false)}
+                  className="block px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
+                >
+                  Share on WhatsApp
+                </a>
+              </div>
+            )}
+          </div>
         </div>
         {!isOwner && (
           <div className="flex items-center gap-[12px] md:gap-[20px]">

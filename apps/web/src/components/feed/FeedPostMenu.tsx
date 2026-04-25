@@ -81,20 +81,12 @@ export function FeedPostMenu({ postId, isOwner, onDelete }: Props) {
           ) : (
             <>
               {isOwner ? (
-                <>
-                  <button
-                    onClick={() => navigate(`/creator/post/edit/${postId}`)}
-                    className="w-full px-4 py-2 text-left text-[13px] text-foreground hover:bg-muted"
-                  >
-                    Edit post
-                  </button>
-                  <button
-                    onClick={deletePost}
-                    className="w-full px-4 py-2 text-left text-[13px] text-destructive hover:bg-muted"
-                  >
-                    Delete post
-                  </button>
-                </>
+                <button
+                  onClick={() => navigate(`/creator/post/edit/${postId}`)}
+                  className="w-full px-4 py-2 text-left text-[13px] text-foreground hover:bg-muted"
+                >
+                  Edit post
+                </button>
               ) : (
                 <button
                   onClick={reportPost}
@@ -109,6 +101,14 @@ export function FeedPostMenu({ postId, isOwner, onDelete }: Props) {
               >
                 Copy link
               </button>
+              {isOwner && (
+                <button
+                  onClick={deletePost}
+                  className="w-full px-4 py-2 text-left text-[13px] text-foreground hover:bg-muted"
+                >
+                  Delete post
+                </button>
+              )}
             </>
           )}
         </div>

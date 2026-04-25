@@ -19,6 +19,7 @@ export default function EditPost() {
   const [text, setText] = useState('');
   const [visibility, setVisibility] = useState<Visibility>('PUBLIC');
   const [ppvPrice, setPpvPrice] = useState('');
+  const [media, setMedia] = useState<{ url: string; type: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -36,6 +37,7 @@ export default function EditPost() {
             setTooOld(true);
           }
           setText(post.text ?? '');
+          setMedia((post.media ?? []) as { url: string; type: string }[]);
           const uiVis = backendVisToUi(post.visibility, post.ppvPrice);
           setVisibility(uiVis);
           if (uiVis === 'PPV' && post.ppvPrice) setPpvPrice(String(post.ppvPrice));
@@ -175,8 +177,33 @@ export default function EditPost() {
           </div>
         )}
 
+        {media.length > 0 && (
+          <div className="mt-[16px] flex flex-wrap gap-[8px]">
+            {media.map((m, i) =>
+              m.type === 'VIDEO' ? (
+                <video
+                  key={i}
+                  src={m.url}
+                  className="h-[120px] w-auto max-w-full rounded-[10px] object-cover opacity-80"
+                  muted
+                />
+              ) : (
+                <img
+                  key={i}
+                  src={m.url}
+                  alt=""
+                  className="h-[120px] w-auto max-w-full rounded-[10px] object-cover opacity-80"
+                />
+              ),
+            )}
+            <p className="w-full text-[11px] text-muted-foreground">
+              Media cannot be changed after posting.
+            </p>
+          </div>
+        )}
+
         <p className="mt-[16px] text-[12px] text-muted-foreground">
-          Note: media cannot be changed after posting. Posts are editable within 24 hours only.
+          Posts are editable within 24 hours only.
         </p>
 
         {error && <p className="mt-[12px] text-[14px] text-red-400">{error}</p>}

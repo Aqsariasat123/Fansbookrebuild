@@ -7,7 +7,7 @@ interface PostMenuProps {
 
 export function PostMenu({ open, onClose, onAction, isPinned = false }: PostMenuProps) {
   if (!open) return null;
-  const items = ['Edit', 'Remove', isPinned ? 'Unpin' : 'Pin'];
+  const items = ['Edit', isPinned ? 'Unpin' : 'Pin', 'Remove'];
   return (
     <>
       <div className="fixed inset-0 z-10" onClick={onClose} />
@@ -19,7 +19,7 @@ export function PostMenu({ open, onClose, onAction, isPinned = false }: PostMenu
               onAction(a.toLowerCase());
               onClose();
             }}
-            className={`flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] hover:bg-muted ${a === 'Remove' ? 'text-red-400' : 'text-foreground'}`}
+            className="flex w-full items-center gap-[8px] px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
           >
             {a}
           </button>
