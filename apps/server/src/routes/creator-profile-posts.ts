@@ -81,7 +81,7 @@ router.get('/:username/posts', async (req, res, next) => {
         isPinned: post.isPinned,
         likeCount: post.likeCount,
         commentCount: post.commentCount,
-        shareCount: 15,
+        shareCount: 0,
         isLiked: 'likes' in post ? (post.likes as { id: string }[]).length > 0 : false,
         createdAt: post.createdAt,
         author: post.author,

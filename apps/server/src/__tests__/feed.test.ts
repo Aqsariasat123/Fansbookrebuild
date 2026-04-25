@@ -87,7 +87,7 @@ describe('feed route logic', () => {
       isPinned: rawPost.isPinned,
       likeCount: rawPost.likeCount,
       commentCount: rawPost.commentCount,
-      shareCount: 15,
+      shareCount: 0,
       createdAt: rawPost.createdAt,
       author: rawPost.author,
       media: rawPost.media,
@@ -97,7 +97,7 @@ describe('feed route logic', () => {
 
     expect(formatted.isLiked).toBe(true);
     expect(formatted.isBookmarked).toBe(false);
-    expect(formatted.shareCount).toBe(15);
+    expect(formatted.shareCount).toBe(0);
   });
 
   it('should extract blocked user ids from both directions', () => {

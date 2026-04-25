@@ -68,7 +68,7 @@ router.get('/', authenticate, async (req, res, next) => {
       isPinned: post.isPinned,
       likeCount: post.likeCount,
       commentCount: post.commentCount,
-      shareCount: 15,
+      shareCount: 0,
       createdAt: post.createdAt,
       author: post.author,
       media: post.media,
