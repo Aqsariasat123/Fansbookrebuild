@@ -73,8 +73,13 @@ export function FeaturesSection() {
                 <p className="mt-[18px] text-[13px] font-bold tracking-[3px]" style={gradText}>
                   {g.label}
                 </p>
-                <p className="mt-[12px] text-[13px] leading-[1.9] text-white/55 break-words hyphens-none">
-                  {g.features.join(' · ')}
+                <p className="mt-[12px] text-[13px] leading-[1.9] text-white/55">
+                  {g.features.map((f, i) => (
+                    <span key={f}>
+                      <span className="whitespace-nowrap">{f}</span>
+                      {i < g.features.length - 1 && ' · '}
+                    </span>
+                  ))}
                 </p>
               </div>
             </div>
