@@ -90,6 +90,11 @@ export const creatorNavItems: NavItem[] = [
     icon: '/icons/dashboard/video-progress.svg',
     labelKey: 'nav.aiClips',
   },
+  {
+    to: '/creator/upsell',
+    icon: '/icons/dashboard/ai-assistant.svg',
+    labelKey: 'nav.aiRevenueAdvisor',
+  },
   { to: '/marketplace', icon: '/icons/dashboard/wallet-card.svg', labelKey: 'nav.marketplace' },
   {
     to: '/notifications',
@@ -130,6 +135,7 @@ export const fallbackLabels: Record<string, string> = {
   'nav.aiChatbot': 'AI Chatbot',
   'nav.aiAssistant': 'AI Assistant',
   'nav.aiClips': 'AI Viral Clips',
+  'nav.aiRevenueAdvisor': 'AI Revenue Advisor',
   'nav.verifyIdentity': 'Verify Identity',
   'nav.english': 'English',
   'nav.logout': 'Logout',

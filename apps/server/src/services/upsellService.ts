@@ -5,8 +5,8 @@ import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 
 const MODEL = 'claude-haiku-4-5-20251001';
-const CACHE_HOURS = 0; // 0 = always regenerate (set to 6 after testing)
-const MAX_SUGGESTIONS = 5;
+const CACHE_HOURS = 168; // 7 days — only regenerate when user clicks Refresh
+const MAX_SUGGESTIONS = 8;
 
 let client: Anthropic | null = null;
 function getClient(): Anthropic {
@@ -127,13 +127,13 @@ export async function generateUpsellSuggestions(creatorId: string): Promise<void
 
   const system = `You are a revenue advisor for adult content creators on a subscription platform.
 Analyze the creator's data and return exactly ${MAX_SUGGESTIONS} actionable suggestions to increase their revenue.
-Each suggestion must be specific and immediately actionable. Vary the types — do not return 5 of the same type.${avoidNote}
+Each suggestion must be specific and immediately actionable. Vary the types — do not return multiple suggestions of the same type.${avoidNote}
 Return ONLY a JSON array. Each item must have: type (POST_TIMING|FAN_ENGAGEMENT|PPV_OPPORTUNITY|REENGAGEMENT|CONTENT_STRATEGY), title (max 10 words), description (1-2 sentences, specific), priority (HIGH|MEDIUM|LOW), actionLabel (optional short CTA text), actionData (optional object).
 Example: [{"type":"REENGAGEMENT","title":"Re-engage 3 dormant subscribers","description":"3 fans haven't interacted in 14+ days and may unsubscribe soon. A personal message could bring them back.","priority":"HIGH","actionLabel":"Send Message"}]`;
 
   const response = await getClient().messages.create({
     model: MODEL,
-    max_tokens: 800,
+    max_tokens: 1400,
     system,
     messages: [{ role: 'user', content: context }],
   });
