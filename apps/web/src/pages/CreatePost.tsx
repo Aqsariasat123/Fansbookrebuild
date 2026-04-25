@@ -5,7 +5,6 @@ import { useAuthStore } from '../stores/authStore';
 import {
   AuthorRow,
   VisibilityDropdown,
-  HashtagPanel,
   MediaUploadArea,
 } from '../components/create-post/CreatePostParts';
 import type { Visibility } from '../components/create-post/CreatePostParts';
@@ -18,8 +17,6 @@ export default function CreatePost() {
   const [ppvPrice, setPpvPrice] = useState('');
   const [isPinned, setIsPinned] = useState(false);
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
-  const [tags, setTags] = useState<string[]>([]);
-  const [showTags, setShowTags] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
@@ -46,8 +43,7 @@ export default function CreatePost() {
     setSubmitting(true);
     setError('');
     try {
-      const hashtagStr = tags.map((t) => `#${t}`).join(' ');
-      const fullText = [text.trim(), hashtagStr].filter(Boolean).join('\n\n');
+      const fullText = text.trim();
       const fd = new FormData();
       fd.append('text', fullText);
       // PPV maps to PUBLIC visibility on the backend (visible/blurred to all) + ppvPrice gate
@@ -90,26 +86,6 @@ export default function CreatePost() {
                 if (v !== 'PPV') setPpvPrice('');
               }}
             />
-            {/* Hashtag toggle */}
-            <button
-              onClick={() => setShowTags((s) => !s)}
-              title="Add hashtags"
-              className={
-                showTags ? 'text-[#01adf1]' : 'text-muted-foreground hover:text-foreground'
-              }
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
-                <line x1="7" y1="7" x2="7.01" y2="7" />
-              </svg>
-            </button>
             <button
               onClick={() => navigate(-1)}
               className="text-muted-foreground hover:text-foreground"
@@ -134,14 +110,6 @@ export default function CreatePost() {
           placeholder="Say Something about this photo..."
           className="mt-[16px] min-h-[50px] w-full resize-none bg-transparent text-[14px] text-foreground placeholder-muted-foreground outline-none"
         />
-
-        {showTags && (
-          <HashtagPanel
-            tags={tags}
-            onAdd={(t) => setTags((prev) => [...prev, t])}
-            onRemove={(t) => setTags((prev) => prev.filter((x) => x !== t))}
-          />
-        )}
 
         <div className="mt-[12px] flex flex-wrap items-center gap-[16px]">
           {showPpv && (
