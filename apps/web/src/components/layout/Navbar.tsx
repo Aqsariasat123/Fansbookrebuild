@@ -97,19 +97,44 @@ function MsgButton() {
   );
 }
 
+function WalletIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M5 3.5C4.6 3.3 4.1 3.5 4 3.9L2.8 7.5H8.5L7 3.9C6.8 3.4 6.3 3.2 5.8 3.4Z"
+        opacity="0.6"
+      />
+      <path d="M9 3C8.6 2.8 8.1 3 8 3.5L6.5 7.5H13L11.2 3.4C11 2.9 10.5 2.8 10 3Z" opacity="0.85" />
+      <rect x="2" y="7.5" width="20" height="13.5" rx="2.5" />
+      <rect x="17" y="12" width="4.5" height="5" rx="2.25" fill="white" />
+      <circle cx="19.25" cy="14.5" r="1.1" fill="currentColor" />
+    </svg>
+  );
+}
+
 function WalletButton() {
   const user = useAuthStore((s) => s.user);
   const { wallet } = useSidebarBadges();
   const walletPath = user?.role === 'CREATOR' ? '/creator/wallet' : '/wallet';
   const display = wallet >= 1000 ? `${(wallet / 1000).toFixed(1)}k` : String(wallet);
   return (
-    <Link
-      to={walletPath}
-      className="flex items-center gap-[6px] rounded-full bg-muted px-[14px] py-[8px] text-[13px] font-semibold text-foreground hover:bg-muted-foreground/20 transition-colors"
-    >
-      <span className="text-[16px]">🪙</span>
-      <span>{display}</span>
-    </Link>
+    <div className="relative group">
+      <Link
+        to={walletPath}
+        className="flex items-center gap-[6px] rounded-full bg-muted px-[14px] py-[8px] text-[13px] font-semibold text-foreground hover:bg-muted-foreground/20 transition-colors"
+      >
+        <WalletIcon className="size-[18px]" />
+        <span>{display}</span>
+      </Link>
+      <span className="pointer-events-none absolute left-1/2 top-full mt-[6px] -translate-x-1/2 whitespace-nowrap rounded-[6px] bg-foreground px-[8px] py-[4px] text-[11px] font-medium text-background opacity-0 transition-opacity group-hover:opacity-100">
+        Wallet
+      </span>
+    </div>
   );
 }
 
