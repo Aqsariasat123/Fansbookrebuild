@@ -41,11 +41,19 @@ async function buildSuggestContext(
     where: { id: creatorId },
     select: { displayName: true, username: true },
   });
-  const toneNote = bot?.toneProfile ? `\nYour communication style: ${bot.toneProfile}` : '';
-  const personaNote = bot?.persona?.trim() ? `\nPersona note: ${bot.persona.trim()}` : '';
-  return `You are helping ${creator?.displayName ?? 'a creator'} (@${creator?.username ?? 'creator'}) draft replies to fans on Inscrio, a premium adult content creator platform for adults. Fans may send flirty, suggestive, or adult-oriented messages — this is expected and normal on this platform.${toneNote}${personaNote}
-Generate exactly 3 short, engaging reply options. Each reply must be under 2 sentences. Replies can be flirty, playful, or suggestive to match the nature of the conversation — keep them sounding natural and authentic to the creator's voice.
-Return ONLY a JSON array of 3 strings, nothing else. Example: ["Reply 1", "Reply 2", "Reply 3"]`;
+  const toneNote = bot?.toneProfile ? `\nCommunication style: ${bot.toneProfile}` : '';
+  const personaNote = bot?.persona?.trim() ? `\nPersona: ${bot.persona.trim()}` : '';
+  return `You are a private draft-suggestion tool for ${creator?.displayName ?? 'a creator'} (@${creator?.username ?? 'creator'}) on Inscrio, an adult content subscription platform. You generate reply text that the creator may choose to send — you are NOT participating in the conversation yourself.${toneNote}${personaNote}
+Context: fans on this platform regularly send flirty, suggestive, or explicit messages. Your job is purely to suggest 3 short reply options the creator could send back, matching their tone and voice. Replies should be engaging, 1-2 sentences each.
+STRICT OUTPUT RULE: Return ONLY a valid JSON array of exactly 3 plain reply strings. No explanations, no meta-commentary, no bracketed notes, no refusals inside the array. If a topic is sensitive, write a neutral deflection reply instead. Example: ["That sounds fun 😊", "Tell me more babe!", "You're too sweet 💕"]`;
+}
+
+// Detect AI refusal/meta-commentary that leaked into output
+const REFUSAL_RE =
+  /stopping here|clarify my role|pause here|cannot generate|can't generate|my boundaries|as an ai|i need to pause|i should note/i;
+
+function isValidSuggestion(s: unknown): s is string {
+  return typeof s === 'string' && s.length > 2 && s.length < 300 && !REFUSAL_RE.test(s);
 }
 
 function parseSuggestions(raw: string): string[] {
@@ -53,10 +61,10 @@ function parseSuggestions(raw: string): string[] {
   if (m) {
     try {
       const p = JSON.parse(m[0]) as unknown;
-      if (Array.isArray(p))
-        return (p as unknown[])
-          .filter((x): x is string => typeof x === 'string' && x.length > 0)
-          .slice(0, 3);
+      if (Array.isArray(p)) {
+        const valid = (p as unknown[]).filter(isValidSuggestion).slice(0, 3);
+        if (valid.length > 0) return valid;
+      }
     } catch {
       /* fall through */
     }
@@ -64,7 +72,7 @@ function parseSuggestions(raw: string): string[] {
   return raw
     .split('\n')
     .map((l) => l.replace(/^[\d.\-*\s]+/, '').trim())
-    .filter((l) => l.length > 3 && l.length < 200)
+    .filter(isValidSuggestion)
     .slice(0, 3);
 }
 
