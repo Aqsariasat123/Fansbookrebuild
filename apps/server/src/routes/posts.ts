@@ -10,7 +10,13 @@ import commentsRouter from './posts-comments.js';
 import { logActivity } from '../utils/audit.js';
 import { checkBadges } from '../utils/check-badges.js';
 import { createPostMedia } from '../utils/postMedia.js';
-import { buildPostCreateData } from '../utils/postHelpers.js';
+import { buildPostCreateData, buildPostUpdate } from '../utils/postHelpers.js';
+import { encodeUserIdIntoImage } from '../utils/lsbWatermark.js';
+import {
+  extractBearerToken,
+  resolveViewerId,
+  isWatermarkEnabled,
+} from '../utils/postServeHelpers.js';
 
 const router = Router();
 const postsUploadsDir = path.join(process.cwd(), 'uploads', 'posts');
@@ -54,12 +60,35 @@ const POST_INCLUDE = {
 router.use('/', commentsRouter);
 
 // ─── GET /api/posts/file/:filename ── serve uploaded files ──
-router.get('/file/:filename', (req, res, next) => {
+router.get('/file/:filename', async (req, res, next) => {
   try {
-    const sanitized = path.basename(req.params.filename);
+    const sanitized = path.basename(req.params.filename as string);
     const filePath = path.join(postsUploadsDir, sanitized);
     if (!fs.existsSync(filePath)) throw new AppError(404, 'File not found');
-    res.sendFile(filePath);
+
+    const isImage = /\.(webp|png|jpg|jpeg)$/i.test(sanitized);
+    const viewerId = isImage
+      ? resolveViewerId(
+          extractBearerToken(req.query as Record<string, unknown>, req.headers.authorization),
+        )
+      : null;
+
+    if (!viewerId || !isImage) {
+      res.sendFile(filePath);
+      return;
+    }
+
+    const enabled = await isWatermarkEnabled(sanitized);
+    if (!enabled) {
+      res.sendFile(filePath);
+      return;
+    }
+
+    const raw = fs.readFileSync(filePath);
+    const watermarked = await encodeUserIdIntoImage(raw, viewerId);
+    res.set('Content-Type', 'image/webp');
+    res.set('Cache-Control', 'private, no-store');
+    res.send(watermarked);
   } catch (err) {
     next(err);
   }
@@ -109,25 +138,6 @@ router.post(
     }
   },
 );
-
-function buildPostUpdate(body: Record<string, unknown>): Record<string, unknown> {
-  const data: Record<string, unknown> = {};
-  if (body.text !== undefined) {
-    if (typeof body.text !== 'string' || (body.text as string).trim().length === 0)
-      throw new AppError(400, 'Text cannot be empty');
-    data.text = (body.text as string).trim();
-  }
-  if (body.visibility !== undefined) {
-    if (!['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'].includes(body.visibility as string))
-      throw new AppError(400, 'Invalid visibility value');
-    data.visibility = body.visibility;
-  }
-  if (body.ppvPrice !== undefined) {
-    const price = parseFloat(body.ppvPrice as string);
-    data.ppvPrice = isNaN(price) || price <= 0 ? null : price;
-  }
-  return data;
-}
 
 // ─── PUT /api/posts/:id ── edit post (owner only) ──────────
 router.put('/:id', authenticate, async (req, res, next) => {
@@ -195,7 +205,6 @@ router.delete('/:id', authenticate, async (req, res, next) => {
     if (!post || post.deletedAt) throw new AppError(404, 'Post not found');
     if (post.authorId !== userId) throw new AppError(403, 'Not authorized to delete this post');
 
-    // Soft delete
     await prisma.post.update({ where: { id: postId }, data: { deletedAt: new Date() } });
 
     logActivity(userId, 'POST_DELETE', 'Post', postId, null, req);

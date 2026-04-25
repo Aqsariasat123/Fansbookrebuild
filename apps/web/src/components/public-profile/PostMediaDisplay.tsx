@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MediaViewer } from '../feed/MediaViewer';
 import { ImageWatermark } from '../shared/ImageWatermark';
+import { withWatermark } from '../../lib/api';
 
 interface MediaItem {
   id: string;
@@ -41,7 +42,11 @@ function SingleImage({
       className="relative aspect-[3/4] w-[55%] max-w-[320px] cursor-pointer overflow-hidden rounded-[12px] md:w-[45%] md:max-w-[380px] md:rounded-[22px]"
       onClick={onClick}
     >
-      <img src={image.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <img
+        src={withWatermark(image.url)}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       {username && <ImageWatermark username={username} />}
     </div>
   );
@@ -62,7 +67,11 @@ function MultiImageGrid({
         className="relative h-[160px] w-[60%] shrink-0 cursor-pointer overflow-hidden rounded-[22px] md:h-[356px] md:w-[518px]"
         onClick={() => onClickIndex(0)}
       >
-        <img src={images[0]?.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={withWatermark(images[0]?.url ?? '')}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         {username && <ImageWatermark username={username} />}
       </div>
       <div className="flex flex-1 flex-col gap-[10px] md:gap-[20px]">

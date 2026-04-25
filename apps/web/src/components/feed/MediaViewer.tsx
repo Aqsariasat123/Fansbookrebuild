@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ImageWatermark } from '../shared/ImageWatermark';
+import { VideoWatermarkCanvas } from './VideoWatermarkCanvas';
+import { withWatermark } from '../../lib/api';
 
 interface MediaItem {
   id: string;
@@ -105,12 +107,13 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
           <div className="relative h-full w-full">
             <video
               key={item.id}
-              src={item.url}
+              src={withWatermark(item.url)}
               controls
               autoPlay
               playsInline
               className="h-full w-full rounded-none object-contain md:rounded-xl"
             />
+            <VideoWatermarkCanvas />
             {username && <ImageWatermark username={username} />}
           </div>
         </div>
@@ -121,7 +124,7 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
         >
           <img
             key={item.id}
-            src={item.url}
+            src={withWatermark(item.url)}
             alt=""
             style={{
               gridArea: '1/1',

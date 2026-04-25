@@ -6,6 +6,7 @@ import {
   AuthorRow,
   VisibilityDropdown,
   MediaUploadArea,
+  WatermarkToggle,
 } from '../components/create-post/CreatePostParts';
 import type { Visibility } from '../components/create-post/CreatePostParts';
 
@@ -16,6 +17,7 @@ export default function CreatePost() {
   const [visibility, setVisibility] = useState<Visibility>('PUBLIC');
   const [ppvPrice, setPpvPrice] = useState('');
   const [isPinned, setIsPinned] = useState(false);
+  const [watermarkEnabled, setWatermarkEnabled] = useState(true);
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -54,6 +56,7 @@ export default function CreatePost() {
       fd.append('visibility', visibility === 'PPV' ? 'PUBLIC' : visibility);
       if (visibility === 'PPV' && ppvPrice) fd.append('ppvPrice', ppvPrice);
       if (isPinned) fd.append('isPinned', 'true');
+      fd.append('watermarkEnabled', watermarkEnabled ? 'true' : 'false');
       images.forEach((img) => fd.append('media', img.file));
       await api.post('/posts', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       navigate('/creator/profile');
@@ -86,6 +89,10 @@ export default function CreatePost() {
             <VisibilityDropdown
               value={visibility}
               onChange={(v) => {
+                if (v === 'STORY') {
+                  navigate('/stories/create');
+                  return;
+                }
                 setVisibility(v);
                 if (v !== 'PPV') setPpvPrice('');
               }}
@@ -140,6 +147,7 @@ export default function CreatePost() {
             />
             <span className="text-[13px] text-muted-foreground">Pin to top</span>
           </label>
+          <WatermarkToggle enabled={watermarkEnabled} onChange={setWatermarkEnabled} />
         </div>
 
         <MediaUploadArea

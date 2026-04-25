@@ -314,7 +314,8 @@ model User {
   fraudEvents           FraudEvent[]
   purchasesAsBuyer      MarketplacePurchase[]    @relation("PurchaseBuyer")
   purchasesAsSeller     MarketplacePurchase[]    @relation("PurchaseSeller")
-  aiClipJobs            AIClipJob[]
+  aiClipJobs                AIClipJob[]
+  watermarkInvestigations   WatermarkInvestigation[] @relation("WatermarkAdmin")
   creatorLiveAuctions    LiveAuction[]    @relation("CreatorLiveAuctions")
   wonLiveAuctions        LiveAuction[]    @relation("WonLiveAuctions")
   currentLiveAuctionBids LiveAuction[]    @relation("CurrentLiveAuctionBidder")
@@ -401,17 +402,18 @@ model Block {
 // ─── Content (Phase 2) ──────────────────────────────────
 
 model Post {
-  id           String         @id @default(cuid())
-  authorId     String
-  text         String?
-  visibility   PostVisibility @default(PUBLIC)
-  isPinned     Boolean        @default(false)
-  ppvPrice     Float?
-  likeCount    Int            @default(0)
-  commentCount Int            @default(0)
-  deletedAt    DateTime?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id                String         @id @default(cuid())
+  authorId          String
+  text              String?
+  visibility        PostVisibility @default(PUBLIC)
+  isPinned          Boolean        @default(false)
+  ppvPrice          Float?
+  likeCount         Int            @default(0)
+  commentCount      Int            @default(0)
+  watermarkEnabled  Boolean        @default(true)
+  deletedAt         DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 
   author       User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
   media        PostMedia[]
@@ -424,6 +426,21 @@ model Post {
   @@index([authorId])
   @@index([visibility])
   @@index([createdAt])
+}
+
+model WatermarkInvestigation {
+  id            String   @id @default(cuid())
+  adminId       String
+  filename      String
+  decodedUserId String?
+  username      String?
+  displayName   String?
+  foundAt       DateTime @default(now())
+
+  admin User @relation("WatermarkAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([decodedUserId])
 }
 
 model PostMedia {

@@ -47,6 +47,7 @@ const AdminSupport = lazy(() => import('./AdminSupport'));
 const AdminEscrow = lazy(() => import('./AdminEscrow'));
 const AdminAIClips = lazy(() => import('./AdminAIClips'));
 const AdminLiveAuctions = lazy(() => import('./AdminLiveAuctions'));
+const AdminWatermark = lazy(() => import('./AdminWatermark'));
 
 export function adminRoutes() {
   return (
@@ -97,6 +98,7 @@ export function adminRoutes() {
             <Route path="/admin/escrow" element={<AdminEscrow />} />
             <Route path="/admin/ai-clips" element={<AdminAIClips />} />
             <Route path="/admin/live-auctions" element={<AdminLiveAuctions />} />
+            <Route path="/admin/watermark" element={<AdminWatermark />} />
           </Route>
         </Route>
       </Route>

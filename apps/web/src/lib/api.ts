@@ -5,6 +5,15 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+// Appends the viewer's JWT as ?token= so the backend can embed their userId via LSB.
+// Only applied to post file URLs (images served from /api/posts/file/*).
+export function withWatermark(url: string): string {
+  if (!url.includes('/api/posts/file/')) return url;
+  const token = localStorage.getItem('accessToken');
+  if (!token) return url;
+  return `${url}?token=${encodeURIComponent(token)}`;
+}
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {

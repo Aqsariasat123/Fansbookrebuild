@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
-export type Visibility = 'PUBLIC' | 'SUBSCRIBERS' | 'TIER_SPECIFIC' | 'PPV';
+export type Visibility = 'PUBLIC' | 'SUBSCRIBERS' | 'TIER_SPECIFIC' | 'PPV' | 'STORY';
 
 export const VIS_LABELS: Record<Visibility, string> = {
   PUBLIC: 'Public',
   SUBSCRIBERS: 'Followers',
   TIER_SPECIFIC: 'Subscribers',
   PPV: 'Pay Per View',
+  STORY: 'Story',
 };
 
 export function AuthorRow({
@@ -66,18 +67,20 @@ export function VisibilityDropdown({
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-[32px] z-20 min-w-[120px] rounded-[8px] bg-card py-[4px] shadow-lg">
-            {(['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC', 'PPV'] as Visibility[]).map((v) => (
-              <button
-                key={v}
-                onClick={() => {
-                  onChange(v);
-                  setOpen(false);
-                }}
-                className="flex w-full px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
-              >
-                {VIS_LABELS[v]}
-              </button>
-            ))}
+            {(['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC', 'PPV', 'STORY'] as Visibility[]).map(
+              (v) => (
+                <button
+                  key={v}
+                  onClick={() => {
+                    onChange(v);
+                    setOpen(false);
+                  }}
+                  className="flex w-full px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
+                >
+                  {VIS_LABELS[v]}
+                </button>
+              ),
+            )}
           </div>
         </>
       )}
@@ -140,6 +143,26 @@ export function HashtagPanel({
         />
       </div>
     </div>
+  );
+}
+
+export function WatermarkToggle({
+  enabled,
+  onChange,
+}: {
+  enabled: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <label className="flex cursor-pointer items-center gap-[8px]">
+      <input
+        type="checkbox"
+        checked={enabled}
+        onChange={(e) => onChange(e.target.checked)}
+        className="size-[16px] accent-[#01adf1]"
+      />
+      <span className="text-[13px] text-muted-foreground">Forensic watermark</span>
+    </label>
   );
 }
 

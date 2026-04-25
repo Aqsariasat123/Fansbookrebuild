@@ -45,9 +45,14 @@ export function MediaUploadArea({
         {images.map((img, i) => {
           const isVideo = img.file.type.startsWith('video/');
           return (
-            <div key={i} className="relative aspect-square overflow-hidden rounded-[12px]">
+            <div key={i} className="relative overflow-hidden rounded-[12px]">
               {isVideo ? (
-                <video src={img.preview} className="size-full object-cover" muted />
+                <video
+                  src={img.preview}
+                  className="w-full rounded-[12px]"
+                  controls
+                  preload="metadata"
+                />
               ) : (
                 <img src={img.preview} alt="" className="size-full object-cover" />
               )}
@@ -66,15 +71,6 @@ export function MediaUploadArea({
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
               </button>
-              {isVideo && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <div className="flex size-[40px] items-center justify-center rounded-full bg-black/50">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                </div>
-              )}
             </div>
           );
         })}

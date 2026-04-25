@@ -1,5 +1,24 @@
 import { AppError } from '../middleware/errorHandler.js';
 
+export function buildPostUpdate(body: Record<string, unknown>): Record<string, unknown> {
+  const data: Record<string, unknown> = {};
+  if (body.text !== undefined) {
+    if (typeof body.text !== 'string' || (body.text as string).trim().length === 0)
+      throw new AppError(400, 'Text cannot be empty');
+    data.text = (body.text as string).trim();
+  }
+  if (body.visibility !== undefined) {
+    if (!['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'].includes(body.visibility as string))
+      throw new AppError(400, 'Invalid visibility value');
+    data.visibility = body.visibility;
+  }
+  if (body.ppvPrice !== undefined) {
+    const price = parseFloat(body.ppvPrice as string);
+    data.ppvPrice = isNaN(price) || price <= 0 ? null : price;
+  }
+  return data;
+}
+
 export type PostVisibility = 'PUBLIC' | 'SUBSCRIBERS' | 'TIER_SPECIFIC';
 const VALID_VISIBILITIES: PostVisibility[] = ['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'];
 
@@ -27,5 +46,6 @@ export function buildPostCreateData(userId: string, body: Record<string, string>
     visibility: resolvedVis,
     ...(parsedPpv && resolvedVis !== 'PUBLIC' ? { ppvPrice: parsedPpv } : {}),
     ...(body.isPinned === 'true' ? { isPinned: true } : {}),
+    watermarkEnabled: body.watermarkEnabled !== 'false',
   };
 }

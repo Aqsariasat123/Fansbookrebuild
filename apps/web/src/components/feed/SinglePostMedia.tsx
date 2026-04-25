@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { MultiImageGrid } from './MultiImageGrid';
 import { MediaViewer } from './MediaViewer';
 import { VideoThumbnail } from './VideoThumbnail';
+import { withWatermark } from '../../lib/api';
 
 interface Media {
   id: string;
@@ -23,7 +24,11 @@ export function SinglePostMedia({ media }: { media: Media[] }) {
           className="relative aspect-[3/4] w-[60%] cursor-pointer overflow-hidden rounded-[22px]"
           onClick={() => setViewerIdx(0)}
         >
-          <img src={images[0].url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={withWatermark(images[0].url)}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         </div>
       )}
       {images.length > 1 && <MultiImageGrid images={images} onClickImage={setViewerIdx} />}
