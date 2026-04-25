@@ -36,8 +36,8 @@ router.get('/', authenticate, async (req, res, next) => {
 
     const posts = await prisma.post.findMany({
       where: {
-        visibility: 'PUBLIC',
         authorId: { in: followedIds, notIn: blockedIds.length > 0 ? blockedIds : undefined },
+        visibility: { in: ['PUBLIC', 'SUBSCRIBERS'] },
         deletedAt: null,
       },
       orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
@@ -66,6 +66,7 @@ router.get('/', authenticate, async (req, res, next) => {
       id: post.id,
       text: post.text,
       isPinned: post.isPinned,
+      ppvPrice: post.ppvPrice ?? null,
       likeCount: post.likeCount,
       commentCount: post.commentCount,
       shareCount: 0,
