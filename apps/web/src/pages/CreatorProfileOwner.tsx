@@ -126,7 +126,7 @@ export default function CreatorProfileOwner() {
           onSchedule={() => setShowSchedule(true)}
         />
         <div className="mt-[20px]">
-          <div className="rounded-[22px] bg-card">
+          <div className="overflow-hidden rounded-[22px] bg-card">
             <ContentTabs activeTab={activeTab} onTabChange={setActiveTab} />
           </div>
           <div className="mt-[12px] flex flex-col gap-[12px] md:mt-[16px] md:gap-[16px]">
