@@ -17,6 +17,7 @@ import {
   resolveViewerId,
   isWatermarkEnabled,
 } from '../utils/postServeHelpers.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 const postsUploadsDir = path.join(process.cwd(), 'uploads', 'posts');
@@ -67,23 +68,40 @@ router.get('/file/:filename', async (req, res, next) => {
     if (!fs.existsSync(filePath)) throw new AppError(404, 'File not found');
 
     const isImage = /\.(webp|png|jpg|jpeg)$/i.test(sanitized);
-    const viewerId = isImage
-      ? resolveViewerId(
-          extractBearerToken(req.query as Record<string, unknown>, req.headers.authorization),
-        )
-      : null;
+    const rawToken = extractBearerToken(
+      req.query as Record<string, unknown>,
+      req.headers.authorization,
+    );
+    const viewerId = isImage ? resolveViewerId(rawToken) : null;
+
+    logger.info({
+      event: 'file_serve',
+      file: sanitized,
+      isImage,
+      hasToken: !!rawToken,
+      tokenPrefix: rawToken ? rawToken.slice(0, 12) + '...' : null,
+      viewerId: viewerId ? viewerId.slice(0, 8) + '...' : null,
+      ip: req.ip,
+    });
 
     if (!viewerId || !isImage) {
+      logger.info({
+        event: 'file_serve_clean',
+        file: sanitized,
+        reason: !isImage ? 'not_image' : 'no_token',
+      });
       res.sendFile(filePath);
       return;
     }
 
     const enabled = await isWatermarkEnabled(sanitized);
     if (!enabled) {
+      logger.info({ event: 'file_serve_clean', file: sanitized, reason: 'wm_disabled' });
       res.sendFile(filePath);
       return;
     }
 
+    logger.info({ event: 'file_serve_watermarked', file: sanitized, viewerId });
     const raw = fs.readFileSync(filePath);
     const watermarked = await encodeUserIdIntoImage(raw, viewerId);
     res.set('Content-Type', 'image/webp');
