@@ -2,12 +2,12 @@ import sharp from 'sharp';
 
 // Magic prefix "WM" written before the userId so we can distinguish a real
 // watermark from random pixel noise in non-watermarked images.
-// Layout: 2-char magic "WM" + 24-char CUID = 26 chars = 208 bits = 208 pixels.
+// Layout: 2-char magic "WM" + 25-char CUID = 27 chars = 216 bits = 216 pixels.
 
 const MAGIC = 'WM';
-const CUID_LEN = 24;
-const PAYLOAD = MAGIC + '\0'.repeat(CUID_LEN); // 26 chars
-const BITS = PAYLOAD.length * 8; // 208
+const CUID_LEN = 25;
+const PAYLOAD = MAGIC + '\0'.repeat(CUID_LEN); // 27 chars
+const BITS = PAYLOAD.length * 8; // 216
 
 function encodeString(s: string, data: Buffer, ch: number): void {
   for (let bit = 0; bit < s.length * 8; bit++) {
