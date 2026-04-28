@@ -108,7 +108,6 @@ export default function App() {
             <NotificationToastContainer />
             <Suspense fallback={<Loading />}>
               <Routes>
-                {/* Marketing pages (no layout) */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/make-money" element={<MakeMoney />} />
                 <Route path="/creators" element={<Creators />} />
@@ -121,23 +120,19 @@ export default function App() {
                 <Route path="/cookies" element={<Cookies />} />
                 <Route path="/complaints" element={<Complaints />} />
                 <Route path="/faq" element={<FAQ />} />
-
-                {/* Payment checkout (no layout) */}
                 <Route path="/payment/checkout" element={<PaymentGateway />} />
-
-                {/* Auth pages (no layout) */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/2fa/verify" element={<TwoFactorVerify />} />
-
-                {/* Protected app routes with layout */}
+                <Route element={<MainLayout />}>
+                  <Route path="/u/:username" element={<CreatorPublicProfile />} />
+                </Route>
                 <Route element={<ProtectedRoute />}>
                   <Route element={<MainLayout />}>
                     <Route path="/verify-identity" element={<VerifyIdentity />} />
-                    {/* Shared routes (both fan + creator) */}
                     <Route path="/feed" element={<Home />} />
                     <Route path="/post/:id" element={<SinglePost />} />
                     <Route path="/following" element={<Following />} />
@@ -157,16 +152,9 @@ export default function App() {
                     <Route path="/marketplace/create" element={<MarketplaceCreate />} />
                     <Route path="/leaderboard" element={<LeaderboardPage />} />
                     <Route path="/badges" element={<BadgesPage />} />
-
-                    {/* Live browsing + viewer + Video call */}
                     <Route path="/live-browse" element={<LiveBrowse />} />
                     <Route path="/live/:sessionId" element={<LiveWatch />} />
                     <Route path="/call/:callId" element={<VideoCallScreen />} />
-
-                    {/* Public creator profile (requires login) */}
-                    <Route path="/u/:username" element={<CreatorPublicProfile />} />
-
-                    {/* Fan-only routes */}
                     <Route element={<RoleRoute allowedRoles={['FAN', 'ADMIN']} />}>
                       <Route path="/become-creator" element={<BecomeCreator />} />
                       <Route path="/profile" element={<Profile />} />
@@ -176,8 +164,6 @@ export default function App() {
                       <Route path="/followers" element={<Followers />} />
                       <Route path="/subscription" element={<Subscriptions />} />
                     </Route>
-
-                    {/* Creator-only routes */}
                     <Route element={<RoleRoute allowedRoles={['CREATOR', 'ADMIN']} />}>
                       <Route path="/creator/dashboard" element={<CreatorDashboardHome />} />
                       <Route path="/creator/analytics" element={<CreatorAnalytics />} />
@@ -199,9 +185,7 @@ export default function App() {
                     </Route>
                   </Route>
                 </Route>
-
                 {adminRoutes()}
-
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
