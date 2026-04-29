@@ -66,7 +66,11 @@ function getVideoOverlay(
         onUnlocked={() => onRefresh?.()}
       />
     );
-  if (post.visibility === 'TIER_SPECIFIC' && !post.isSubscribed && !isOwner)
+  const isSubLocked =
+    (post.visibility === 'TIER_SPECIFIC' || post.visibility === 'SUBSCRIBERS') &&
+    !post.isSubscribed &&
+    !isOwner;
+  if (isSubLocked)
     return <SubscriberOverlay username={post.author.username} thumbnailUrl={thumb} />;
   return null;
 }

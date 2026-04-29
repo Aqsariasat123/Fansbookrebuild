@@ -71,7 +71,10 @@ export function ImagePost({
   const images = post.media.filter((m) => m.type === 'IMAGE');
   const [viewerIdx, setViewerIdx] = useState<number | null>(null);
   const isPpv = !!post.ppvPrice && !post.isPpvUnlocked;
-  const isSubscriberLocked = post.visibility === 'TIER_SPECIFIC' && !post.isSubscribed && !isOwner;
+  const isSubscriberLocked =
+    (post.visibility === 'TIER_SPECIFIC' || post.visibility === 'SUBSCRIBERS') &&
+    !post.isSubscribed &&
+    !isOwner;
 
   return (
     <div className="rounded-[11px] bg-card px-[9px] py-[6px] md:rounded-[22px] md:px-[20px] md:py-[13px]">

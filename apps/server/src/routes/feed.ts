@@ -40,10 +40,12 @@ router.get('/', authenticate, async (req, res, next) => {
     const followedIds = follows.map((f) => f.followingId);
     followedIds.push(userId);
     const subscribedCreatorIds = new Set(subs.map((s) => s.creatorId));
+    const visibleAuthorIds =
+      blockedIds.length > 0 ? followedIds.filter((id) => !blockedIds.includes(id)) : followedIds;
 
     const posts = await prisma.post.findMany({
       where: {
-        authorId: { in: followedIds, notIn: blockedIds.length > 0 ? blockedIds : undefined },
+        authorId: { in: visibleAuthorIds },
         visibility: { in: ['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'] },
         deletedAt: null,
       },
@@ -66,6 +68,7 @@ router.get('/', authenticate, async (req, res, next) => {
         },
         likes: { where: { userId }, select: { id: true }, take: 1 },
         bookmarks: { where: { userId }, select: { id: true }, take: 1 },
+        ppvPurchases: { where: { userId }, select: { id: true }, take: 1 },
       },
     });
 
@@ -75,6 +78,7 @@ router.get('/', authenticate, async (req, res, next) => {
       isPinned: post.isPinned,
       visibility: post.visibility,
       ppvPrice: post.ppvPrice ?? null,
+      isPpvUnlocked: post.ppvPurchases.length > 0,
       likeCount: post.likeCount,
       commentCount: post.commentCount,
       shareCount: 0,
