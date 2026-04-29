@@ -10,10 +10,12 @@ interface ProfileSharePopupProps {
 
 export function ProfileSharePopup({ username, pos, onClose }: ProfileSharePopupProps) {
   const popupRef = useRef<HTMLDivElement>(null);
+  const isSharingRef = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
+      if (isSharingRef.current) return;
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) onClose();
     };
     const keyHandler = (e: KeyboardEvent) => {
@@ -29,20 +31,16 @@ export function ProfileSharePopup({ username, pos, onClose }: ProfileSharePopupP
 
   const profileUrl = `${window.location.origin}/u/${username}`;
 
-  const handleShareMessage = () => {
-    navigator.clipboard.writeText(profileUrl).catch(() => {});
-    showToast('Profile link copied — paste it in your message');
-    navigate('/messages');
-    onClose();
-  };
-
   const handleShareVia = async () => {
     if (navigator.share) {
+      isSharingRef.current = true;
       try {
         await navigator.share({ title: `@${username} on Inscrio`, url: profileUrl });
         onClose();
       } catch {
         /* cancelled */
+      } finally {
+        isSharingRef.current = false;
       }
     } else {
       try {
@@ -74,26 +72,6 @@ export function ProfileSharePopup({ username, pos, onClose }: ProfileSharePopupP
         className="fixed z-50 w-[226px] rounded-[16px] bg-card px-[20px] pb-[20px] pt-[16px] shadow-xl border border-border"
       >
         <div className="flex flex-col gap-[24px]">
-          <button
-            onClick={handleShareMessage}
-            className="flex items-center gap-[12px] text-left hover:opacity-70 transition-opacity"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
-            <span className="text-[13px] text-foreground">Share profile via message</span>
-          </button>
-
           <button
             onClick={handleShareVia}
             className="flex items-center gap-[12px] text-left hover:opacity-70 transition-opacity"
