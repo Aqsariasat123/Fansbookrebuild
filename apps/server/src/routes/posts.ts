@@ -19,6 +19,10 @@ import {
 } from '../utils/postServeHelpers.js';
 import { logger } from '../utils/logger.js';
 
+// Per-viewer watermark cache: key = "userId:filename", TTL 10 min
+const wmCache = new Map<string, { buf: Buffer; exp: number }>();
+const WM_TTL = 10 * 60 * 1000;
+
 const router = Router();
 const postsUploadsDir = path.join(process.cwd(), 'uploads', 'posts');
 if (!fs.existsSync(postsUploadsDir)) fs.mkdirSync(postsUploadsDir, { recursive: true });
@@ -60,53 +64,40 @@ const POST_INCLUDE = {
 // Mount comments sub-router
 router.use('/', commentsRouter);
 
-// ─── GET /api/posts/file/:filename ── serve uploaded files ──
+async function serveWatermarked(
+  fp: string,
+  name: string,
+  uid: string,
+  res: import('express').Response,
+) {
+  const key = `${uid}:${name}`;
+  const hit = wmCache.get(key);
+  if (hit && hit.exp > Date.now()) {
+    res.set('Content-Type', 'image/webp').set('Cache-Control', 'private, no-store').send(hit.buf);
+    return;
+  }
+  const wm = await encodeUserIdIntoImage(fs.readFileSync(fp), uid);
+  wmCache.set(key, { buf: wm, exp: Date.now() + WM_TTL });
+  res.set('Content-Type', 'image/webp').set('Cache-Control', 'private, no-store').send(wm);
+}
+
 router.get('/file/:filename', async (req, res, next) => {
   try {
     const sanitized = path.basename(req.params.filename as string);
     const filePath = path.join(postsUploadsDir, sanitized);
     if (!fs.existsSync(filePath)) throw new AppError(404, 'File not found');
-
     const isImage = /\.(webp|png|jpg|jpeg)$/i.test(sanitized);
-    const rawToken = extractBearerToken(
-      req.query as Record<string, unknown>,
-      req.headers.authorization,
-    );
-    const viewerId = isImage ? resolveViewerId(rawToken) : null;
-
-    logger.info({
-      event: 'file_serve',
-      file: sanitized,
-      isImage,
-      hasToken: !!rawToken,
-      tokenPrefix: rawToken ? rawToken.slice(0, 12) + '...' : null,
-      viewerId: viewerId ? viewerId.slice(0, 8) + '...' : null,
-      ip: req.ip,
-    });
-
-    if (!viewerId || !isImage) {
-      logger.info({
-        event: 'file_serve_clean',
-        file: sanitized,
-        reason: !isImage ? 'not_image' : 'no_token',
-      });
+    const viewerId = isImage
+      ? resolveViewerId(
+          extractBearerToken(req.query as Record<string, unknown>, req.headers.authorization),
+        )
+      : null;
+    logger.info({ event: 'file_serve', file: sanitized, hasToken: !!viewerId, ip: req.ip });
+    if (!viewerId || !isImage || !(await isWatermarkEnabled(sanitized))) {
       res.sendFile(filePath);
       return;
     }
-
-    const enabled = await isWatermarkEnabled(sanitized);
-    if (!enabled) {
-      logger.info({ event: 'file_serve_clean', file: sanitized, reason: 'wm_disabled' });
-      res.sendFile(filePath);
-      return;
-    }
-
-    logger.info({ event: 'file_serve_watermarked', file: sanitized, viewerId });
-    const raw = fs.readFileSync(filePath);
-    const watermarked = await encodeUserIdIntoImage(raw, viewerId);
-    res.set('Content-Type', 'image/webp');
-    res.set('Cache-Control', 'private, no-store');
-    res.send(watermarked);
+    await serveWatermarked(filePath, sanitized, viewerId, res);
   } catch (err) {
     next(err);
   }
@@ -157,33 +148,21 @@ router.post(
   },
 );
 
-// ─── PUT /api/posts/:id ── edit post (owner only) ──────────
 router.put('/:id', authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.userId;
     const postId = req.params.id as string;
-
     const post = await prisma.post.findUnique({ where: { id: postId } });
     if (!post) throw new AppError(404, 'Post not found');
     if (post.authorId !== userId) throw new AppError(403, 'Not authorized to edit this post');
-
-    // 24-hour edit restriction
-    const hoursSinceCreation = (Date.now() - post.createdAt.getTime()) / (1000 * 60 * 60);
-    if (hoursSinceCreation > 24) {
+    if ((Date.now() - post.createdAt.getTime()) / 3600000 > 24)
       throw new AppError(403, 'Posts can only be edited within 24 hours of creation');
-    }
-
     const updateData = buildPostUpdate(req.body as Record<string, unknown>);
-
     const updated = await prisma.post.update({
       where: { id: postId },
       data: updateData,
-      include: {
-        author: { select: AUTHOR_SELECT },
-        media: { orderBy: { order: 'asc' } },
-      },
+      include: { author: { select: AUTHOR_SELECT }, media: { orderBy: { order: 'asc' } } },
     });
-
     logActivity(userId, 'POST_UPDATE', 'Post', postId, { fields: Object.keys(updateData) }, req);
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -191,7 +170,6 @@ router.put('/:id', authenticate, async (req, res, next) => {
   }
 });
 
-// ─── PATCH /api/posts/:id/pin ── pin/unpin post (owner only) ─
 router.patch('/:id/pin', authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.userId;
@@ -200,12 +178,11 @@ router.patch('/:id/pin', authenticate, async (req, res, next) => {
     const post = await prisma.post.findUnique({ where: { id: postId } });
     if (!post) throw new AppError(404, 'Post not found');
     if (post.authorId !== userId) throw new AppError(403, 'Not authorized');
-    if (isPinned) {
+    if (isPinned)
       await prisma.post.updateMany({
         where: { authorId: userId, isPinned: true },
         data: { isPinned: false },
       });
-    }
     const updated = await prisma.post.update({ where: { id: postId }, data: { isPinned } });
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -213,18 +190,14 @@ router.patch('/:id/pin', authenticate, async (req, res, next) => {
   }
 });
 
-// ─── DELETE /api/posts/:id ── delete post (owner only) ─────
 router.delete('/:id', authenticate, async (req, res, next) => {
   try {
     const userId = req.user!.userId;
     const postId = req.params.id as string;
-
     const post = await prisma.post.findUnique({ where: { id: postId } });
     if (!post || post.deletedAt) throw new AppError(404, 'Post not found');
     if (post.authorId !== userId) throw new AppError(403, 'Not authorized to delete this post');
-
     await prisma.post.update({ where: { id: postId }, data: { deletedAt: new Date() } });
-
     logActivity(userId, 'POST_DELETE', 'Post', postId, null, req);
     res.json({ success: true, message: 'Post deleted' });
   } catch (err) {
