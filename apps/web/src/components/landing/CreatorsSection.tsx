@@ -72,55 +72,67 @@ export function CreatorsSection() {
 
         {/* Mobile: cascade images arc + text below */}
         <div className="lg:hidden">
-          {/* Images arc strip — no text overlap */}
-          <div className="relative h-[148px] overflow-hidden">
+          {/* Images arc strip — fully vw-based so it scales across all mobile viewports */}
+          <div className="relative overflow-hidden" style={{ height: '38vw' }}>
             <img
               src="/images/landing/pos-1.webp"
               alt=""
               className="absolute rounded-[5px] object-cover"
-              style={{ left: '-25vw', top: 55, width: 91, height: 92 }}
+              style={{ left: '-20vw', top: '14vw', width: '23.5vw', height: '24vw' }}
             />
             <img
               src="/images/landing/pos-2.webp"
               alt=""
               className="absolute rounded-[5px] object-cover"
-              style={{ left: '-5.5vw', top: 61, width: 77, height: 78 }}
+              style={{ left: '2vw', top: '15.5vw', width: '19.5vw', height: '20vw' }}
             />
             <img
               src="/images/landing/pos-3.webp"
               alt=""
               className="absolute rounded-[5px] object-cover"
-              style={{ left: '10.9vw', top: 66, width: 67, height: 68 }}
+              style={{ left: '21vw', top: '17vw', width: '17vw', height: '17.5vw' }}
             />
             <img
               src="/images/landing/pos-4.webp"
               alt=""
               className="absolute rounded-[5px] object-cover"
-              style={{ left: '25vw', top: 72, width: 55, height: 56 }}
+              style={{ left: '37vw', top: '18.5vw', width: '14vw', height: '14.5vw' }}
             />
             <img
               src="/images/landing/pos-5.webp"
               alt=""
               className="absolute rounded-[5px] object-cover"
-              style={{ right: '25vw', top: 72, width: 55, height: 56 }}
+              style={{ right: '37vw', top: '18.5vw', width: '14vw', height: '14.5vw' }}
             />
             <img
               src="/images/landing/pos-6.webp"
               alt=""
               className="absolute rounded-[5px] object-cover"
-              style={{ right: '10.9vw', top: 66, width: 67, height: 68, transform: 'scaleX(-1)' }}
+              style={{
+                right: '21vw',
+                top: '17vw',
+                width: '17vw',
+                height: '17.5vw',
+                transform: 'scaleX(-1)',
+              }}
             />
             <img
               src="/images/landing/pos-7.webp"
               alt=""
               className="absolute rounded-[5px] object-cover"
-              style={{ right: '-5.5vw', top: 61, width: 77, height: 78 }}
+              style={{ right: '2vw', top: '15.5vw', width: '19.5vw', height: '20vw' }}
             />
             <img
               src="/images/landing/pos-8.webp"
               alt=""
               className="absolute rounded-[5px] object-cover"
-              style={{ right: '-25vw', top: 55, width: 91, height: 92, transform: 'scaleX(-1)' }}
+              style={{
+                right: '-20vw',
+                top: '14vw',
+                width: '23.5vw',
+                height: '24vw',
+                transform: 'scaleX(-1)',
+              }}
             />
           </div>
 
