@@ -70,13 +70,6 @@ export default function CreatePost() {
     <div className="flex flex-col gap-[20px]">
       <div className="flex items-center justify-between">
         <p className="text-[20px] font-semibold text-foreground">Create Post</p>
-        <button
-          onClick={handleSubmit}
-          disabled={canSubmit}
-          className="rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[10px] text-[16px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
-        >
-          {submitting ? 'Posting...' : 'Post'}
-        </button>
       </div>
 
       <div className="rounded-[22px] bg-card p-[20px]">
@@ -176,6 +169,15 @@ export default function CreatePost() {
           onChange={handleFiles}
         />
         {error && <p className="mt-[12px] text-[14px] text-red-400">{error}</p>}
+        <div className="mt-[16px] flex justify-end">
+          <button
+            onClick={handleSubmit}
+            disabled={canSubmit}
+            className="rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[40px] py-[10px] text-[16px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            {submitting ? 'Posting...' : 'Post'}
+          </button>
+        </div>
       </div>
     </div>
   );
