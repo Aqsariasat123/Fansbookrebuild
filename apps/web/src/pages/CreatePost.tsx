@@ -6,7 +6,6 @@ import {
   AuthorRow,
   VisibilityDropdown,
   MediaUploadArea,
-  WatermarkToggle,
 } from '../components/create-post/CreatePostParts';
 import type { Visibility } from '../components/create-post/CreatePostParts';
 
@@ -17,7 +16,6 @@ export default function CreatePost() {
   const [visibility, setVisibility] = useState<Visibility>('PUBLIC');
   const [ppvPrice, setPpvPrice] = useState('');
   const [isPinned, setIsPinned] = useState(false);
-  const [watermarkEnabled, setWatermarkEnabled] = useState(true);
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -56,7 +54,6 @@ export default function CreatePost() {
       fd.append('visibility', visibility === 'PPV' ? 'PUBLIC' : visibility);
       if (visibility === 'PPV' && ppvPrice) fd.append('ppvPrice', ppvPrice);
       if (isPinned) fd.append('isPinned', 'true');
-      fd.append('watermarkEnabled', watermarkEnabled ? 'true' : 'false');
       images.forEach((img) => fd.append('media', img.file));
       await api.post('/posts', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       navigate('/creator/profile');
@@ -147,7 +144,21 @@ export default function CreatePost() {
             />
             <span className="text-[13px] text-muted-foreground">Pin to top</span>
           </label>
-          <WatermarkToggle enabled={watermarkEnabled} onChange={setWatermarkEnabled} />
+          <div className="flex items-center gap-[6px] rounded-[6px] bg-[#01adf1]/10 px-[10px] py-[5px]">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#01adf1"
+              strokeWidth="2"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span className="text-[12px] text-[#01adf1]">
+              All media is forensically watermarked
+            </span>
+          </div>
         </div>
 
         <MediaUploadArea

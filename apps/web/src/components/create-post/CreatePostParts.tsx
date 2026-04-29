@@ -146,24 +146,4 @@ export function HashtagPanel({
   );
 }
 
-export function WatermarkToggle({
-  enabled,
-  onChange,
-}: {
-  enabled: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <label className="flex cursor-pointer items-center gap-[8px]">
-      <input
-        type="checkbox"
-        checked={enabled}
-        onChange={(e) => onChange(e.target.checked)}
-        className="size-[16px] accent-[#01adf1]"
-      />
-      <span className="text-[13px] text-muted-foreground">Forensic watermark</span>
-    </label>
-  );
-}
-
 export { MediaUploadArea } from './MediaUploadArea';
