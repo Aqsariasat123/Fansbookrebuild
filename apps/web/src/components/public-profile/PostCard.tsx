@@ -7,6 +7,8 @@ export interface PublicPost {
   id: string;
   text: string | null;
   visibility: string;
+  ppvPrice?: number | null;
+  isPurchased?: boolean;
   likeCount: number;
   commentCount: number;
   shareCount?: number;
@@ -127,8 +129,33 @@ interface PostCardProps {
   isSubscribed: boolean;
 }
 
+function VideoList({ videos }: { videos: PublicPost['media'] }) {
+  if (videos.length === 0) return null;
+  return (
+    <div className="mb-[12px] flex flex-col gap-[8px]">
+      {videos.map((v) => (
+        <div key={v.id} className="relative">
+          <video
+            src={v.url}
+            poster={v.thumbnail ?? undefined}
+            controls
+            className="w-full rounded-[12px] bg-black max-h-[400px]"
+          />
+          <VideoWatermarkCanvas />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function isPostLocked(post: PublicPost, isSubscribed: boolean): boolean {
+  const isPpvLocked = !!post.ppvPrice && !post.isPurchased;
+  const isSubLocked = !isSubscribed && post.visibility !== 'PUBLIC' && post.visibility !== 'FREE';
+  return isPpvLocked || isSubLocked;
+}
+
 export function PostCard({ post, isSubscribed }: PostCardProps) {
-  const isLocked = !isSubscribed && post.visibility !== 'PUBLIC' && post.visibility !== 'FREE';
+  const isLocked = isPostLocked(post, isSubscribed);
   const images = post.media.filter((m) => m.type === 'IMAGE');
   const videos = post.media.filter((m) => m.type === 'VIDEO');
 
@@ -142,22 +169,13 @@ export function PostCard({ post, isSubscribed }: PostCardProps) {
           {post.text}
         </p>
       )}
-      {videos.length > 0 && (
-        <div className="mb-[12px] flex flex-col gap-[8px]">
-          {videos.map((v) => (
-            <div key={v.id} className="relative">
-              <video
-                src={v.url}
-                poster={v.thumbnail ?? undefined}
-                controls
-                className="w-full rounded-[12px] bg-black max-h-[400px]"
-              />
-              <VideoWatermarkCanvas />
-            </div>
-          ))}
-        </div>
-      )}
-      <PostMediaDisplay images={images} isLocked={isLocked} username={post.author?.username} />
+      <VideoList videos={videos} />
+      <PostMediaDisplay
+        images={images}
+        isLocked={isLocked}
+        ppvPrice={post.ppvPrice}
+        username={post.author?.username}
+      />
       <PostActions
         postId={post.id}
         likeCount={post.likeCount}

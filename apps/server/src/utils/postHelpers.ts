@@ -44,7 +44,7 @@ export function buildPostCreateData(userId: string, body: Record<string, string>
     authorId: userId,
     text: body.text?.trim() || '',
     visibility: resolvedVis,
-    ...(parsedPpv && resolvedVis !== 'PUBLIC' ? { ppvPrice: parsedPpv } : {}),
+    ...(parsedPpv ? { ppvPrice: parsedPpv } : {}),
     ...(body.isPinned === 'true' ? { isPinned: true } : {}),
     watermarkEnabled: body.watermarkEnabled !== 'false',
   };

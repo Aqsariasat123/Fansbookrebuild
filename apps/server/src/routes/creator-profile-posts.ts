@@ -60,6 +60,9 @@ router.get('/:username/posts', async (req, res, next) => {
               }
             : {}),
           ...(isOwner ? { _count: { select: { ppvPurchases: true } } } : {}),
+          ...(viewerUserId
+            ? { ppvPurchases: { where: { userId: viewerUserId }, select: { id: true }, take: 1 } }
+            : {}),
         },
       }),
       prisma.post.count({ where }),
@@ -74,7 +77,9 @@ router.get('/:username/posts', async (req, res, next) => {
         id: post.id,
         text: post.text,
         visibility: post.visibility,
-        ppvPrice: isOwner ? post.ppvPrice : undefined,
+        ppvPrice: post.ppvPrice ?? null,
+        isPurchased:
+          'ppvPurchases' in post ? (post.ppvPurchases as { id: string }[]).length > 0 : false,
         ppvSoldCount,
         ppvRevenue:
           ppvSoldCount !== undefined && post.ppvPrice ? ppvSoldCount * post.ppvPrice : undefined,
