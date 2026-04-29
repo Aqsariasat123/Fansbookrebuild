@@ -115,15 +115,17 @@ export default function CreatePost() {
         <div className="mt-[12px] flex flex-wrap items-center gap-[16px]">
           {showPpv && (
             <div className="flex items-center gap-[8px]">
-              <label className="text-[13px] text-muted-foreground">PPV Price $</label>
+              <label className="flex items-center gap-[4px] text-[13px] text-muted-foreground">
+                PPV Price <span className="text-[14px]">🪙</span>
+              </label>
               <input
                 type="number"
                 min="1"
                 max="500"
-                step="0.01"
+                step="1"
                 value={ppvPrice}
-                onChange={(e) => setPpvPrice(e.target.value)}
-                placeholder="0.00"
+                onChange={(e) => setPpvPrice(Math.floor(Number(e.target.value)).toString())}
+                placeholder="0"
                 className="w-[90px] rounded-[8px] bg-muted px-[10px] py-[6px] text-[13px] text-foreground outline-none"
               />
             </div>
