@@ -34,7 +34,6 @@ export default function HelpSupport() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [loadingFaqs, setLoadingFaqs] = useState(true);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
-  const [showContactForm, setShowContactForm] = useState(false);
   const contactRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -91,46 +90,23 @@ export default function HelpSupport() {
 
         <div className="bg-muted h-px w-full my-[20px]" />
 
-        {/* Inline AI Support Chat */}
-        <div className="flex flex-col gap-[12px]">
-          <p className="text-[16px] text-foreground">Support Assistant</p>
-          <p className="text-[12px] text-muted-foreground -mt-[4px]">
-            Chat with our AI assistant — it can answer most questions instantly.
-          </p>
-          <InlineSupportChat />
-        </div>
-
-        <div className="bg-muted h-px w-full my-[20px]" />
-
-        {/* Email fallback */}
-        <div ref={contactRef} className="flex flex-col gap-[4px]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[16px] text-foreground">Still need help?</p>
-              <p className="text-[12px] text-muted-foreground mt-[2px]">
-                Couldn&apos;t find the answer above? Send us a message and we&apos;ll get back to
-                you.
-              </p>
-            </div>
-            {/* Toggle button — only shown on mobile */}
-            <button
-              onClick={() => {
-                setShowContactForm((v) => !v);
-                if (!showContactForm) {
-                  setTimeout(
-                    () =>
-                      contactRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
-                    50,
-                  );
-                }
-              }}
-              className="ml-[12px] shrink-0 md:hidden rounded-[8px] border border-border px-[12px] py-[6px] text-[12px] text-foreground"
-            >
-              {showContactForm ? 'Hide' : 'Contact Us'}
-            </button>
+        {/* Support chat (left) + Contact form (right) — side-by-side on desktop */}
+        <div className="grid grid-cols-1 gap-[24px] lg:grid-cols-2">
+          {/* Left — AI chat */}
+          <div className="flex flex-col gap-[12px]">
+            <p className="text-[16px] text-foreground">Support Assistant</p>
+            <p className="text-[12px] text-muted-foreground -mt-[4px]">
+              Chat with our AI assistant — it can answer most questions instantly.
+            </p>
+            <InlineSupportChat />
           </div>
-          {/* Always visible on desktop, toggle on mobile */}
-          <div className={`mt-[12px] ${showContactForm ? 'block' : 'hidden md:block'}`}>
+
+          {/* Right — Contact form */}
+          <div ref={contactRef} className="flex flex-col gap-[4px]">
+            <p className="text-[16px] text-foreground">Still need help?</p>
+            <p className="text-[12px] text-muted-foreground mt-[2px] mb-[12px]">
+              Couldn&apos;t find the answer above? Send us a message and we&apos;ll get back to you.
+            </p>
             <ReportForm />
           </div>
         </div>

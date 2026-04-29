@@ -26,16 +26,20 @@ export function InlineSupportChat() {
       .then(({ data: r }) => {
         if (r.success && r.data.length > 0) {
           const latest = r.data[0];
-          if (latest.status !== 'RESOLVED') {
+          const ageMs = Date.now() - new Date(latest.updatedAt ?? latest.createdAt).getTime();
+          const tooOld = ageMs > 7 * 24 * 60 * 60 * 1000;
+          if (!tooOld && latest.status !== 'RESOLVED') {
             setTicketId(latest.id);
             setMessages(latest.messages);
             setEscalated(latest.status === 'ESCALATED');
             return;
           }
         }
-        setMessages([{ role: 'BOT', content: greeting }]);
+        setMessages([{ role: 'BOT', content: greeting, createdAt: new Date().toISOString() }]);
       })
-      .catch(() => setMessages([{ role: 'BOT', content: greeting }]));
+      .catch(() =>
+        setMessages([{ role: 'BOT', content: greeting, createdAt: new Date().toISOString() }]),
+      );
   }, []);
 
   useEffect(() => {
@@ -69,7 +73,10 @@ export function InlineSupportChat() {
     const text = input.trim();
     if (!text || loading) return;
     setInput('');
-    setMessages((prev) => [...prev, { role: 'USER', content: text }]);
+    setMessages((prev) => [
+      ...prev,
+      { role: 'USER', content: text, createdAt: new Date().toISOString() },
+    ]);
     setLoading(true);
     try {
       const { data: r } = await api.post('/support/chat', { message: text, ticketId });
@@ -84,13 +91,20 @@ export function InlineSupportChat() {
           ticketId: string;
         };
         setTicketId(tid);
-        setMessages((prev) => [...prev, { role: 'BOT', content: reply }]);
+        setMessages((prev) => [
+          ...prev,
+          { role: 'BOT', content: reply, createdAt: new Date().toISOString() },
+        ]);
         if (esc) setEscalated(true);
       }
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'BOT', content: 'Something went wrong. Please try again.' },
+        {
+          role: 'BOT',
+          content: 'Something went wrong. Please try again.',
+          createdAt: new Date().toISOString(),
+        },
       ]);
     } finally {
       setLoading(false);
@@ -98,7 +112,7 @@ export function InlineSupportChat() {
   }
 
   return (
-    <div className="flex flex-col h-[420px] rounded-[12px] border border-muted overflow-hidden">
+    <div className="flex flex-col h-[560px] rounded-[12px] border border-muted overflow-hidden">
       <div className="flex items-center gap-[8px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[16px] py-[12px]">
         <span className="material-icons-outlined text-white text-[18px]">support_agent</span>
         <div>

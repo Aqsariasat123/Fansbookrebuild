@@ -4,12 +4,27 @@ export interface SupportMessage {
   createdAt?: string;
 }
 
+function formatTimestamp(iso?: string): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (sameDay) return time;
+  return `${d.toLocaleDateString([], { day: 'numeric', month: 'short' })} ${time}`;
+}
+
 export function MessageBubble({ msg }: { msg: SupportMessage }) {
   const isUser = msg.role === 'USER';
   const isAdmin = msg.role === 'ADMIN';
+  const ts = formatTimestamp(msg.createdAt);
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex flex-col gap-[3px] ${isUser ? 'items-end' : 'items-start'}`}>
       <div
         className={`max-w-[80%] rounded-[12px] px-[12px] py-[8px] text-[13px] leading-relaxed ${
           isUser
@@ -24,6 +39,7 @@ export function MessageBubble({ msg }: { msg: SupportMessage }) {
         )}
         {msg.content}
       </div>
+      {ts && <span className="text-[10px] text-muted-foreground px-[4px]">{ts}</span>}
     </div>
   );
 }

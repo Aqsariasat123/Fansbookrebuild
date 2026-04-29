@@ -15,6 +15,7 @@ export async function resizeImage(
   height: number,
 ): Promise<ProcessedImage> {
   const buffer = await sharp(inputPath)
+    .rotate()
     .resize(width, height, { fit: 'cover', withoutEnlargement: true })
     .webp({ quality: MEDIA_CONFIG.IMAGE_QUALITY })
     .toBuffer();
@@ -38,15 +39,21 @@ export async function processCover(inputPath: string): Promise<ProcessedImage> {
 }
 
 export async function convertToWebP(inputPath: string): Promise<ProcessedImage> {
-  const buffer = await sharp(inputPath).webp({ quality: MEDIA_CONFIG.IMAGE_QUALITY }).toBuffer();
+  const buffer = await sharp(inputPath)
+    .rotate()
+    .webp({ quality: MEDIA_CONFIG.IMAGE_QUALITY })
+    .toBuffer();
 
   const basename = path.basename(inputPath, path.extname(inputPath));
   return { buffer, filename: `${basename}.webp`, mimeType: 'image/webp' };
 }
 
 export async function embedWatermark(filePath: string, username: string): Promise<void> {
-  const image = sharp(filePath);
-  const { width = 800, height = 600 } = await image.metadata();
+  const meta = await sharp(filePath).metadata();
+  // EXIF orientations 5-8 involve 90/270° rotation — width and height are swapped after auto-rotate
+  const swapDims = meta.orientation !== undefined && meta.orientation >= 5;
+  const width = swapDims ? (meta.height ?? 800) : (meta.width ?? 800);
+  const height = swapDims ? (meta.width ?? 600) : (meta.height ?? 600);
 
   const fontSize = Math.max(13, Math.round(width * 0.022));
   const padding = Math.round(fontSize * 0.65);
@@ -69,6 +76,7 @@ export async function embedWatermark(filePath: string, username: string): Promis
   );
 
   const output = await sharp(filePath)
+    .rotate()
     .composite([{ input: svg, gravity: 'southeast', left: margin, top: height - boxH - margin }])
     .toBuffer();
 

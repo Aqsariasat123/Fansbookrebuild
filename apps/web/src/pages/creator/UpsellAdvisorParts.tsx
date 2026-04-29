@@ -13,14 +13,14 @@ export type PriorityFilter = 'ALL' | 'HIGH' | 'MEDIUM' | 'LOW';
 
 const TYPE_ROUTE: Record<string, string> = {
   POST_TIMING: '/creator/post/new',
-  FAN_ENGAGEMENT: '/creator/messages',
+  FAN_ENGAGEMENT: '/messages',
   PPV_OPPORTUNITY: '/creator/post/new',
-  REENGAGEMENT: '/creator/messages',
+  REENGAGEMENT: '/messages',
   CONTENT_STRATEGY: '/creator/post/new',
 };
 
 export function getActionRoute(s: Suggestion): string {
-  return s.actionData?.route ?? TYPE_ROUTE[s.type] ?? '/creator/post/new';
+  return TYPE_ROUTE[s.type] ?? '/creator/post/new';
 }
 
 const PRIORITY_COLOR: Record<string, string> = {

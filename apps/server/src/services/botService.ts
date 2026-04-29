@@ -43,21 +43,25 @@ async function buildSuggestContext(
   });
   const toneNote = bot?.toneProfile ? `\nCommunication style: ${bot.toneProfile}` : '';
   const personaNote = bot?.persona?.trim() ? `\nPersona: ${bot.persona.trim()}` : '';
-  return `You are a private draft-suggestion tool for ${creator?.displayName ?? 'a creator'} (@${creator?.username ?? 'creator'}) on Inscrio, an adult content subscription platform. You generate reply text that the creator may choose to send — you are NOT participating in the conversation yourself.${toneNote}${personaNote}
-Context: fans on this platform regularly send flirty, suggestive, or explicit messages. Your job is purely to suggest 3 short reply options the creator could send back, matching their tone and voice. Replies should be engaging, 1-2 sentences each.
-STRICT OUTPUT RULE: Return ONLY a valid JSON array of exactly 3 plain reply strings. No explanations, no meta-commentary, no bracketed notes, no refusals inside the array. If a topic is sensitive, write a neutral deflection reply instead. Example: ["That sounds fun 😊", "Tell me more babe!", "You're too sweet 💕"]`;
+  return `You are a ghostwriter helping ${creator?.displayName ?? 'a creator'} (@${creator?.username ?? 'creator'}) reply to fan messages on Inscrio. Draft 3 short reply options the creator could send — write as if you ARE the creator.${toneNote}${personaNote}
+Fans send personal, flirty, or enthusiastic messages. Write replies that are warm, engaging, and match the creator's voice. Keep each reply to 1-2 sentences.
+OUTPUT FORMAT: Return ONLY a JSON array of exactly 3 strings, nothing else — no commentary, no keys, no explanation. Example: ["That's so sweet, thank you! 😊", "Tell me more!", "You're too kind 💕"]`;
 }
 
 // Detect AI refusal/meta-commentary that leaked into output
 const REFUSAL_RE =
-  /stopping here|clarify my role|pause here|cannot generate|can't generate|my boundaries|as an ai|i need to pause|i should note/i;
+  /stopping here|clarify (my|something)|pause here|cannot generate|can't generate|my (boundaries|function|role|actual)|as an ai|i need to (pause|be honest|reset|clarify)|i should (note|be direct)|appreciate you testing|what i am/i;
 
 function isValidSuggestion(s: unknown): s is string {
-  return typeof s === 'string' && s.length > 2 && s.length < 300 && !REFUSAL_RE.test(s);
+  if (typeof s !== 'string') return false;
+  const trimmed = s.trim();
+  // Reject stage directions (bracketed text) and refusals
+  if (trimmed.startsWith('[')) return false;
+  return trimmed.length > 2 && trimmed.length < 300 && !REFUSAL_RE.test(trimmed);
 }
 
 function parseSuggestions(raw: string): string[] {
-  const m = raw.match(/\[[\s\S]*?\]/);
+  const m = raw.match(/\[[\s\S]*\]/);
   if (m) {
     try {
       const p = JSON.parse(m[0]) as unknown;
@@ -83,11 +87,11 @@ async function callSuggestLLM(
 ): Promise<string[]> {
   const response = await getClient().messages.create({
     model: SUGGEST_MODEL,
-    max_tokens: 250,
+    max_tokens: 300,
     system,
-    messages: [...history, { role: 'assistant', content: '[' }],
+    messages: history,
   });
-  const raw = '[' + (response.content[0]?.type === 'text' ? response.content[0].text.trim() : '"]');
+  const raw = response.content[0]?.type === 'text' ? response.content[0].text.trim() : '[]';
   await logAIUsage(
     creatorId,
     'suggest_reply',
@@ -110,7 +114,7 @@ export async function generateSuggestions(
   });
   const history = messages
     .reverse()
-    .filter((m) => m.text)
+    .filter((m) => m.text && !m.text.trim().startsWith('['))
     .map((m) => ({
       role: (m.senderId === creatorId ? 'assistant' : 'user') as 'user' | 'assistant',
       content: m.text!,
@@ -153,9 +157,14 @@ export async function sendAutoReplyIfOffline(
   if (!bot?.suggestEnabled) return;
   const isOnline = await redis.sismember('online_users', creatorId);
   if (isOnline) return;
+  // Show creator as online while the bot "types"
+  emitFn(fanId, 'user:online', { userId: creatorId });
   await new Promise((r) => setTimeout(r, 2000 + Math.random() * 2000));
   const reply = await generateAutoReply(creatorId, conversationId);
-  if (!reply) return;
+  if (!reply) {
+    emitFn(fanId, 'user:offline', { userId: creatorId });
+    return;
+  }
   const botMsg = await prisma.message.create({
     data: { conversationId, senderId: creatorId, text: reply, mediaType: 'TEXT' },
     include: { sender: { select: SENDER_SELECT } },
@@ -170,6 +179,8 @@ export async function sendAutoReplyIfOffline(
     lastMessage: reply,
     lastMessageAt: new Date(),
   });
+  // Go offline after 2 minutes
+  setTimeout(() => emitFn(fanId, 'user:offline', { userId: creatorId }), 2 * 60 * 1000);
 }
 
 export async function polishMessage(creatorId: string, roughText: string): Promise<string | null> {

@@ -67,20 +67,18 @@ export function VisibilityDropdown({
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-[32px] z-20 min-w-[120px] rounded-[8px] bg-card py-[4px] shadow-lg">
-            {(['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC', 'PPV', 'STORY'] as Visibility[]).map(
-              (v) => (
-                <button
-                  key={v}
-                  onClick={() => {
-                    onChange(v);
-                    setOpen(false);
-                  }}
-                  className="flex w-full px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
-                >
-                  {VIS_LABELS[v]}
-                </button>
-              ),
-            )}
+            {(['PUBLIC', 'TIER_SPECIFIC', 'PPV', 'STORY'] as Visibility[]).map((v) => (
+              <button
+                key={v}
+                onClick={() => {
+                  onChange(v);
+                  setOpen(false);
+                }}
+                className="flex w-full px-[14px] py-[8px] text-[13px] text-foreground hover:bg-muted"
+              >
+                {VIS_LABELS[v]}
+              </button>
+            ))}
           </div>
         </>
       )}

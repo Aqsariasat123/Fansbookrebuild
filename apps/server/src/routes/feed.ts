@@ -24,20 +24,27 @@ router.get('/', authenticate, async (req, res, next) => {
     const cursor = req.query.cursor as string | undefined;
     const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 10, 1), 50);
 
-    const follows = await prisma.follow.findMany({
-      where: { followerId: userId },
-      select: { followingId: true },
-    });
+    const [follows, blockedIds, subs] = await Promise.all([
+      prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } }),
+      getBlockedIds(userId),
+      prisma.subscription.findMany({
+        where: {
+          subscriberId: userId,
+          status: 'ACTIVE',
+          OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
+        },
+        select: { creatorId: true },
+      }),
+    ]);
+
     const followedIds = follows.map((f) => f.followingId);
     followedIds.push(userId);
-
-    // Get blocked user IDs to exclude
-    const blockedIds = await getBlockedIds(userId);
+    const subscribedCreatorIds = new Set(subs.map((s) => s.creatorId));
 
     const posts = await prisma.post.findMany({
       where: {
         authorId: { in: followedIds, notIn: blockedIds.length > 0 ? blockedIds : undefined },
-        visibility: { in: ['PUBLIC', 'SUBSCRIBERS'] },
+        visibility: { in: ['PUBLIC', 'SUBSCRIBERS', 'TIER_SPECIFIC'] },
         deletedAt: null,
       },
       orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
@@ -66,6 +73,7 @@ router.get('/', authenticate, async (req, res, next) => {
       id: post.id,
       text: post.text,
       isPinned: post.isPinned,
+      visibility: post.visibility,
       ppvPrice: post.ppvPrice ?? null,
       likeCount: post.likeCount,
       commentCount: post.commentCount,
@@ -75,6 +83,7 @@ router.get('/', authenticate, async (req, res, next) => {
       media: post.media,
       isLiked: post.likes.length > 0,
       isBookmarked: post.bookmarks.length > 0,
+      isSubscribed: subscribedCreatorIds.has(post.authorId),
     }));
 
     const nextCursor =

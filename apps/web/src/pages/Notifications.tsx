@@ -1,136 +1,93 @@
-import { useState, useEffect, useMemo } from 'react';
-import { api } from '../lib/api';
-import { getSocket } from '../lib/socket';
-import { useNotificationStore } from '../stores/notificationStore';
+import { useState } from 'react';
+import { useNotificationsPage } from '../hooks/useNotificationsPage';
 import { NotificationRow } from '../components/notifications/NotificationRow';
 import type { Notification } from '../components/notifications/NotificationRow';
 
-const FILTER_TABS = ['All', 'Likes', 'Comments', 'Follows', 'Tips', 'System'] as const;
-type FilterTab = (typeof FILTER_TABS)[number];
-
-const TAB_TYPE_MAP: Record<FilterTab, string | null> = {
-  All: null,
-  Likes: 'LIKE',
-  Comments: 'COMMENT',
-  Follows: 'FOLLOW',
-  Tips: 'TIP',
-  System: 'SYSTEM',
-};
-
-function getDateGroup(dateStr: string): string {
-  const now = new Date();
-  const d = new Date(dateStr);
-  const diffMs = now.getTime() - d.getTime();
-  const diffDays = Math.floor(diffMs / 86400000);
-  if (diffDays < 1 && now.getDate() === d.getDate()) return 'Today';
-  if (diffDays < 7) return 'This Week';
-  return 'Earlier';
+function BulkActionBar({
+  allSelected,
+  selectedSize,
+  isArchiveTab,
+  onToggleAll,
+  onBulkArchive,
+  onBulkDelete,
+}: {
+  allSelected: boolean;
+  selectedSize: number;
+  isArchiveTab: boolean;
+  onToggleAll: () => void;
+  onBulkArchive: () => void;
+  onBulkDelete: () => void;
+}) {
+  return (
+    <div className="mt-[12px] flex items-center gap-[10px] border-b border-muted pb-[12px]">
+      <button
+        onClick={onToggleAll}
+        className="flex items-center gap-[6px] text-[12px] text-muted-foreground hover:text-foreground"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          {allSelected ? (
+            <>
+              <rect x="3" y="3" width="18" height="18" rx="2" fill="#01adf1" />
+              <path
+                d="M9 12l2 2 4-4"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </>
+          ) : (
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+          )}
+        </svg>
+        {allSelected ? 'Deselect all' : 'Select all'}
+      </button>
+      {selectedSize > 0 && (
+        <>
+          <span className="text-[12px] text-muted-foreground">{selectedSize} selected</span>
+          {!isArchiveTab && (
+            <button
+              onClick={onBulkArchive}
+              className="rounded-[50px] bg-muted px-[12px] py-[5px] text-[12px] font-medium text-foreground hover:bg-muted-foreground/20"
+            >
+              Archive selected
+            </button>
+          )}
+          <button
+            onClick={onBulkDelete}
+            className="rounded-[50px] bg-red-500/10 px-[12px] py-[5px] text-[12px] font-medium text-red-400 hover:bg-red-500/20"
+          >
+            Delete selected
+          </button>
+        </>
+      )}
+    </div>
+  );
 }
 
+const FILTER_TABS = ['All', 'Likes', 'Comments', 'Follows', 'Tips', 'System', 'Archived'] as const;
+type FilterTab = (typeof FILTER_TABS)[number];
+
 export default function Notifications() {
-  const [items, setItems] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<FilterTab>('All');
-  const decrement = useNotificationStore((s) => s.decrement);
-  const resetNotif = useNotificationStore((s) => s.reset);
-
-  useEffect(() => {
-    resetNotif();
-    api
-      .get('/notifications')
-      .then(({ data: r }) => {
-        if (r.success) setItems(r.data.items);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  // Real-time notification updates
-  useEffect(() => {
-    const socket = getSocket();
-    if (!socket) return;
-
-    const handleNew = (data: Notification) => {
-      setItems((prev) => [data, ...prev]);
-    };
-
-    const handleUpdated = (data: Notification) => {
-      setItems((prev) => prev.map((n) => (n.id === data.id ? { ...n, message: data.message } : n)));
-    };
-
-    socket.on('notification:new', handleNew);
-    socket.on('notification:updated', handleUpdated);
-    return () => {
-      socket.off('notification:new', handleNew);
-      socket.off('notification:updated', handleUpdated);
-    };
-  }, []);
-
-  const toggleSelect = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      const item = items.find((n) => n.id === id);
-      await api.delete(`/notifications/${id}`);
-      setItems((prev) => prev.filter((n) => n.id !== id));
-      if (item && !item.read) decrement();
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const handleMarkRead = async (n: Notification) => {
-    try {
-      await api.put(`/notifications/${n.id}/read`);
-      setItems((prev) => prev.map((item) => (item.id === n.id ? { ...item, read: true } : item)));
-      if (!n.read) decrement();
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const handleMarkAllRead = async () => {
-    try {
-      await api.put('/notifications/read-all');
-      setItems((prev) => prev.map((item) => ({ ...item, read: true })));
-      resetNotif();
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const grouped = useMemo(() => {
-    let filtered = items;
-    if (search.trim()) {
-      filtered = filtered.filter((n) => n.message.toLowerCase().includes(search.toLowerCase()));
-    }
-    const typeFilter = TAB_TYPE_MAP[activeTab];
-    if (typeFilter) {
-      filtered = filtered.filter((n) => n.type === typeFilter);
-    }
-    const groups: { label: string; items: Notification[] }[] = [];
-    const order = ['Today', 'This Week', 'Earlier'];
-    const map = new Map<string, Notification[]>();
-    for (const n of filtered) {
-      const g = getDateGroup(n.createdAt);
-      if (!map.has(g)) map.set(g, []);
-      map.get(g)!.push(n);
-    }
-    for (const label of order) {
-      const list = map.get(label);
-      if (list && list.length > 0) groups.push({ label, items: list });
-    }
-    return groups;
-  }, [items, search, activeTab]);
+  const {
+    loading,
+    grouped,
+    selected,
+    isArchiveTab,
+    items,
+    handleDelete,
+    handleArchive,
+    handleMarkRead,
+    handleMarkAllRead,
+    handleBulkArchive,
+    handleBulkDelete,
+    allSelected,
+    toggleSelect,
+    toggleSelectAll,
+    setSelected,
+  } = useNotificationsPage(activeTab, search);
 
   const totalFiltered = grouped.reduce((acc, g) => acc + g.items.length, 0);
   const hasUnread = items.some((n) => !n.read);
@@ -138,7 +95,6 @@ export default function Notifications() {
   return (
     <div className="flex flex-col gap-[20px]">
       <div className="rounded-[22px] bg-card p-[16px] md:p-[22px]">
-        {/* Search */}
         <div className="flex items-center gap-[10px] rounded-[52px] bg-muted py-[8px] pl-[10px] pr-[10px] md:py-[10px] md:pl-[15px]">
           <img
             src="/icons/dashboard/search.svg"
@@ -155,7 +111,7 @@ export default function Notifications() {
 
         <div className="mt-[16px] flex items-center justify-between">
           <p className="text-[20px] text-foreground">Notifications</p>
-          {hasUnread && (
+          {hasUnread && !isArchiveTab && (
             <button
               onClick={handleMarkAllRead}
               className="rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[16px] py-[6px] text-[12px] font-medium text-white transition-opacity hover:opacity-90 md:text-[14px]"
@@ -165,22 +121,31 @@ export default function Notifications() {
           )}
         </div>
 
-        {/* Filter tabs */}
         <div className="mt-[12px] flex gap-[8px] overflow-x-auto pb-[4px]">
           {FILTER_TABS.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`shrink-0 rounded-[50px] px-[16px] py-[6px] text-[12px] font-medium transition-colors md:text-[14px] ${
-                activeTab === tab
-                  ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'
-                  : 'bg-muted text-muted-foreground hover:text-foreground'
-              }`}
+              onClick={() => {
+                setActiveTab(tab);
+                setSelected(new Set());
+              }}
+              className={`shrink-0 rounded-[50px] px-[16px] py-[6px] text-[12px] font-medium transition-colors md:text-[14px] ${activeTab === tab ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
             >
               {tab}
             </button>
           ))}
         </div>
+
+        {totalFiltered > 0 && (
+          <BulkActionBar
+            allSelected={allSelected}
+            selectedSize={selected.size}
+            isArchiveTab={isArchiveTab}
+            onToggleAll={toggleSelectAll}
+            onBulkArchive={() => handleBulkArchive(Array.from(selected))}
+            onBulkDelete={() => handleBulkDelete(Array.from(selected))}
+          />
+        )}
 
         <div className="mt-[16px]">
           {loading ? (
@@ -189,7 +154,11 @@ export default function Notifications() {
             </div>
           ) : totalFiltered === 0 ? (
             <p className="py-[40px] text-center text-[16px] text-muted-foreground">
-              {search.trim() ? 'No matching notifications' : 'No notifications'}
+              {search.trim()
+                ? 'No matching notifications'
+                : isArchiveTab
+                  ? 'No archived notifications'
+                  : 'No notifications'}
             </p>
           ) : (
             <div className="flex flex-col gap-[24px]">
@@ -198,14 +167,15 @@ export default function Notifications() {
                   <p className="mb-[8px] text-[13px] font-medium uppercase tracking-wider text-muted-foreground">
                     {group.label}
                   </p>
-                  <div className="flex flex-col gap-[12px]">
-                    {group.items.map((n) => (
+                  <div className="flex flex-col gap-[8px]">
+                    {group.items.map((n: Notification) => (
                       <NotificationRow
                         key={n.id}
                         notification={n}
                         isSelected={selected.has(n.id)}
                         onToggleSelect={toggleSelect}
                         onDelete={handleDelete}
+                        onArchive={handleArchive}
                         onMarkRead={handleMarkRead}
                       />
                     ))}

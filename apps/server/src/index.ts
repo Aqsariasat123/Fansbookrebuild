@@ -61,6 +61,34 @@ async function main() {
       60 * 60 * 1000,
     );
 
+    // Support chat cleanup — daily, delete tickets+messages older than 7 days (resolved) or 30 days (any)
+    setInterval(
+      async () => {
+        try {
+          const cutoff7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+          const cutoff30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+          const old = await prisma.supportTicket.findMany({
+            where: {
+              OR: [
+                { status: 'RESOLVED', updatedAt: { lt: cutoff7d } },
+                { updatedAt: { lt: cutoff30d } },
+              ],
+            },
+            select: { id: true },
+          });
+          if (old.length > 0) {
+            const ids = old.map((t) => t.id);
+            await prisma.supportMessage.deleteMany({ where: { ticketId: { in: ids } } });
+            await prisma.supportTicket.deleteMany({ where: { id: { in: ids } } });
+            logger.info({ count: old.length }, 'Cleaned up old support tickets');
+          }
+        } catch (err) {
+          logger.error({ err }, 'Support ticket cleanup failed');
+        }
+      },
+      24 * 60 * 60 * 1000,
+    );
+
     server.listen(env.PORT, () => {
       logger.info(`Server running on http://localhost:${env.PORT}`);
       logger.info(`Environment: ${env.NODE_ENV}`);

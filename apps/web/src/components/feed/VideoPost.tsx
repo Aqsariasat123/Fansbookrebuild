@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { MediaViewer } from './MediaViewer';
 import { VideoThumbnail } from './VideoThumbnail';
 import { PPVOverlay } from './PPVOverlay';
+import { SubscriberOverlay } from './SubscriberOverlay';
 import { PostActions } from './PostActions';
-import { PostHeader } from './FeedPosts';
-import type { FeedPost } from './FeedPosts';
+import { PostHeader } from './PostHeader';
+import type { FeedPost } from './feedTypes';
 import { ImageWatermark } from '../shared/ImageWatermark';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -49,28 +50,42 @@ function VideoMediaPlayer({
   );
 }
 
+function getVideoOverlay(
+  post: FeedPost,
+  video: Media | undefined,
+  isOwner: boolean,
+  onRefresh?: () => void,
+) {
+  const thumb = video?.thumbnail || video?.url;
+  if (!!post.ppvPrice && !post.isPpvUnlocked)
+    return (
+      <PPVOverlay
+        postId={post.id}
+        price={post.ppvPrice!}
+        thumbnailUrl={thumb}
+        onUnlocked={() => onRefresh?.()}
+      />
+    );
+  if (post.visibility === 'TIER_SPECIFIC' && !post.isSubscribed && !isOwner)
+    return <SubscriberOverlay username={post.author.username} thumbnailUrl={thumb} />;
+  return null;
+}
+
 function VideoContent({
   post,
   video,
   onPlay,
   onRefresh,
+  isOwner,
 }: {
   post: FeedPost;
   video: Media | undefined;
   onPlay: () => void;
   onRefresh?: () => void;
+  isOwner: boolean;
 }) {
-  const isPpv = !!post.ppvPrice && !post.isPpvUnlocked;
-  if (isPpv) {
-    return (
-      <PPVOverlay
-        postId={post.id}
-        price={post.ppvPrice!}
-        thumbnailUrl={video?.thumbnail || video?.url}
-        onUnlocked={() => onRefresh?.()}
-      />
-    );
-  }
+  const overlay = getVideoOverlay(post, video, isOwner, onRefresh);
+  if (overlay) return overlay;
   return video ? (
     <VideoMediaPlayer video={video} onClick={onPlay} username={post.author.username} />
   ) : null;
@@ -105,6 +120,7 @@ export function VideoPost({
           video={video}
           onPlay={() => setShowViewer(true)}
           onRefresh={onRefresh}
+          isOwner={isOwner}
         />
       </div>
       <div className="px-[9px] py-[11px] md:px-[20px] md:py-[20px]">

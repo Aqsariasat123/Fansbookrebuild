@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
     cb(null, `${req.user!.userId}-${Date.now()}${ext}`);
   },
 });
-const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
+const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
 
 const SENDER_SELECT = { id: true, username: true, displayName: true, avatar: true };
 
@@ -132,20 +132,28 @@ router.post(
 router.post(
   '/:conversationId/image',
   authenticate,
-  upload.single('image'),
+  upload.single('media'),
   async (req, res, next) => {
     try {
       const userId = req.user!.userId;
       const conversationId = req.params.conversationId as string;
       await verifyParticipant(conversationId, userId);
-      if (!req.file) throw new AppError(400, 'Image required');
+      if (!req.file) throw new AppError(400, 'File required');
+      const isVideo = req.file.mimetype.startsWith('video/');
+      const mediaType = isVideo ? 'VIDEO' : 'IMAGE';
       const mediaUrl = `/api/messages/file/${req.file.filename}`;
       const caption = req.body.caption || null;
       const message = await prisma.message.create({
-        data: { conversationId, senderId: userId, text: caption, mediaUrl, mediaType: 'IMAGE' },
+        data: { conversationId, senderId: userId, text: caption, mediaUrl, mediaType },
         include: { sender: { select: SENDER_SELECT } },
       });
-      const preview = caption ? `📷 ${caption}` : '📷 Image';
+      const preview = caption
+        ? isVideo
+          ? `🎥 ${caption}`
+          : `📷 ${caption}`
+        : isVideo
+          ? '🎥 Video'
+          : '📷 Image';
       await prisma.conversation.update({
         where: { id: conversationId },
         data: { lastMessage: preview, lastMessageAt: new Date() },

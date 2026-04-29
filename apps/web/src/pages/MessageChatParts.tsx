@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TipModal } from '../components/shared/TipModal';
-import { TypingDots } from '../components/chat/ChatBubbles';
+import { TypingDots } from '../components/chat/ChatExtras';
 import { SmartReplyBar } from '../components/chat/SmartReplyBar';
 import { api } from '../lib/api';
 import type { ChatMessage } from '../components/chat/ChatBubbles';
@@ -108,7 +108,7 @@ export async function execImageSend(
   setSending(true);
   try {
     const fd = new FormData();
-    fd.append('image', file);
+    fd.append('media', file);
     if (caption.trim()) fd.append('caption', caption.trim());
     const { data: res } = await api.post(`/messages/${cid}/image`, fd);
     if (res.success) {

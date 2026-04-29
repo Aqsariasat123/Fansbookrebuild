@@ -56,6 +56,7 @@ export function useLiveStream() {
           audio: true,
         }));
       liveState.localStream = stream;
+      gs().clearChat();
       if (videoEl) {
         videoEl.srcObject = stream;
         videoEl.muted = true;

@@ -7,7 +7,6 @@ import { MessagesDropdown } from './MessagesDropdown';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { useMessageStore } from '../../stores/messageStore';
 import { useAuthStore } from '../../stores/authStore';
-import { useSidebarBadges } from '../../hooks/useSidebarBadges';
 
 function BellIcon({ className }: { className?: string }) {
   return (
@@ -100,36 +99,26 @@ function MsgButton() {
 function WalletIcon({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 102.89 102.84"
       fill="currentColor"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        d="M5 3.5C4.6 3.3 4.1 3.5 4 3.9L2.8 7.5H8.5L7 3.9C6.8 3.4 6.3 3.2 5.8 3.4Z"
-        opacity="0.6"
-      />
-      <path d="M9 3C8.6 2.8 8.1 3 8 3.5L6.5 7.5H13L11.2 3.4C11 2.9 10.5 2.8 10 3Z" opacity="0.85" />
-      <rect x="2" y="7.5" width="20" height="13.5" rx="2.5" />
-      <rect x="17" y="12" width="4.5" height="5" rx="2.25" fill="white" />
-      <circle cx="19.25" cy="14.5" r="1.1" fill="currentColor" />
+      <path d="M60.01,13.63l-4.18-11.63C54.84.69,53.05-.08,51.18,0c-.92.04-1.82.29-2.6.71L3.51,25.05l56.5-11.42Z" />
+      <path d="M77.11,18.28c-.42-2.31-2.39-3.99-4.68-3.99-.29,0-.59.03-.88.08,0,0-68.04,13.09-68.04,13.15.4-.08.82-.12,1.24-.12h74.01l-1.66-9.11Z" />
+      <path d="M99.44,56.06h-25.33c-1.9,0-3.44,1.54-3.44,3.44v14.44c0,1.9,1.54,3.44,3.44,3.44h25.33c1.9,0,3.44-1.54,3.44-3.44v-14.44c0-1.9-1.54-3.44-3.44-3.44ZM80.67,72.06c-2.95,0-5.34-2.39-5.34-5.34s2.39-5.34,5.34-5.34,5.34,2.39,5.34,5.34-2.39,5.34-5.34,5.34Z" />
+      <path d="M74.11,82.39c-4.66,0-8.44-3.79-8.44-8.44v-14.44c0-4.66,3.79-8.44,8.44-8.44h19.89v-17.78c0-1.6-1.29-2.89-2.89-2.89H2.89c-1.6,0-2.89,1.29-2.89,2.89v66.67c0,1.6,1.29,2.89,2.89,2.89h88.22c1.6,0,2.89-1.29,2.89-2.89v-17.56h-19.89Z" />
     </svg>
   );
 }
 
 function WalletButton() {
   const user = useAuthStore((s) => s.user);
-  const { wallet } = useSidebarBadges();
   const walletPath = user?.role === 'CREATOR' ? '/creator/wallet' : '/wallet';
-  const display = wallet >= 1000 ? `${(wallet / 1000).toFixed(1)}k` : String(wallet);
   return (
     <div className="relative group">
-      <Link
-        to={walletPath}
-        className="flex items-center gap-[6px] rounded-full bg-muted px-[14px] py-[8px] text-[13px] font-semibold text-foreground hover:bg-muted-foreground/20 transition-colors"
-      >
-        <WalletIcon className="size-[18px]" />
-        <span>{display}</span>
+      <Link to={walletPath} className={`relative shrink-0 ${iconCircle}`} aria-label="Wallet">
+        <WalletIcon className="size-[22px]" />
       </Link>
       <span className="pointer-events-none absolute left-1/2 top-full mt-[6px] -translate-x-1/2 whitespace-nowrap rounded-[6px] bg-foreground px-[8px] py-[4px] text-[11px] font-medium text-background opacity-0 transition-opacity group-hover:opacity-100">
         Wallet

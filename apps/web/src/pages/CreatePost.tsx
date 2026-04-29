@@ -6,6 +6,7 @@ import {
   AuthorRow,
   VisibilityDropdown,
   MediaUploadArea,
+  HashtagPanel,
 } from '../components/create-post/CreatePostParts';
 import type { Visibility } from '../components/create-post/CreatePostParts';
 
@@ -15,6 +16,7 @@ export default function CreatePost() {
   const [text, setText] = useState('');
   const [visibility, setVisibility] = useState<Visibility>('PUBLIC');
   const [ppvPrice, setPpvPrice] = useState('');
+  const [hashtags, setHashtags] = useState<string[]>([]);
   const [isPinned, setIsPinned] = useState(false);
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -54,6 +56,7 @@ export default function CreatePost() {
       fd.append('visibility', visibility === 'PPV' ? 'PUBLIC' : visibility);
       if (visibility === 'PPV' && ppvPrice) fd.append('ppvPrice', ppvPrice);
       if (isPinned) fd.append('isPinned', 'true');
+      if (hashtags.length) fd.append('hashtags', hashtags.join(','));
       images.forEach((img) => fd.append('media', img.file));
       await api.post('/posts', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       navigate('/creator/profile');
@@ -110,6 +113,12 @@ export default function CreatePost() {
           onChange={(e) => setText(e.target.value)}
           placeholder="Say Something about this photo..."
           className="mt-[16px] min-h-[50px] w-full resize-none bg-transparent text-[14px] text-foreground placeholder-muted-foreground outline-none"
+        />
+
+        <HashtagPanel
+          tags={hashtags}
+          onAdd={(tag) => setHashtags((prev) => [...prev, tag])}
+          onRemove={(tag) => setHashtags((prev) => prev.filter((t) => t !== tag))}
         />
 
         <div className="mt-[12px] flex flex-wrap items-center gap-[16px]">

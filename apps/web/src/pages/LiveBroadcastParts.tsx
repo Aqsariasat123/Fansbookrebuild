@@ -46,6 +46,8 @@ export function BroadcastVideoPanel({
   creatorOnPrivateCall,
   zoomLevel,
   isScreenSharing,
+  isLive,
+  elapsed,
   onEnd,
   onZoomChange,
   onToggleScreenShare,
@@ -55,13 +57,18 @@ export function BroadcastVideoPanel({
   creatorOnPrivateCall: boolean;
   zoomLevel: number;
   isScreenSharing: boolean;
+  isLive: boolean;
+  elapsed: number;
   onEnd: () => void;
   onZoomChange: (level: number) => void;
   onToggleScreenShare: () => void;
 }) {
   const fmt = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
+  const fmtTime = (s: number) =>
+    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+
   return (
-    <div className="overflow-hidden rounded-[16px] border border-[#a61651]/40">
+    <div className="overflow-hidden rounded-[16px]">
       <div className="flex items-center justify-between bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[20px] py-[10px]">
         <p className="text-[16px] font-semibold text-white">Video Broadcasting</p>
         <button
@@ -71,17 +78,30 @@ export function BroadcastVideoPanel({
           End Stream
         </button>
       </div>
-      <div className="relative overflow-hidden bg-[#0a0c0e]">
+      {/* Video — overflow:hidden clips zoom, object-cover fills 100% always */}
+      <div className="relative overflow-hidden bg-[#0a0c0e]" style={{ aspectRatio: '16/9' }}>
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className="aspect-video w-full object-contain"
-          style={{ transform: `scaleX(-${zoomLevel}) scaleY(${zoomLevel})` }}
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ transform: `scale(${zoomLevel}) scaleX(-1)`, transformOrigin: 'center center' }}
         />
-        <div className="absolute right-[16px] top-[16px]">
-          <span className="rounded-[4px] bg-black/60 px-[10px] py-[4px] text-[14px] text-white">
+        {/* LIVE badge + timer — top left */}
+        {isLive && (
+          <div className="absolute left-[12px] top-[12px] flex items-center gap-[8px]">
+            <span className="rounded-[4px] bg-red-600 px-[10px] py-[4px] text-[13px] font-bold text-white">
+              LIVE
+            </span>
+            <span className="rounded-[4px] bg-black/60 px-[8px] py-[4px] text-[13px] font-medium text-white">
+              {fmtTime(elapsed)}
+            </span>
+          </div>
+        )}
+        {/* Viewer count — top right */}
+        <div className="absolute right-[12px] top-[12px]">
+          <span className="rounded-[4px] bg-black/60 px-[10px] py-[4px] text-[13px] text-white">
             {fmt(viewerCount)} viewers
           </span>
         </div>
@@ -95,22 +115,22 @@ export function BroadcastVideoPanel({
       <div className="flex items-center gap-[16px] bg-card px-[16px] py-[10px]">
         <div className="flex flex-1 items-center gap-[8px]">
           <button
-            onClick={() => onZoomChange(Math.max(0.5, zoomLevel - 0.1))}
+            onClick={() => onZoomChange(Math.max(1.0, zoomLevel - 0.1))}
             className="flex size-[28px] items-center justify-center rounded-full border border-border text-[16px] font-medium text-foreground hover:border-foreground"
           >
             −
           </button>
           <input
             type="range"
-            min="0.5"
-            max="2"
+            min="1"
+            max="3"
             step="0.05"
             value={zoomLevel}
             onChange={(e) => onZoomChange(parseFloat(e.target.value))}
             className="h-[4px] flex-1 accent-[#01adf1]"
           />
           <button
-            onClick={() => onZoomChange(Math.min(2, zoomLevel + 0.1))}
+            onClick={() => onZoomChange(Math.min(3, zoomLevel + 0.1))}
             className="flex size-[28px] items-center justify-center rounded-full border border-border text-[16px] font-medium text-foreground hover:border-foreground"
           >
             +

@@ -121,11 +121,11 @@ describe('Messages page', () => {
     expect(screen.getByText('Sarah Jones')).toBeInTheDocument();
   });
 
-  it('should show "Find and invite people" bar', async () => {
+  it('should show Message heading', async () => {
     mockGet.mockResolvedValue({ data: { success: true, data: [] } });
     renderWithProviders(<Messages />);
     await waitFor(() => {
-      expect(screen.getByText('Find and invite people')).toBeInTheDocument();
+      expect(screen.getByText('Messages')).toBeInTheDocument();
     });
   });
 });

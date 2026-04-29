@@ -1,62 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
-import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 import { getSocket } from '../../lib/socket';
 import { useMessageStore } from '../../stores/messageStore';
-
-interface ConversationItem {
-  id: string;
-  other: { id: string; username: string; displayName: string; avatar: string | null };
-  lastMessage: string | null;
-  lastMessageAt: string;
-  unreadCount: number;
-}
-
-function formatTime(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
-
-function ConvRow({ c, onClick }: { c: ConversationItem; onClick: () => void }) {
-  const isOnline = useOnlineStatus(c.other.id);
-  return (
-    <button
-      onClick={onClick}
-      className="flex w-full items-center gap-[14px] border-b border-muted px-[16px] py-[12px] text-left transition-colors hover:bg-muted/70"
-    >
-      <div className="relative shrink-0">
-        {c.other.avatar ? (
-          <img src={c.other.avatar} alt="" className="size-[40px] rounded-full object-cover" />
-        ) : (
-          <div className="flex size-[40px] items-center justify-center rounded-full bg-primary/30">
-            <span className="text-[14px] font-medium text-foreground">
-              {c.other.displayName.charAt(0).toUpperCase()}
-            </span>
-          </div>
-        )}
-        {isOnline && (
-          <div className="absolute bottom-0 right-0 size-[8px] rounded-full bg-green-500" />
-        )}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[14px] text-foreground">{c.other.displayName}</p>
-        <p className="truncate text-[12px] text-muted-foreground">{c.lastMessage ?? ''}</p>
-      </div>
-      <div className="flex shrink-0 flex-col items-end gap-[4px]">
-        <p className="text-[11px] text-muted-foreground">{formatTime(c.lastMessageAt)}</p>
-        {c.unreadCount > 0 && (
-          <div className="flex items-center justify-center rounded-full bg-[#01adf1]/20 px-[8px] py-[1px]">
-            <span className="text-[10px] text-[#01adf1]">{c.unreadCount}</span>
-          </div>
-        )}
-      </div>
-    </button>
-  );
-}
+import { ChatModal } from '../chat/ChatModal';
+import { ConvRow, type ConversationItem } from './DropdownConvRow';
 
 interface Props {
   open: boolean;
@@ -68,6 +16,7 @@ export function MessagesDropdown({ open, onClose }: Props) {
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
+  const [openConv, setOpenConv] = useState<ConversationItem | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -116,12 +65,6 @@ export function MessagesDropdown({ open, onClose }: Props) {
   const filtered = search
     ? conversations.filter((c) => c.other.displayName.toLowerCase().includes(search.toLowerCase()))
     : conversations;
-
-  const handleConvClick = (convId: string) => {
-    onClose();
-    useMessageStore.getState().reset();
-    navigate(`/messages/${convId}`);
-  };
 
   return (
     <>
@@ -186,7 +129,16 @@ export function MessagesDropdown({ open, onClose }: Props) {
               No conversations yet
             </p>
           ) : (
-            filtered.map((c) => <ConvRow key={c.id} c={c} onClick={() => handleConvClick(c.id)} />)
+            filtered.map((c) => (
+              <ConvRow
+                key={c.id}
+                c={c}
+                onClick={() => {
+                  useMessageStore.getState().reset();
+                  setOpenConv(c);
+                }}
+              />
+            ))
           )}
         </div>
 
@@ -203,6 +155,17 @@ export function MessagesDropdown({ open, onClose }: Props) {
           </button>
         </div>
       </div>
+
+      {/* Chat modal — opens on top of the panel backdrop */}
+      {openConv && (
+        <ChatModal
+          conversationId={openConv.id}
+          otherName={openConv.other.displayName}
+          otherAvatar={openConv.other.avatar}
+          otherId={openConv.other.id}
+          onClose={() => setOpenConv(null)}
+        />
+      )}
     </>
   );
 }

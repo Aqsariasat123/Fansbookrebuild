@@ -713,12 +713,14 @@ model Notification {
   entityType String?
   message    String
   read       Boolean          @default(false)
+  archived   Boolean          @default(false)
   createdAt  DateTime         @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([read])
+  @@index([archived])
   @@index([createdAt])
 }
 

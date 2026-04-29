@@ -33,11 +33,14 @@ function decodeString(data: Buffer, ch: number, len: number): string {
 
 export async function encodeUserIdIntoImage(inputBuffer: Buffer, userId: string): Promise<Buffer> {
   const payload = MAGIC + userId.padEnd(CUID_LEN, '\0').slice(0, CUID_LEN);
-  const image = sharp(inputBuffer);
-  const { width = 0, height = 0 } = await image.metadata();
+  const { width = 0, height = 0 } = await sharp(inputBuffer).metadata();
   if (width * height < BITS) return inputBuffer;
 
-  const { data, info } = await image.raw().toBuffer({ resolveWithObject: true });
+  // .rotate() auto-orients from EXIF so LSB encoding matches the displayed image
+  const { data, info } = await sharp(inputBuffer)
+    .rotate()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
   const ch = info.channels;
   encodeString(payload, data, ch);
 

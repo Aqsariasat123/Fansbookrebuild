@@ -17,27 +17,10 @@ export function buildCallProps(
   };
 }
 
-export function MessagePageHeader({ onInvite }: { onInvite?: () => void }) {
-  const [copied, setCopied] = useState(false);
-  const handleInvite = () => {
-    if (onInvite) return onInvite();
-    navigator.clipboard.writeText(`${window.location.origin}/explore`).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
+export function MessagePageHeader() {
   return (
-    <div className="flex items-center justify-between border-b border-muted px-[39px] py-[16px]">
+    <div className="flex items-center border-b border-muted px-[39px] py-[16px]">
       <p className="text-[20px] text-foreground">Message</p>
-      <div className="flex items-center gap-[16px]">
-        <button
-          onClick={handleInvite}
-          className="flex items-center gap-[10px] bg-muted p-[10px] rounded-[8px] hover:opacity-80 transition-opacity"
-        >
-          <img src={`${IMG}/person-heart.svg`} alt="" className="size-[24px]" />
-          <span className="text-[20px] text-muted-foreground">{copied ? 'Copied!' : 'Invite'}</span>
-        </button>
-      </div>
     </div>
   );
 }

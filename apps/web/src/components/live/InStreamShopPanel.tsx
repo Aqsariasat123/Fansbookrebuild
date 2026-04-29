@@ -127,14 +127,14 @@ export function InStreamShopPanel({ sessionId, pinnedItemId, onPinChange }: Prop
   const filtered = listings.filter((l) => l.title.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="rounded-[12px] border border-border bg-card p-[16px] flex flex-col gap-[12px]">
+    <div className="rounded-[12px] border border-border bg-card p-[16px] flex flex-col gap-[14px]">
       <div className="flex items-center justify-between">
-        <p className="text-[14px] font-semibold text-foreground">In-Stream Shopping</p>
+        <p className="text-[16px] font-semibold text-foreground">In-Stream Shopping</p>
         {pinnedItemId && !activeAuction && (
           <button
             onClick={handleUnpin}
             disabled={loading}
-            className="text-[12px] text-red-400 hover:text-red-300"
+            className="text-[14px] text-red-400 hover:text-red-300"
           >
             Unpin
           </button>
@@ -161,12 +161,12 @@ export function InStreamShopPanel({ sessionId, pinnedItemId, onPinChange }: Prop
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search your listings…"
-        className="rounded-[8px] border border-border bg-background px-[12px] py-[8px] text-[13px] text-foreground placeholder-muted-foreground outline-none"
+        className="rounded-[8px] border border-border bg-background px-[12px] py-[10px] text-[14px] text-foreground placeholder-muted-foreground outline-none"
       />
 
-      <div className="flex flex-col gap-[8px] max-h-[300px] overflow-y-auto">
+      <div className="flex flex-col gap-[10px] max-h-[360px] overflow-y-auto">
         {filtered.length === 0 && (
-          <p className="text-[12px] text-muted-foreground text-center py-[16px]">
+          <p className="text-[14px] text-muted-foreground text-center py-[16px]">
             No active listings found.
           </p>
         )}

@@ -20,6 +20,7 @@ export default function LiveBroadcasting() {
   const sessionId = useLiveStore((s) => s.sessionId);
   const privateIncoming = useLiveStore((s) => s.privateIncoming);
   const creatorOnPrivateCall = useLiveStore((s) => s.creatorOnPrivateCall);
+  const clearChat = useLiveStore((s) => s.clearChat);
 
   const { stopBroadcast, sendChat, getLocalStream, switchToScreenShare, switchToCamera } =
     useLiveStream();
@@ -32,6 +33,11 @@ export default function LiveBroadcasting() {
   const [activeTab, setActiveTab] = useState<'chat' | 'shop'>('chat');
   const [zoomLevel, setZoomLevel] = useState(1.0);
   const [screenSharing, setScreenSharing] = useState(false);
+
+  // Clear stale chat from previous session on mount
+  useEffect(() => {
+    clearChat();
+  }, [clearChat]);
 
   // Attach stream to video element + retry until ready
   useEffect(() => {
@@ -52,20 +58,30 @@ export default function LiveBroadcasting() {
     return () => clearInterval(interval);
   }, [getLocalStream, isLive]);
 
-  // Health check — re-attach stream if video goes black
+  // Health check — re-attach if stream changes or video pauses; also recover ended camera tracks
   useEffect(() => {
     if (!isLive) return;
-    const check = setInterval(() => {
+    const check = setInterval(async () => {
       if (!videoRef.current) return;
       const stream = getLocalStream();
       if (!stream) return;
-      if (videoRef.current.srcObject !== stream || videoRef.current.paused) {
-        videoRef.current.srcObject = stream;
+      // If camera track ended (e.g. browser killed it), restart camera
+      const videoTracks = stream.getVideoTracks();
+      const trackEnded =
+        videoTracks.length === 0 || videoTracks.every((t) => t.readyState === 'ended');
+      if (trackEnded && !screenSharing) {
+        await switchToCamera();
+      }
+      // Re-attach if srcObject drifted or video paused
+      const current = getLocalStream();
+      if (!current) return;
+      if (videoRef.current.srcObject !== current || videoRef.current.paused) {
+        videoRef.current.srcObject = current;
         videoRef.current.play().catch(() => {});
       }
-    }, 3000);
+    }, 1000);
     return () => clearInterval(check);
-  }, [isLive, getLocalStream]);
+  }, [isLive, getLocalStream, screenSharing, switchToCamera]);
 
   useEffect(() => {
     if (!isLive) return;
@@ -103,36 +119,15 @@ export default function LiveBroadcasting() {
     }
   };
 
-  const fmt = (s: number) =>
-    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
-
   return (
     <div className="flex flex-col gap-[20px]">
-      <div className="flex flex-col gap-[12px] md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-[16px] font-semibold text-foreground md:text-[18px]">
-            Live Broadcasting
-          </p>
-          <p className="text-[13px] text-muted-foreground md:text-[14px]">
-            You are live! Your fans can watch you in real-time.
-          </p>
-        </div>
-        {isLive && (
-          <div className="flex items-center gap-[12px]">
-            <span className="rounded-[4px] bg-red-600 px-[10px] py-[4px] text-[12px] font-semibold text-white">
-              LIVE
-            </span>
-            <span className="text-[14px] text-muted-foreground">{fmt(elapsed)}</span>
-            {creatorOnPrivateCall && (
-              <button
-                onClick={() => sessionId && endPrivateCall(sessionId)}
-                className="rounded-[6px] border border-border px-[10px] py-[4px] text-[12px] text-muted-foreground hover:border-foreground"
-              >
-                End Private
-              </button>
-            )}
-          </div>
-        )}
+      <div>
+        <p className="text-[16px] font-semibold text-foreground md:text-[18px]">
+          Live Broadcasting
+        </p>
+        <p className="text-[13px] text-muted-foreground md:text-[14px]">
+          You are live! Your fans can watch you in real-time.
+        </p>
       </div>
 
       {privateIncoming && (
@@ -151,17 +146,19 @@ export default function LiveBroadcasting() {
           creatorOnPrivateCall={creatorOnPrivateCall}
           zoomLevel={zoomLevel}
           isScreenSharing={screenSharing}
+          isLive={isLive}
+          elapsed={elapsed}
           onEnd={handleEnd}
           onZoomChange={setZoomLevel}
           onToggleScreenShare={handleToggleScreenShare}
         />
         <div className="flex flex-col gap-[8px]">
-          <div className="flex overflow-hidden rounded-[12px] border border-[#a61651]/40">
+          <div className="flex overflow-hidden rounded-[12px] border border-border">
             {(['chat', 'shop'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setActiveTab(t)}
-                className={`flex-1 py-[10px] text-[13px] font-semibold transition-colors ${
+                className={`flex-1 py-[10px] text-[14px] font-semibold transition-colors ${
                   activeTab === t
                     ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white'
                     : 'text-muted-foreground hover:text-foreground'
