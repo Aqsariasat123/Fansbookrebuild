@@ -1,7 +1,8 @@
-import { useRef, useState, type MouseEvent } from 'react';
+import { useRef, useState, useCallback, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProfileSharePopup } from './ProfileSharePopup';
-import { CoverIcon, StatsRow, ProfileAboutColumn } from './ProfileHeaderParts';
+import { CoverIcon, StatsRow, ProfileAboutColumn, AvatarEditor } from './ProfileHeaderParts';
+import { CoverCropModal } from '../profile/CoverCropModal';
 
 interface ProfileHeaderProps {
   displayName: string;
@@ -26,14 +27,6 @@ const CAMERA_D =
 const EDIT_D =
   'M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z';
 
-function makeFileHandler(cb: (f: File) => void) {
-  return (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (f) cb(f);
-    e.target.value = '';
-  };
-}
-
 export function ProfileHeader({
   displayName,
   username,
@@ -52,10 +45,10 @@ export function ProfileHeader({
   onCoverUpload,
 }: ProfileHeaderProps) {
   const navigate = useNavigate();
-  const avatarRef = useRef<HTMLInputElement>(null);
   const coverRef = useRef<HTMLInputElement>(null);
   const [showShare, setShowShare] = useState(false);
   const [sharePos, setSharePos] = useState<{ top: number; right: number } | null>(null);
+  const [coverCropSrc, setCoverCropSrc] = useState<string | null>(null);
   const initial = displayName.charAt(0).toUpperCase();
   const hasAbout = bio || hashtags.length > 0;
 
@@ -64,6 +57,26 @@ export function ProfileHeader({
     setSharePos({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
     setShowShare(true);
   };
+
+  const handleCoverFileSelected = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) setCoverCropSrc(URL.createObjectURL(f));
+    e.target.value = '';
+  }, []);
+
+  const handleCoverCropApply = useCallback(
+    (file: File) => {
+      if (coverCropSrc) URL.revokeObjectURL(coverCropSrc);
+      setCoverCropSrc(null);
+      onCoverUpload(file);
+    },
+    [coverCropSrc, onCoverUpload],
+  );
+
+  const handleCoverCropCancel = useCallback(() => {
+    if (coverCropSrc) URL.revokeObjectURL(coverCropSrc);
+    setCoverCropSrc(null);
+  }, [coverCropSrc]);
 
   return (
     <div>
@@ -116,45 +129,18 @@ export function ProfileHeader({
           type="file"
           accept="image/*"
           className="hidden"
-          onChange={makeFileHandler(onCoverUpload)}
+          onChange={handleCoverFileSelected}
         />
       </div>
 
       <div>
-        {/* Avatar — wrapper is pointer-events-none so its transparent area doesn't block cover buttons */}
         <div className="pointer-events-none relative z-10 -mt-[60px] flex justify-center md:-mt-[88px] md:justify-start">
-          <div className="pointer-events-auto relative size-[130px] rounded-full border-4 border-muted bg-muted md:size-[176px]">
-            {avatar ? (
-              <img src={avatar} alt="" className="size-full rounded-full object-cover" />
-            ) : (
-              <div className="flex size-full items-center justify-center rounded-full bg-muted">
-                <span className="text-[40px] font-medium text-muted-foreground md:text-[52px]">
-                  {initial}
-                </span>
-              </div>
-            )}
-            {uploadingAvatar && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-                <div className="size-6 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
-              </div>
-            )}
-            <button
-              onClick={() => avatarRef.current?.click()}
-              disabled={uploadingAvatar}
-              className="absolute bottom-[2px] right-[2px] flex size-[30px] items-center justify-center rounded-full bg-primary text-white hover:opacity-80 md:size-[36px]"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 5h-3.17L15 3H9L7.17 5H4C2.9 5 2 5.9 2 7v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-              </svg>
-            </button>
-            <input
-              ref={avatarRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={makeFileHandler(onAvatarUpload)}
-            />
-          </div>
+          <AvatarEditor
+            avatar={avatar}
+            initial={initial}
+            uploading={uploadingAvatar}
+            onUpload={onAvatarUpload}
+          />
         </div>
 
         {/* Name + bio row */}
@@ -198,6 +184,13 @@ export function ProfileHeader({
           username={username}
           pos={sharePos!}
           onClose={() => setShowShare(false)}
+        />
+      )}
+      {coverCropSrc && (
+        <CoverCropModal
+          src={coverCropSrc}
+          onApply={handleCoverCropApply}
+          onCancel={handleCoverCropCancel}
         />
       )}
     </div>

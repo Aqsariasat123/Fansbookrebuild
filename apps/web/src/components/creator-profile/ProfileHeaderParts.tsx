@@ -1,3 +1,57 @@
+import { useRef } from 'react';
+
+export function AvatarEditor({
+  avatar,
+  initial,
+  uploading,
+  onUpload,
+}: {
+  avatar: string | null;
+  initial: string;
+  uploading: boolean;
+  onUpload: (file: File) => void;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <div className="pointer-events-auto relative size-[130px] rounded-full border-4 border-muted bg-muted md:size-[176px]">
+      {avatar ? (
+        <img src={avatar} alt="" className="size-full rounded-full object-cover" />
+      ) : (
+        <div className="flex size-full items-center justify-center rounded-full bg-muted">
+          <span className="text-[40px] font-medium text-muted-foreground md:text-[52px]">
+            {initial}
+          </span>
+        </div>
+      )}
+      {uploading && (
+        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
+          <div className="size-6 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
+        </div>
+      )}
+      <button
+        onClick={() => ref.current?.click()}
+        disabled={uploading}
+        className="absolute bottom-[2px] right-[2px] flex size-[30px] items-center justify-center rounded-full bg-primary text-white hover:opacity-80 md:size-[36px]"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 5h-3.17L15 3H9L7.17 5H4C2.9 5 2 5.9 2 7v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+        </svg>
+      </button>
+      <input
+        ref={ref}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) onUpload(f);
+          e.target.value = '';
+        }}
+      />
+    </div>
+  );
+}
+
 export function formatCount(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(2)}M`;
   if (n >= 1000) return `${(n / 1000).toFixed(2)}K`;
