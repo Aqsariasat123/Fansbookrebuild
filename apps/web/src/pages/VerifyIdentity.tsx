@@ -51,7 +51,6 @@ export default function VerifyIdentity() {
 
   // Always fetch real status from API on mount to correct stale authStore
   useEffect(() => {
-    if (isDone) return;
     api
       .get('/verification/status')
       .then(({ data: r }) => {
@@ -61,9 +60,11 @@ export default function VerifyIdentity() {
           setStatus(s);
           setRetryCount(r.data.retryCount ?? 0);
           setStep('RESULT');
+        } else if (s === 'PENDING') {
+          // Stay in PENDING (polling) if just returned from Didit; otherwise show form
+          setStatus('PENDING');
+          if (!isDone) setStep('FORM');
         } else {
-          // PENDING or UNVERIFIED: always show form (PENDING shows info banner)
-          if (s === 'PENDING') setStatus('PENDING');
           setStep('FORM');
         }
       })
@@ -144,6 +145,16 @@ export default function VerifyIdentity() {
             onRestart={() => {
               setStep('FORM');
               setError('');
+            }}
+            onManualCheck={async () => {
+              const { data: r } = await api.post('/verification/check');
+              if (!r.success) return;
+              const s = r.data.status as VerifyStatus;
+              if (RESULT_STATUSES.includes(s)) {
+                setStatus(s);
+                setRetryCount(r.data.retryCount ?? 0);
+                setStep('RESULT');
+              }
             }}
           />
         )}

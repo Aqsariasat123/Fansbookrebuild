@@ -4,6 +4,7 @@ import { logger } from '../utils/logger.js';
 import {
   createVerificationSession,
   getVerificationStatus,
+  checkAndSyncVerificationStatus,
   handleDiditWebhook,
 } from '../services/verificationService.js';
 
@@ -42,6 +43,17 @@ router.get('/status', authenticate, async (req: Request, res: Response, next: Ne
   try {
     const userId = (req as Request & { user: { userId: string } }).user.userId;
     const data = await getVerificationStatus(userId);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/verification/check — pull latest status from Didit API (webhook fallback)
+router.post('/check', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = (req as Request & { user: { userId: string } }).user.userId;
+    const data = await checkAndSyncVerificationStatus(userId);
     res.json({ success: true, data });
   } catch (err) {
     next(err);

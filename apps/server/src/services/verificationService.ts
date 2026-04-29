@@ -38,27 +38,20 @@ export async function createVerificationSession(
   try {
     const sessionRes = await fetch(DIDIT_SESSION_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': env.DIDIT_API_KEY,
-      },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': env.DIDIT_API_KEY },
       body: JSON.stringify({
         workflow_id: env.DIDIT_WORKFLOW_ID,
         vendor_data: userId,
         callback: `${env.CLIENT_URL}/verify-identity?done=1`,
       }),
     });
-
     const sessionBody = (await sessionRes.json()) as Record<string, unknown>;
     logger.info({ sessionStatus: sessionRes.status, sessionBody }, 'Didit session response');
-
     if (!sessionRes.ok) {
       logger.error({ sessionBody }, 'Didit session creation failed');
       throw new Error('DIDIT_SESSION_FAILED');
     }
-
     const session = sessionBody as { session_id: string; url: string };
-
     await prisma.identityVerification.upsert({
       where: { userId },
       create: { userId, status: 'PENDING', diditSessionId: session.session_id },
@@ -68,7 +61,6 @@ export async function createVerificationSession(
         retryCount: { increment: 1 },
       },
     });
-
     return { sdkToken: session.url, sessionId: session.session_id };
   } catch (err) {
     logger.error({ err, userId }, 'Didit API call failed');
@@ -80,6 +72,42 @@ export async function getVerificationStatus(userId: string) {
   const record = await prisma.identityVerification.findUnique({ where: { userId } });
   if (!record) return { status: 'UNVERIFIED', retryCount: 0 };
   return { status: record.status, retryCount: record.retryCount };
+}
+
+async function fetchDiditSessionStatus(sessionId: string): Promise<string | null> {
+  const res = await fetch(`${DIDIT_SESSION_URL}${sessionId}`, {
+    headers: { 'x-api-key': env.DIDIT_API_KEY },
+  });
+  if (!res.ok) return null;
+  const data = (await res.json()) as { status?: string };
+  if (!data.status || data.status === 'InProgress' || data.status === 'Started') return null;
+  return data.status;
+}
+
+export async function checkAndSyncVerificationStatus(userId: string) {
+  const record = await prisma.identityVerification.findUnique({ where: { userId } });
+  if (!record) return { status: 'UNVERIFIED', retryCount: 0 };
+  if (
+    record.status !== 'PENDING' ||
+    !isDiditConfigured() ||
+    record.diditSessionId === 'PLACEHOLDER'
+  ) {
+    return { status: record.status, retryCount: record.retryCount };
+  }
+  try {
+    const rawStatus = await fetchDiditSessionStatus(record.diditSessionId!);
+    if (!rawStatus) return { status: 'PENDING', retryCount: record.retryCount };
+    const newStatus = mapDiditStatus(rawStatus);
+    await prisma.identityVerification.update({
+      where: { userId },
+      data: { status: newStatus, reviewedAt: new Date() },
+    });
+    const userStatus = newStatus === 'MANUAL_REVIEW' ? 'PENDING' : newStatus;
+    await prisma.user.update({ where: { id: userId }, data: { verificationStatus: userStatus } });
+    return { status: newStatus, retryCount: record.retryCount };
+  } catch {
+    return { status: record.status, retryCount: record.retryCount };
+  }
 }
 
 function verifyWebhookSignature(rawBody: Buffer, signature: string) {
@@ -144,6 +172,21 @@ export async function handleDiditWebhook(rawBody: Buffer, signature: string, pay
   if (user) await sendVerificationResultEmail(user.email, user.username, newStatus);
 }
 
+const EMAIL_MSG: Record<string, string> = {
+  APPROVED: 'Your identity has been verified. You now have full access to Inscrio.',
+  REJECTED:
+    'We were unable to verify your identity. Please try again with a clear photo of your ID.',
+  MANUAL_REVIEW:
+    'Your verification is being reviewed by our team. We will notify you within 24 hours.',
+};
+async function sendVerificationResultEmail(email: string, username: string, status: string) {
+  await sendEmail(
+    email,
+    'Inscrio Identity Verification Result',
+    `<p>Hi @${username},</p><p>${EMAIL_MSG[status] ?? 'Verification update.'}</p>`,
+  );
+}
+
 export async function adminApprove(verificationId: string, adminId: string) {
   const v = await prisma.identityVerification.update({
     where: { id: verificationId },
@@ -176,20 +219,4 @@ export async function adminRequestResubmit(verificationId: string, adminId: stri
     include: { user: { select: { id: true, email: true, username: true } } },
   });
   await prisma.user.update({ where: { id: v.userId }, data: { verificationStatus: 'PENDING' } });
-}
-
-async function sendVerificationResultEmail(email: string, username: string, status: string) {
-  const messages: Record<string, string> = {
-    APPROVED: 'Your identity has been verified. You now have full access to Inscrio.',
-    REJECTED:
-      'We were unable to verify your identity. Please try again with a clear photo of your ID.',
-    MANUAL_REVIEW:
-      'Your verification is being reviewed by our team. We will notify you within 24 hours.',
-  };
-  const body = messages[status] ?? 'Verification update.';
-  await sendEmail(
-    email,
-    'Inscrio Identity Verification Result',
-    `<p>Hi @${username},</p><p>${body}</p>`,
-  );
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import type { VerifyStatus } from './VerifyIdentityFormStep';
+export { ResultStep } from './VerifyIdentityResult';
 
 function isDiditDoneEvent(event: MessageEvent): boolean {
   if (!event.origin.includes('didit')) return false;
@@ -85,15 +84,33 @@ export function SdkStep({ sdkToken, onDone }: { sdkToken: string; onDone: () => 
   );
 }
 
-// ── Pending Step ──────────────────────────────────────────
-export function PendingStep({ onRestart }: { onRestart?: () => void }) {
+export function PendingStep({
+  onRestart,
+  onManualCheck,
+}: {
+  onRestart?: () => void;
+  onManualCheck?: () => Promise<void>;
+}) {
+  const [showCheck, setShowCheck] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
-
+  const [checking, setChecking] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setTimedOut(true), 120000);
-    return () => clearTimeout(t);
+    const t1 = setTimeout(() => setShowCheck(true), 30000);
+    const t2 = setTimeout(() => setTimedOut(true), 120000);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, []);
-
+  async function handleCheck() {
+    if (!onManualCheck) return;
+    setChecking(true);
+    try {
+      await onManualCheck();
+    } finally {
+      setChecking(false);
+    }
+  }
   return (
     <div className="flex flex-col items-center gap-[20px] text-center py-[24px]">
       <div className="size-[56px] animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
@@ -102,94 +119,24 @@ export function PendingStep({ onRestart }: { onRestart?: () => void }) {
         Waiting for confirmation from Didit. This page will update automatically once your
         verification is complete.
       </p>
-      {timedOut ? (
+      {showCheck && onManualCheck && (
+        <button
+          onClick={handleCheck}
+          disabled={checking}
+          className="rounded-full border border-[#01adf1] px-[24px] py-[10px] text-[14px] font-medium text-[#01adf1] hover:bg-[#01adf1]/10 transition-colors disabled:opacity-50"
+        >
+          {checking ? 'Checking…' : 'Check status'}
+        </button>
+      )}
+      {timedOut && (
         <p className="text-[13px] text-gray-500 max-w-[300px]">
           This is taking longer than expected. You can close this page — we'll email you when your
           verification is complete.
         </p>
-      ) : null}
+      )}
       {onRestart && (
         <button onClick={onRestart} className="text-[12px] text-gray-600 underline mt-[4px]">
           Restart verification
-        </button>
-      )}
-    </div>
-  );
-}
-
-// ── Result Step ───────────────────────────────────────────
-export function ResultStep({
-  status,
-  retryCount,
-  onRetry,
-}: {
-  status: VerifyStatus;
-  retryCount: number;
-  onRetry: () => void;
-}) {
-  const navigate = useNavigate();
-  const canRetry = retryCount < 3;
-
-  if (status === 'APPROVED') {
-    return (
-      <div className="flex flex-col items-center gap-[20px] text-center py-[24px]">
-        <div className="flex size-[72px] items-center justify-center rounded-full bg-green-500/20">
-          <span className="material-icons-outlined text-[40px] text-green-400">verified</span>
-        </div>
-        <h2 className="text-[22px] font-bold text-white">You're verified!</h2>
-        <p className="text-[14px] text-gray-400">
-          Your identity has been confirmed. You now have full access to Inscrio.
-        </p>
-        <button
-          onClick={() => navigate('/feed')}
-          className="rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[12px] text-[15px] font-semibold text-white"
-        >
-          Go to Dashboard
-        </button>
-      </div>
-    );
-  }
-
-  if (status === 'REJECTED') {
-    return (
-      <div className="flex flex-col items-center gap-[20px] text-center py-[24px]">
-        <div className="flex size-[72px] items-center justify-center rounded-full bg-red-500/20">
-          <span className="material-icons-outlined text-[40px] text-red-400">cancel</span>
-        </div>
-        <h2 className="text-[22px] font-bold text-white">Unable to verify</h2>
-        <p className="text-[14px] text-gray-400 max-w-[340px]">
-          We could not verify your identity. Please try again with a clear, well-lit photo of your
-          ID document.
-        </p>
-        {canRetry ? (
-          <button
-            onClick={onRetry}
-            className="rounded-full bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[32px] py-[12px] text-[15px] font-semibold text-white"
-          >
-            Try Again
-          </button>
-        ) : (
-          <p className="text-[13px] text-red-400">
-            Maximum attempts reached. Please contact support.
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  // MANUAL_REVIEW
-  return (
-    <div className="flex flex-col items-center gap-[20px] text-center py-[24px]">
-      <div className="flex size-[72px] items-center justify-center rounded-full bg-yellow-500/20">
-        <span className="material-icons-outlined text-[40px] text-yellow-400">schedule</span>
-      </div>
-      <h2 className="text-[22px] font-bold text-white">Under Review</h2>
-      <p className="text-[14px] text-gray-400 max-w-[340px]">
-        Your documents are being reviewed by our team. We will email you within 24 hours.
-      </p>
-      {canRetry && (
-        <button onClick={onRetry} className="mt-[4px] text-[13px] text-gray-400 underline">
-          Resubmit with different documents
         </button>
       )}
     </div>
