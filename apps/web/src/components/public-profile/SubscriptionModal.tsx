@@ -44,7 +44,7 @@ export function SubscriptionModal({ tiers, loading, onClose, onSubscribe }: Prop
         </button>
 
         {/* Title */}
-        <h2 className="mb-[20px] text-center text-[20px] font-semibold text-foreground md:mb-[28px] md:text-[28px]">
+        <h2 className="mb-[20px] px-[48px] text-center text-[20px] font-semibold text-foreground md:mb-[28px] md:px-0 md:text-[28px]">
           Choose Your Subscription Plan
         </h2>
 
