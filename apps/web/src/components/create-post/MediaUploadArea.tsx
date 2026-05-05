@@ -32,7 +32,7 @@ export function MediaUploadArea({
           </svg>
           <p className="text-[14px] text-muted-foreground">Click to add photos or videos</p>
           <p className="text-[12px] text-muted-foreground/60">
-            Up to {MAX_FILES} files · 50 MB each
+            Up to {MAX_FILES} files · 5 GB each
           </p>
         </div>
       </div>

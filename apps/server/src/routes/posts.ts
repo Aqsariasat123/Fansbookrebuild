@@ -44,7 +44,7 @@ const ALLOWED_MIME = new Set([
 ]);
 const upload = multer({
   storage,
-  limits: { fileSize: 50 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => cb(null, ALLOWED_MIME.has(file.mimetype)),
 });
 
