@@ -7,8 +7,11 @@ import {
   VisibilityDropdown,
   MediaUploadArea,
   HashtagPanel,
+  PostOptionsRow,
 } from '../components/create-post/CreatePostParts';
 import type { Visibility } from '../components/create-post/CreatePostParts';
+import { PostImageCropModal } from '../components/create-post/PostImageCropModal';
+import { useImageCropQueue } from '../hooks/useImageCropQueue';
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -25,15 +28,23 @@ export default function CreatePost() {
 
   const showPpv = visibility === 'PPV';
 
+  const crop = useImageCropQueue((file) =>
+    setImages((prev) => [...prev, { file, preview: URL.createObjectURL(file) }]),
+  );
+
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
-    setImages((prev) => {
-      const slots = Math.max(0, 10 - prev.length);
-      return [
+    const slots = Math.max(0, 10 - images.length - crop.queue.length);
+    const accepted = files.slice(0, slots);
+    const videos = accepted.filter((f) => !f.type.startsWith('image/'));
+    const imgs = accepted.filter((f) => f.type.startsWith('image/'));
+    if (videos.length) {
+      setImages((prev) => [
         ...prev,
-        ...files.slice(0, slots).map((f) => ({ file: f, preview: URL.createObjectURL(f) })),
-      ];
-    });
+        ...videos.map((f) => ({ file: f, preview: URL.createObjectURL(f) })),
+      ]);
+    }
+    crop.enqueue(imgs);
     e.target.value = '';
   }
 
@@ -121,49 +132,13 @@ export default function CreatePost() {
           onRemove={(tag) => setHashtags((prev) => prev.filter((t) => t !== tag))}
         />
 
-        <div className="mt-[12px] flex flex-wrap items-center gap-[16px]">
-          {showPpv && (
-            <div className="flex items-center gap-[8px]">
-              <label className="flex items-center gap-[4px] text-[13px] text-muted-foreground">
-                PPV Price <span className="text-[14px]">🪙</span>
-              </label>
-              <input
-                type="number"
-                min="1"
-                max="500"
-                step="1"
-                value={ppvPrice}
-                onChange={(e) => setPpvPrice(Math.floor(Number(e.target.value)).toString())}
-                placeholder="0"
-                className="w-[90px] rounded-[8px] bg-muted px-[10px] py-[6px] text-[13px] text-foreground outline-none"
-              />
-            </div>
-          )}
-          <label className="flex cursor-pointer items-center gap-[8px]">
-            <input
-              type="checkbox"
-              checked={isPinned}
-              onChange={(e) => setIsPinned(e.target.checked)}
-              className="size-[16px] accent-[#01adf1]"
-            />
-            <span className="text-[13px] text-muted-foreground">Pin to top</span>
-          </label>
-          <div className="flex items-center gap-[6px] rounded-[6px] bg-[#01adf1]/10 px-[10px] py-[5px]">
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#01adf1"
-              strokeWidth="2"
-            >
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <span className="text-[12px] text-[#01adf1]">
-              All media is forensically watermarked
-            </span>
-          </div>
-        </div>
+        <PostOptionsRow
+          showPpv={showPpv}
+          ppvPrice={ppvPrice}
+          onPpvChange={setPpvPrice}
+          isPinned={isPinned}
+          onPinChange={setIsPinned}
+        />
 
         <MediaUploadArea
           images={images}
@@ -190,6 +165,18 @@ export default function CreatePost() {
           </button>
         </div>
       </div>
+      {crop.src && crop.queue[0] && (
+        <PostImageCropModal
+          key={crop.src}
+          src={crop.src}
+          fileName={crop.queue[0].name || 'image.jpg'}
+          originalFile={crop.queue[0]}
+          remaining={crop.queue.length}
+          onApply={crop.apply}
+          onUseOriginal={crop.useOriginal}
+          onCancelAll={crop.clear}
+        />
+      )}
     </div>
   );
 }

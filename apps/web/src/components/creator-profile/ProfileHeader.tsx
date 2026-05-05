@@ -1,8 +1,10 @@
-import { useRef, useState, useCallback, type MouseEvent } from 'react';
+import { useRef, useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProfileSharePopup } from './ProfileSharePopup';
 import { CoverIcon, StatsRow, ProfileAboutColumn, AvatarEditor } from './ProfileHeaderParts';
 import { CoverCropModal } from '../profile/CoverCropModal';
+import { AvatarCropModal } from '../profile/AvatarCropModal';
+import { useCropSrc } from '../../hooks/useCropSrc';
 
 interface ProfileHeaderProps {
   displayName: string;
@@ -48,7 +50,8 @@ export function ProfileHeader({
   const coverRef = useRef<HTMLInputElement>(null);
   const [showShare, setShowShare] = useState(false);
   const [sharePos, setSharePos] = useState<{ top: number; right: number } | null>(null);
-  const [coverCropSrc, setCoverCropSrc] = useState<string | null>(null);
+  const coverCrop = useCropSrc(onCoverUpload);
+  const avatarCrop = useCropSrc(onAvatarUpload);
   const initial = displayName.charAt(0).toUpperCase();
   const hasAbout = bio || hashtags.length > 0;
 
@@ -58,25 +61,11 @@ export function ProfileHeader({
     setShowShare(true);
   };
 
-  const handleCoverFileSelected = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (f) setCoverCropSrc(URL.createObjectURL(f));
+    if (f) coverCrop.setFromFile(f);
     e.target.value = '';
-  }, []);
-
-  const handleCoverCropApply = useCallback(
-    (file: File) => {
-      if (coverCropSrc) URL.revokeObjectURL(coverCropSrc);
-      setCoverCropSrc(null);
-      onCoverUpload(file);
-    },
-    [coverCropSrc, onCoverUpload],
-  );
-
-  const handleCoverCropCancel = useCallback(() => {
-    if (coverCropSrc) URL.revokeObjectURL(coverCropSrc);
-    setCoverCropSrc(null);
-  }, [coverCropSrc]);
+  };
 
   return (
     <div>
@@ -139,7 +128,7 @@ export function ProfileHeader({
             avatar={avatar}
             initial={initial}
             uploading={uploadingAvatar}
-            onUpload={onAvatarUpload}
+            onUpload={avatarCrop.setFromFile}
           />
         </div>
 
@@ -186,11 +175,14 @@ export function ProfileHeader({
           onClose={() => setShowShare(false)}
         />
       )}
-      {coverCropSrc && (
-        <CoverCropModal
-          src={coverCropSrc}
-          onApply={handleCoverCropApply}
-          onCancel={handleCoverCropCancel}
+      {coverCrop.src && (
+        <CoverCropModal src={coverCrop.src} onApply={coverCrop.apply} onCancel={coverCrop.cancel} />
+      )}
+      {avatarCrop.src && (
+        <AvatarCropModal
+          src={avatarCrop.src}
+          onApply={avatarCrop.apply}
+          onCancel={avatarCrop.cancel}
         />
       )}
     </div>

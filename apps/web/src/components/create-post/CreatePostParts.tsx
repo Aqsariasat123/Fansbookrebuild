@@ -2,6 +2,64 @@ import { useState } from 'react';
 
 export type Visibility = 'PUBLIC' | 'SUBSCRIBERS' | 'TIER_SPECIFIC' | 'PPV' | 'STORY';
 
+export function PostOptionsRow({
+  showPpv,
+  ppvPrice,
+  onPpvChange,
+  isPinned,
+  onPinChange,
+}: {
+  showPpv: boolean;
+  ppvPrice: string;
+  onPpvChange: (v: string) => void;
+  isPinned: boolean;
+  onPinChange: (v: boolean) => void;
+}) {
+  return (
+    <div className="mt-[12px] flex flex-wrap items-center gap-[16px]">
+      {showPpv && (
+        <div className="flex items-center gap-[8px]">
+          <label className="flex items-center gap-[4px] text-[13px] text-muted-foreground">
+            PPV Price <span className="text-[14px]">🪙</span>
+          </label>
+          <input
+            type="number"
+            min="1"
+            max="500"
+            step="1"
+            value={ppvPrice}
+            onChange={(e) => onPpvChange(Math.floor(Number(e.target.value)).toString())}
+            placeholder="0"
+            className="w-[90px] rounded-[8px] bg-muted px-[10px] py-[6px] text-[13px] text-foreground outline-none"
+          />
+        </div>
+      )}
+      <label className="flex cursor-pointer items-center gap-[8px]">
+        <input
+          type="checkbox"
+          checked={isPinned}
+          onChange={(e) => onPinChange(e.target.checked)}
+          className="size-[16px] accent-[#01adf1]"
+        />
+        <span className="text-[13px] text-muted-foreground">Pin to top</span>
+      </label>
+      <div className="flex items-center gap-[6px] rounded-[6px] bg-[#01adf1]/10 px-[10px] py-[5px]">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#01adf1"
+          strokeWidth="2"
+        >
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        <span className="text-[12px] text-[#01adf1]">All media is forensically watermarked</span>
+      </div>
+    </div>
+  );
+}
+
 export const VIS_LABELS: Record<Visibility, string> = {
   PUBLIC: 'Public',
   SUBSCRIBERS: 'Followers',
