@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface ImagePreviewProps {
   file: File;
@@ -9,7 +9,10 @@ interface ImagePreviewProps {
 
 export function ImagePreview({ file, onSend, onClose, sending }: ImagePreviewProps) {
   const [caption, setCaption] = useState('');
-  const previewUrl = URL.createObjectURL(file);
+  const previewUrl = useMemo(() => URL.createObjectURL(file), [file]);
+  const isVideo = file.type.startsWith('video/');
+
+  useEffect(() => () => URL.revokeObjectURL(previewUrl), [previewUrl]);
 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center">
@@ -32,11 +35,20 @@ export function ImagePreview({ file, onSend, onClose, sending }: ImagePreviewPro
         </button>
 
         <div className="p-[16px] flex items-center justify-center bg-muted min-h-[300px] max-h-[60vh]">
-          <img
-            src={previewUrl}
-            alt="Preview"
-            className="max-w-full max-h-[55vh] object-contain rounded-[8px]"
-          />
+          {isVideo ? (
+            <video
+              src={previewUrl}
+              controls
+              playsInline
+              className="max-w-full max-h-[55vh] rounded-[8px]"
+            />
+          ) : (
+            <img
+              src={previewUrl}
+              alt="Preview"
+              className="max-w-full max-h-[55vh] object-contain rounded-[8px]"
+            />
+          )}
         </div>
 
         <div className="flex items-center gap-[12px] p-[16px]">
