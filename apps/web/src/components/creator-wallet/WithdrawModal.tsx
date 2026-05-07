@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FEES } from '@fansbook/shared';
 
 interface WithdrawModalProps {
   onClose: () => void;
@@ -10,6 +11,10 @@ export function WithdrawModal({ onClose, onWithdraw }: WithdrawModalProps) {
   const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const grossAmount = parseFloat(withdrawAmount) || 0;
+  const feeAmount = Math.round(grossAmount * (FEES.PLATFORM_FEE_PERCENT / 100) * 100) / 100;
+  const payoutAmount = Math.round((grossAmount - feeAmount) * 100) / 100;
 
   async function handleSubmit() {
     const amount = parseFloat(withdrawAmount);
@@ -71,6 +76,23 @@ export function WithdrawModal({ onClose, onWithdraw }: WithdrawModalProps) {
               <option value="paypal">PayPal</option>
             </select>
           </div>
+
+          {grossAmount > 0 && (
+            <div className="rounded-[12px] border border-border bg-muted/50 px-[14px] py-[10px] text-[13px]">
+              <div className="flex justify-between text-muted-foreground">
+                <span>Gross amount</span>
+                <span>${grossAmount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Platform fee ({FEES.PLATFORM_FEE_PERCENT}%)</span>
+                <span>− ${feeAmount.toFixed(2)}</span>
+              </div>
+              <div className="mt-[6px] flex justify-between border-t border-border pt-[6px] font-semibold text-foreground">
+                <span>You receive</span>
+                <span>${payoutAmount.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
 
           {error && <p className="text-[13px] text-red-400">{error}</p>}
 

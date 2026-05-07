@@ -113,6 +113,11 @@ router.post('/withdraw', async (req, res, next) => {
       throw new AppError(400, 'Insufficient balance');
     }
 
+    // Platform fee is deducted at withdrawal time — creator receives the net payout.
+    // The Withdrawal record stores the gross amount; admin pays out (amount - feeAmount).
+    const feeAmount = Math.round(amount * (FEES.PLATFORM_FEE_PERCENT / 100) * 100) / 100;
+    const payoutAmount = Math.round((amount - feeAmount) * 100) / 100;
+
     const [withdrawal] = await prisma.$transaction([
       prisma.withdrawal.create({
         data: {
@@ -136,6 +141,9 @@ router.post('/withdraw', async (req, res, next) => {
       data: {
         id: withdrawal.id,
         amount: withdrawal.amount,
+        feeAmount,
+        payoutAmount,
+        feePercent: FEES.PLATFORM_FEE_PERCENT,
         paymentMethod: withdrawal.paymentMethod,
         status: withdrawal.status,
         createdAt: withdrawal.createdAt,

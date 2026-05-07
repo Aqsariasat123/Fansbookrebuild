@@ -5,7 +5,6 @@ import { AppError } from '../middleware/errorHandler.js';
 import { createNotification } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
 import { checkBadges } from '../utils/check-badges.js';
-import { FEES } from '@fansbook/shared';
 
 const router = Router();
 
@@ -124,8 +123,7 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
     const creatorWallet = await prisma.wallet.findUnique({ where: { userId: post.authorId } });
     if (!creatorWallet) throw new AppError(500, 'Creator wallet not found');
 
-    const creatorAmt = amount - amount * (FEES.PLATFORM_FEE_PERCENT / 100);
-
+    // Creator receives the full tip — platform fee is taken at withdrawal time
     await prisma.$transaction([
       prisma.wallet.update({
         where: { id: fanWallet.id },
@@ -133,7 +131,7 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
       }),
       prisma.wallet.update({
         where: { id: creatorWallet.id },
-        data: { balance: { increment: creatorAmt }, totalEarned: { increment: creatorAmt } },
+        data: { balance: { increment: amount }, totalEarned: { increment: amount } },
       }),
       prisma.transaction.create({
         data: {
@@ -148,8 +146,8 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
         data: {
           walletId: creatorWallet.id,
           type: 'TIP_RECEIVED',
-          amount: creatorAmt,
-          description: `Tip on post (${FEES.PLATFORM_FEE_PERCENT}% fee)`,
+          amount,
+          description: 'Tip on post',
           status: 'COMPLETED',
         },
       }),
