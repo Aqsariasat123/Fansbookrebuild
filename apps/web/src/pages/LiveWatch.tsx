@@ -11,12 +11,14 @@ import {
   VideoPanel,
   GoPrivateControls,
   PinnedItemCard,
+  LiveWatchModals,
   initLiveState,
   type SessionInfo,
   type PrivateStatus,
 } from './LiveWatchParts';
-import { InStreamPurchaseModal, type PinnedItem } from '../components/live/InStreamPurchaseModal';
+import type { PinnedItem } from '../components/live/InStreamPurchaseModal';
 import { LiveAuctionPanel } from '../components/live/LiveAuctionPanel';
+import { usePrivateShowSocket } from '../hooks/usePrivateShowSocket';
 
 export default function LiveWatch() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -35,6 +37,9 @@ export default function LiveWatch() {
   const [privateStatus, setPrivateStatus] = useState<PrivateStatus>('idle');
   const [pinnedItem, setPinnedItem] = useState<PinnedItem | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [insufficient, setInsufficient] = useState<{ required: number; balance: number } | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!sessionId) return;
@@ -56,21 +61,7 @@ export default function LiveWatch() {
       .catch(() => {});
   }, [sessionId]);
 
-  useEffect(() => {
-    const socket = getSocket();
-    if (!socket) return;
-    const onAccepted = () => setPrivateStatus('accepted');
-    const onDeclined = () => setPrivateStatus('declined');
-    const onCallEnded = () => setPrivateStatus('idle');
-    socket.on('live:private-accepted', onAccepted);
-    socket.on('live:private-declined', onDeclined);
-    socket.on('live:private-call-ended', onCallEnded);
-    return () => {
-      socket.off('live:private-accepted', onAccepted);
-      socket.off('live:private-declined', onDeclined);
-      socket.off('live:private-call-ended', onCallEnded);
-    };
-  }, []);
+  usePrivateShowSocket(setPrivateStatus, setInsufficient);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -168,13 +159,15 @@ export default function LiveWatch() {
           }
         />
       </div>
-      {showPurchaseModal && pinnedItem && (
-        <InStreamPurchaseModal
-          item={pinnedItem}
-          onClose={() => setShowPurchaseModal(false)}
-          onSuccess={() => setPinnedItem(null)}
-        />
-      )}
+      <LiveWatchModals
+        showPurchase={showPurchaseModal}
+        pinnedItem={pinnedItem}
+        onClosePurchase={() => setShowPurchaseModal(false)}
+        onPurchaseSuccess={() => setPinnedItem(null)}
+        insufficient={insufficient}
+        onDismissInsufficient={() => setInsufficient(null)}
+        onBuyCoins={() => navigate('/wallet')}
+      />
       <LiveAuctionPanel sessionId={sessionId!} userId={userId} />
     </div>
   );

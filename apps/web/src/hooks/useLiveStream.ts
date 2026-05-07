@@ -9,6 +9,7 @@ import {
   liveState,
   switchToCamera as _cam,
   switchToScreenShare as _share,
+  applyTrackZoom as _zoom,
 } from './liveStreamState';
 
 const gs = () => useLiveStore.getState();
@@ -196,5 +197,6 @@ export function useLiveStream() {
     getIsScreenSharing: useCallback(() => liveState.isScreenSharing, []),
     switchToScreenShare: useCallback(() => _share(), []),
     switchToCamera: useCallback(() => _cam(), []),
+    applyTrackZoom: useCallback((z: number) => _zoom(z), []),
   };
 }

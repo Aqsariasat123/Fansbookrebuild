@@ -45,12 +45,16 @@ export function CameraPreview({
   onStart,
   policyAgreed,
   onPolicyToggle,
+  zoomLevel,
+  onZoomChange,
 }: {
   previewing: boolean;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   onStart: () => void;
   policyAgreed: boolean;
   onPolicyToggle: () => void;
+  zoomLevel: number;
+  onZoomChange: (z: number) => void;
 }) {
   return (
     <div
@@ -79,11 +83,41 @@ export function CameraPreview({
               autoPlay
               playsInline
               muted
-              className="max-h-[38vh] w-full -scale-x-100 object-cover"
+              className="max-h-[38vh] w-full object-cover"
+              style={{
+                transform: `scale(${zoomLevel}) scaleX(-1)`,
+                transformOrigin: 'center center',
+              }}
             />
             <div className="absolute left-[12px] top-[12px] rounded-[4px] bg-black/60 px-[10px] py-[4px] text-[12px] text-white">
               Preview
             </div>
+          </div>
+          <div className="flex w-full max-w-[640px] items-center gap-[8px]">
+            <button
+              onClick={() => onZoomChange(Math.max(1.0, zoomLevel - 0.1))}
+              className="flex size-[28px] items-center justify-center rounded-full border border-border text-[16px] font-medium text-foreground hover:border-foreground"
+            >
+              −
+            </button>
+            <input
+              type="range"
+              min="1"
+              max="3"
+              step="0.05"
+              value={zoomLevel}
+              onChange={(e) => onZoomChange(parseFloat(e.target.value))}
+              className="h-[4px] flex-1 accent-[#01adf1]"
+            />
+            <button
+              onClick={() => onZoomChange(Math.min(3, zoomLevel + 0.1))}
+              className="flex size-[28px] items-center justify-center rounded-full border border-border text-[16px] font-medium text-foreground hover:border-foreground"
+            >
+              +
+            </button>
+            <span className="min-w-[36px] text-[12px] text-muted-foreground">
+              {Math.round(zoomLevel * 100)}%
+            </span>
           </div>
         </>
       )}

@@ -1,9 +1,9 @@
 import type { Server, Socket } from 'socket.io';
 import { prisma } from './database.js';
 import { logger } from '../utils/logger.js';
-import { sessionTransports, sessionProducers } from '../routes/live.js';
-import type { DtlsParameters, MediaKind, RtpParameters } from 'mediasoup/types';
 import { registerShoppingHandlers } from './live-shopping-handlers.js';
+import { registerMediasoupHandlers } from './live-mediasoup-handlers.js';
+import { chargePrivateShow, checkPrivateShowAffordable } from './live-private-payment.js';
 
 const sessionViewers = new Map<string, Set<string>>();
 export const sessionOnPrivateCall = new Map<string, boolean>();
@@ -103,24 +103,6 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
     }
   });
 
-  socket.on(
-    'live:transport-connect',
-    async (data: { sessionId: string; transportId: string; dtlsParameters: DtlsParameters }) => {
-      try {
-        const transports = sessionTransports.get(data.sessionId);
-        if (!transports) return;
-        for (const t of transports.values()) {
-          if (t.id === data.transportId) {
-            await t.connect({ dtlsParameters: data.dtlsParameters });
-            break;
-          }
-        }
-      } catch (err) {
-        logger.error({ err }, 'Error in live:transport-connect');
-      }
-    },
-  );
-
   socket.on('live:private-request', async (data: { sessionId: string }) => {
     try {
       const session = await prisma.liveSession.findUnique({
@@ -128,6 +110,15 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
         select: { creatorId: true, privateShow: true, privateShowTokens: true },
       });
       if (!session?.privateShow) return;
+      const tokens = session.privateShowTokens ?? 0;
+      const afford = await checkPrivateShowAffordable(userId, tokens);
+      if (!afford.ok) {
+        socket.emit('live:private-insufficient', {
+          required: afford.required,
+          balance: afford.balance,
+        });
+        return;
+      }
       const fan = await prisma.user.findUnique({
         where: { id: userId },
         select: { displayName: true },
@@ -136,7 +127,7 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
         sessionId: data.sessionId,
         userId,
         userName: fan?.displayName ?? 'Fan',
-        tokens: session.privateShowTokens,
+        tokens,
       });
     } catch (err) {
       logger.error({ err }, 'Error in live:private-request');
@@ -147,12 +138,32 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
     try {
       const session = await prisma.liveSession.findUnique({
         where: { id: data.sessionId },
-        select: { creator: { select: { displayName: true } } },
+        select: {
+          creatorId: true,
+          privateShowTokens: true,
+          creator: { select: { displayName: true } },
+        },
       });
+      if (!session) return;
+      const result = await chargePrivateShow(
+        data.fanId,
+        data.sessionId,
+        session.creatorId,
+        session.creator.displayName ?? 'creator',
+        session.privateShowTokens ?? 0,
+      );
+      if (!result.ok) {
+        io.to(`user:${data.fanId}`).emit('live:private-insufficient', {
+          required: result.required,
+          balance: result.balance,
+        });
+        socket.emit('live:private-payment-failed', { fanId: data.fanId });
+        return;
+      }
       io.to(`user:${data.fanId}`).emit('live:private-accepted', { sessionId: data.sessionId });
       sessionOnPrivateCall.set(data.sessionId, true);
       io.to(`live:${data.sessionId}`).emit('live:on-private-call', {
-        creatorName: session?.creator.displayName ?? 'Creator',
+        creatorName: session.creator.displayName ?? 'Creator',
       });
     } catch (err) {
       logger.error({ err }, 'Error in live:private-accept');
@@ -169,38 +180,5 @@ export function registerLiveHandlers(io: Server, socket: Socket) {
   });
 
   registerShoppingHandlers(io, socket, userId);
-
-  socket.on(
-    'live:produce',
-    async (
-      data: {
-        sessionId: string;
-        transportId: string;
-        kind: MediaKind;
-        rtpParameters: RtpParameters;
-      },
-      callback: (resp: { producerId: string }) => void,
-    ) => {
-      try {
-        const transports = sessionTransports.get(data.sessionId);
-        if (!transports) return;
-        for (const t of transports.values()) {
-          if (t.id === data.transportId) {
-            const producer = await t.produce({
-              kind: data.kind,
-              rtpParameters: data.rtpParameters,
-            });
-            if (!sessionProducers.has(data.sessionId)) {
-              sessionProducers.set(data.sessionId, []);
-            }
-            sessionProducers.get(data.sessionId)!.push(producer);
-            if (callback) callback({ producerId: producer.id });
-            break;
-          }
-        }
-      } catch (err) {
-        logger.error({ err }, 'Error in live:produce');
-      }
-    },
-  );
+  registerMediasoupHandlers(socket);
 }

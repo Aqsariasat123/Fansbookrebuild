@@ -1,5 +1,45 @@
 import type { ReactNode } from 'react';
 import { api } from '../lib/api';
+import { InStreamPurchaseModal, type PinnedItem } from '../components/live/InStreamPurchaseModal';
+import { InsufficientCoinsModal } from '../components/live/InsufficientCoinsModal';
+
+export function LiveWatchModals({
+  showPurchase,
+  pinnedItem,
+  onClosePurchase,
+  onPurchaseSuccess,
+  insufficient,
+  onDismissInsufficient,
+  onBuyCoins,
+}: {
+  showPurchase: boolean;
+  pinnedItem: PinnedItem | null;
+  onClosePurchase: () => void;
+  onPurchaseSuccess: () => void;
+  insufficient: { required: number; balance: number } | null;
+  onDismissInsufficient: () => void;
+  onBuyCoins: () => void;
+}) {
+  return (
+    <>
+      {showPurchase && pinnedItem && (
+        <InStreamPurchaseModal
+          item={pinnedItem}
+          onClose={onClosePurchase}
+          onSuccess={onPurchaseSuccess}
+        />
+      )}
+      {insufficient && (
+        <InsufficientCoinsModal
+          required={insufficient.required}
+          balance={insufficient.balance}
+          onCancel={onDismissInsufficient}
+          onBuy={onBuyCoins}
+        />
+      )}
+    </>
+  );
+}
 
 type NavState = { creatorName?: string; creatorAvatar?: string } | null;
 export function initLiveState(s: unknown): { name: string; avatar: string | null } {

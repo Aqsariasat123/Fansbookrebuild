@@ -8,6 +8,7 @@ import { InStreamShopPanel } from '../components/live/InStreamShopPanel';
 import { useCall } from '../hooks/useCall';
 import { useCallStore } from '../stores/callStore';
 import { PrivateRequestBanner, BroadcastVideoPanel } from './LiveBroadcastParts';
+import { useBroadcastEffects } from '../hooks/useBroadcastEffects';
 
 export default function LiveBroadcasting() {
   const navigate = useNavigate();
@@ -22,8 +23,14 @@ export default function LiveBroadcasting() {
   const creatorOnPrivateCall = useLiveStore((s) => s.creatorOnPrivateCall);
   const clearChat = useLiveStore((s) => s.clearChat);
 
-  const { stopBroadcast, sendChat, getLocalStream, switchToScreenShare, switchToCamera } =
-    useLiveStream();
+  const {
+    stopBroadcast,
+    sendChat,
+    getLocalStream,
+    switchToScreenShare,
+    switchToCamera,
+    applyTrackZoom,
+  } = useLiveStream();
   const { acceptPrivate, declinePrivate, endPrivateCall } = useLivePrivate();
   const { startCall } = useCall();
   const callStatus = useCallStore((s) => s.status);
@@ -97,13 +104,14 @@ export default function LiveBroadcasting() {
     if (callStatus === 'ended' && creatorOnPrivateCall && sessionId) endPrivateCall(sessionId);
   }, [callStatus, creatorOnPrivateCall, sessionId, endPrivateCall]);
 
-  // Audible notification when fan requests private show
-  useEffect(() => {
-    if (!privateIncoming) return;
-    const audio = new Audio('/sounds/notification.wav');
-    audio.volume = 0.8;
-    audio.play().catch(() => {});
-  }, [privateIncoming]);
+  useBroadcastEffects({
+    videoRef,
+    isLive,
+    zoomLevel,
+    screenSharing,
+    privateIncoming,
+    applyTrackZoom,
+  });
 
   const handleEnd = async () => {
     await stopBroadcast();

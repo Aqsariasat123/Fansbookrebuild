@@ -42,6 +42,27 @@ export async function switchToCamera() {
   }
 }
 
+// Map UI zoom (1.0–3.0) to the camera track's hardware zoom range, where supported.
+// On unsupported devices (most desktops), this is a silent no-op and creators see
+// only the local CSS zoom — viewers still see un-zoomed video.
+export async function applyTrackZoom(zoom: number): Promise<boolean> {
+  const track = liveState.localStream?.getVideoTracks()[0];
+  if (!track) return false;
+  try {
+    const caps = (track.getCapabilities?.() ?? {}) as MediaTrackCapabilities & {
+      zoom?: { min: number; max: number; step: number };
+    };
+    const z = caps.zoom;
+    if (!z || typeof z.min !== 'number' || typeof z.max !== 'number') return false;
+    const target = z.min + ((zoom - 1) / 2) * (z.max - z.min);
+    const clamped = Math.max(z.min, Math.min(z.max, target));
+    await track.applyConstraints({ advanced: [{ zoom: clamped } as MediaTrackConstraintSet] });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function switchToScreenShare(): Promise<boolean> {
   try {
     const s = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });

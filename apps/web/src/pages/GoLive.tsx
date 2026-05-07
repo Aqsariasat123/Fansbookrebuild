@@ -18,14 +18,22 @@ export default function GoLive() {
   const [streamExtTokens, setStreamExtTokens] = useState('');
   const [previewing, setPreviewing] = useState(false);
   const [starting, setStarting] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1.0);
 
   useEffect(() => {
     if (!previewing || !streamRef.current) return;
-    const video = videoRef.current;
-    if (!video) return;
-    video.srcObject = streamRef.current;
-    video.muted = true;
-    video.play().catch(() => {});
+    const attach = () => {
+      const v = videoRef.current;
+      const s = streamRef.current;
+      if (!v || !s) return;
+      if (v.srcObject !== s) v.srcObject = s;
+      v.muted = true;
+      if (v.paused) v.play().catch(() => {});
+    };
+    attach();
+    // Health check — re-attach if srcObject drifts or video pauses (fixes "black after a second")
+    const interval = setInterval(attach, 1000);
+    return () => clearInterval(interval);
   }, [previewing]);
 
   const stopPreview = () => {
@@ -96,6 +104,8 @@ export default function GoLive() {
         onStart={startPreview}
         policyAgreed={policyAgreed}
         onPolicyToggle={() => setPolicyAgreed((v) => !v)}
+        zoomLevel={zoomLevel}
+        onZoomChange={setZoomLevel}
       />
 
       {/* Form card — centered, ~6 of 12 columns */}
