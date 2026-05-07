@@ -7,6 +7,7 @@ import { MessagesDropdown } from './MessagesDropdown';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { useMessageStore } from '../../stores/messageStore';
 import { useAuthStore } from '../../stores/authStore';
+import { useSidebarBadges } from '../../hooks/useSidebarBadges';
 
 function BellIcon({ className }: { className?: string }) {
   return (
@@ -112,6 +113,17 @@ function WalletIcon({ className }: { className?: string }) {
   );
 }
 
+function WalletBadge() {
+  const { wallet } = useSidebarBadges();
+  if (!wallet) return null;
+  const display = wallet >= 1000 ? `${(wallet / 1000).toFixed(1)}k` : String(wallet);
+  return (
+    <span className="absolute -right-[2px] -top-[2px] flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-[5px] text-[10px] font-bold text-white">
+      {display}
+    </span>
+  );
+}
+
 function WalletButton() {
   const user = useAuthStore((s) => s.user);
   const walletPath = user?.role === 'CREATOR' ? '/creator/wallet' : '/wallet';
@@ -119,6 +131,7 @@ function WalletButton() {
     <div className="relative group">
       <Link to={walletPath} className={`relative shrink-0 ${iconCircle}`} aria-label="Wallet">
         <WalletIcon className="size-[22px]" />
+        <WalletBadge />
       </Link>
       <span className="pointer-events-none absolute left-1/2 top-full mt-[6px] -translate-x-1/2 whitespace-nowrap rounded-[6px] bg-foreground px-[8px] py-[4px] text-[11px] font-medium text-background opacity-0 transition-opacity group-hover:opacity-100">
         Wallet
