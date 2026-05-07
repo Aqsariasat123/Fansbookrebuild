@@ -12,6 +12,7 @@ import {
 import type { Visibility } from '../components/create-post/CreatePostParts';
 import { PostImageCropModal } from '../components/create-post/PostImageCropModal';
 import { useImageCropQueue } from '../hooks/useImageCropQueue';
+import { buildPostFormData, extractErrorMessage } from '../components/create-post/postSubmit';
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -60,19 +61,15 @@ export default function CreatePost() {
     setSubmitting(true);
     setError('');
     try {
-      const fullText = text.trim();
-      const fd = new FormData();
-      fd.append('text', fullText);
-      // PPV maps to PUBLIC visibility on the backend (visible/blurred to all) + ppvPrice gate
-      fd.append('visibility', visibility === 'PPV' ? 'PUBLIC' : visibility);
-      if (visibility === 'PPV' && ppvPrice) fd.append('ppvPrice', ppvPrice);
-      if (isPinned) fd.append('isPinned', 'true');
-      if (hashtags.length) fd.append('hashtags', hashtags.join(','));
-      images.forEach((img) => fd.append('media', img.file));
-      await api.post('/posts', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const fd = buildPostFormData(
+        { text: text.trim(), visibility, ppvPrice, isPinned, hashtags },
+        images,
+      );
+      // Don't set Content-Type — let axios add multipart boundary automatically
+      await api.post('/posts', fd);
       navigate('/creator/profile');
-    } catch {
-      setError('Failed to create post');
+    } catch (err) {
+      setError(extractErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
