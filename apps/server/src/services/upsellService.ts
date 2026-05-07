@@ -3,6 +3,8 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../config/database.js';
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
+import { ALLOWED_ROUTES, buildUpsellSystemPrompt } from './upsellPrompt.js';
+import { collectCreatorContext } from './upsellContext.js';
 
 const MODEL = 'claude-haiku-4-5-20251001';
 const CACHE_HOURS = 168; // 7 days — only regenerate when user clicks Refresh
@@ -23,70 +25,8 @@ interface SuggestionRaw {
   description: string;
   priority: string;
   actionLabel?: string;
+  route?: string;
   actionData?: Record<string, unknown>;
-}
-
-async function collectCreatorContext(creatorId: string): Promise<string> {
-  const now = new Date();
-  const days30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const days7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const days14 = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-
-  const [creator, recentPosts, tips30d, activeFans, dormantFans, subCount, ppvSales] =
-    await Promise.all([
-      prisma.user.findUnique({
-        where: { id: creatorId },
-        select: { displayName: true, username: true, category: true },
-      }),
-      prisma.post.findMany({
-        where: { authorId: creatorId, createdAt: { gte: days30 } },
-        orderBy: { createdAt: 'desc' },
-        take: 10,
-        select: { createdAt: true, likeCount: true, commentCount: true, ppvPrice: true },
-      }),
-      prisma.tip.aggregate({
-        where: { receiverId: creatorId, createdAt: { gte: days30 } },
-        _sum: { amount: true },
-        _count: true,
-      }),
-      prisma.subscription.count({
-        where: { creatorId, status: 'ACTIVE', updatedAt: { gte: days7 } },
-      }),
-      prisma.subscription.findMany({
-        where: { creatorId, status: 'ACTIVE', updatedAt: { lte: days14 } },
-        take: 5,
-        select: { subscriberId: true },
-      }),
-      prisma.subscription.count({ where: { creatorId, status: 'ACTIVE' } }),
-      prisma.ppvPurchase.count({
-        where: { post: { authorId: creatorId }, createdAt: { gte: days30 } },
-      }),
-    ]);
-
-  const daysSinceLastPost =
-    recentPosts.length > 0
-      ? Math.floor((now.getTime() - recentPosts[0].createdAt.getTime()) / 86400000)
-      : 999;
-
-  const avgEngagement =
-    recentPosts.length > 0
-      ? Math.round(
-          recentPosts.reduce((s, p) => s + p.likeCount + p.commentCount, 0) / recentPosts.length,
-        )
-      : 0;
-
-  const hasPpvPosts = recentPosts.some((p) => p.ppvPrice && p.ppvPrice > 0);
-
-  return `Creator: ${creator?.displayName} (@${creator?.username}), Category: ${creator?.category ?? 'general'}
-Active subscribers: ${subCount}
-Subscribers active in last 7 days: ${activeFans}
-Dormant subscribers (no activity 14+ days): ${dormantFans.length}
-Posts in last 30 days: ${recentPosts.length}
-Days since last post: ${daysSinceLastPost}
-Average engagement per post (likes + comments): ${avgEngagement}
-Tips received in 30 days: ${tips30d._count} tips worth $${((tips30d._sum as { amount?: number | null }).amount ?? 0).toFixed(2)}
-PPV sales in 30 days: ${ppvSales}
-Has PPV content: ${hasPpvPosts ? 'yes' : 'no'}`;
 }
 
 function parseSuggestions(raw: string): SuggestionRaw[] {
@@ -125,11 +65,7 @@ export async function generateUpsellSuggestions(creatorId: string): Promise<void
       ? `\nDo NOT repeat these already-dismissed suggestions: ${dismissed.map((d) => `"${d.title}"`).join(', ')}. Generate completely different ones.`
       : '';
 
-  const system = `You are a revenue advisor for adult content creators on a subscription platform.
-Analyze the creator's data and return exactly ${MAX_SUGGESTIONS} actionable suggestions to increase their revenue.
-Each suggestion must be specific and immediately actionable. Vary the types — do not return multiple suggestions of the same type.${avoidNote}
-Return ONLY a JSON array. Each item must have: type (POST_TIMING|FAN_ENGAGEMENT|PPV_OPPORTUNITY|REENGAGEMENT|CONTENT_STRATEGY), title (max 10 words), description (1-2 sentences, specific), priority (HIGH|MEDIUM|LOW), actionLabel (optional short CTA text, max 4 words).
-Example: [{"type":"REENGAGEMENT","title":"Re-engage 3 dormant subscribers","description":"3 fans haven't interacted in 14+ days and may unsubscribe soon. A personal message could bring them back.","priority":"HIGH","actionLabel":"Send Message"}]`;
+  const system = buildUpsellSystemPrompt(MAX_SUGGESTIONS, avoidNote);
 
   const response = await getClient().messages.create({
     model: MODEL,
@@ -157,15 +93,22 @@ Example: [{"type":"REENGAGEMENT","title":"Re-engage 3 dormant subscribers","desc
   await prisma.upsellSuggestion.deleteMany({ where: { creatorId, dismissed: false } });
   if (suggestions.length > 0) {
     await prisma.upsellSuggestion.createMany({
-      data: suggestions.map((s) => ({
-        creatorId,
-        type: s.type,
-        title: s.title,
-        description: s.description,
-        priority: s.priority,
-        actionLabel: s.actionLabel ?? null,
-        actionData: s.actionData ? (s.actionData as Prisma.InputJsonValue) : Prisma.JsonNull,
-      })),
+      data: suggestions.map((s) => {
+        const route = s.route && ALLOWED_ROUTES.has(s.route) ? s.route : null;
+        const actionData = { ...(s.actionData ?? {}), ...(route ? { route } : {}) };
+        return {
+          creatorId,
+          type: s.type,
+          title: s.title,
+          description: s.description,
+          priority: s.priority,
+          actionLabel: s.actionLabel ?? null,
+          actionData:
+            Object.keys(actionData).length > 0
+              ? (actionData as Prisma.InputJsonValue)
+              : Prisma.JsonNull,
+        };
+      }),
     });
   }
 }

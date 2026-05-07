@@ -12,15 +12,19 @@ export interface Suggestion {
 export type PriorityFilter = 'ALL' | 'HIGH' | 'MEDIUM' | 'LOW';
 
 const TYPE_ROUTE: Record<string, string> = {
-  POST_TIMING: '/creator/post/new',
+  POST_TIMING: '/creator/analytics',
   FAN_ENGAGEMENT: '/messages',
   PPV_OPPORTUNITY: '/creator/post/new',
   REENGAGEMENT: '/messages',
   CONTENT_STRATEGY: '/creator/post/new',
+  SUBSCRIPTION_GROWTH: '/creator/subscriptions',
+  LIVE_STREAM: '/creator/go-live',
+  MARKETPLACE: '/marketplace/new',
 };
 
 export function getActionRoute(s: Suggestion): string {
-  return TYPE_ROUTE[s.type] ?? '/creator/post/new';
+  // Prefer the AI-supplied route (validated server-side) over the type fallback
+  return s.actionData?.route ?? TYPE_ROUTE[s.type] ?? '/creator/post/new';
 }
 
 const PRIORITY_COLOR: Record<string, string> = {
@@ -35,6 +39,9 @@ const TYPE_LABEL: Record<string, string> = {
   PPV_OPPORTUNITY: 'PPV Opportunity',
   REENGAGEMENT: 'Re-engagement',
   CONTENT_STRATEGY: 'Content Strategy',
+  SUBSCRIPTION_GROWTH: 'Subscription Growth',
+  LIVE_STREAM: 'Live Stream',
+  MARKETPLACE: 'Marketplace',
 };
 
 const TYPE_ICON: Record<string, string> = {
@@ -43,6 +50,9 @@ const TYPE_ICON: Record<string, string> = {
   PPV_OPPORTUNITY: '💰',
   REENGAGEMENT: '🔄',
   CONTENT_STRATEGY: '📈',
+  SUBSCRIPTION_GROWTH: '⭐',
+  LIVE_STREAM: '📡',
+  MARKETPLACE: '🛍️',
 };
 
 export function SuggestionCard({
