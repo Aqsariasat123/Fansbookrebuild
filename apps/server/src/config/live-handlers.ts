@@ -9,7 +9,14 @@ const sessionViewers = new Map<string, Set<string>>();
 export const sessionOnPrivateCall = new Map<string, boolean>();
 
 async function broadcastViewerCount(io: Server, sessionId: string) {
-  const count = sessionViewers.get(sessionId)?.size ?? 0;
+  const session = await prisma.liveSession.findUnique({
+    where: { id: sessionId },
+    select: { creatorId: true },
+  });
+  const viewers = sessionViewers.get(sessionId);
+  const total = viewers?.size ?? 0;
+  const creatorIsIn = !!(session && viewers?.has(session.creatorId));
+  const count = Math.max(0, total - (creatorIsIn ? 1 : 0));
   await prisma.liveSession.update({ where: { id: sessionId }, data: { viewerCount: count } });
   io.to(`live:${sessionId}`).emit('live:viewer-count', { sessionId, count });
 }

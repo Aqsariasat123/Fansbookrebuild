@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
+import { sessionProducers } from './live.js';
 
 const router = Router();
 
@@ -29,17 +30,19 @@ router.get('/following', authenticate, async (req, res, next) => {
         },
       },
     });
-    const items = sessions.map((s) => ({
-      id: s.id,
-      creatorId: s.creator.id,
-      username: s.creator.username,
-      displayName: s.creator.displayName,
-      avatar: s.creator.avatar,
-      category: s.creator.category,
-      viewerCount: s.viewerCount,
-      title: s.title,
-      startedAt: s.startedAt?.toISOString() ?? null,
-    }));
+    const items = sessions
+      .filter((s) => sessionProducers.get(s.id)?.some((p) => p.kind === 'video'))
+      .map((s) => ({
+        id: s.id,
+        creatorId: s.creator.id,
+        username: s.creator.username,
+        displayName: s.creator.displayName,
+        avatar: s.creator.avatar,
+        category: s.creator.category,
+        viewerCount: s.viewerCount,
+        title: s.title,
+        startedAt: s.startedAt?.toISOString() ?? null,
+      }));
     res.json({ success: true, data: items });
   } catch (err) {
     next(err);

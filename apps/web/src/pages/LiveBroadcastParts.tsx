@@ -79,7 +79,7 @@ export function BroadcastVideoPanel({
         </button>
       </div>
       {/* Video — overflow:hidden clips zoom, object-cover fills 100% always */}
-      <div className="relative overflow-hidden bg-[#0a0c0e]" style={{ aspectRatio: '16/9' }}>
+      <div className="relative h-[55vh] overflow-hidden bg-[#0a0c0e] lg:h-auto lg:aspect-video">
         <video
           ref={videoRef}
           autoPlay

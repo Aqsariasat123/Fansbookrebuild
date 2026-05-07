@@ -97,6 +97,14 @@ export default function LiveBroadcasting() {
     if (callStatus === 'ended' && creatorOnPrivateCall && sessionId) endPrivateCall(sessionId);
   }, [callStatus, creatorOnPrivateCall, sessionId, endPrivateCall]);
 
+  // Audible notification when fan requests private show
+  useEffect(() => {
+    if (!privateIncoming) return;
+    const audio = new Audio('/sounds/notification.wav');
+    audio.volume = 0.8;
+    audio.play().catch(() => {});
+  }, [privateIncoming]);
+
   const handleEnd = async () => {
     await stopBroadcast();
     if (videoRef.current) videoRef.current.srcObject = null;

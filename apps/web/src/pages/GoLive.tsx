@@ -8,6 +8,7 @@ export default function GoLive() {
   const { startBroadcast } = useLiveStream();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const startingRef = useRef(false);
 
   const [policyAgreed, setPolicyAgreed] = useState(false);
   const [title, setTitle] = useState('');
@@ -54,6 +55,8 @@ export default function GoLive() {
   };
 
   const handleGoLive = async () => {
+    if (startingRef.current) return;
+    startingRef.current = true;
     setStarting(true);
     try {
       // Transfer ownership of preview stream to startBroadcast — avoids camera re-init black flash
@@ -70,6 +73,7 @@ export default function GoLive() {
       );
       navigate(`/creator/live?session=${sessionId}`);
     } catch {
+      startingRef.current = false;
       setStarting(false);
     }
   };
