@@ -40,8 +40,12 @@ export default function Settings() {
   const user = useAuthStore((s) => s.user);
   const isFan = user?.role === 'FAN';
 
+  // Privacy tab (DM permissions, profile visibility) only makes sense for creators
   const tabs = isFan
-    ? [...BASE_TABS, { key: 'become-creator' as const, label: 'Become Creator' }]
+    ? [
+        ...BASE_TABS.filter((t) => t.key !== 'privacy'),
+        { key: 'become-creator' as const, label: 'Become Creator' },
+      ]
     : BASE_TABS;
 
   return (
