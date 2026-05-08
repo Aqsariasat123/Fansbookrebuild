@@ -121,7 +121,7 @@ export default function Notifications() {
           )}
         </div>
 
-        <div className="mt-[12px] flex gap-[8px] overflow-x-auto pb-[4px]">
+        <div className="mt-[12px] flex flex-wrap gap-[6px] md:gap-[8px]">
           {FILTER_TABS.map((tab) => (
             <button
               key={tab}
@@ -129,7 +129,7 @@ export default function Notifications() {
                 setActiveTab(tab);
                 setSelected(new Set());
               }}
-              className={`shrink-0 rounded-[50px] px-[16px] py-[6px] text-[12px] font-medium transition-colors md:text-[14px] ${activeTab === tab ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
+              className={`rounded-[50px] px-[12px] py-[5px] text-[12px] font-medium transition-colors md:px-[16px] md:py-[6px] md:text-[14px] ${activeTab === tab ? 'bg-gradient-to-r from-[#01adf1] to-[#a61651] text-white' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
             >
               {tab}
             </button>
