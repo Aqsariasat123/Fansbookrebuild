@@ -174,6 +174,7 @@ export function PostCard({ post, isSubscribed }: PostCardProps) {
         images={images}
         isLocked={isLocked}
         ppvPrice={post.ppvPrice}
+        postId={post.id}
         username={post.author?.username}
       />
       <PostActions

@@ -169,6 +169,11 @@ export default function Home() {
           key={post.id}
           post={post}
           onDelete={(id) => setPosts((prev) => prev.filter((p) => p.id !== id))}
+          onRefresh={() =>
+            setPosts((prev) =>
+              prev.map((p) => (p.id === post.id ? { ...p, isPpvUnlocked: true } : p)),
+            )
+          }
         />
       ))}
       {models.length > 0 && <PopularModels models={models} />}
@@ -177,6 +182,11 @@ export default function Home() {
           key={post.id}
           post={post}
           onDelete={(id) => setPosts((prev) => prev.filter((p) => p.id !== id))}
+          onRefresh={() =>
+            setPosts((prev) =>
+              prev.map((p) => (p.id === post.id ? { ...p, isPpvUnlocked: true } : p)),
+            )
+          }
         />
       ))}
       <div ref={sentinelRef} className="h-1" />
