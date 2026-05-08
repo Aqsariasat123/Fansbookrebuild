@@ -139,6 +139,7 @@ router.post('/:id/tip', authenticate, async (req, res, next) => {
           type: 'TIP_SENT',
           amount,
           description: 'Tip on post',
+          referenceId: post.authorId,
           status: 'COMPLETED',
         },
       }),

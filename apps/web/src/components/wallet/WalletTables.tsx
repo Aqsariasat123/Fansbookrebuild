@@ -1,67 +1,5 @@
-interface Transaction {
-  id: string;
-  type: string;
-  amount: number;
-  description: string | null;
-  referenceId: string | null;
-  status: string;
-  createdAt: string;
-}
-
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
-}
-
-function Pagination({
-  page,
-  total,
-  limit,
-  onPage,
-}: {
-  page: number;
-  total: number;
-  limit: number;
-  onPage: (p: number) => void;
-}) {
-  const totalPages = Math.ceil(total / limit);
-  if (totalPages <= 1) return null;
-  const pages = Array.from({ length: Math.min(6, totalPages) }, (_, i) => i + 1);
-  return (
-    <div className="flex items-center justify-center gap-[6px] py-[24px]">
-      {pages.map((p) => (
-        <button
-          key={p}
-          onClick={() => onPage(p)}
-          className={`h-[28px] w-[28px] rounded-[2px] border border-border flex items-center justify-center text-[10px] text-foreground ${p === page ? 'bg-muted-foreground' : ''}`}
-        >
-          {p}
-        </button>
-      ))}
-      {totalPages > 6 && (
-        <span className="h-[28px] w-[28px] rounded-[2px] border border-border flex items-center justify-center text-[10px] text-foreground">
-          ...
-        </span>
-      )}
-      {page < totalPages && (
-        <button
-          onClick={() => onPage(page + 1)}
-          className="h-[38px] px-[10px] rounded-[4px] border border-border flex items-center justify-center text-[10px] text-foreground"
-        >
-          Next
-        </button>
-      )}
-    </div>
-  );
-}
-
-interface TableProps {
-  items: Transaction[];
-  page: number;
-  total: number;
-  limit: number;
-  onPage: (p: number) => void;
-}
+import { Link } from 'react-router-dom';
+import { Pagination, formatDateTime, prettyType, type TableProps } from './walletShared';
 
 export function PurchaseTable({ items, page, total, limit, onPage }: TableProps) {
   return (
@@ -95,19 +33,19 @@ export function PurchaseTable({ items, page, total, limit, onPage }: TableProps)
                   key={t.id}
                   className={`grid grid-cols-5 px-[20px] py-[14px] md:px-[45px] md:py-[20px] ${i < items.length - 1 ? 'border-b border-muted' : ''}`}
                 >
-                  <p className="text-center text-[12px] text-foreground md:text-[16px]">
-                    {formatDate(t.createdAt)}
+                  <p className="truncate text-center text-[12px] text-foreground md:text-[16px]">
+                    {formatDateTime(t.createdAt)}
                   </p>
-                  <p className="text-center text-[12px] text-foreground md:text-[16px]">
+                  <p className="truncate text-center text-[12px] text-foreground md:text-[16px]">
                     {t.amount}
                   </p>
-                  <p className="text-center text-[12px] text-foreground md:text-[16px]">
+                  <p className="truncate text-center text-[12px] text-foreground md:text-[16px]">
                     {t.referenceId || '-'}
                   </p>
-                  <p className="text-center text-[12px] text-foreground md:text-[16px]">
+                  <p className="truncate text-center text-[12px] text-foreground md:text-[16px]">
                     {amountPaid}
                   </p>
-                  <p className="text-center text-[12px] text-foreground md:text-[16px]">
+                  <p className="truncate text-center text-[12px] text-foreground md:text-[16px]">
                     {t.status === 'COMPLETED' ? 'Paid' : t.status}
                   </p>
                 </div>
@@ -125,9 +63,9 @@ export function SpendingTable({ items, page, total, limit, onPage }: TableProps)
   return (
     <>
       <div className="overflow-x-auto rounded-[22px]">
-        <div className="min-w-[500px] overflow-hidden rounded-[22px] bg-card">
+        <div className="min-w-[560px] overflow-hidden rounded-[22px] bg-card">
           <div className="grid grid-cols-4 bg-[#01adf1] px-[20px] py-[14px] md:px-[45px] md:py-[22px]">
-            {['Date', 'No Of Coins Spent', 'Modal Name', 'Spent Type'].map((h) => (
+            {['Date & Time', 'Coins Spent', 'Recipient', 'Type'].map((h) => (
               <p
                 key={h}
                 className="text-center text-[12px] font-bold text-foreground md:text-[16px]"
@@ -141,24 +79,33 @@ export function SpendingTable({ items, page, total, limit, onPage }: TableProps)
           ) : (
             items.map((t, i) => {
               const parts = t.description?.split('|') || [];
-              const modelName = parts[0] || '-';
-              const spentType = parts[1] || t.type;
+              const fallbackModel = parts[0] || t.description || '-';
+              const recipient = t.recipient ?? null;
               return (
                 <div
                   key={t.id}
                   className={`grid grid-cols-4 px-[20px] py-[14px] md:px-[45px] md:py-[20px] ${i < items.length - 1 ? 'border-b border-muted' : ''}`}
                 >
-                  <p className="text-center text-[12px] text-foreground md:text-[16px]">
-                    {formatDate(t.createdAt)}
+                  <p className="truncate text-center text-[12px] text-foreground md:text-[16px]">
+                    {formatDateTime(t.createdAt)}
                   </p>
-                  <p className="text-center text-[12px] text-foreground md:text-[16px]">
+                  <p className="truncate text-center text-[12px] text-foreground md:text-[16px]">
                     {t.amount}
                   </p>
-                  <p className="text-center text-[12px] text-foreground md:text-[16px]">
-                    {modelName}
+                  <p className="truncate text-center text-[12px] text-foreground md:text-[16px]">
+                    {recipient ? (
+                      <Link
+                        to={`/u/${recipient.username}`}
+                        className="text-[#01adf1] hover:underline"
+                      >
+                        {recipient.displayName || `@${recipient.username}`}
+                      </Link>
+                    ) : (
+                      fallbackModel
+                    )}
                   </p>
-                  <p className="text-center text-[12px] text-foreground md:text-[16px]">
-                    {spentType}
+                  <p className="truncate text-center text-[12px] text-foreground md:text-[16px]">
+                    {prettyType(t.type)}
                   </p>
                 </div>
               );

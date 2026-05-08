@@ -3,6 +3,7 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { enrichWithRecipients } from './wallet-enrich.js';
 import {
   COIN_PACKAGES,
   purchaseSchema,
@@ -84,7 +85,9 @@ router.get('/spending', authenticate, async (req, res, next) => {
       }),
       prisma.transaction.count({ where }),
     ]);
-    res.json({ success: true, data: { items, total, page, limit } });
+
+    const enriched = await enrichWithRecipients(items);
+    res.json({ success: true, data: { items: enriched, total, page, limit } });
   } catch (err) {
     next(err);
   }

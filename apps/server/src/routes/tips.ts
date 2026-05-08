@@ -78,6 +78,7 @@ router.post('/', authenticate, async (req: Request, res, next) => {
           type: 'TIP_SENT',
           amount: tipAmount,
           description: message || 'Direct tip',
+          referenceId: receiverId,
           status: 'COMPLETED',
         },
       }),
