@@ -1,41 +1,11 @@
 import { useState } from 'react';
 import { api, withWatermark } from '../../lib/api';
+import { LockIcon, SparkleOverlay } from './PostLockedVisuals';
 
 interface MediaItem {
   id: string;
   url: string;
   type: string;
-}
-
-function LockIcon() {
-  return (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="white" className="opacity-90">
-      <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z" />
-    </svg>
-  );
-}
-
-function SparkleOverlay() {
-  return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden rounded-[16px]">
-      {[...Array(12)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute h-[6px] w-[6px] rounded-full bg-white"
-          style={{
-            left: `${20 + Math.random() * 60}%`,
-            top: `${20 + Math.random() * 60}%`,
-            animation: `sparkle 0.6s ease-out ${i * 0.05}s forwards`,
-            opacity: 0,
-          }}
-        />
-      ))}
-      <div
-        className="absolute inset-0 rounded-[16px] bg-white"
-        style={{ animation: 'flashReveal 0.5s ease-out forwards' }}
-      />
-    </div>
-  );
 }
 
 function LockedOverlay({
@@ -53,9 +23,8 @@ function LockedOverlay({
           <span className="text-[13px] text-white/80">Pay per view</span>
           <button
             onClick={onUnlockClick}
-            className="flex items-center gap-[6px] rounded-[20px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[18px] py-[8px] text-[14px] font-semibold text-white shadow-lg transition-opacity hover:opacity-90"
+            className="rounded-[20px] bg-gradient-to-r from-[#01adf1] to-[#a61651] px-[18px] py-[8px] text-[14px] font-semibold text-white shadow-lg transition-opacity hover:opacity-90"
           >
-            <span className="text-[16px]">🪙</span>
             Unlock for {ppvPrice} coins
           </button>
         </div>
@@ -143,11 +112,12 @@ export function PostLockedImage({
       await api.post(`/posts/${postId}/ppv-unlock`);
       setConfirming(false);
       setUnlocking(true);
+      // Match the longest sparkle delay+duration so the burst plays in full
       setTimeout(() => {
         setUnlocking(false);
         setUnlocked(true);
         onUnlocked?.();
-      }, 700);
+      }, 1100);
     } catch (err) {
       const e = err as { response?: { data?: { error?: string; message?: string } } };
       setError(e.response?.data?.error ?? e.response?.data?.message ?? 'Unlock failed');
