@@ -9,10 +9,9 @@ type Step = 1 | 2 | 3;
 export default function BecomeCreator() {
   const navigate = useNavigate();
   const setUser = useAuthStore((s) => s.setUser);
+  const user = useAuthStore((s) => s.user);
   const [step, setStep] = useState<Step>(1);
   const [agreed, setAgreed] = useState(false);
-  const [idDoc, setIdDoc] = useState<File | null>(null);
-  const [selfie, setSelfie] = useState<File | null>(null);
   const [bank, setBank] = useState({ country: '', bankName: '', accountNumber: '', routing: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -23,15 +22,12 @@ export default function BecomeCreator() {
     try {
       const fd = new FormData();
       fd.append('agreement', 'true');
-      if (idDoc) fd.append('idDocument', idDoc);
-      if (selfie) fd.append('selfie', selfie);
       fd.append('bankCountry', bank.country);
       fd.append('bankName', bank.bankName);
       fd.append('accountNumber', bank.accountNumber);
       fd.append('routing', bank.routing);
-      const res = await api.post('/auth/become-creator', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      // Don't set Content-Type — let axios add multipart boundary automatically
+      const res = await api.post('/auth/become-creator', fd);
       if (res.data.data) setUser(res.data.data);
       navigate('/creator/dashboard');
     } catch (err: unknown) {
@@ -60,14 +56,7 @@ export default function BecomeCreator() {
 
         <div className="rounded-[22px] bg-card p-[20px]">
           {step === 1 && <StepAgreement agreed={agreed} setAgreed={setAgreed} />}
-          {step === 2 && (
-            <StepVerification
-              idDoc={idDoc}
-              setIdDoc={setIdDoc}
-              selfie={selfie}
-              setSelfie={setSelfie}
-            />
-          )}
+          {step === 2 && <StepVerification verificationStatus={user?.verificationStatus} />}
           {step === 3 && <StepBank bank={bank} setBank={setBank} />}
         </div>
 

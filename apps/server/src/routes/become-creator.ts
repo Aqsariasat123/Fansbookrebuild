@@ -28,13 +28,14 @@ function buildCreatorUpdateData(
   body: Record<string, string>,
 ) {
   const { bankCountry, bankName, accountNumber, routing } = body;
+  // Identity verification is handled by the Didit flow on /verify-identity.
+  // Only set legacy file URLs if the client still happens to upload them.
   return {
     role: 'CREATOR' as const,
     idDocumentUrl: buildFileUrl(files?.idDocument?.[0]),
     selfieUrl: buildFileUrl(files?.selfie?.[0]),
     bankCountry: bankCountry || undefined,
     bankDetails: bankName ? JSON.stringify({ bankName, accountNumber, routing }) : undefined,
-    verificationStatus: 'PENDING' as const,
   };
 }
 

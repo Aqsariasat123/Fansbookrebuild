@@ -27,62 +27,64 @@ export function StepAgreement({
           className="size-[18px] accent-[#01adf1]"
         />
         <span className="text-[14px] text-foreground">
-          I agree to the Creator Terms and Conditions
+          I agree to the Creator{' '}
+          <a
+            href="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="text-[#01adf1] underline hover:opacity-80"
+          >
+            Terms and Conditions
+          </a>
         </span>
       </label>
     </div>
   );
 }
 
-function FileInput({
-  label,
-  file,
-  onFile,
-}: {
-  label: string;
-  file: File | null;
-  onFile: (f: File | null) => void;
-}) {
-  return (
-    <div>
-      <label className="text-[13px] text-muted-foreground">{label}</label>
-      <div className="mt-[4px] flex items-center gap-[12px]">
-        <label className="cursor-pointer rounded-[50px] bg-muted px-[16px] py-[8px] text-[13px] text-foreground hover:bg-muted/80">
-          Choose File
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => onFile(e.target.files?.[0] || null)}
-          />
-        </label>
-        <span className="text-[12px] text-muted-foreground">
-          {file ? file.name : 'No file selected'}
-        </span>
-      </div>
-    </div>
-  );
-}
+export function StepVerification({ verificationStatus }: { verificationStatus?: string }) {
+  const status = verificationStatus ?? 'UNVERIFIED';
+  const isVerified = status === 'APPROVED';
+  const isPending = status === 'PENDING' || status === 'MANUAL_REVIEW';
 
-export function StepVerification({
-  idDoc,
-  setIdDoc,
-  selfie,
-  setSelfie,
-}: {
-  idDoc: File | null;
-  setIdDoc: (f: File | null) => void;
-  selfie: File | null;
-  setSelfie: (f: File | null) => void;
-}) {
   return (
     <div className="flex flex-col gap-[16px]">
-      <p className="text-[16px] font-medium text-foreground">ID Verification</p>
+      <p className="text-[16px] font-medium text-foreground">Identity Verification</p>
       <p className="text-[13px] text-muted-foreground">
-        Upload a clear photo of your government-issued ID and a selfie.
+        Identity verification is handled by our secure ID partner. You'll be redirected to a guided
+        flow that captures your government ID and a quick selfie.
       </p>
-      <FileInput label="Government ID" file={idDoc} onFile={setIdDoc} />
-      <FileInput label="Selfie" file={selfie} onFile={setSelfie} />
+
+      {isVerified && (
+        <div className="rounded-[12px] border border-green-500/30 bg-green-500/10 p-[14px] text-[13px] text-green-400">
+          ✓ Identity verified — you're good to continue.
+        </div>
+      )}
+
+      {isPending && (
+        <div className="rounded-[12px] border border-yellow-500/30 bg-yellow-500/10 p-[14px] text-[13px] text-yellow-400">
+          Your verification is being reviewed. This usually takes a few minutes — you can continue
+          and we'll activate your account once approved.
+        </div>
+      )}
+
+      {!isVerified && !isPending && (
+        <a
+          href="/verify-identity"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-[50px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-center text-[14px] font-medium text-white hover:opacity-90"
+        >
+          Start Identity Verification
+        </a>
+      )}
+
+      {!isVerified && !isPending && (
+        <p className="text-[12px] text-muted-foreground">
+          After completing the flow, return to this page and tap Next.
+        </p>
+      )}
     </div>
   );
 }
