@@ -102,7 +102,10 @@ export default function Leaderboard() {
             <table className="w-full">
               <thead>
                 <tr className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7]">
-                  {['Rank', 'Creator', getValueLabel()].map((h) => (
+                  {(type === 'earnings'
+                    ? ['Rank', 'Creator']
+                    : ['Rank', 'Creator', getValueLabel()]
+                  ).map((h) => (
                     <th
                       key={h}
                       className="px-[14px] py-[14px] text-left text-[13px] font-semibold text-white"
@@ -151,9 +154,11 @@ export default function Leaderboard() {
                         </div>
                       </Link>
                     </td>
-                    <td className="px-[14px] py-[12px] text-[14px] font-medium text-foreground">
-                      {formatValue(e.value)}
-                    </td>
+                    {type !== 'earnings' && (
+                      <td className="px-[14px] py-[12px] text-[14px] font-medium text-foreground">
+                        {formatValue(e.value)}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -186,12 +191,14 @@ export default function Leaderboard() {
                   <p className="text-[14px] font-medium text-foreground">{e.displayName}</p>
                   <p className="text-[11px] text-muted-foreground">@{e.username}</p>
                 </div>
-                <div className="flex flex-col items-end leading-tight">
-                  <span className="text-[14px] font-semibold text-[#01adf1]">
-                    {formatValue(e.value)}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">{getValueLabel()}</span>
-                </div>
+                {type !== 'earnings' && (
+                  <div className="flex flex-col items-end leading-tight">
+                    <span className="text-[14px] font-semibold text-[#01adf1]">
+                      {formatValue(e.value)}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">{getValueLabel()}</span>
+                  </div>
+                )}
               </Link>
             ))}
           </div>
