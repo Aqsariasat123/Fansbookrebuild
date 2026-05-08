@@ -20,7 +20,7 @@ export function PostOptionsRow({
       {showPpv && (
         <div className="flex items-center gap-[8px]">
           <label className="flex items-center gap-[4px] text-[13px] text-muted-foreground">
-            PPV Price <span className="text-[14px]">🪙</span>
+            Pay per View Price
           </label>
           <input
             type="number"
