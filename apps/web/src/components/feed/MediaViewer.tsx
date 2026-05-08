@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ImageWatermark } from '../shared/ImageWatermark';
 import { VideoWatermarkCanvas } from './VideoWatermarkCanvas';
 import { withWatermark } from '../../lib/api';
+import { MediaViewerImage } from './MediaViewerImage';
 
 interface MediaItem {
   id: string;
@@ -18,9 +19,13 @@ interface MediaViewerProps {
 
 export function MediaViewer({ media, initialIndex, onClose, username }: MediaViewerProps) {
   const [idx, setIdx] = useState(initialIndex);
+  const [loaded, setLoaded] = useState(false);
   const item = media[idx];
   const hasPrev = idx > 0;
   const hasNext = idx < media.length - 1;
+
+  // Reset loaded state every time the user moves to a different item
+  useEffect(() => setLoaded(false), [idx]);
 
   const goNext = useCallback(() => {
     if (hasNext) setIdx((i) => i + 1);
@@ -101,7 +106,7 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
       {/* Media - full screen for video */}
       {item.type === 'VIDEO' ? (
         <div
-          className="h-full w-full max-w-[100vw] md:h-[95vh] md:w-[85vw] md:max-w-[1200px]"
+          className="relative h-full w-full max-w-[100vw] md:h-[95vh] md:w-[85vw] md:max-w-[1200px]"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="relative h-full w-full">
@@ -111,76 +116,29 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
               controls
               autoPlay
               playsInline
+              onLoadedData={() => setLoaded(true)}
+              onError={() => setLoaded(true)}
               className="h-full w-full rounded-none object-contain md:rounded-xl"
+              style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.2s ease-out' }}
             />
+            {!loaded && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white" />
+              </div>
+            )}
             <VideoWatermarkCanvas />
             {username && <ImageWatermark username={username} />}
           </div>
         </div>
       ) : (
-        <div
-          style={{ display: 'inline-grid', maxHeight: '90vh', maxWidth: '90vw' }}
+        <MediaViewerImage
+          src={withWatermark(item.url)}
+          imgKey={item.id}
+          username={username}
+          loaded={loaded}
+          onLoaded={() => setLoaded(true)}
           onClick={(e) => e.stopPropagation()}
-        >
-          <img
-            key={item.id}
-            src={withWatermark(item.url)}
-            alt=""
-            style={{
-              gridArea: '1/1',
-              display: 'block',
-              maxHeight: '90vh',
-              maxWidth: '90vw',
-              borderRadius: 8,
-              objectFit: 'contain',
-            }}
-            draggable={false}
-            onContextMenu={(e) => e.preventDefault()}
-          />
-          {username && (
-            <div
-              style={{
-                gridArea: '1/1',
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'flex-end',
-                padding: 10,
-                pointerEvents: 'none',
-                userSelect: 'none',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  borderRadius: 6,
-                  backgroundColor: 'rgba(0,0,0,0.55)',
-                  padding: '6px 12px',
-                }}
-              >
-                <img
-                  src="/images/landing/logo.webp"
-                  alt=""
-                  style={{ height: 18, opacity: 0.9, flexShrink: 0 }}
-                />
-                <span
-                  style={{
-                    fontFamily: 'Outfit, sans-serif',
-                    fontSize: 13,
-                    color: 'rgba(255,255,255,0.9)',
-                    maxWidth: 200,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  inscrio.com/u/{username}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
+        />
       )}
 
       {/* Next */}
