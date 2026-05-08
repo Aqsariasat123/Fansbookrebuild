@@ -57,29 +57,29 @@ export function PostHeader({
             )}
           </div>
           <div className="flex flex-col">
-            <div className="flex items-center gap-[3px]">
-              <p className="text-[12px] font-normal text-foreground md:text-[16px]">
+            <div className="flex items-center gap-[4px]">
+              <p className="text-[14px] font-medium text-foreground md:text-[16px]">
                 {post.author.displayName}
               </p>
               {post.author.isVerified && (
                 <img
                   src={`${IMG}/verified.svg`}
                   alt="Verified"
-                  className="size-[12px] md:size-[16px]"
+                  className="size-[14px] md:size-[16px]"
                 />
               )}
             </div>
-            <p className="text-[8px] text-muted-foreground md:text-[12px]">
+            <p className="text-[12px] text-muted-foreground md:text-[12px]">
               @{post.author.username}
             </p>
           </div>
         </Link>
-        <p className="whitespace-pre-wrap text-[10px] font-normal leading-normal text-foreground md:text-[16px]">
+        <p className="whitespace-pre-wrap text-[13px] font-normal leading-normal text-foreground md:text-[16px]">
           {post.text ? renderWithHashtags(post.text) : null}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-[8px] md:gap-[18px]">
-        <span className="text-[8px] font-normal text-muted-foreground md:text-[16px]">
+        <span className="text-[12px] font-normal text-muted-foreground md:text-[16px]">
           {timeAgo(post.createdAt)}
         </span>
         <FeedPostMenu postId={post.id} isOwner={isOwner} onDelete={onDelete} />

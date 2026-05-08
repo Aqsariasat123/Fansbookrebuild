@@ -69,10 +69,14 @@ export function FeedPostMenu({ postId, isOwner, onDelete }: Props) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex size-[11px] items-center justify-center hover:opacity-70 md:size-[24px]"
+        className="flex items-center justify-center p-[4px] text-foreground hover:opacity-70"
         aria-label="Post options"
       >
-        <img src="/icons/dashboard/pending.svg" alt="" className="size-full rotate-90" />
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="md:size-[22px]">
+          <circle cx="10" cy="3" r="1.7" fill="currentColor" />
+          <circle cx="10" cy="10" r="1.7" fill="currentColor" />
+          <circle cx="10" cy="17" r="1.7" fill="currentColor" />
+        </svg>
       </button>
       {open && (
         <div className="absolute right-0 top-full z-50 mt-1 min-w-[130px] rounded-[8px] border border-border bg-card py-1 shadow-lg">
