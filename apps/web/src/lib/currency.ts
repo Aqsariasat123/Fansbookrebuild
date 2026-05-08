@@ -1,6 +1,11 @@
 // Fixed exchange rate: 1 EUR ≈ 1.08 USD
 const EUR_TO_USD = 1.08;
 
+// U+00A0 non-breaking space — keeps the (≈ $X) bracket on one line on narrow
+// viewports. Only the regular space before `(` is a wrap point, so the whole
+// conversion bracket flows to the next line as a single unit.
+const NBSP = ' ';
+
 function isUSLocale(): boolean {
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -21,12 +26,12 @@ function fmtCompact(n: number, symbol: string): string {
 export function formatMoney(amount: number): string {
   const eur = `€${amount.toFixed(2)}`;
   if (!isUSLocale()) return eur;
-  return `${eur} (≈ $${(amount * EUR_TO_USD).toFixed(2)})`;
+  return `${eur} (≈${NBSP}$${(amount * EUR_TO_USD).toFixed(2)})`;
 }
 
 /** Compact version (K/M) for stat cards and summaries. */
 export function formatMoneyCompact(amount: number): string {
   const eur = fmtCompact(amount, '€');
   if (!isUSLocale()) return eur;
-  return `${eur} (≈ ${fmtCompact(amount * EUR_TO_USD, '$')})`;
+  return `${eur} (≈${NBSP}${fmtCompact(amount * EUR_TO_USD, '$')})`;
 }
