@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { ImagePost, VideoPost } from '../components/feed/FeedPosts';
-import { PostComposerBar } from '../components/feed/PostComposerBar';
 import { StoriesRow } from '../components/feed/StoriesRow';
 import { EmptyFeedState } from '../components/feed/EmptyFeedState';
 import { AnnouncementBanner } from '../components/feed/AnnouncementBanner';
@@ -159,7 +158,6 @@ export default function Home() {
           New posts available — tap to refresh
         </button>
       )}
-      {isCreator && <PostComposerBar />}
       {(storyGroups.length > 0 || isCreator) && (
         <StoriesRow groups={storyGroups} isCreator={!!isCreator} onRefetch={fetchStories} />
       )}
