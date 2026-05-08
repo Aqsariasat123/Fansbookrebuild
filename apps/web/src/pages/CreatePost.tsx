@@ -152,7 +152,7 @@ export default function CreatePost() {
           onChange={handleFiles}
         />
         {error && <p className="mt-[12px] text-[14px] text-red-400">{error}</p>}
-        <div className="mt-[16px] flex justify-end">
+        <div className="mt-[16px] flex justify-start">
           <button
             onClick={handleSubmit}
             disabled={canSubmit}
