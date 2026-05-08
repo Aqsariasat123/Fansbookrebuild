@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
+import { useAuthStore } from '../../stores/authStore';
 
 interface NotifPref {
   type: string;
   inApp: boolean;
   email: boolean;
 }
+
+// Notification types that only make sense for creators (people follow/subscribe
+// to creators and tip creators). Hidden from fan settings.
+const CREATOR_ONLY_TYPES = new Set(['FOLLOW', 'SUBSCRIBE', 'TIP']);
 
 const TYPE_LABELS: Record<string, { label: string; desc: string }> = {
   LIKE: { label: 'Likes', desc: 'When someone likes your content' },
@@ -27,6 +32,8 @@ export function SettingsNotifications() {
   const [prefs, setPrefs] = useState<NotifPref[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
+  const isFan = useAuthStore((s) => s.user?.role) === 'FAN';
+  const visiblePrefs = isFan ? prefs.filter((p) => !CREATOR_ONLY_TYPES.has(p.type)) : prefs;
 
   useEffect(() => {
     api
@@ -62,7 +69,7 @@ export function SettingsNotifications() {
         <span className="text-center">In-App</span>
         <span className="text-center">Email</span>
       </div>
-      {prefs.map((p) => {
+      {visiblePrefs.map((p) => {
         const info = TYPE_LABELS[p.type];
         if (!info) return null;
         return (
