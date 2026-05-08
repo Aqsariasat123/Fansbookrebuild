@@ -50,6 +50,11 @@ export default function Leaderboard() {
     return 'New Followers';
   };
 
+  const formatValue = (n: number) => {
+    if (type === 'earnings') return `$${n.toFixed(2)}`;
+    return n.toLocaleString();
+  };
+
   return (
     <div className="flex flex-col gap-[20px]">
       <p className="text-[24px] font-semibold text-foreground">Leaderboard</p>
@@ -147,7 +152,7 @@ export default function Leaderboard() {
                       </Link>
                     </td>
                     <td className="px-[14px] py-[12px] text-[14px] font-medium text-foreground">
-                      {type === 'earnings' ? `$${e.value.toFixed(2)}` : e.value.toLocaleString()}
+                      {formatValue(e.value)}
                     </td>
                   </tr>
                 ))}
@@ -181,9 +186,12 @@ export default function Leaderboard() {
                   <p className="text-[14px] font-medium text-foreground">{e.displayName}</p>
                   <p className="text-[11px] text-muted-foreground">@{e.username}</p>
                 </div>
-                <span className="text-[14px] font-medium text-[#01adf1]">
-                  {type === 'earnings' ? `$${e.value.toFixed(2)}` : e.value}
-                </span>
+                <div className="flex flex-col items-end leading-tight">
+                  <span className="text-[14px] font-semibold text-[#01adf1]">
+                    {formatValue(e.value)}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{getValueLabel()}</span>
+                </div>
               </Link>
             ))}
           </div>
