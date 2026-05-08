@@ -91,16 +91,11 @@ export function PendingStep({
   onRestart?: () => void;
   onManualCheck?: () => Promise<void>;
 }) {
-  const [showCheck, setShowCheck] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
   const [checking, setChecking] = useState(false);
   useEffect(() => {
-    const t1 = setTimeout(() => setShowCheck(true), 30000);
-    const t2 = setTimeout(() => setTimedOut(true), 120000);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
+    const t = setTimeout(() => setTimedOut(true), 120000);
+    return () => clearTimeout(t);
   }, []);
   async function handleCheck() {
     if (!onManualCheck) return;
@@ -119,13 +114,13 @@ export function PendingStep({
         Waiting for confirmation from Didit. This page will update automatically once your
         verification is complete.
       </p>
-      {showCheck && onManualCheck && (
+      {onManualCheck && (
         <button
           onClick={handleCheck}
           disabled={checking}
           className="rounded-full border border-[#01adf1] px-[24px] py-[10px] text-[14px] font-medium text-[#01adf1] hover:bg-[#01adf1]/10 transition-colors disabled:opacity-50"
         >
-          {checking ? 'Checking…' : 'Check status'}
+          {checking ? 'Checking…' : 'Check status now'}
         </button>
       )}
       {timedOut && (

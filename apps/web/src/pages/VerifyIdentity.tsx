@@ -71,32 +71,32 @@ export default function VerifyIdentity() {
       .catch(() => {});
   }, [isDone]);
 
-  // Poll while PENDING or SDK (handles webhook-based completion on both steps)
+  // Active poll while PENDING or SDK — calls /verification/check which pulls
+  // status directly from Didit (so we don't rely on the webhook firing).
+  // SDK step uses /status (cheap) at 3s; PENDING uses /check at 6s.
   useEffect(() => {
     if (step !== 'PENDING' && step !== 'SDK') return;
-    pollRef.current = setInterval(
-      () => {
-        api
-          .get('/verification/status')
-          .then(({ data: r }) => {
-            if (!r.success || r.data.status === 'PENDING') return;
-            clearInterval(pollRef.current!);
-            const s = r.data.status as VerifyStatus;
-            setStatus(s);
-            setRetryCount(r.data.retryCount ?? 0);
-            // Update authStore so sidebar badge refreshes
-            if (authUser) {
-              setAuthUser({
-                ...authUser,
-                verificationStatus: s === 'MANUAL_REVIEW' ? 'PENDING' : s,
-              });
-            }
-            setStep(s === 'UNVERIFIED' ? 'FORM' : 'RESULT');
-          })
-          .catch(() => {});
-      },
-      step === 'SDK' ? 3000 : 8000,
-    );
+    const endpoint = step === 'PENDING' ? '/verification/check' : '/verification/status';
+    const interval = step === 'PENDING' ? 6000 : 3000;
+    const httpFn = step === 'PENDING' ? api.post : api.get;
+    pollRef.current = setInterval(() => {
+      httpFn(endpoint)
+        .then(({ data: r }) => {
+          if (!r.success || r.data.status === 'PENDING') return;
+          clearInterval(pollRef.current!);
+          const s = r.data.status as VerifyStatus;
+          setStatus(s);
+          setRetryCount(r.data.retryCount ?? 0);
+          if (authUser) {
+            setAuthUser({
+              ...authUser,
+              verificationStatus: s === 'MANUAL_REVIEW' ? 'PENDING' : s,
+            });
+          }
+          setStep(s === 'UNVERIFIED' ? 'FORM' : 'RESULT');
+        })
+        .catch(() => {});
+    }, interval);
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
