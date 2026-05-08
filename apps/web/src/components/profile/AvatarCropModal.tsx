@@ -18,12 +18,14 @@ async function cropToFile(src: string, area: Area): Promise<File> {
   canvas.width = 400;
   canvas.height = 400;
   const ctx = canvas.getContext('2d')!;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(image, area.x, area.y, area.width, area.height, 0, 0, 400, 400);
+  // Output PNG (lossless) so the cropped avatar keeps the original brightness/colour
   return new Promise((resolve) =>
     canvas.toBlob(
-      (blob) => resolve(new File([blob!], 'avatar.jpg', { type: 'image/jpeg' })),
-      'image/jpeg',
-      0.95,
+      (blob) => resolve(new File([blob!], 'avatar.png', { type: 'image/png' })),
+      'image/png',
     ),
   );
 }

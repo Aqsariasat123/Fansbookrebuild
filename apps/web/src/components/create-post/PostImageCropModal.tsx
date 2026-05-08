@@ -26,12 +26,16 @@ async function cropToFile(src: string, area: Area, name: string): Promise<File> 
   canvas.width = area.width;
   canvas.height = area.height;
   const ctx = canvas.getContext('2d')!;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(image, area.x, area.y, area.width, area.height, 0, 0, area.width, area.height);
+  // Quality 0.97 + high-quality smoothing — keeps the cropped image visually identical
+  // to the original. JPEG (not PNG) since post images can be many and PNG is much larger.
   return new Promise((resolve) =>
     canvas.toBlob(
       (blob) => resolve(new File([blob!], name, { type: 'image/jpeg' })),
       'image/jpeg',
-      0.95,
+      0.97,
     ),
   );
 }
