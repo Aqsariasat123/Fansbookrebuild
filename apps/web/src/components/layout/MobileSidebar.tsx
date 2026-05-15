@@ -51,13 +51,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
           </Link>
         </div>
 
-        {/* Fade mask so scrolled items don't clash with the logo above */}
-        <div
-          className="pointer-events-none absolute left-0 right-0 z-10 h-[48px] bg-gradient-to-b from-muted to-transparent"
-          style={{ top: 83 }}
-        />
-
-        <div className="flex flex-col gap-[32px] px-[32px] pt-[56px] overflow-y-auto h-[calc(100%-83px)] pb-[20px]">
+        <div className="flex flex-col gap-[32px] px-[32px] pt-[24px] overflow-y-auto h-[calc(100%-83px)] pb-[20px]">
           <div className="flex flex-col gap-[22px]">
             {navItems.map(({ to, icon, labelKey }) => (
               <NavLink
