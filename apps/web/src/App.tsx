@@ -7,6 +7,7 @@ import { adminRoutes } from './pages/admin/AdminRoutes';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { RoleRoute } from './components/RoleRoute';
 import { AuthBootstrap } from './components/AuthBootstrap';
+import { useContentProtection } from './hooks/useContentProtection';
 import { AgeVerification } from './components/AgeVerification';
 import { NotificationToastContainer } from './components/shared/NotificationToast';
 import {
@@ -99,6 +100,7 @@ function Loading() {
 }
 
 export default function App() {
+  useContentProtection();
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
