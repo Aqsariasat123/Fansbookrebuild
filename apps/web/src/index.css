@@ -111,6 +111,36 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
+/* ─── Cross-browser normalization (on top of the Tailwind Preflight reset) ─── */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  tab-size: 4;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* Edge/IE inject their own reveal & clear icons into input fields — Chrome
+   does not. Hide them so fields render identically across browsers (the app
+   ships its own show/hide-password toggle, which otherwise shows alongside
+   Edge's built-in eye icon). */
+::-ms-reveal,
+::-ms-clear {
+  display: none;
+}
+/* Placeholder colour/opacity is inconsistent across engines — pin it */
+::placeholder {
+  opacity: 1;
+  color: hsl(var(--muted-foreground));
+}
+/* Firefox draws an inner dotted border inside buttons — remove it */
+::-moz-focus-inner {
+  border: 0;
+}
+
 /* Dark scrollbar for sidebar */
 .sidebar-nav::-webkit-scrollbar {
   width: 4px;
