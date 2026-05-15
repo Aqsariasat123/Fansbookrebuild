@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { showToast } from '../shared/NotificationToast';
 
@@ -9,24 +9,28 @@ interface ProfileSharePopupProps {
 }
 
 export function ProfileSharePopup({ username, pos, onClose }: ProfileSharePopupProps) {
-  const popupRef = useRef<HTMLDivElement>(null);
   const isSharingRef = useRef(false);
+  const openedAtRef = useRef(Date.now());
   const navigate = useNavigate();
 
+  // Dismiss guard. The popup used to "blink and disappear" on some machines
+  // because two things could close it the instant it opened: a stray event
+  // from the very click that opened it, and the OS share sheet stealing focus.
+  // requestClose ignores any close within 250ms of opening, and while a
+  // native share is in progress — and it is the single dismiss path (the old
+  // duplicate document-level mousedown listener has been removed).
+  const requestClose = useCallback(() => {
+    if (isSharingRef.current) return;
+    if (Date.now() - openedAtRef.current < 250) return;
+    onClose();
+  }, [onClose]);
+
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (isSharingRef.current) return;
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) onClose();
-    };
-    const keyHandler = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
-    document.addEventListener('mousedown', handler);
-    document.addEventListener('keydown', keyHandler);
-    return () => {
-      document.removeEventListener('mousedown', handler);
-      document.removeEventListener('keydown', keyHandler);
-    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
   const profileUrl = `${window.location.origin}/u/${username}`;
@@ -65,9 +69,8 @@ export function ProfileSharePopup({ username, pos, onClose }: ProfileSharePopupP
 
   return (
     <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <div className="fixed inset-0 z-40" onClick={requestClose} />
       <div
-        ref={popupRef}
         style={{ top: pos.top, right: pos.right }}
         className="fixed z-50 w-[226px] rounded-[16px] bg-card px-[20px] pb-[20px] pt-[16px] shadow-xl border border-border"
       >
