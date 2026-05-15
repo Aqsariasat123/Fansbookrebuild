@@ -11,6 +11,7 @@ import {
 } from '../components/create-post/CreatePostParts';
 import type { Visibility } from '../components/create-post/CreatePostParts';
 import { PostImageCropModal } from '../components/create-post/PostImageCropModal';
+import { UploadProgressBar } from '../components/create-post/UploadProgressBar';
 import { useImageCropQueue } from '../hooks/useImageCropQueue';
 import { buildPostFormData, extractErrorMessage } from '../components/create-post/postSubmit';
 
@@ -24,6 +25,7 @@ export default function CreatePost() {
   const [isPinned, setIsPinned] = useState(false);
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -59,6 +61,7 @@ export default function CreatePost() {
   async function handleSubmit() {
     if (!text.trim() && images.length === 0) return;
     setSubmitting(true);
+    setUploadProgress(0);
     setError('');
     try {
       const fd = buildPostFormData(
@@ -66,7 +69,11 @@ export default function CreatePost() {
         images,
       );
       // Don't set Content-Type — let axios add multipart boundary automatically
-      await api.post('/posts', fd);
+      await api.post('/posts', fd, {
+        onUploadProgress: (e) => {
+          if (e.total) setUploadProgress(Math.round((e.loaded / e.total) * 100));
+        },
+      });
       navigate('/creator/profile');
     } catch (err) {
       setError(extractErrorMessage(err));
@@ -152,6 +159,7 @@ export default function CreatePost() {
           onChange={handleFiles}
         />
         {error && <p className="mt-[12px] text-[14px] text-red-400">{error}</p>}
+        {submitting && images.length > 0 && <UploadProgressBar progress={uploadProgress} />}
         <div className="mt-[16px] flex justify-start">
           <button
             onClick={handleSubmit}
