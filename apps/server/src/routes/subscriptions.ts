@@ -5,7 +5,7 @@ import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { createNotification } from '../utils/notify.js';
 import { logActivity } from '../utils/audit.js';
-import { subscribeSchema, FEES } from '@fansbook/shared';
+import { subscribeSchema } from '@fansbook/shared';
 
 const router = Router();
 
@@ -87,8 +87,8 @@ router.post('/', authenticate, validate(subscribeSchema), async (req, res, next)
       update: {},
     });
 
-    const commission = tier.price * (FEES.PLATFORM_FEE_PERCENT / 100);
-    const creatorAmount = tier.price - commission;
+    // Creator receives the full amount — the platform fee is taken at withdrawal time
+    const creatorAmount = tier.price;
     const endDate = new Date(Date.now() + THIRTY_DAYS_MS);
 
     const [subscription] = await prisma.$transaction([
@@ -125,7 +125,7 @@ router.post('/', authenticate, validate(subscribeSchema), async (req, res, next)
           walletId: creatorWallet.id,
           type: 'SUBSCRIPTION',
           amount: creatorAmount,
-          description: `Subscription from fan (${tier.name}) — ${FEES.PLATFORM_FEE_PERCENT}% fee applied`,
+          description: `Subscription from fan (${tier.name})`,
           referenceId: userId,
           status: 'COMPLETED',
         },
@@ -148,7 +148,6 @@ router.post('/', authenticate, validate(subscribeSchema), async (req, res, next)
       {
         tierId,
         amount: tier.price,
-        commission,
       },
       req,
     );

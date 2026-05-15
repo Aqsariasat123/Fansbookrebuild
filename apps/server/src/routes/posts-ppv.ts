@@ -3,7 +3,6 @@ import { prisma } from '../config/database.js';
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { logActivity } from '../utils/audit.js';
-import { FEES } from '@fansbook/shared';
 
 const router = Router();
 
@@ -42,7 +41,8 @@ router.post('/:id/ppv-unlock', authenticate, async (req, res, next) => {
     if (!creatorWallet) throw new AppError(500, 'Creator wallet not found');
 
     const price = post.ppvPrice!;
-    const creatorAmt = price - price * (FEES.PLATFORM_FEE_PERCENT / 100);
+    // Creator receives the full amount — the platform fee is taken at withdrawal time
+    const creatorAmt = price;
 
     await prisma.$transaction([
       prisma.wallet.update({
@@ -67,7 +67,7 @@ router.post('/:id/ppv-unlock', authenticate, async (req, res, next) => {
           walletId: creatorWallet.id,
           type: 'PPV_EARNING',
           amount: creatorAmt,
-          description: `PPV earning: post ${postId} (${FEES.PLATFORM_FEE_PERCENT}% fee)`,
+          description: `PPV earning: post ${postId}`,
           referenceId: userId,
           status: 'COMPLETED',
         },
