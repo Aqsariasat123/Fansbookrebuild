@@ -81,7 +81,6 @@ export function ProfileHeader({
             <div className="size-8 animate-spin rounded-full border-4 border-foreground border-t-transparent" />
           </div>
         )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
         <div className="absolute right-[12px] top-[12px] z-20 flex gap-[8px]">
           <CoverIcon title="Change cover photo" onClick={() => coverRef.current?.click()}>
             <path d={CAMERA_D} />

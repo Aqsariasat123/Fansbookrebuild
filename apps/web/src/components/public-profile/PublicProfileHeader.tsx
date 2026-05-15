@@ -49,7 +49,6 @@ function CoverBanner({ cover }: { cover: string | null }) {
       ) : (
         <div className="absolute inset-0 bg-muted" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
     </div>
   );
 }
