@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api, withWatermark } from '../../lib/api';
-import { LockIcon, SparkleOverlay } from './PostLockedVisuals';
+import { LockIcon } from './PostLockedVisuals';
+import { SparkleOverlay } from '../shared/SparkleOverlay';
 
 interface MediaItem {
   id: string;
