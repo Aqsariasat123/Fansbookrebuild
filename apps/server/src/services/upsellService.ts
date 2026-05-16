@@ -1,23 +1,13 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../config/database.js';
-import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 import { ALLOWED_ROUTES, buildUpsellSystemPrompt } from './upsellPrompt.js';
 import { collectCreatorContext } from './upsellContext.js';
+import { llmComplete } from './llmClient.js';
 
-const MODEL = 'claude-haiku-4-5-20251001';
+const FALLBACK_MODEL = 'claude-haiku-4-5-20251001';
 const CACHE_HOURS = 168; // 7 days — only regenerate when user clicks Refresh
 const MAX_SUGGESTIONS = 8;
-
-let client: Anthropic | null = null;
-function getClient(): Anthropic {
-  if (!client) {
-    if (!env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not configured');
-    client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
-  }
-  return client;
-}
 
 interface SuggestionRaw {
   type: string;
@@ -67,24 +57,23 @@ export async function generateUpsellSuggestions(creatorId: string): Promise<void
 
   const system = buildUpsellSystemPrompt(MAX_SUGGESTIONS, avoidNote);
 
-  const response = await getClient().messages.create({
-    model: MODEL,
-    max_tokens: 1400,
+  const c = await llmComplete({
     system,
     messages: [{ role: 'user', content: context }],
+    maxTokens: 1400,
+    anthropicModel: FALLBACK_MODEL,
   });
 
-  const raw = response.content[0]?.type === 'text' ? response.content[0].text : '[]';
+  const raw = c.text || '[]';
   const suggestions = parseSuggestions(raw);
 
-  const cost =
-    (response.usage.input_tokens * 0.00025 + response.usage.output_tokens * 0.00125) / 1000;
+  const cost = (c.inputTokens * 0.00025 + c.outputTokens * 0.00125) / 1000;
   await prisma.aIUsageLog.create({
     data: {
       creatorId,
       feature: 'upsell',
-      inputTokens: response.usage.input_tokens,
-      outputTokens: response.usage.output_tokens,
+      inputTokens: c.inputTokens,
+      outputTokens: c.outputTokens,
       cost,
     },
   });

@@ -25,6 +25,11 @@ const envSchema = z.object({
   EMAIL_ENABLED: z.string().optional().default('false'),
   // AI Chatbot (optional — bot feature disabled without it)
   ANTHROPIC_API_KEY: z.string().optional().default(''),
+  // OpenRouter — preferred chat-AI provider (handles flirty/companion content
+  // that Anthropic now refuses). When OPENROUTER_API_KEY is set, llmClient
+  // routes there; otherwise it falls back to Anthropic. Card #13.
+  OPENROUTER_API_KEY: z.string().optional().default(''),
+  OPENROUTER_MODEL: z.string().optional().default('nousresearch/hermes-3-llama-3.1-70b'),
   // mediasoup (optional — live streaming disabled without it)
   MEDIASOUP_ANNOUNCED_IP: z.string().optional().default('127.0.0.1'),
   MEDIASOUP_MIN_PORT: z.coerce.number().optional().default(40000),

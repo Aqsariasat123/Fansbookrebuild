@@ -1,22 +1,15 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { prisma } from '../config/database.js';
-import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 import { redis } from '../config/redis.js';
 import { logAIUsage, updateToneProfile, getMonthlyUsage } from './botAnalytics.js';
+import { llmComplete } from './llmClient.js';
 
 export { updateToneProfile, getMonthlyUsage };
 
-const SUGGEST_MODEL = 'claude-haiku-4-5-20251001';
-const POLISH_MODEL = 'claude-sonnet-4-6';
-let anthropic: Anthropic | null = null;
-function getClient(): Anthropic {
-  if (!anthropic) {
-    if (!env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not configured');
-    anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
-  }
-  return anthropic;
-}
+// Anthropic fallback models — only used if OPENROUTER_API_KEY is not set.
+// When OpenRouter is on, OPENROUTER_MODEL drives both calls.
+const SUGGEST_FALLBACK_MODEL = 'claude-haiku-4-5-20251001';
+const POLISH_FALLBACK_MODEL = 'claude-sonnet-4-6';
 
 export async function getBotConfig(creatorId: string) {
   return prisma.creatorBot.findUnique({ where: { creatorId } });
@@ -85,19 +78,14 @@ async function callSuggestLLM(
   history: Array<{ role: 'user' | 'assistant'; content: string }>,
   creatorId: string,
 ): Promise<string[]> {
-  const response = await getClient().messages.create({
-    model: SUGGEST_MODEL,
-    max_tokens: 300,
+  const c = await llmComplete({
     system,
     messages: history,
+    maxTokens: 300,
+    anthropicModel: SUGGEST_FALLBACK_MODEL,
   });
-  const raw = response.content[0]?.type === 'text' ? response.content[0].text.trim() : '[]';
-  await logAIUsage(
-    creatorId,
-    'suggest_reply',
-    response.usage.input_tokens,
-    response.usage.output_tokens,
-  );
+  const raw = c.text.trim() || '[]';
+  await logAIUsage(creatorId, 'suggest_reply', c.inputTokens, c.outputTokens);
   return parseSuggestions(raw);
 }
 
@@ -192,20 +180,14 @@ export async function polishMessage(creatorId: string, roughText: string): Promi
 Keep the same meaning. Make it more natural and engaging. Keep it concise (1-3 sentences).
 Return ONLY the polished message text, nothing else.`;
   try {
-    const response = await getClient().messages.create({
-      model: POLISH_MODEL,
-      max_tokens: 300,
+    const c = await llmComplete({
       system,
       messages: [{ role: 'user', content: `Rough message: "${roughText}"` }],
+      maxTokens: 300,
+      anthropicModel: POLISH_FALLBACK_MODEL,
     });
-    const polished = response.content[0]?.type === 'text' ? response.content[0].text.trim() : null;
-    if (polished)
-      await logAIUsage(
-        creatorId,
-        'polish',
-        response.usage.input_tokens,
-        response.usage.output_tokens,
-      );
+    const polished = c.text.trim() || null;
+    if (polished) await logAIUsage(creatorId, 'polish', c.inputTokens, c.outputTokens);
     return polished;
   } catch (err) {
     logger.error({ err }, 'polishMessage failed');

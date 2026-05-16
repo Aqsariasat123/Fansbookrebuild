@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import Anthropic from '@anthropic-ai/sdk';
 import { prisma } from '../config/database.js';
 import { validate } from '../middleware/validate.js';
 import { authLimiter } from '../middleware/rateLimit.js';
 import { logger } from '../utils/logger.js';
 import { env } from '../config/env.js';
+import { llmComplete } from '../services/llmClient.js';
 
 const router = Router();
 
@@ -35,12 +35,6 @@ Key features of Inscrio:
 - **Engagement**: Stories, chat with file sharing, leaderboards, subscriber badges
 
 Answer questions clearly and concisely. If someone has an issue that needs human support, encourage them to submit the contact form. Do not make up features or prices that aren't mentioned above. Keep replies short (2-4 sentences max unless a list is needed).`;
-
-let anthropicClient: Anthropic | null = null;
-function getClient(): Anthropic {
-  if (!anthropicClient) anthropicClient = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
-  return anthropicClient;
-}
 
 // POST /api/contact — unauthenticated contact form
 router.post('/', authLimiter, validate(contactSchema), async (req, res, next) => {
@@ -73,7 +67,7 @@ router.post('/', authLimiter, validate(contactSchema), async (req, res, next) =>
 // POST /api/contact/chat — AI support chat
 router.post('/chat', authLimiter, validate(chatSchema), async (req, res, next) => {
   try {
-    if (!env.ANTHROPIC_API_KEY) {
+    if (!env.OPENROUTER_API_KEY && !env.ANTHROPIC_API_KEY) {
       res.json({
         reply:
           "I'm not available right now. Please submit the contact form and we'll get back to you soon.",
@@ -86,23 +80,17 @@ router.post('/chat', authLimiter, validate(chatSchema), async (req, res, next) =
       history: { role: 'user' | 'assistant'; content: string }[];
     };
 
-    const messages: Anthropic.MessageParam[] = [
-      ...history.map((h) => ({ role: h.role, content: h.content })),
-      { role: 'user', content: message },
-    ];
-
-    const response = await getClient().messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 512,
+    const c = await llmComplete({
       system: SYSTEM_PROMPT,
-      messages,
+      messages: [
+        ...history.map((h) => ({ role: h.role, content: h.content })),
+        { role: 'user' as const, content: message },
+      ],
+      maxTokens: 512,
+      anthropicModel: 'claude-haiku-4-5-20251001',
     });
 
-    const reply =
-      response.content[0]?.type === 'text'
-        ? response.content[0].text
-        : "I couldn't generate a response. Please try again.";
-
+    const reply = c.text || "I couldn't generate a response. Please try again.";
     res.json({ reply });
   } catch (err) {
     next(err);

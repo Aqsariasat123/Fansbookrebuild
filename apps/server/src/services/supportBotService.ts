@@ -1,18 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { prisma } from '../config/database.js';
-import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
+import { llmComplete } from './llmClient.js';
 
-const BOT_MODEL = 'claude-haiku-4-5-20251001';
-let anthropic: Anthropic | null = null;
-
-function getClient(): Anthropic {
-  if (!anthropic) {
-    if (!env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not configured');
-    anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
-  }
-  return anthropic;
-}
+const BOT_FALLBACK_MODEL = 'claude-haiku-4-5-20251001';
 
 const SYSTEM_PROMPT = `You are a helpful support assistant for Inscrio (inscrio.com), a creator-fan social platform where creators share exclusive content and fans subscribe to support them.
 
@@ -145,15 +135,13 @@ export async function chatWithBot(
   let escalated = false;
 
   try {
-    const client = getClient();
-    const response = await client.messages.create({
-      model: BOT_MODEL,
-      max_tokens: 512,
+    const c = await llmComplete({
       system: SYSTEM_PROMPT,
       messages: history,
+      maxTokens: 512,
+      anthropicModel: BOT_FALLBACK_MODEL,
     });
-
-    const raw = response.content[0].type === 'text' ? response.content[0].text : '';
+    const raw = c.text;
     escalated = shouldEscalate(raw);
     reply = cleanReply(raw);
   } catch (err) {
