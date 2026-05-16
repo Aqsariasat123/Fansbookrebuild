@@ -60,7 +60,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
                 onClick={onClose}
                 className={({ isActive }) =>
                   `flex items-center gap-[15px] text-[12px] transition-colors ${
-                    isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                    isActive ? 'text-foreground' : 'text-muted-foreground'
                   }`
                 }
               >
@@ -93,7 +93,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
               navigate('/language');
               onClose();
             }}
-            className="flex items-center gap-[15px] text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+            className="flex items-center gap-[15px] text-[12px] text-muted-foreground transition-colors"
           >
             <img src="/icons/dashboard/language.svg" alt="" className="h-[20px] w-[20px]" />
             {currentLangName}
@@ -106,7 +106,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-[15px] text-[16px] text-muted-foreground transition-colors hover:text-foreground"
+            className="flex items-center gap-[15px] text-[16px] text-muted-foreground transition-colors"
           >
             <img src="/icons/dashboard/logout.svg" alt="" className="h-[20px] w-[20px]" />
             {label('nav.logout')}
