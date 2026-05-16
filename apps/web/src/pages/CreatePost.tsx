@@ -15,6 +15,7 @@ import { UploadProgressBar } from '../components/create-post/UploadProgressBar';
 import { useImageCropQueue } from '../hooks/useImageCropQueue';
 import { buildPostFormData, extractErrorMessage } from '../components/create-post/postSubmit';
 
+// eslint-disable-next-line complexity -- form page with multiple visibility/upload/PPV states
 export default function CreatePost() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
@@ -30,6 +31,15 @@ export default function CreatePost() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const showPpv = visibility === 'PPV';
+
+  function changeVisibility(v: Visibility) {
+    if (v === 'STORY') {
+      navigate('/stories/create');
+      return;
+    }
+    setVisibility(v);
+    if (v !== 'PPV') setPpvPrice('');
+  }
 
   const crop = useImageCropQueue((file) =>
     setImages((prev) => [...prev, { file, preview: URL.createObjectURL(file) }]),
@@ -82,7 +92,8 @@ export default function CreatePost() {
     }
   }
 
-  const canSubmit = submitting || (!text.trim() && images.length === 0);
+  const needsPpvPrice = visibility === 'PPV' && (!ppvPrice || Number(ppvPrice) <= 0);
+  const canSubmit = submitting || (!text.trim() && images.length === 0) || needsPpvPrice;
 
   return (
     <div className="flex flex-col gap-[20px]">
@@ -93,34 +104,26 @@ export default function CreatePost() {
       <div className="rounded-[22px] bg-card p-[20px]">
         <div className="flex items-start justify-between">
           <AuthorRow user={user} />
-          <div className="flex items-center gap-[16px]">
-            <VisibilityDropdown
-              value={visibility}
-              onChange={(v) => {
-                if (v === 'STORY') {
-                  navigate('/stories/create');
-                  return;
-                }
-                setVisibility(v);
-                if (v !== 'PPV') setPpvPrice('');
-              }}
-            />
-            <button
-              onClick={() => navigate(-1)}
-              className="text-muted-foreground hover:text-foreground"
+          <button
+            onClick={() => navigate(-1)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Post type selector — left-aligned, right before the post text body */}
+        <div className="mt-[16px] flex items-center gap-[10px]">
+          <VisibilityDropdown value={visibility} onChange={changeVisibility} />
         </div>
 
         <textarea
@@ -158,6 +161,11 @@ export default function CreatePost() {
           className="hidden"
           onChange={handleFiles}
         />
+        {needsPpvPrice && (
+          <p className="mt-[12px] text-[13px] text-amber-400">
+            Set a PPV price above before posting — otherwise the post would go live as public.
+          </p>
+        )}
         {error && <p className="mt-[12px] text-[14px] text-red-400">{error}</p>}
         {submitting && images.length > 0 && <UploadProgressBar progress={uploadProgress} />}
         <div className="mt-[16px] flex justify-start">

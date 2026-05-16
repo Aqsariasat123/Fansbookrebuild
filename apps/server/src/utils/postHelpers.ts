@@ -37,12 +37,27 @@ export function parsePpvPrice(ppvPrice?: string): number | null {
   return parsed;
 }
 
+/** Append explicit hashtags (entered via the HashtagPanel) to the post text so
+ *  they're persisted and rendered by the existing #tag link logic. */
+function withHashtags(text: string, hashtagsCsv?: string): string {
+  if (!hashtagsCsv) return text;
+  const tags = hashtagsCsv
+    .split(',')
+    .map((t) => t.trim().replace(/^#+/, ''))
+    .filter(Boolean);
+  if (tags.length === 0) return text;
+  const tagStr = tags.map((t) => `#${t}`).join(' ');
+  const base = text.trim();
+  return base ? `${base}\n\n${tagStr}` : tagStr;
+}
+
 export function buildPostCreateData(userId: string, body: Record<string, string>) {
   const resolvedVis = resolveVisibility(body.visibility);
   const parsedPpv = parsePpvPrice(body.ppvPrice);
+  const text = withHashtags(body.text?.trim() || '', body.hashtags);
   return {
     authorId: userId,
-    text: body.text?.trim() || '',
+    text,
     visibility: resolvedVis,
     ...(parsedPpv ? { ppvPrice: parsedPpv } : {}),
     ...(body.isPinned === 'true' ? { isPinned: true } : {}),
