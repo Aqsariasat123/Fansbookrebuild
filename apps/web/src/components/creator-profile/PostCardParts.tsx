@@ -163,7 +163,7 @@ export function VideoCard({
           <span className="text-[14px] text-foreground md:text-[16px]">Play</span>
         </div>
       </div>
-      {username && <ImageWatermark username={username} />}
+      {username && <ImageWatermark />}
     </div>
   );
 }

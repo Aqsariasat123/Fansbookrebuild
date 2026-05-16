@@ -5,13 +5,19 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-// Appends the viewer's JWT as ?token= so the backend can embed their userId via LSB.
-// Only applied to post file URLs (images served from /api/posts/file/*).
+// Previously: appended the viewer's JWT as ?token= so the server would
+// generate a per-viewer LSB-watermarked copy on every request. That made
+// the first lightbox open of any image slow (2-5s on a low-end CPU) and
+// LSB does not survive screenshots anyway.
+//
+// New approach (per cards #4 + #23 — client direction): the server caches
+// and returns the original image instantly, and forensic attribution is
+// carried by a visible viewer-id overlay rendered client-side
+// (ImageWatermark) which survives screenshots. So this helper is now a
+// no-op, kept as the single call-site if we ever want a per-request URL
+// transform back.
 export function withWatermark(url: string): string {
-  if (!url.includes('/api/posts/file/')) return url;
-  const token = localStorage.getItem('accessToken');
-  if (!token) return url;
-  return `${url}?token=${encodeURIComponent(token)}`;
+  return url;
 }
 
 api.interceptors.request.use((config) => {

@@ -45,7 +45,7 @@ function VideoMediaPlayer({
           <span className="text-[9px] font-normal text-foreground md:text-[20px]">Play</span>
         </button>
       </div>
-      {username && <ImageWatermark username={username} />}
+      {username && <ImageWatermark />}
     </div>
   );
 }

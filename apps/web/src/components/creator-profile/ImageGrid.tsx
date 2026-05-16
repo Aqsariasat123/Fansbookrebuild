@@ -6,10 +6,10 @@ const noCtx = (e: React.MouseEvent) => e.preventDefault();
 interface ImageGridProps {
   media: PostMedia[];
   onImageClick: (index: number) => void;
-  username: string;
+  username?: string;
 }
 
-export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
+export function ImageGrid({ media, onImageClick, username: _username }: ImageGridProps) {
   const images = media.filter((m) => m.type === 'IMAGE');
   if (images.length === 0) return null;
   const extra = images.length > 4 ? images.length - 3 : 0;
@@ -28,7 +28,7 @@ export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
           draggable={false}
           onContextMenu={noCtx}
         />
-        <ImageWatermark username={username} />
+        <ImageWatermark />
       </div>
     );
   }
@@ -47,7 +47,7 @@ export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
           draggable={false}
           onContextMenu={noCtx}
         />
-        <ImageWatermark username={username} />
+        <ImageWatermark />
       </div>
       {shown.slice(1).map((img, i) => (
         <div

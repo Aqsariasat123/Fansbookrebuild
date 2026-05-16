@@ -127,7 +127,7 @@ export function MediaViewer({ media, initialIndex, onClose, username }: MediaVie
               </div>
             )}
             <VideoWatermarkCanvas />
-            {username && <ImageWatermark username={username} />}
+            {username && <ImageWatermark />}
           </div>
         </div>
       ) : (
