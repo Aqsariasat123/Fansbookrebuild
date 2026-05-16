@@ -11,17 +11,22 @@ interface ProfileSharePopupProps {
 export function ProfileSharePopup({ username, pos, onClose }: ProfileSharePopupProps) {
   const isSharingRef = useRef(false);
   const openedAtRef = useRef(Date.now());
+  const pointerMovedRef = useRef(false);
   const navigate = useNavigate();
 
-  // Dismiss guard. The popup used to "blink and disappear" on some machines
-  // because two things could close it the instant it opened: a stray event
-  // from the very click that opened it, and the OS share sheet stealing focus.
-  // requestClose ignores any close within 250ms of opening, and while a
-  // native share is in progress — and it is the single dismiss path (the old
-  // duplicate document-level mousedown listener has been removed).
+  // Dismiss guard. On some PCs (one client tester's machine in particular) the
+  // popup opened and then disappeared within ~700ms even with the earlier
+  // 250ms guard — strongly suggests the hardware/driver was firing a phantom
+  // mouse-up or extra click shortly after the opener click. We now require BOTH:
+  //   (1) at least 500ms since the popup opened, AND
+  //   (2) the user has actually moved the pointer at least once since open.
+  // Phantom clicks fire without movement, so they fail check (2). A real user
+  // dismiss (move mouse to backdrop, click) passes both. Escape and the
+  // explicit Cancel paths bypass this — they were never the issue.
   const requestClose = useCallback(() => {
     if (isSharingRef.current) return;
-    if (Date.now() - openedAtRef.current < 250) return;
+    if (Date.now() - openedAtRef.current < 500) return;
+    if (!pointerMovedRef.current) return;
     onClose();
   }, [onClose]);
 
@@ -29,8 +34,15 @@ export function ProfileSharePopup({ username, pos, onClose }: ProfileSharePopupP
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
+    const onMove = () => {
+      pointerMovedRef.current = true;
+    };
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    window.addEventListener('pointermove', onMove, { once: true });
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('pointermove', onMove);
+    };
   }, [onClose]);
 
   const profileUrl = `${window.location.origin}/u/${username}`;
