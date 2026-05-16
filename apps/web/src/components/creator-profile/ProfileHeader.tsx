@@ -2,6 +2,7 @@ import { useRef, useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProfileSharePopup } from './ProfileSharePopup';
 import { CoverIcon, StatsRow, ProfileAboutColumn, AvatarEditor } from './ProfileHeaderParts';
+import { ChangeCoverButton } from './ChangeCoverButton';
 import { CoverCropModal } from '../profile/CoverCropModal';
 import { AvatarCropModal } from '../profile/AvatarCropModal';
 import { useCropSrc } from '../../hooks/useCropSrc';
@@ -24,8 +25,6 @@ interface ProfileHeaderProps {
   onCoverUpload: (file: File) => void;
 }
 
-const CAMERA_D =
-  'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z';
 const EDIT_D =
   'M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z';
 
@@ -82,9 +81,7 @@ export function ProfileHeader({
           </div>
         )}
         <div className="absolute right-[12px] top-[12px] z-20 flex gap-[8px]">
-          <CoverIcon title="Change cover photo" onClick={() => coverRef.current?.click()}>
-            <path d={CAMERA_D} />
-          </CoverIcon>
+          <ChangeCoverButton onClick={() => coverRef.current?.click()} />
           <CoverIcon title="Edit profile" onClick={() => navigate('/creator/profile/edit')}>
             <path d={EDIT_D} />
           </CoverIcon>
