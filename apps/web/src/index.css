@@ -210,3 +210,19 @@ body {
     transform: scaleY(1.1);
   }
 }
+/* Slow drifting twinkle, infinite — used on locked PPV images so they
+   constantly attract the eye. Each sparkle randomises its own delay. */
+@keyframes ambientTwinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4) translateY(0);
+  }
+  40% {
+    opacity: 0.55;
+  }
+  60% {
+    opacity: 0.7;
+    transform: scale(1) translateY(-6px);
+  }
+}

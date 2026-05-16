@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { api, withWatermark } from '../../lib/api';
 import { LockIcon } from './PostLockedVisuals';
 import { SparkleOverlay } from '../shared/SparkleOverlay';
+import { AmbientSparkles } from '../shared/AmbientSparkles';
 
 interface MediaItem {
   id: string;
@@ -145,7 +146,10 @@ export function PostLockedImage({
         <img src={image.url} alt="" className="h-full w-full object-cover blur-xl" />
         {unlocking && <SparkleOverlay />}
         {!unlocking && (
-          <LockedOverlay ppvPrice={ppvPrice} onUnlockClick={() => setConfirming(true)} />
+          <>
+            <AmbientSparkles />
+            <LockedOverlay ppvPrice={ppvPrice} onUnlockClick={() => setConfirming(true)} />
+          </>
         )}
       </div>
       {confirming && ppvPrice && (
