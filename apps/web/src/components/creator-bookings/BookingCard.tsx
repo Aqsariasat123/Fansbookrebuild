@@ -56,7 +56,7 @@ export function BookingCard({ booking, onAction, updating }: BookingCardProps) {
           )}
           <div>
             <p className="text-[15px] font-medium text-foreground">{fan.displayName}</p>
-            <p className="text-[12px] text-muted-foreground">@{fan.username}</p>
+            <p className="text-[12px] text-foreground/75">@{fan.username}</p>
           </div>
         </div>
 

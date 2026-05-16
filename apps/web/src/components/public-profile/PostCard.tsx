@@ -113,7 +113,7 @@ function AuthorHeader({
               <img src="/icons/dashboard/verified.svg" alt="Verified" className="size-[14px]" />
             )}
           </div>
-          <p className="text-[12px] text-muted-foreground">@{author.username}</p>
+          <p className="text-[12px] text-foreground/75">@{author.username}</p>
         </div>
       </div>
       <div className="flex items-center gap-[10px]">

@@ -66,7 +66,7 @@ export function NavbarUserMenu() {
       <button onClick={() => setOpen((p) => !p)} className="flex items-center gap-[6px]">
         <div className="hidden text-right lg:block">
           <p className="text-[16px] leading-tight text-foreground">{getDisplayName(user)}</p>
-          <p className="text-[12px] leading-tight text-muted-foreground">
+          <p className="text-[12px] leading-tight text-foreground/75">
             @{user?.username || 'user'}
           </p>
         </div>
@@ -85,7 +85,7 @@ export function NavbarUserMenu() {
           {/* Header */}
           <div className="border-b border-border px-[16px] py-[12px]">
             <p className="text-[14px] font-semibold text-foreground">{getDisplayName(user)}</p>
-            <p className="text-[12px] text-muted-foreground">@{user?.username || 'user'}</p>
+            <p className="text-[12px] text-foreground/75">@{user?.username || 'user'}</p>
           </div>
 
           {/* Menu items */}

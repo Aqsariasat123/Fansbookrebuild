@@ -156,7 +156,7 @@ function UserRow({
               <img src="/icons/dashboard/verified.svg" alt="" className="size-[14px]" />
             )}
           </div>
-          <p className="text-[10px] leading-[normal] text-muted-foreground md:text-[12px]">
+          <p className="text-[10px] leading-[normal] text-foreground/75 md:text-[12px]">
             @{user.username}
           </p>
         </div>

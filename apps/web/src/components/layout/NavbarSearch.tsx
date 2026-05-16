@@ -85,7 +85,7 @@ export function NavbarSearch() {
                 </div>
                 <div>
                   <p className="text-[14px] text-foreground leading-tight">{r.displayName}</p>
-                  <p className="text-[12px] text-muted-foreground leading-tight">@{r.username}</p>
+                  <p className="text-[12px] text-foreground/75 leading-tight">@{r.username}</p>
                 </div>
               </Link>
             ))

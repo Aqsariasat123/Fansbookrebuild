@@ -42,7 +42,7 @@ export function SuggestedCarousel({ creators, onSeeAll }: Props) {
             <p className="w-full truncate text-center text-[13px] font-medium text-foreground">
               {c.displayName}
             </p>
-            <p className="text-[11px] text-muted-foreground">@{c.username}</p>
+            <p className="text-[11px] text-foreground/75">@{c.username}</p>
           </Link>
         ))}
       </div>

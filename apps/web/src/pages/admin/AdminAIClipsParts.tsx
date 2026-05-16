@@ -92,7 +92,7 @@ export function CreatorTable({
         >
           <div>
             <p className="text-[13px] font-medium text-foreground">{r.user?.displayName}</p>
-            <p className="text-[11px] text-muted-foreground">@{r.user?.username}</p>
+            <p className="text-[11px] text-foreground/75">@{r.user?.username}</p>
           </div>
           <p className="text-[14px] font-bold text-[#01adf1]">{r.jobCount} sessions</p>
         </div>

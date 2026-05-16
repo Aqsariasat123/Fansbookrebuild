@@ -75,7 +75,7 @@ export function ProfileSidebar({
               <img src="/icons/dashboard/verified.svg" alt="" className="size-[16px]" />
             )}
           </div>
-          <p className="text-[13px] text-muted-foreground">@{profile.username}</p>
+          <p className="text-[13px] text-foreground/75">@{profile.username}</p>
 
           {showActions && (
             <ProfileActionButtons

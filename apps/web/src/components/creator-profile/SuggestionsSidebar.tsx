@@ -74,7 +74,7 @@ export function SuggestionsSidebar({ creatorUsername }: SuggestionsSidebarProps)
                       <img src="/icons/dashboard/verified.svg" alt="" className="size-[10px]" />
                     )}
                   </div>
-                  <p className="text-[10px] text-muted-foreground">@{creator.username}</p>
+                  <p className="text-[10px] text-foreground/75">@{creator.username}</p>
                 </div>
               </div>
             </Link>

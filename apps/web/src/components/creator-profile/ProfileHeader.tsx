@@ -141,7 +141,7 @@ export function ProfileHeader({
                 <img src="/icons/dashboard/verified.svg" alt="Verified" className="size-[18px]" />
               )}
             </div>
-            <p className="text-[14px] text-muted-foreground">@{username}</p>
+            <p className="text-[14px] text-foreground/75">@{username}</p>
             <StatsRow
               followingCount={followingCount}
               followersCount={followersCount}

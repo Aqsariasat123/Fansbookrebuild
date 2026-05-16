@@ -79,7 +79,7 @@ export default function StepSuggested({ interests }: { interests: string[] }) {
               <p className="text-[13px] font-medium text-foreground truncate max-w-full">
                 {c.displayName}
               </p>
-              <p className="text-[11px] text-muted-foreground">@{c.username}</p>
+              <p className="text-[11px] text-foreground/75">@{c.username}</p>
               <button
                 onClick={() => toggleFollow(c.id)}
                 className={`w-full rounded-[50px] py-[6px] text-[12px] font-medium transition-colors ${

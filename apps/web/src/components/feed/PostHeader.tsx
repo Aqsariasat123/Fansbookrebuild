@@ -69,9 +69,7 @@ export function PostHeader({
                 />
               )}
             </div>
-            <p className="text-[12px] text-muted-foreground md:text-[12px]">
-              @{post.author.username}
-            </p>
+            <p className="text-[12px] text-foreground/75 md:text-[12px]">@{post.author.username}</p>
           </div>
         </Link>
         <p className="whitespace-pre-wrap text-[13px] font-normal leading-normal text-foreground md:text-[16px]">

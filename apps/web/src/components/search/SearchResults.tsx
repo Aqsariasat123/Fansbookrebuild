@@ -85,7 +85,7 @@ export function CreatorResults({ items }: { items: Creator[] }) {
                 <img src="/icons/dashboard/verified.svg" alt="" className="size-[14px]" />
               )}
             </div>
-            <p className="text-[12px] text-muted-foreground">@{c.username}</p>
+            <p className="text-[12px] text-foreground/75">@{c.username}</p>
           </div>
           <span className="text-[12px] text-muted-foreground">
             {c._count?.followers || 0} followers

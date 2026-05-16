@@ -38,7 +38,7 @@ export function SinglePostHeader({ author, createdAt }: Props) {
               <img src="/icons/dashboard/verified.svg" alt="" className="size-[16px]" />
             )}
           </div>
-          <p className="text-[12px] text-muted-foreground">@{author.username}</p>
+          <p className="text-[12px] text-foreground/75">@{author.username}</p>
         </div>
       </Link>
       <span className="text-[14px] text-muted-foreground">{timeAgo}</span>

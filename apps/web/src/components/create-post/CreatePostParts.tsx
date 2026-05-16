@@ -96,7 +96,7 @@ export function AuthorRow({
             </svg>
           )}
         </div>
-        <p className="text-[12px] text-muted-foreground">@{user?.username || 'username'}</p>
+        <p className="text-[12px] text-foreground/75">@{user?.username || 'username'}</p>
       </div>
     </div>
   );

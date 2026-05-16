@@ -150,7 +150,7 @@ export default function Leaderboard() {
                               />
                             )}
                           </div>
-                          <p className="text-[11px] text-muted-foreground">@{e.username}</p>
+                          <p className="text-[11px] text-foreground/75">@{e.username}</p>
                         </div>
                       </Link>
                     </td>
@@ -189,7 +189,7 @@ export default function Leaderboard() {
                 </div>
                 <div className="flex-1">
                   <p className="text-[14px] font-medium text-foreground">{e.displayName}</p>
-                  <p className="text-[11px] text-muted-foreground">@{e.username}</p>
+                  <p className="text-[11px] text-foreground/75">@{e.username}</p>
                 </div>
                 {type !== 'earnings' && (
                   <div className="flex flex-col items-end leading-tight">

@@ -100,7 +100,7 @@ export function PublicProfileHeader({
                 <img src="/icons/dashboard/verified.svg" alt="Verified" className="size-[18px]" />
               )}
             </div>
-            <p className="text-[16px] text-muted-foreground">@{profile.username}</p>
+            <p className="text-[16px] text-foreground/75">@{profile.username}</p>
           </div>
 
           {/* Stats */}

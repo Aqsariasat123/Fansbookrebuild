@@ -92,7 +92,7 @@ export default function Following() {
                     <img src="/icons/dashboard/verified.svg" alt="" className="size-[14px]" />
                   )}
                 </div>
-                <p className="text-[12px] text-muted-foreground">@{u.username}</p>
+                <p className="text-[12px] text-foreground/75">@{u.username}</p>
               </div>
               <button
                 onClick={() => handleUnfollow(u.id)}

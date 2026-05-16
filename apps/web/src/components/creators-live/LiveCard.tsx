@@ -50,7 +50,7 @@ export function LiveCard({ session }: { session: LiveCreatorCard }) {
           </div>
           <div className="font-outfit leading-none text-foreground">
             <p className="text-[16px] font-semibold">{session.displayName}</p>
-            <p className="mt-[3px] text-[13px] text-muted-foreground">@{session.username}</p>
+            <p className="mt-[3px] text-[13px] text-foreground/75">@{session.username}</p>
           </div>
         </div>
 

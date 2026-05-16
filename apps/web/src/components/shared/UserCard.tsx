@@ -39,7 +39,7 @@ export default function UserCard({ user, showFollow = true, isFollowing, onFollo
             <img src="/icons/dashboard/verified.svg" alt="" className="h-[14px] w-[14px]" />
           )}
         </Link>
-        <p className="text-[12px] text-muted-foreground">@{user.username}</p>
+        <p className="text-[12px] text-foreground/75">@{user.username}</p>
         {user.bio && (
           <p className="mt-[2px] truncate text-[12px] text-muted-foreground">{user.bio}</p>
         )}

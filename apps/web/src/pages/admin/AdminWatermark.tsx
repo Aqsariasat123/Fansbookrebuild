@@ -53,7 +53,7 @@ function ResultCard({ result }: { result: InvestigationResult }) {
           )}
           <div>
             <p className="text-[15px] font-semibold text-foreground">{result.user.displayName}</p>
-            <p className="text-[13px] text-muted-foreground">@{result.user.username}</p>
+            <p className="text-[13px] text-foreground/75">@{result.user.username}</p>
             <p className="text-[12px] text-muted-foreground">{result.user.email}</p>
           </div>
           <div className="ml-auto rounded-[6px] bg-green-500/20 px-[10px] py-[4px] text-[12px] font-medium text-green-400">
