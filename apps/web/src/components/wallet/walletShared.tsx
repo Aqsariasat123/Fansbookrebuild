@@ -5,6 +5,11 @@ export interface Recipient {
   avatar: string | null;
 }
 
+export interface LinkedPost {
+  id: string;
+  text: string | null;
+}
+
 export interface Transaction {
   id: string;
   type: string;
@@ -14,6 +19,9 @@ export interface Transaction {
   status: string;
   createdAt: string;
   recipient?: Recipient | null;
+  /** Set when the transaction's referenceId resolves to a Post (e.g. PPV
+   *  unlocks). Mutually exclusive with `recipient`. */
+  post?: LinkedPost | null;
 }
 
 export interface TableProps {

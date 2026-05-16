@@ -59,6 +59,8 @@ router.post('/:id/ppv-unlock', authenticate, async (req, res, next) => {
           type: 'PPV_PURCHASE',
           amount: price,
           description: `PPV unlock: post ${postId}`,
+          // store the post ID so the wallet enrich step can render a link
+          referenceId: postId,
           status: 'COMPLETED',
         },
       }),

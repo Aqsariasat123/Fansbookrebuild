@@ -77,10 +77,17 @@ export function SpendingTable({ items, page, total, limit, onPage }: TableProps)
           {items.length === 0 ? (
             <p className="py-[40px] text-center text-muted-foreground">No spending history</p>
           ) : (
+            // eslint-disable-next-line complexity -- spending row renderer with several optional cells
             items.map((t, i) => {
               const parts = t.description?.split('|') || [];
               const fallbackModel = parts[0] || t.description || '-';
               const recipient = t.recipient ?? null;
+              const post = t.post ?? null;
+              // Trim the post text down to a short, readable title — the
+              // raw text can be a long paragraph with hashtags.
+              const postTitle = post
+                ? (post.text || '').trim().split(/\n+/)[0].slice(0, 60) || 'View post'
+                : null;
               return (
                 <div
                   key={t.id}
@@ -99,6 +106,10 @@ export function SpendingTable({ items, page, total, limit, onPage }: TableProps)
                         className="text-[#01adf1] hover:underline"
                       >
                         {recipient.displayName || `@${recipient.username}`}
+                      </Link>
+                    ) : post && postTitle ? (
+                      <Link to={`/post/${post.id}`} className="text-[#01adf1] hover:underline">
+                        {postTitle}
                       </Link>
                     ) : (
                       fallbackModel
