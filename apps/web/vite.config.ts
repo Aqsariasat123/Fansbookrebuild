@@ -8,18 +8,19 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/dashboard/fansbook-logo.png'],
+      includeAssets: ['favicon.ico', 'favicon-192.png', 'favicon-512.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Fansbook',
-        short_name: 'Fansbook',
+        name: 'Inscrio',
+        short_name: 'Inscrio',
         description: 'Creator-fan social platform',
         theme_color: '#0e1012',
         background_color: '#15191c',
         display: 'standalone',
         start_url: '/',
         icons: [
-          { src: '/icons/dashboard/fansbook-logo.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/dashboard/fansbook-logo.png', sizes: '512x512', type: 'image/png' },
+          { src: '/favicon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/favicon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
         ],
       },
       workbox: {

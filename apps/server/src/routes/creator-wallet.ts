@@ -45,6 +45,23 @@ router.get('/balance', async (req, res, next) => {
   }
 });
 
+function parseWithdrawalDateRange(startDate?: string, endDate?: string) {
+  if (!startDate && !endDate) return undefined;
+  const range: { gte?: Date; lte?: Date } = {};
+  if (startDate) {
+    const start = new Date(startDate);
+    if (!isNaN(start.getTime())) range.gte = start;
+  }
+  if (endDate) {
+    const end = new Date(endDate);
+    if (!isNaN(end.getTime())) {
+      end.setHours(23, 59, 59, 999);
+      range.lte = end;
+    }
+  }
+  return range;
+}
+
 // ─── GET /api/creator/wallet/withdrawals ── withdrawal history
 router.get('/withdrawals', async (req, res, next) => {
   try {
@@ -53,7 +70,16 @@ router.get('/withdrawals', async (req, res, next) => {
     const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20));
     const skip = (page - 1) * limit;
 
-    const where = { creatorId: userId };
+    // Optional date-range filter for the search-by-date feature on the
+    // creator's Withdrawal History tab.
+    const dateRange = parseWithdrawalDateRange(
+      req.query.startDate as string | undefined,
+      req.query.endDate as string | undefined,
+    );
+    const where: { creatorId: string; createdAt?: { gte?: Date; lte?: Date } } = {
+      creatorId: userId,
+    };
+    if (dateRange) where.createdAt = dateRange;
 
     const [items, total] = await Promise.all([
       prisma.withdrawal.findMany({

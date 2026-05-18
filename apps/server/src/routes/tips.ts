@@ -35,17 +35,26 @@ async function getWallets(userId: string, receiverId: string, tipAmount: number)
   return { fanWallet, creatorWallet };
 }
 
-async function notifyTipSent(userId: string, receiverId: string, tipAmount: number) {
+async function notifyTipSent(
+  userId: string,
+  receiverId: string,
+  tipAmount: number,
+  note?: string | null,
+) {
   const actor = await prisma.user.findUnique({
     where: { id: userId },
     select: { displayName: true, avatar: true },
   });
+  const trimmed = typeof note === 'string' ? note.trim() : '';
+  // Append the fan's note (clipped to keep the toast readable) so the creator
+  // sees it without needing to dig into the wallet.
+  const noteSuffix = trimmed ? ` — "${trimmed.slice(0, 120)}"` : '';
   createNotification({
     userId: receiverId,
     type: 'TIP',
     actorId: userId,
     entityType: `TIP|avatar:${actor?.avatar || ''}`,
-    message: `${actor?.displayName || 'Someone'} sent you a $${tipAmount} tip!`,
+    message: `${actor?.displayName || 'Someone'} sent you a $${tipAmount} tip!${noteSuffix}`,
   });
 }
 
@@ -77,7 +86,9 @@ router.post('/', authenticate, async (req: Request, res, next) => {
           walletId: fanWallet.id,
           type: 'TIP_SENT',
           amount: tipAmount,
-          description: message || 'Direct tip',
+          // Store the fan's optional note verbatim (null when blank) so we can
+          // surface the actual text on the creator's earnings — no placeholder.
+          description: typeof message === 'string' && message.trim() ? message.trim() : null,
           referenceId: receiverId,
           status: 'COMPLETED',
         },
@@ -87,14 +98,14 @@ router.post('/', authenticate, async (req: Request, res, next) => {
           walletId: creatorWallet.id,
           type: 'TIP_RECEIVED',
           amount: tipAmount,
-          description: message || 'Direct tip received',
+          description: typeof message === 'string' && message.trim() ? message.trim() : null,
           referenceId: userId,
           status: 'COMPLETED',
         },
       }),
     ]);
 
-    notifyTipSent(userId, receiverId, tipAmount);
+    notifyTipSent(userId, receiverId, tipAmount, message);
     logActivity(userId, 'TIP', 'User', receiverId, { amount: tipAmount }, req);
     res.json({ success: true, message: 'Tip sent!' });
   } catch (err) {

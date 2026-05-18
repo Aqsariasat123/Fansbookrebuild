@@ -32,32 +32,50 @@ function UserCell({ fromUser }: { fromUser: EarningItem['fromUser'] }) {
   );
 }
 
+/** Tip messages from fans live in transaction.description. Older rows used
+ *  a placeholder phrase — strip those so only real notes render. */
+function cleanNote(desc: string | null): string | null {
+  if (!desc) return null;
+  const t = desc.trim();
+  if (!t || t === 'Direct tip' || t === 'Direct tip received') return null;
+  return t;
+}
+
 export function EarningsMobileCards({ items }: { items: EarningItem[] }) {
   return (
     <>
-      {items.map((item) => (
-        <div key={item.id} className="rounded-[16px] bg-card p-[16px]">
-          {[
-            { label: 'Date', value: formatDate(item.createdAt) },
-            { label: 'Time', value: formatTime(item.createdAt) },
-            { label: 'Source', value: item.source },
-            { label: 'Amount', value: `$${item.amount.toFixed(2)}` },
-            { label: 'Status', value: item.status },
-          ].map((r, i, arr) => (
-            <div
-              key={r.label}
-              className={`flex items-center justify-between py-[8px] ${i < arr.length - 1 ? 'border-b border-border' : ''}`}
-            >
-              <span className="text-[12px] text-muted-foreground">{r.label}</span>
-              <span className="text-[13px] text-foreground">{r.value}</span>
+      {items.map((item) => {
+        const note = cleanNote(item.description);
+        return (
+          <div key={item.id} className="rounded-[16px] bg-card p-[16px]">
+            {[
+              { label: 'Date', value: formatDate(item.createdAt) },
+              { label: 'Time', value: formatTime(item.createdAt) },
+              { label: 'Source', value: item.source },
+              { label: 'Amount', value: `$${item.amount.toFixed(2)}` },
+              { label: 'Status', value: item.status },
+            ].map((r, i, arr) => (
+              <div
+                key={r.label}
+                className={`flex items-center justify-between py-[8px] ${i < arr.length - 1 ? 'border-b border-border' : ''}`}
+              >
+                <span className="text-[12px] text-muted-foreground">{r.label}</span>
+                <span className="text-[13px] text-foreground">{r.value}</span>
+              </div>
+            ))}
+            <div className="flex items-center justify-between py-[8px] border-t border-border">
+              <span className="text-[12px] text-muted-foreground">From</span>
+              <UserCell fromUser={item.fromUser} />
             </div>
-          ))}
-          <div className="flex items-center justify-between py-[8px] border-t border-border">
-            <span className="text-[12px] text-muted-foreground">From</span>
-            <UserCell fromUser={item.fromUser} />
+            {note && (
+              <div className="border-t border-border py-[8px]">
+                <span className="text-[12px] text-muted-foreground">Note</span>
+                <p className="mt-[2px] text-[13px] italic text-foreground">&ldquo;{note}&rdquo;</p>
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </>
   );
 }
@@ -105,7 +123,14 @@ export function EarningsTable({ items, loading }: { items: EarningItem[]; loadin
               <td className="px-[16px] py-[14px] text-[14px]">
                 <UserCell fromUser={item.fromUser} />
               </td>
-              <td className="px-[16px] py-[14px] text-[14px] text-foreground">{item.source}</td>
+              <td className="px-[16px] py-[14px] text-[14px] text-foreground">
+                {item.source}
+                {cleanNote(item.description) && (
+                  <p className="mt-[2px] text-[12px] italic text-muted-foreground">
+                    &ldquo;{cleanNote(item.description)}&rdquo;
+                  </p>
+                )}
+              </td>
               <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                 ${item.amount.toFixed(2)}
               </td>

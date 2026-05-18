@@ -104,13 +104,13 @@ export default function Wallet() {
         <div className="flex gap-[20px] md:gap-[40px]">
           <button
             onClick={() => setTab('purchases')}
-            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[20px] ${tab === 'purchases' ? 'border-b border-[#01adf1] text-primary' : 'text-muted-foreground/84'}`}
+            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[16px] ${tab === 'purchases' ? 'border-b border-[#01adf1] text-primary' : 'text-muted-foreground/84'}`}
           >
             Coins Purchase History
           </button>
           <button
             onClick={() => setTab('spending')}
-            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[20px] ${tab === 'spending' ? 'border-b border-[#01adf1] text-primary' : 'text-muted-foreground/84'}`}
+            className={`px-[4px] py-[8px] text-[14px] transition-colors md:px-[10px] md:py-[11px] md:text-[16px] ${tab === 'spending' ? 'border-b border-[#01adf1] text-primary' : 'text-muted-foreground/84'}`}
           >
             Coin Spending History
           </button>

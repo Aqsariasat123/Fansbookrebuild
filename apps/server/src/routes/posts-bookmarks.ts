@@ -53,6 +53,9 @@ router.get('/:id', authenticate, async (req, res, next) => {
         comments: { orderBy: { createdAt: 'asc' }, include: { author: { select: AUTHOR_SELECT } } },
         likes: { where: { userId }, select: { id: true }, take: 1 },
         bookmarks: { where: { userId }, select: { id: true }, take: 1 },
+        // Mirror the feed route: surface whether the viewer has already
+        // unlocked this PPV post so the detail page does not re-lock it.
+        ppvPurchases: { where: { userId }, select: { id: true }, take: 1 },
       },
     });
     if (!post) throw new AppError(404, 'Post not found');
@@ -73,6 +76,9 @@ router.get('/:id', authenticate, async (req, res, next) => {
         comments: post.comments,
         isLiked: post.likes.length > 0,
         isBookmarked: post.bookmarks.length > 0,
+        // Author always sees their own post unlocked; everyone else inherits
+        // the purchase check above.
+        isPpvUnlocked: post.authorId === userId || post.ppvPurchases.length > 0,
       },
     });
   } catch (err) {

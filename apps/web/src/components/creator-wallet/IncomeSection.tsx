@@ -1,0 +1,189 @@
+import { useEffect, useState } from 'react';
+import { api } from '../../lib/api';
+import { EarningsMobileCards, EarningsTable } from '../../pages/CreatorEarningsParts';
+import type { EarningItem } from '../../pages/CreatorEarningsParts';
+
+const CATEGORIES = ['All', 'Tips', 'Subscriptions', 'PPV / Post Purchase'];
+
+interface FiltersState {
+  search: string;
+  category: string;
+  startDate: string;
+  endDate: string;
+  page: number;
+}
+
+function useEarnings(f: FiltersState, limit: number) {
+  const [items, setItems] = useState<EarningItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const params: Record<string, string | number> = { page: f.page, limit };
+    if (f.category !== 'All') params.category = f.category;
+    if (f.search) params.search = f.search;
+    if (f.startDate) params.startDate = f.startDate;
+    if (f.endDate) params.endDate = f.endDate;
+    api
+      .get('/creator/earnings', { params })
+      .then(({ data: r }) => {
+        if (r.success) {
+          setItems(r.data.items ?? []);
+          setTotal(r.data.total ?? 0);
+        }
+      })
+      .catch(() => {
+        setItems([]);
+        setTotal(0);
+      })
+      .finally(() => setLoading(false));
+  }, [f.page, f.category, f.search, f.startDate, f.endDate, limit]);
+
+  return { items, total, loading };
+}
+
+/**
+ * "My Earnings" body — extracted from the standalone CreatorEarnings page so it
+ * can also live inside the creator's Wallet → Income tab. Renders the filter
+ * bar, the table/mobile-cards, and pagination. No page title.
+ */
+export default function IncomeSection() {
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('All');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [page, setPage] = useState(1);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const limit = 20;
+
+  const { items, total, loading } = useEarnings(
+    { search, category, startDate, endDate, page },
+    limit,
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, category, startDate, endDate]);
+
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+
+  return (
+    <div className="flex flex-col gap-[20px]">
+      <div className="flex flex-col gap-[12px] rounded-[16px] bg-card p-[20px]">
+        <div className="flex items-center gap-[10px] rounded-[52px] bg-muted px-[16px] py-[10px]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+          </svg>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search"
+            className="flex-1 bg-transparent text-[14px] text-foreground placeholder-muted-foreground outline-none"
+          />
+        </div>
+        <div className="flex flex-col gap-[12px] md:flex-row md:flex-wrap md:items-center">
+          <div className="relative">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex w-full items-center justify-between gap-[8px] rounded-[8px] border border-border px-[14px] py-[8px] text-[14px] text-foreground md:w-auto"
+            >
+              {category}{' '}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 10l5 5 5-5z" />
+              </svg>
+            </button>
+            {dropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
+                <div className="absolute left-0 right-0 top-[40px] z-20 rounded-[8px] bg-card py-[4px] shadow-lg md:right-auto md:min-w-[180px]">
+                  {CATEGORIES.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => {
+                        setCategory(c);
+                        setDropdownOpen(false);
+                      }}
+                      className="flex w-full px-[14px] py-[8px] text-[14px] text-foreground hover:bg-muted"
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-[8px] md:flex md:items-center md:gap-[12px]">
+            <div className="flex items-center gap-[6px]">
+              <span className="text-[13px] text-muted-foreground md:text-[14px]">From:</span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full rounded-[6px] border border-border bg-transparent px-[8px] py-[6px] text-[12px] text-foreground outline-none md:w-auto md:px-[10px] md:text-[13px]"
+              />
+            </div>
+            <div className="flex items-center gap-[6px]">
+              <span className="text-[13px] text-muted-foreground md:text-[14px]">To:</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full rounded-[6px] border border-border bg-transparent px-[8px] py-[6px] text-[12px] text-foreground outline-none md:w-auto md:px-[10px] md:text-[13px]"
+              />
+            </div>
+          </div>
+          {(startDate || endDate) && (
+            <button
+              onClick={() => {
+                setStartDate('');
+                setEndDate('');
+              }}
+              className="rounded-[50px] bg-[#01adf1] px-[14px] py-[6px] text-[13px] text-white"
+            >
+              Clear Dates
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-[12px] md:hidden">
+        {loading ? (
+          <div className="flex justify-center py-[40px]">
+            <div className="size-8 animate-spin rounded-full border-4 border-[#01adf1] border-t-transparent" />
+          </div>
+        ) : items.length === 0 ? (
+          <p className="py-[40px] text-center text-[14px] text-muted-foreground">No earnings yet</p>
+        ) : (
+          <EarningsMobileCards items={items} />
+        )}
+      </div>
+
+      <div className="hidden overflow-x-auto rounded-[16px] md:block">
+        <EarningsTable items={items} loading={loading} />
+      </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-[6px]">
+          {Array.from({ length: Math.min(totalPages, 6) }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`flex size-[32px] items-center justify-center rounded-[4px] text-[13px] ${page === i + 1 ? 'bg-[#01adf1] text-white' : 'bg-card text-muted-foreground hover:text-foreground'}`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          {totalPages > 6 && <span className="text-[13px] text-muted-foreground">...</span>}
+          <button
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            className="rounded-[4px] bg-card px-[12px] py-[6px] text-[13px] text-muted-foreground hover:text-foreground disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
