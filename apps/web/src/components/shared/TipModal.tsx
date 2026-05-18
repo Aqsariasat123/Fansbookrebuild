@@ -19,7 +19,7 @@ export function TipModal({ receiverId, receiverName, onClose }: Props) {
   const handleSend = async () => {
     const tipAmount = Number(amount);
     if (!tipAmount || tipAmount < 1) {
-      setError('Minimum tip is $1');
+      setError('Minimum tip is 1 coin');
       return;
     }
     setLoading(true);
@@ -46,7 +46,7 @@ export function TipModal({ receiverId, receiverName, onClose }: Props) {
             <div className="text-[48px]">&#10004;</div>
             <p className="mt-[8px] text-[18px] font-medium text-foreground">Tip Sent!</p>
             <p className="mt-[4px] text-[14px] text-muted-foreground">
-              You sent ${amount} to {receiverName}
+              You sent {amount} coins to {receiverName}
             </p>
             <button
               onClick={onClose}
@@ -75,15 +75,15 @@ export function TipModal({ receiverId, receiverName, onClose }: Props) {
                       : 'border-border text-foreground hover:border-foreground'
                   }`}
                 >
-                  ${a}
+                  {a} coins
                 </button>
               ))}
             </div>
 
             <div className="mt-[16px]">
-              <label className="text-[14px] text-muted-foreground">Custom Amount</label>
+              <label className="text-[14px] text-muted-foreground">Custom Amount (coins)</label>
               <div className="mt-[4px] flex items-center rounded-[8px] border border-border px-[12px]">
-                <span className="text-[16px] text-muted-foreground">$</span>
+                <span className="text-[14px] text-muted-foreground">coins</span>
                 <input
                   type="number"
                   min="1"
@@ -115,7 +115,7 @@ export function TipModal({ receiverId, receiverName, onClose }: Props) {
               disabled={loading || !amount}
               className="mt-[20px] w-full rounded-[11px] bg-gradient-to-r from-[#01adf1] to-[#a61651] py-[12px] text-[16px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {loading ? 'Sending...' : `Send $${amount || '0'} Tip`}
+              {loading ? 'Sending...' : `Send ${amount || '0'} Coins`}
             </button>
           </>
         )}

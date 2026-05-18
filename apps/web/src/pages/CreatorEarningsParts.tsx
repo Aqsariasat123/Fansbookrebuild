@@ -54,7 +54,7 @@ export function EarningsMobileCards({ items }: { items: EarningItem[] }) {
               { label: 'Date', value: formatDate(item.createdAt) },
               { label: 'Time', value: formatTime(item.createdAt) },
               { label: 'Source', value: item.source },
-              { label: 'Amount', value: `$${item.amount.toFixed(2)}` },
+              { label: 'Amount', value: `${item.amount.toFixed(2)} coins` },
               { label: 'Status', value: item.status },
             ].map((r, i, arr) => (
               <div
@@ -134,7 +134,7 @@ export function EarningsTable({ items, loading }: { items: EarningItem[]; loadin
                 )}
               </td>
               <td className="px-[16px] py-[14px] text-[14px] text-foreground">
-                ${item.amount.toFixed(2)}
+                {item.amount.toFixed(2)} coins
               </td>
               <td className="px-[16px] py-[14px] text-[14px] text-foreground">{item.status}</td>
             </tr>

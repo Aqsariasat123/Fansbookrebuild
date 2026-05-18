@@ -54,7 +54,7 @@ export function TipModal({ postId, creatorName, onClose }: TipModalProps) {
                   : 'bg-muted text-muted-foreground hover:text-foreground'
               }`}
             >
-              ${a}
+              {a} coins
             </button>
           ))}
         </div>

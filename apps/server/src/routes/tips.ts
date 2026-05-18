@@ -9,8 +9,8 @@ const router = Router();
 
 function validateTip(receiverId: string, tipAmount: number, userId: string) {
   if (!receiverId) throw new AppError(400, 'receiverId is required');
-  if (!tipAmount || tipAmount < 1) throw new AppError(400, 'Minimum tip is $1');
-  if (tipAmount > 10000) throw new AppError(400, 'Maximum tip is $10,000');
+  if (!tipAmount || tipAmount < 1) throw new AppError(400, 'Minimum tip is 1 coin');
+  if (tipAmount > 10000) throw new AppError(400, 'Maximum tip is 10,000 coins');
   if (receiverId === userId) throw new AppError(400, 'Cannot tip yourself');
 }
 
@@ -54,7 +54,7 @@ async function notifyTipSent(
     type: 'TIP',
     actorId: userId,
     entityType: `TIP|avatar:${actor?.avatar || ''}`,
-    message: `${actor?.displayName || 'Someone'} sent you a $${tipAmount} tip!${noteSuffix}`,
+    message: `${actor?.displayName || 'Someone'} sent you a ${tipAmount}-coin tip!${noteSuffix}`,
   });
 }
 
