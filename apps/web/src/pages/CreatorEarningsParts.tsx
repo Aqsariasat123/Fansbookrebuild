@@ -33,10 +33,12 @@ function UserCell({ fromUser }: { fromUser: EarningItem['fromUser'] }) {
 }
 
 /** Tip messages from fans live in transaction.description. Older rows used
- *  a placeholder phrase — strip those so only real notes render. */
-function cleanNote(desc: string | null): string | null {
-  if (!desc) return null;
-  const t = desc.trim();
+ *  a placeholder phrase, and PPV/subscription rows use internal references
+ *  ("PPV earning: post …") rather than human notes — strip both so only real
+ *  fan-written tip notes render. */
+function cleanNote(item: EarningItem): string | null {
+  if (item.type !== 'TIP_RECEIVED') return null;
+  const t = (item.description || '').trim();
   if (!t || t === 'Direct tip' || t === 'Direct tip received') return null;
   return t;
 }
@@ -45,7 +47,7 @@ export function EarningsMobileCards({ items }: { items: EarningItem[] }) {
   return (
     <>
       {items.map((item) => {
-        const note = cleanNote(item.description);
+        const note = cleanNote(item);
         return (
           <div key={item.id} className="rounded-[16px] bg-card p-[16px]">
             {[
@@ -125,9 +127,9 @@ export function EarningsTable({ items, loading }: { items: EarningItem[]; loadin
               </td>
               <td className="px-[16px] py-[14px] text-[14px] text-foreground">
                 {item.source}
-                {cleanNote(item.description) && (
+                {cleanNote(item) && (
                   <p className="mt-[2px] text-[12px] italic text-muted-foreground">
-                    &ldquo;{cleanNote(item.description)}&rdquo;
+                    &ldquo;{cleanNote(item)}&rdquo;
                   </p>
                 )}
               </td>
