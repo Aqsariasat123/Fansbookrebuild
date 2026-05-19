@@ -9,7 +9,7 @@ interface ImageGridProps {
   username?: string;
 }
 
-export function ImageGrid({ media, onImageClick, username: _username }: ImageGridProps) {
+export function ImageGrid({ media, onImageClick, username }: ImageGridProps) {
   const images = media.filter((m) => m.type === 'IMAGE');
   if (images.length === 0) return null;
   const extra = images.length > 4 ? images.length - 3 : 0;
@@ -28,7 +28,7 @@ export function ImageGrid({ media, onImageClick, username: _username }: ImageGri
           draggable={false}
           onContextMenu={noCtx}
         />
-        <ImageWatermark />
+        <ImageWatermark username={username} />
       </div>
     );
   }
@@ -47,7 +47,7 @@ export function ImageGrid({ media, onImageClick, username: _username }: ImageGri
           draggable={false}
           onContextMenu={noCtx}
         />
-        <ImageWatermark />
+        <ImageWatermark username={username} />
       </div>
       {shown.slice(1).map((img, i) => (
         <div

@@ -13,9 +13,10 @@ interface MediaItem {
 
 interface MediaGridProps {
   media: MediaItem[];
+  username?: string;
 }
 
-export function MediaGrid({ media }: MediaGridProps) {
+export function MediaGrid({ media, username }: MediaGridProps) {
   const [viewerIdx, setViewerIdx] = useState<number | null>(null);
   const unlocked = media.filter((m) => !m.isLocked);
 
@@ -68,6 +69,7 @@ export function MediaGrid({ media }: MediaGridProps) {
           media={unlocked.map((m) => ({ id: m.id, url: m.url, type: m.type as 'IMAGE' | 'VIDEO' }))}
           initialIndex={viewerIdx}
           onClose={() => setViewerIdx(null)}
+          username={username}
         />
       )}
     </>

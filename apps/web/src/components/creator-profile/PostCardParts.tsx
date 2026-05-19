@@ -36,22 +36,19 @@ export function PostCardHeader({
               <img src={`${IMG}/verified.svg`} alt="" className="size-[14px] md:size-[16px]" />
             )}
           </div>
-          <span className="text-[11px] text-muted-foreground md:text-[13px]">
-            @{author.username}
-          </span>
+          <span className="text-[12px] text-foreground/75 md:text-[14px]">@{author.username}</span>
         </div>
       </div>
       <div className="relative flex items-center gap-[8px]">
         <PinIndicator isPinned={isPinned} />
-        <span className="text-[11px] text-muted-foreground md:text-[13px]">
-          {timeAgo(createdAt)}
-        </span>
+        <span className="text-[13px] text-foreground/75 md:text-[14px]">{timeAgo(createdAt)}</span>
         <button
           type="button"
           onClick={onMenuToggle}
           className="flex size-[26px] items-center justify-center rounded-full hover:bg-muted"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          {/* Card #28 follow-up: bigger three-dot menu, no surrounding circle. */}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <circle cx="12" cy="5" r="2" />
             <circle cx="12" cy="12" r="2" />
             <circle cx="12" cy="19" r="2" />
@@ -163,7 +160,7 @@ export function VideoCard({
           <span className="text-[14px] text-foreground md:text-[16px]">Play</span>
         </div>
       </div>
-      {username && <ImageWatermark />}
+      {username && <ImageWatermark username={username} />}
     </div>
   );
 }

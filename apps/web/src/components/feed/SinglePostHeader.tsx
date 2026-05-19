@@ -41,7 +41,7 @@ export function SinglePostHeader({ author, createdAt }: Props) {
           <p className="text-[12px] text-foreground/75">@{author.username}</p>
         </div>
       </Link>
-      <span className="text-[14px] text-muted-foreground">{timeAgo}</span>
+      <span className="text-[14px] text-foreground/75">{timeAgo}</span>
     </div>
   );
 }

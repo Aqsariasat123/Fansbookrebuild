@@ -42,3 +42,9 @@ apps/server/prisma/migrations/*.sql.bak
 *.tgz
 .cache/
 .github/workflows/
+
+# MCP server credentials (Trello API key + token)
+.mcp.json
+
+# Local Trello card verification scripts (not committed)
+.trello-verify/

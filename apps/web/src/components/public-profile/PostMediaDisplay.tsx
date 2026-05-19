@@ -92,6 +92,7 @@ export function PostMediaDisplay({
   isLocked,
   ppvPrice,
   postId,
+  username,
   onUnlocked,
 }: PostMediaDisplayProps) {
   const [viewerIdx, setViewerIdx] = useState<number | null>(null);
@@ -123,6 +124,7 @@ export function PostMediaDisplay({
           media={images.map((m) => ({ ...m, type: m.type as 'IMAGE' | 'VIDEO' }))}
           initialIndex={viewerIdx}
           onClose={() => setViewerIdx(null)}
+          username={username}
         />
       )}
     </>

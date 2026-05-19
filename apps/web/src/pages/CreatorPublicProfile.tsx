@@ -167,6 +167,7 @@ export default function CreatorPublicProfile() {
               activeTab={activeTab}
               posts={posts}
               isSubscribed={profile.isSubscribed}
+              username={profile.username}
             />
           </div>
         </div>

@@ -12,7 +12,7 @@ interface Media {
   thumbnail?: string | null;
 }
 
-export function SinglePostMedia({ media }: { media: Media[] }) {
+export function SinglePostMedia({ media, username }: { media: Media[]; username?: string }) {
   const [viewerIdx, setViewerIdx] = useState<number | null>(null);
   const images = media.filter((m) => m.type === 'IMAGE');
   const video = media.find((m) => m.type === 'VIDEO');
@@ -31,7 +31,9 @@ export function SinglePostMedia({ media }: { media: Media[] }) {
           />
         </div>
       )}
-      {images.length > 1 && <MultiImageGrid images={images} onClickImage={setViewerIdx} />}
+      {images.length > 1 && (
+        <MultiImageGrid images={images} onClickImage={setViewerIdx} username={username} />
+      )}
       {video && (
         <div
           className="relative aspect-[3/4] w-[60%] cursor-pointer overflow-hidden rounded-[22px]"
@@ -49,6 +51,7 @@ export function SinglePostMedia({ media }: { media: Media[] }) {
           media={video ? [video] : images}
           initialIndex={viewerIdx}
           onClose={() => setViewerIdx(null)}
+          username={username}
         />
       )}
     </div>

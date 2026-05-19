@@ -59,7 +59,7 @@ export function CommentItem({
           {comment.author.isVerified && (
             <img src="/icons/dashboard/verified.svg" alt="" className="size-[12px]" />
           )}
-          <span className="text-[10px] text-muted-foreground">{timeAgo}</span>
+          <span className="text-[11px] text-foreground/75">{timeAgo}</span>
         </div>
         <p className="text-[12px] leading-[1.5] text-foreground md:text-[13px]">{comment.text}</p>
         <div className="mt-[2px] flex items-center gap-[14px]">

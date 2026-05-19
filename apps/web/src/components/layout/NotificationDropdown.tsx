@@ -142,7 +142,7 @@ export function NotificationDropdown({ open, onClose }: Props) {
               >
                 {n.message}
               </p>
-              <p className="text-[11px] text-muted-foreground mt-[2px]">{timeAgo(n.createdAt)}</p>
+              <p className="text-[12px] text-foreground/75 mt-[2px]">{timeAgo(n.createdAt)}</p>
             </div>
             {!n.read && <span className="mt-[6px] size-[8px] rounded-full bg-[#01adf1] shrink-0" />}
           </button>

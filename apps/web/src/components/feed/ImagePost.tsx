@@ -47,7 +47,7 @@ function ImagePostMedia({
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <ImageWatermark />
+          <ImageWatermark username={post.author.username} />
         </div>
       )}
       {images.length > 1 && (

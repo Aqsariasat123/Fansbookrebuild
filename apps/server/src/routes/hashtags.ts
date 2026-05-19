@@ -15,6 +15,7 @@ const AUTHOR_SELECT = {
 // GET /api/hashtags/:tag/posts — paginated posts containing #tag
 router.get('/:tag/posts', authenticate, async (req, res, next) => {
   try {
+    const userId = req.user!.userId;
     const tag = req.params.tag as string;
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(20, Math.max(1, Number(req.query.limit) || 10));
@@ -25,16 +26,29 @@ router.get('/:tag/posts', authenticate, async (req, res, next) => {
       visibility: 'PUBLIC' as const,
     };
 
-    const [items, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       prisma.post.findMany({
         where,
-        include: { author: { select: AUTHOR_SELECT }, media: { orderBy: { order: 'asc' } } },
+        include: {
+          author: { select: AUTHOR_SELECT },
+          media: { orderBy: { order: 'asc' } },
+          // Mirror feed + single-post: surface whether the viewer has already
+          // unlocked this PPV post, otherwise the hashtag feed re-locks it.
+          ppvPurchases: { where: { userId }, select: { id: true }, take: 1 },
+        },
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
       }),
       prisma.post.count({ where }),
     ]);
+
+    const items = rows.map(({ ppvPurchases, ...rest }) => ({
+      ...rest,
+      // Author always sees their own post unlocked; everyone else inherits
+      // the purchase check above.
+      isPpvUnlocked: rest.authorId === userId || ppvPurchases.length > 0,
+    }));
 
     res.json({ success: true, data: { items, total, page, limit, tag } });
   } catch (err) {

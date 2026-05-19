@@ -77,7 +77,7 @@ export function PostHeader({
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-[8px] md:gap-[18px]">
-        <span className="text-[12px] font-normal text-muted-foreground md:text-[16px]">
+        <span className="text-[13px] font-normal text-foreground/75 md:text-[16px]">
           {timeAgo(post.createdAt)}
         </span>
         <FeedPostMenu postId={post.id} isOwner={isOwner} onDelete={onDelete} />

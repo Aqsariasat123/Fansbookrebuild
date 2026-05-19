@@ -27,7 +27,7 @@ export function MultiImageGrid({
         onClick={() => onClickImage(0)}
       >
         <img src={images[0]?.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        {username && <ImageWatermark />}
+        {username && <ImageWatermark username={username} />}
       </div>
     );
   }
@@ -43,7 +43,7 @@ export function MultiImageGrid({
             onClick={() => onClickImage(i)}
           >
             <img src={img.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
-            {i === 0 && username && <ImageWatermark />}
+            {i === 0 && username && <ImageWatermark username={username} />}
           </div>
         ))}
       </div>
@@ -70,7 +70,7 @@ export function MultiImageGrid({
               alt=""
               className={`absolute inset-0 h-full w-full object-cover${isLast ? ' blur-sm' : ''}`}
             />
-            {i === 0 && username && <ImageWatermark />}
+            {i === 0 && username && <ImageWatermark username={username} />}
             {isLast && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                 <p className="text-[18px] font-semibold text-white">+{overflow}</p>

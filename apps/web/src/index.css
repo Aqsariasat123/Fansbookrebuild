@@ -226,3 +226,51 @@ body {
     transform: scale(1) translateY(-6px);
   }
 }
+
+/* Card #5 follow-up — richer unlock sequence:
+   - shimmerSweep: a bright diagonal bar polishes across the image
+   - curtainPeel: the blurred lock layer scales up + fades out
+   - confettiPop: coloured particles fly outward in arcs */
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-130%) skewX(-18deg);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateX(130%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+@keyframes curtainPeel {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(20px) brightness(0.55);
+  }
+  55% {
+    opacity: 0.5;
+    transform: scale(1.06);
+    filter: blur(8px) brightness(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12);
+    filter: blur(0) brightness(1);
+  }
+}
+@keyframes confettiPop {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.3);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--cx, 0px), var(--cy, 0px)) rotate(var(--cr, 0deg)) scale(0.8);
+  }
+}

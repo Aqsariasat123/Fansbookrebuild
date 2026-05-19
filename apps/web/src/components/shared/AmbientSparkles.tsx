@@ -20,7 +20,9 @@ function makeSparkles(count: number) {
   }));
 }
 
-export function AmbientSparkles({ count = 14 }: { count?: number }) {
+// Card #5 follow-up: the client asked for "maybe you could double the amount
+// of them". Field doubled from 14 → 28 so the lock state feels properly alive.
+export function AmbientSparkles({ count = 28 }: { count?: number }) {
   const sparkles = makeSparkles(count);
   return (
     <div className="pointer-events-none absolute inset-0 z-[5] overflow-hidden rounded-[inherit]">

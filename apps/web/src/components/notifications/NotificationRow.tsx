@@ -131,7 +131,7 @@ export function NotificationRow({
             {n.message}
           </p>
           <div className="flex items-center gap-[10px] mt-[3px]">
-            <span className="text-[11px] text-muted-foreground">{timeAgo(n.createdAt)}</span>
+            <span className="text-[12px] text-foreground/75">{timeAgo(n.createdAt)}</span>
             {actionLink && (
               <Link
                 to={actionLink.href}

@@ -117,7 +117,7 @@ function AuthorHeader({
         </div>
       </div>
       <div className="flex items-center gap-[10px]">
-        <span className="text-[12px] text-muted-foreground">{timeAgo(createdAt)}</span>
+        <span className="text-[13px] text-foreground/75 md:text-[14px]">{timeAgo(createdAt)}</span>
         <DotsMenu postId={postId} />
       </div>
     </div>

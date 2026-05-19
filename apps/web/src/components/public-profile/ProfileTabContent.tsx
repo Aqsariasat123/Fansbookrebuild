@@ -66,9 +66,16 @@ interface Props {
   posts: PublicPost[];
   isSubscribed: boolean;
   viewMode?: 'list' | 'grid';
+  username?: string;
 }
 
-export function ProfileTabContent({ activeTab, posts, isSubscribed, viewMode = 'list' }: Props) {
+export function ProfileTabContent({
+  activeTab,
+  posts,
+  isSubscribed,
+  viewMode = 'list',
+  username,
+}: Props) {
   if (activeTab === 'feed') {
     if (posts.length === 0) return <EmptyState label="No posts yet." />;
     if (viewMode === 'grid') return <FeedGridView posts={posts} />;
@@ -83,5 +90,5 @@ export function ProfileTabContent({ activeTab, posts, isSubscribed, viewMode = '
 
   const media = extractAllMedia(posts, isSubscribed);
   if (media.length === 0) return <EmptyState label="No media yet." />;
-  return <MediaGrid media={media} />;
+  return <MediaGrid media={media} username={username} />;
 }

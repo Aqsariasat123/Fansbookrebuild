@@ -114,7 +114,7 @@ export default function SinglePost() {
             />
           </div>
         ) : (
-          <SinglePostMedia media={post.media} />
+          <SinglePostMedia media={post.media} username={post.author.username} />
         )}
         <div className="mt-[20px]">
           <PostActions
